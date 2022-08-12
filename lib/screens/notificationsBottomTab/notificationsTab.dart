@@ -1,4 +1,5 @@
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/screens/GDARNotificationScreen/GdArNotificationScreen.dart';
 import 'package:diamon_rose_app/screens/NotificationPage/notificationScreen.dart';
 import 'package:diamon_rose_app/screens/chatPage/chatScreenMain.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
@@ -18,7 +19,7 @@ class _NotificationsTabState extends State<NotificationsTab> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: 2,
+        length: 3,
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: constantColors.navButton,
@@ -28,6 +29,7 @@ class _NotificationsTabState extends State<NotificationsTab> {
               tabs: [
                 Tab(text: 'Chats'),
                 Tab(text: 'Notifications'),
+                Tab(text: 'GD AR'),
               ],
             ),
           ),
@@ -35,6 +37,7 @@ class _NotificationsTabState extends State<NotificationsTab> {
             children: [
               ChatScreen(),
               NotificationScreen(),
+              GDARNotificationScreen(),
             ],
           ),
         ));

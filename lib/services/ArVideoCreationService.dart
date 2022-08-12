@@ -61,6 +61,15 @@ class ArVideoCreation extends ChangeNotifier {
     });
   }
 
+  String formatDuration(Duration duration) {
+    String hours = duration.inHours.toString().padLeft(0, '2');
+    String minutes =
+        duration.inMinutes.remainder(60).toString().padLeft(2, '0');
+    String seconds =
+        duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return "$hours:$minutes:$seconds";
+  }
+
   Future<void> arVideoCreator(
       {required BuildContext ctx,
       required File file,
@@ -69,7 +78,10 @@ class ArVideoCreation extends ChangeNotifier {
       final FirebaseOperations firebaseOperations =
           Provider.of<FirebaseOperations>(ctx, listen: false);
 
+      final String endDurationString = formatDuration(endDuration);
+
       log("end Duration == ${endDuration.toString()}");
+      log("End duration in String == ${endDurationString}");
 
       final String ownerName = firebaseOperations.initUserName;
       final Authentication auth =
@@ -112,8 +124,15 @@ class ArVideoCreation extends ChangeNotifier {
       );
 
       try {
-        _rvmResponse = await firebaseOperations.postData(
-            fileStarting: fileName, audioFlag: audioFlag);
+        _rvmResponse = await firebaseOperations.postData2(
+          endDuration: endDurationString,
+          idVal: fileName,
+          ownerName: ownerName,
+          useruid: auth.getUserId,
+          registrationId: firebaseOperations.fcmToken,
+          fileStarting: fileName,
+          audioFlag: audioFlag,
+        );
         notifyListeners();
         log("bg removal done");
       } catch (e) {

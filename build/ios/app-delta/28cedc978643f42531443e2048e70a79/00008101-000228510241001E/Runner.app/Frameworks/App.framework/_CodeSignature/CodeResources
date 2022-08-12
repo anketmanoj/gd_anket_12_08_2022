@@ -456,6 +456,14 @@
 		<data>
 		zg6AEuOKM55BH/RKiXqZqsORXXE=
 		</data>
+		<key>flutter_assets/isolate_snapshot_data</key>
+		<data>
+		/8YINIQYa2MGeFNAjTVvMEJmvKA=
+		</data>
+		<key>flutter_assets/kernel_blob.bin</key>
+		<data>
+		7ciuFKmwvh3TuytePNrWhmOkMhs=
+		</data>
 		<key>flutter_assets/packages/cool_alert/assets/flare/error_check.flr</key>
 		<data>
 		VN79t3Y/lmWDMDBluvzHc5SgYHI=
@@ -1824,6 +1832,10 @@
 		<data>
 		4X7PZ95hkgUE15GU2+5c1VKgHP0=
 		</data>
+		<key>flutter_assets/vm_snapshot_data</key>
+		<data>
+		kzk1wp8qHso+VmYD8lJ5+HidZCw=
+		</data>
 	</dict>
 	<key>files2</key>
 	<dict>
@@ -3024,6 +3036,28 @@
 			<key>hash2</key>
 			<data>
 			TDYN86u6z4Vu7PyuO9xbDd/JyDIkfDi8ygoVQ6BE5ys=
+			</data>
+		</dict>
+		<key>flutter_assets/isolate_snapshot_data</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			/8YINIQYa2MGeFNAjTVvMEJmvKA=
+			</data>
+			<key>hash2</key>
+			<data>
+			GiXyiy84iwHokWSI8cF+JQcEiNYwhXKJ6iopY39uCfo=
+			</data>
+		</dict>
+		<key>flutter_assets/kernel_blob.bin</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			7ciuFKmwvh3TuytePNrWhmOkMhs=
+			</data>
+			<key>hash2</key>
+			<data>
+			loZg/TlJHctrUTFJMg3SLsEuBNPEQ0ErWkWjuUpYmiM=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/cool_alert/assets/flare/error_check.flr</key>
@@ -6786,6 +6820,17 @@
 			<key>hash2</key>
 			<data>
 			3OTu8LGXtkCtaqqyIo7h7n3M+L1ta13lSE3RvRZDCng=
+			</data>
+		</dict>
+		<key>flutter_assets/vm_snapshot_data</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			kzk1wp8qHso+VmYD8lJ5+HidZCw=
+			</data>
+			<key>hash2</key>
+			<data>
+			SWudSb+UjFAbtsuvOflVVEzSQrNcWWVHTwGa+DH02Gs=
 			</data>
 		</dict>
 	</dict>

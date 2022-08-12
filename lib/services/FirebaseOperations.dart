@@ -1747,7 +1747,7 @@ class FirebaseOperations with ChangeNotifier {
     return url;
   }
 
-  Future<RvmResponse?> postData(
+  Future<RvmResponse?> postDataOld(
       {required String fileStarting, required int audioFlag}) async {
     // ignore: unawaited_futures
 
@@ -1762,12 +1762,52 @@ class FirebaseOperations with ChangeNotifier {
           "useruid": "",
           "idVal": "",
           "registrationId": "",
-          // "main" : "",
-          // "gifUrl" : "",
-          // "alphaUrl" : "",
           "ownerName": "",
-          // "audioUrl" : "",
           "endDuration": "hh:mm:ss"
+        },
+      ),
+    );
+
+    // log(response.statusCode)
+
+    if (response.statusCode == 200) {
+      log("Anket response OK");
+
+      log("rvm response full = ${response.body}");
+      final RvmResponse rvmResponse = RvmResponse.fromJson(response.body);
+
+      return rvmResponse;
+    } else {
+      // ignore: unawaited_futures
+      log("Anket Error RVM ${response.statusCode}");
+      return null;
+    }
+  }
+
+  Future<RvmResponse?> postData2({
+    required String fileStarting,
+    required int audioFlag,
+    required String useruid,
+    required String idVal,
+    required String registrationId,
+    required String ownerName,
+    required String endDuration,
+  }) async {
+    // ignore: unawaited_futures
+
+    var response = await http.post(
+      Uri.parse(
+          "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api/background_separation2/"),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(
+        {
+          "file_title": fileStarting,
+          "audio_flag": audioFlag,
+          "useruid": useruid,
+          "idVal": idVal,
+          "registrationId": registrationId,
+          "ownerName": ownerName,
+          "endDuration": endDuration
         },
       ),
     );
