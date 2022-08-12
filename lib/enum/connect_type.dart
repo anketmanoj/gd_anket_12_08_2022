@@ -1,0 +1,5 @@
+enum ConectionType {
+  failed,
+  done,
+}
+

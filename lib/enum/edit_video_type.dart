@@ -1,0 +1,5 @@
+enum EditVideoType {
+  newVideo,
+  updateVideo,
+}
+

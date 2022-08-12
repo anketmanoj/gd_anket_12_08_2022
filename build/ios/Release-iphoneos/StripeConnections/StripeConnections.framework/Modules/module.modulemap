@@ -1,0 +1,11 @@
+framework module StripeConnections {
+  umbrella header "StripeConnections-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module StripeConnections.Swift {
+    header "StripeConnections-Swift.h"
+    requires objc
+}

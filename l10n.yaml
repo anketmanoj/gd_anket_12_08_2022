@@ -1,0 +1,5 @@
+# flutter pub get した際に flutter_gen が自動処理するintl関連の処理設定
+arb-dir: lib/share/localizations/l10n/generated/translate_resources
+template-arb-file: app_ja.arb
+output-class: Localy
+untranslated-messages-file: lib/share/localizations/l10n/generated/untranslated_keys_info.json

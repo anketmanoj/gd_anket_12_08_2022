@@ -1,0 +1,13 @@
+/.DS_Store
+/.dart_tool
+/.firebaserc
+/.flutter-plugins
+/.flutter-plugins-dependencies
+/.idea
+/.metadata
+/.packages
+/.run
+/.vscode
+/GoogleService-Info.plist
+/gd_web_app
+/web_admin

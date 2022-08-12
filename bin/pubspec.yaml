@@ -1,0 +1,10 @@
+name: diamon_rose_app_cli
+description: Diamon Rose App Cli
+
+publish_to: 'none'
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+dependencies:
+  intl_translation: ^0.17.10+1
+
