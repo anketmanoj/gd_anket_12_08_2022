@@ -393,22 +393,12 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   constantColors: constantColors,
                   onTap: () async {
                     await FirebaseFirestore.instance
-                        .collection("users")
-                        .get()
-                        .then((value) => value.docs.forEach((userDoc) async {
-                              if (userDoc['userimage'] ==
-                                  "https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg") {
-                                await FirebaseFirestore.instance
-                                    .collection("users")
-                                    .doc(userDoc.id)
-                                    .update({
-                                  "userimage":
-                                      "https://firebasestorage.googleapis.com/v0/b/gdfe-ac584.appspot.com/o/bgImagesAR%2FGDapplogo.png?alt=media&token=9a23d52a-2282-4eb7-a751-a8e4fc7b7f8f",
-                                });
-                              }
-
-                              log("done updating");
-                            }));
+                        .collection("posts")
+                        .doc("BG9ciuEuxNSC5NeAfSUxP")
+                        .update({
+                      "discountamount": 0.0,
+                      "price": 1.0,
+                    });
                   },
                   leadingIcon: FontAwesomeIcons.history,
                   trailingIcon: Icons.arrow_forward_ios,

@@ -1784,6 +1784,32 @@ class FirebaseOperations with ChangeNotifier {
     }
   }
 
+  Future<void> createPendingArDoc({
+    required String endDurationString,
+    required String useruid,
+    required String ownerName,
+    required String idVal,
+    required String gifUrl,
+  }) async {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(useruid)
+        .collection("MyCollection")
+        .doc(idVal)
+        .set({
+      "gif": gifUrl,
+      "layerType": "AR",
+      "valueType": "myItems-Pending",
+      "timestamp": Timestamp.now(),
+      "id": idVal,
+      "ownerId": useruid,
+      "ownerName": ownerName,
+      "usage": "Pending",
+      "main": null,
+      "endDuration": endDurationString,
+    });
+  }
+
   Future<RvmResponse?> postData2({
     required String fileStarting,
     required int audioFlag,
@@ -1795,9 +1821,11 @@ class FirebaseOperations with ChangeNotifier {
   }) async {
     // ignore: unawaited_futures
 
+    log("sending request");
+
     var response = await http.post(
       Uri.parse(
-          "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api/background_separation2/"),
+          "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api3/background_separation2/"),
       headers: {"Content-Type": "application/json"},
       body: json.encode(
         {
@@ -1811,6 +1839,8 @@ class FirebaseOperations with ChangeNotifier {
         },
       ),
     );
+
+    log("sent request");
 
     // log(response.statusCode)
 

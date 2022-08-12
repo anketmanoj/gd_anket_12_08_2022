@@ -70,58 +70,63 @@ class ArVideoCreation extends ChangeNotifier {
     return "$hours:$minutes:$seconds";
   }
 
-  Future<void> arVideoCreator(
-      {required BuildContext ctx,
-      required File file,
-      required Duration endDuration}) async {
+  Future<void> arVideoCreator({
+    required BuildContext ctx,
+    required File file,
+    required Duration endDuration,
+    required String fileName,
+    required String inputFileUrl,
+  }) async {
     if (await Permission.storage.request().isGranted) {
       final FirebaseOperations firebaseOperations =
           Provider.of<FirebaseOperations>(ctx, listen: false);
-
-      final String endDurationString = formatDuration(endDuration);
-
-      log("end Duration == ${endDuration.toString()}");
-      log("End duration in String == ${endDurationString}");
-
       final String ownerName = firebaseOperations.initUserName;
       final Authentication auth =
           Provider.of<Authentication>(ctx, listen: false);
       log("starting | $ownerName");
 
-      Get.snackbar(
-        'Uploading Video',
-        'Your video is now being uploaded!',
-        overlayColor: constantColors.navButton,
-        colorText: constantColors.whiteColor,
-        snackPosition: SnackPosition.TOP,
-        forwardAnimationCurve: Curves.elasticInOut,
-        reverseAnimationCurve: Curves.easeOut,
-      );
+      final String endDurationString = formatDuration(endDuration);
 
-      final String fileName = "${Timestamp.now().millisecondsSinceEpoch}";
-      _inputFileUrl = await firebaseOperations.uploadToAWS(
+      final Directory tmpDocument = await getApplicationDocumentsDirectory();
+      final String rawDocument = tmpDocument.path;
+      final String coverFolder = "${rawDocument}/";
+
+      String commandToExceute =
+          "-i ${file.path} -ss 00:00:00 -vframes 1 -y ${coverFolder}cover.jpg";
+      log("starting ffmpeg");
+      await FFmpegKit.execute(commandToExceute).then((value) {
+        _gifFile = File("${coverFolder}cover.jpg");
+        notifyListeners();
+      });
+      log("uploading cover image");
+      final String? gifFileUrl = await firebaseOperations.uploadToAWS(
           pop: false,
           ctx: ctx,
-          file: file,
+          file: File(_gifFile!.path),
           startingFileName: fileName,
-          endingFileName: "videoFile.mp4");
+          endingFileName: "cover.jpg");
+
+      log("cover image uploaded == $gifFileUrl");
+
+      log("end Duration == ${endDuration.toString()}");
+      log("End duration in String == ${endDurationString}");
+
+      await firebaseOperations.createPendingArDoc(
+          endDurationString: endDurationString,
+          useruid: auth.getUserId,
+          ownerName: ownerName,
+          idVal: fileName,
+          gifUrl: gifFileUrl!);
+
+      log("created Pending Document");
+
       log("filename ${fileName} and inputfile done");
 
-      final int audioFlag = await audioCheck(videoUrl: _inputFileUrl!);
+      final int audioFlag = await audioCheck(videoUrl: inputFileUrl);
 
       log("audioFlag == $audioFlag");
 
       notifyListeners();
-
-      Get.snackbar(
-        'Removing Background',
-        'Removing the background from your video!',
-        overlayColor: constantColors.navButton,
-        colorText: constantColors.whiteColor,
-        snackPosition: SnackPosition.TOP,
-        forwardAnimationCurve: Curves.elasticInOut,
-        reverseAnimationCurve: Curves.easeOut,
-      );
 
       try {
         _rvmResponse = await firebaseOperations.postData2(
@@ -139,101 +144,8 @@ class ArVideoCreation extends ChangeNotifier {
         log("Error anket == ${e.toString()}");
       }
 
-      if (_rvmResponse != null) {
-        // ignore: unawaited_futures
-        Get.snackbar(
-          'Final touches...',
-          'Your AR is almost ready!',
-          overlayColor: constantColors.navButton,
-          colorText: constantColors.whiteColor,
-          snackPosition: SnackPosition.TOP,
-          forwardAnimationCurve: Curves.elasticInOut,
-          reverseAnimationCurve: Curves.easeOut,
-        );
-
-        final String alphaUrl =
-            "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/${fileName}_alpha.mp4";
-
-        final String audioUrlFile = audioFlag == 1
-            ? "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/${fileName}_audio.aac"
-            : "No audio";
-
-        final List<String> _imgSeq = [];
-
-        log("number of pngs = ${_rvmResponse!.totalNumberPngs}");
-
-        for (int i = 1; i <= _rvmResponse!.totalNumberPngs; i++) {
-          _imgSeq.add(
-              "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/${fileName}_ImgSeq$i.png");
-        }
-
-        final Directory tmpDocument = await getApplicationDocumentsDirectory();
-        final String rawDocument = tmpDocument.path;
-        final String gifFolder = "${rawDocument}/";
-
-        String commandToExceute =
-            "-i ${file.path} -i ${alphaUrl} -t 2 -filter_complex \"[1][0]scale2ref[mask][main];[main][mask]alphamerge,fps=20,scale=480:-1,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse\" -y ${gifFolder}output.gif";
-        log("starting ffmpeg");
-        await FFmpegKit.execute(commandToExceute).then((value) {
-          _gifFile = File("${gifFolder}output.gif");
-          notifyListeners();
-        });
-
-        final String? gifUrl = await firebaseOperations.uploadToAWS(
-            pop: false,
-            file: File(_gifFile!.path),
-            startingFileName: fileName,
-            endingFileName: "output.gif",
-            ctx: ctx);
-
-        log("gif done");
-
-        _audioFlag = 0;
-        notifyListeners();
-
-        await deleteFile(["${gifFolder}output.gif"]);
-
-        Get.snackbar(
-            'AR Successfully created!', 'Taking you to the AR Preview Settings',
-            overlayColor: constantColors.navButton,
-            colorText: constantColors.whiteColor,
-            snackPosition: SnackPosition.TOP,
-            forwardAnimationCurve: Curves.elasticInOut,
-            reverseAnimationCurve: Curves.easeOut);
-
-        // ignore: cascade_invocations, unawaited_futures
-        Get.to(() => ArPreviewSetting(
-              gifUrl: gifUrl!,
-              ownerName: ownerName,
-              audioFlag: audioFlag,
-              alphaUrl: alphaUrl,
-              audioUrl: audioUrlFile,
-              imgSeqList: _imgSeq,
-              arIdVal: fileName,
-              inputUrl: _inputFileUrl!,
-              userUid: auth.getUserId,
-              endDuration: endDuration,
-            ));
-
-        // await firebaseOperations
-        //     .addArToCollection(
-        //   ownerName: ownerName,
-        //   audioFlag: audioFlag,
-        //   alphaUrl: alphaUrl,
-        //   audioUrl: audioUrlFile,
-        //   imgSeqList: _imgSeq,
-        //   gifUrl: gifUrl!,
-        //   idVal: fileName,
-        //   mainUrl: _inputFileUrl!,
-        //   useruid: auth.getUserId,
-        // )
-        //     .whenComplete(() async {
-
-        //   log("sucess!");
-
-        //   log("gif file deleted");
-        // });
-      }
+      log("Sent request to server, now waiting ");
+      log("token == ${firebaseOperations.fcmToken}");
     } else if (await Permission.storage.request().isDenied) {
       await openAppSettings();
     }

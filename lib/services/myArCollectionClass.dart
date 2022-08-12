@@ -14,6 +14,7 @@ class MyArCollection {
   String ownerId;
   String ownerName;
   String? usage = 'Material';
+  String? endDuration;
 
   MyArCollection({
     required this.gif,
@@ -29,6 +30,7 @@ class MyArCollection {
     required this.ownerId,
     required this.ownerName,
     this.usage,
+    this.endDuration,
   });
 
   // create myarcollection from json
@@ -46,6 +48,7 @@ class MyArCollection {
       ownerId: json['ownerId'] as String,
       ownerName: json['ownerName'] as String,
       usage: json['usage'] as String?,
+      endDuration: json['endDuration'] as String?,
       imgSeq: (json['imgSeq'] as List).map((item) => item as String).toList(),
     );
   }
@@ -66,6 +69,7 @@ class MyArCollection {
       'ownerId': ownerId,
       'ownerName': ownerName,
       'usage': usage,
+      'endDuration': endDuration,
     };
   }
 }

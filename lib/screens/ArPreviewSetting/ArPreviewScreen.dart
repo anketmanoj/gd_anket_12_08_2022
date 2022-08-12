@@ -443,6 +443,7 @@ class ArPreviewSetting extends StatelessWidget {
                                           Curves.elasticInOut,
                                       reverseAnimationCurve: Curves.easeOut,
                                     );
+
                                     Navigator.pop(context);
                                     Navigator.pop(context);
                                   });
@@ -513,7 +514,7 @@ class ArPreviewSetting extends StatelessWidget {
                                               value: _isFree.value,
                                               onChanged: (value) {
                                                 _isFree.value = value;
-                                                _isPaid.value = false;
+                                                _isPaid.value = !value;
                                               }),
                                           title: Text(
                                             "Free",
@@ -529,7 +530,7 @@ class ArPreviewSetting extends StatelessWidget {
                                             value: _isPaid.value,
                                             onChanged: (value) {
                                               _isPaid.value = value;
-                                              _isFree.value = false;
+                                              _isFree.value = !value;
                                             },
                                           ),
                                           title: Text(

@@ -1895,7 +1895,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                           context: context,
                           type: CoolAlertType.loading,
                           text: "Processing Video",
-                          // barrierDismissible: false,
+                          barrierDismissible: false,
                         );
                         try {
                           await combineBgAr(

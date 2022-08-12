@@ -685,6 +685,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                               } else {
                                 final String videoUrl =
                                     "https://gdfe-ac584.web.app/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
+                                // "https://gdfe-ac584.web.app/#/video/0ReK4oZIhGdbuYxBiUG5J/sjhbjhs";
                                 CoolAlert.show(
                                   context: context,
                                   type: CoolAlertType.info,

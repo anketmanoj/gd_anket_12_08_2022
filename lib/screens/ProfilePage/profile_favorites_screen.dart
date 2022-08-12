@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class FavoritesPage extends StatelessWidget {
@@ -35,6 +38,25 @@ class FavoritesPage extends StatelessWidget {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       return ListTile(
+                        onTap: () {
+                          try {
+                            Navigator.push(
+                                context,
+                                PageTransition(
+                                    child: PostDetailsScreen(
+                                      videoId: snapshot.data!.docs[index]
+                                          ["videoId"],
+                                    ),
+                                    type: PageTransitionType.fade));
+                          } catch (e) {
+                            CoolAlert.show(
+                              context: context,
+                              type: CoolAlertType.error,
+                              title: "Post No Longer Exists",
+                              text: "This post has been removed by the creator",
+                            );
+                          }
+                        },
                         title: Text(
                           snapshot.data!.docs[index]['videotitle'],
                           overflow: TextOverflow.ellipsis,

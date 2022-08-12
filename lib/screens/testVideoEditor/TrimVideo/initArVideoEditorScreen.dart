@@ -173,6 +173,26 @@ class _ArVideoEditorScreenState extends State<ArVideoEditorScreen> {
                                         (timer) {
                                       count.value += 1;
                                     });
+
+                                    CoolAlert.show(
+                                      context: context,
+                                      type: CoolAlertType.loading,
+                                      text: "Uploading Video",
+                                      barrierDismissible: false,
+                                    );
+
+                                    final String fileName =
+                                        "${Timestamp.now().millisecondsSinceEpoch}";
+
+                                    final String? inputFileUrl =
+                                        await firebaseOperations.uploadToAWS(
+                                            pop: false,
+                                            ctx: context,
+                                            file: file,
+                                            startingFileName: fileName,
+                                            endingFileName: "videoFile.mp4");
+
+                                    Navigator.pop(context);
                                     Navigator.pop(context);
                                     Navigator.pop(context);
                                     Navigator.pop(context);
@@ -257,6 +277,8 @@ class _ArVideoEditorScreenState extends State<ArVideoEditorScreen> {
                                     await Provider.of<ArVideoCreation>(context,
                                             listen: false)
                                         .arVideoCreator(
+                                      fileName: fileName,
+                                      inputFileUrl: inputFileUrl!,
                                       endDuration: endDuration,
                                       ctx: context,
                                       file: file,
