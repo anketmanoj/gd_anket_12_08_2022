@@ -389,21 +389,21 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 //   trailingIcon: Icons.arrow_forward_ios,
                 //   text: "Test With Audio",
                 // ),
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () async {
-                    await FirebaseFirestore.instance
-                        .collection("posts")
-                        .doc("BG9ciuEuxNSC5NeAfSUxP")
-                        .update({
-                      "discountamount": 0.0,
-                      "price": 1.0,
-                    });
-                  },
-                  leadingIcon: FontAwesomeIcons.history,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: "test all Materials",
-                ),
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () async {
+                //     await FirebaseFirestore.instance
+                //         .collection("posts")
+                //         .doc("BG9ciuEuxNSC5NeAfSUxP")
+                //         .update({
+                //       "discountamount": 0.0,
+                //       "price": 1.0,
+                //     });
+                //   },
+                //   leadingIcon: FontAwesomeIcons.history,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "test all Materials",
+                // ),
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () {

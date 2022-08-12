@@ -600,6 +600,24 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                           child: Container(
                                             height: 50,
                                             child: TextFormField(
+                                              validator: (value) {
+                                                if (_isPaid == true &&
+                                                    value!.isNotEmpty) {
+                                                  final double endPrice = double
+                                                          .parse(_contentPrice
+                                                              .text) *
+                                                      (1 -
+                                                          double.parse(value) /
+                                                              100);
+
+                                                  if (endPrice >= 1.00) {
+                                                    return null;
+                                                  } else {
+                                                    return "Total price after discount too low";
+                                                  }
+                                                }
+                                                return null;
+                                              },
                                               controller: _contentDiscount,
                                               onChanged: (value) {
                                                 setState(() {
