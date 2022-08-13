@@ -21,7 +21,7 @@ import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
+// import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -63,79 +63,79 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
     // return video;
   }
 
-  Future<void> initPayment(
-      {required String email,
-      required String amount,
-      required BuildContext ctx}) async {
-    try {
-      // * create a payment intent on the server
-      final response = await http.post(
-        Uri.parse(
-            "https://us-central1-gdfe-ac584.cloudfunctions.net/stripePaymentIntentRequest"),
-        body: {
-          'email': email,
-          'amount': amount,
-        },
-      );
+  // Future<void> initPayment(
+  //     {required String email,
+  //     required String amount,
+  //     required BuildContext ctx}) async {
+  //   try {
+  //     // * create a payment intent on the server
+  //     final response = await http.post(
+  //       Uri.parse(
+  //           "https://us-central1-gdfe-ac584.cloudfunctions.net/stripePaymentIntentRequest"),
+  //       body: {
+  //         'email': email,
+  //         'amount': amount,
+  //       },
+  //     );
 
-      final jsonResponse = jsonDecode(response.body);
-      // initailize the payment sheet
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          applePay: true,
-          googlePay: true,
-          paymentIntentClientSecret: jsonResponse['paymentIntent'],
-          merchantDisplayName: "Glamorous Diastation",
-          customerId: jsonResponse['customer'],
-          customerEphemeralKeySecret: jsonResponse['ephemeralKey'],
-          testEnv: true,
-          merchantCountryCode: 'US',
-        ),
-      );
+  //     final jsonResponse = jsonDecode(response.body);
+  //     // initailize the payment sheet
+  //     await Stripe.instance.initPaymentSheet(
+  //       paymentSheetParameters: SetupPaymentSheetParameters(
+  //         applePay: true,
+  //         googlePay: true,
+  //         paymentIntentClientSecret: jsonResponse['paymentIntent'],
+  //         merchantDisplayName: "Glamorous Diastation",
+  //         customerId: jsonResponse['customer'],
+  //         customerEphemeralKeySecret: jsonResponse['ephemeralKey'],
+  //         testEnv: true,
+  //         merchantCountryCode: 'US',
+  //       ),
+  //     );
 
-      await Stripe.instance.presentPaymentSheet();
-      showTopSnackBar(
-        ctx,
-        CustomSnackBar.success(
-          message: "Payment Successful",
-        ),
-      );
+  //     await Stripe.instance.presentPaymentSheet();
+  //     showTopSnackBar(
+  //       ctx,
+  //       CustomSnackBar.success(
+  //         message: "Payment Successful",
+  //       ),
+  //     );
 
-      CoolAlert.show(
-        context: context,
-        type: CoolAlertType.loading,
-        text: "Saving to your collection",
-        barrierDismissible: false,
-      );
-      await Provider.of<FirebaseOperations>(context, listen: false)
-          .addToMyCollection(
-        videoOwnerId: video!.useruid,
-        amount: int.parse((double.parse(amount) / 100).toStringAsFixed(0)),
-        videoItem: video!,
-        isFree: video!.isFree,
-        ctx: context,
-        videoId: video!.id,
-      );
-      // ignore: avoid_catches_without_on_clauses
-    } catch (e) {
-      print(e.toString());
-      if (e is StripeException) {
-        showTopSnackBar(
-          ctx,
-          CustomSnackBar.error(
-            message: "Payment Error ${e.error.localizedMessage}",
-          ),
-        );
-      } else {
-        showTopSnackBar(
-          ctx,
-          CustomSnackBar.error(
-            message: "Payment Error ${e.toString()}",
-          ),
-        );
-      }
-    }
-  }
+  //     CoolAlert.show(
+  //       context: context,
+  //       type: CoolAlertType.loading,
+  //       text: "Saving to your collection",
+  //       barrierDismissible: false,
+  //     );
+  //     await Provider.of<FirebaseOperations>(context, listen: false)
+  //         .addToMyCollection(
+  //       videoOwnerId: video!.useruid,
+  //       amount: int.parse((double.parse(amount) / 100).toStringAsFixed(0)),
+  //       videoItem: video!,
+  //       isFree: video!.isFree,
+  //       ctx: context,
+  //       videoId: video!.id,
+  //     );
+  //     // ignore: avoid_catches_without_on_clauses
+  //   } catch (e) {
+  //     print(e.toString());
+  //     if (e is StripeException) {
+  //       showTopSnackBar(
+  //         ctx,
+  //         CustomSnackBar.error(
+  //           message: "Payment Error ${e.error.localizedMessage}",
+  //         ),
+  //       );
+  //     } else {
+  //       showTopSnackBar(
+  //         ctx,
+  //         CustomSnackBar.error(
+  //           message: "Payment Error ${e.toString()}",
+  //         ),
+  //       );
+  //     }
+  //   }
+  // }
 
   @override
   void initState() {
@@ -679,14 +679,14 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                       ),
                                                     ),
                                                     onPressed: () async {
-                                                      await initPayment(
-                                                        ctx: context,
-                                                        amount:
-                                                            "${video!.price * (1 - video!.discountAmount / 100) * 100}",
-                                                        email:
-                                                            firebaseOperations
-                                                                .initUserEmail,
-                                                      );
+                                                      // await initPayment(
+                                                      //   ctx: context,
+                                                      //   amount:
+                                                      //       "${video!.price * (1 - video!.discountAmount / 100) * 100}",
+                                                      //   email:
+                                                      //       firebaseOperations
+                                                      //           .initUserEmail,
+                                                      // );
                                                     },
                                                     // paymentController.makePayment(
                                                     //     amount: "10", currency: "USD"),

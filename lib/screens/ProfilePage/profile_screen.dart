@@ -1263,6 +1263,7 @@ class _TopProfileStackState extends State<TopProfileStack> {
           return Stack(
             children: [
               Container(
+                width: 100.w,
                 decoration: BoxDecoration(
                   color: constantColors.bioBg,
                 ),

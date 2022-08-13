@@ -25,7 +25,7 @@ import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
+// import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
@@ -104,204 +104,204 @@ class _VideoPostItemState extends State<VideoPostItem> {
     );
   }
 
-  Future<void> initPayment(
-      {required String email,
-      required String amount,
-      required BuildContext ctx}) async {
-    try {
-      // * create a payment intent on the server
-      final response = await http.post(
-        Uri.parse(
-            "https://us-central1-gdfe-ac584.cloudfunctions.net/stripePaymentIntentRequest"),
-        body: {
-          'email': email,
-          'amount': amount,
-        },
-      );
+//   Future<void> initPayment(
+//       {required String email,
+//       required String amount,
+//       required BuildContext ctx}) async {
+//     try {
+//       // * create a payment intent on the server
+//       final response = await http.post(
+//         Uri.parse(
+//             "https://us-central1-gdfe-ac584.cloudfunctions.net/stripePaymentIntentRequest"),
+//         body: {
+//           'email': email,
+//           'amount': amount,
+//         },
+//       );
 
-      final jsonResponse = jsonDecode(response.body);
-      // initailize the payment sheet
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          applePay: true,
-          googlePay: true,
-          paymentIntentClientSecret: jsonResponse['paymentIntent'],
-          merchantDisplayName: "Glamorous Diastation",
-          customerId: jsonResponse['customer'],
-          customerEphemeralKeySecret: jsonResponse['ephemeralKey'],
-          testEnv: true,
-          merchantCountryCode: 'US',
-        ),
-      );
+//       final jsonResponse = jsonDecode(response.body);
+//       // initailize the payment sheet
+//       await Stripe.instance.initPaymentSheet(
+//         paymentSheetParameters: SetupPaymentSheetParameters(
+//           applePay: true,
+//           googlePay: true,
+//           paymentIntentClientSecret: jsonResponse['paymentIntent'],
+//           merchantDisplayName: "Glamorous Diastation",
+//           customerId: jsonResponse['customer'],
+//           customerEphemeralKeySecret: jsonResponse['ephemeralKey'],
+//           testEnv: true,
+//           merchantCountryCode: 'US',
+//         ),
+//       );
 
-      await Stripe.instance.presentPaymentSheet();
-      showTopSnackBar(
-        ctx,
-        CustomSnackBar.success(
-          message: "Payment Successful",
-        ),
-      );
+//       await Stripe.instance.presentPaymentSheet();
+//       showTopSnackBar(
+//         ctx,
+//         CustomSnackBar.success(
+//           message: "Payment Successful",
+//         ),
+//       );
 
-      setState(() {
-        blur = false;
-      });
-// ! Apple payment method
-      // await Stripe.instance.presentApplePay(
-      //   ApplePayPresentParams(
-      //     cartItems: [
-      //       ApplePayCartSummaryItem(
-      //         label: "test",
-      //         amount: (double.parse(amount) / 100).toStringAsFixed(0),
-      //       )
-      //     ],
-      //     currency: "USD",
-      //     country: "US",
-      //   ),
-      // );
+//       setState(() {
+//         blur = false;
+//       });
+// // ! Apple payment method
+//       // await Stripe.instance.presentApplePay(
+//       //   ApplePayPresentParams(
+//       //     cartItems: [
+//       //       ApplePayCartSummaryItem(
+//       //         label: "test",
+//       //         amount: (double.parse(amount) / 100).toStringAsFixed(0),
+//       //       )
+//       //     ],
+//       //     currency: "USD",
+//       //     country: "US",
+//       //   ),
+//       // );
 
-      CoolAlert.show(
-        context: context,
-        type: CoolAlertType.loading,
-        text: "Saving to your collection",
-        barrierDismissible: false,
-      );
+//       CoolAlert.show(
+//         context: context,
+//         type: CoolAlertType.loading,
+//         text: "Saving to your collection",
+//         barrierDismissible: false,
+//       );
 
-      await Provider.of<FirebaseOperations>(context, listen: false)
-          .addToMyCollection(
-        videoOwnerId: widget.video.useruid,
-        amount: int.parse((double.parse(amount) / 100).toStringAsFixed(0)),
-        videoItem: widget.video,
-        isFree: widget.video.isFree,
-        ctx: context,
-        videoId: widget.video.id,
-      );
-      // ignore: avoid_catches_without_on_clauses
-    } catch (e) {
-      print(e.toString());
-      if (e is StripeException) {
-        showTopSnackBar(
-          ctx,
-          CustomSnackBar.error(
-            message: "Payment Error ${e.error.localizedMessage}",
-          ),
-        );
-      } else {
-        showTopSnackBar(
-          ctx,
-          CustomSnackBar.error(
-            message: "Payment Error ${e.toString()}",
-          ),
-        );
-      }
-    }
-  }
+//       await Provider.of<FirebaseOperations>(context, listen: false)
+//           .addToMyCollection(
+//         videoOwnerId: widget.video.useruid,
+//         amount: int.parse((double.parse(amount) / 100).toStringAsFixed(0)),
+//         videoItem: widget.video,
+//         isFree: widget.video.isFree,
+//         ctx: context,
+//         videoId: widget.video.id,
+//       );
+//       // ignore: avoid_catches_without_on_clauses
+//     } catch (e) {
+//       print(e.toString());
+//       if (e is StripeException) {
+//         showTopSnackBar(
+//           ctx,
+//           CustomSnackBar.error(
+//             message: "Payment Error ${e.error.localizedMessage}",
+//           ),
+//         );
+//       } else {
+//         showTopSnackBar(
+//           ctx,
+//           CustomSnackBar.error(
+//             message: "Payment Error ${e.toString()}",
+//           ),
+//         );
+//       }
+//     }
+//   }
 
-  Future<void> initApplePayment(
-      {required String email,
-      required String amount,
-      required BuildContext ctx}) async {
-    try {
-      // * create a payment intent on the server
-      final response = await http.post(
-        Uri.parse(
-            "https://us-central1-gdfe-ac584.cloudfunctions.net/stripePaymentIntentRequest"),
-        body: {
-          'email': email,
-          'amount': amount,
-        },
-      );
+//   Future<void> initApplePayment(
+//       {required String email,
+//       required String amount,
+//       required BuildContext ctx}) async {
+//     try {
+//       // * create a payment intent on the server
+//       final response = await http.post(
+//         Uri.parse(
+//             "https://us-central1-gdfe-ac584.cloudfunctions.net/stripePaymentIntentRequest"),
+//         body: {
+//           'email': email,
+//           'amount': amount,
+//         },
+//       );
 
-      final jsonResponse = jsonDecode(response.body);
-      // initailize the payment sheet
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          applePay: true,
-          googlePay: true,
-          paymentIntentClientSecret: jsonResponse['client_secret'],
-          merchantDisplayName: "Glamorous Diastation",
-          customerId: jsonResponse['customer'],
-          customerEphemeralKeySecret: jsonResponse['ephemeralKey'],
-          testEnv: true,
-          merchantCountryCode: 'US',
-        ),
-      );
+//       final jsonResponse = jsonDecode(response.body);
+//       // initailize the payment sheet
+//       await Stripe.instance.initPaymentSheet(
+//         paymentSheetParameters: SetupPaymentSheetParameters(
+//           applePay: true,
+//           googlePay: true,
+//           paymentIntentClientSecret: jsonResponse['client_secret'],
+//           merchantDisplayName: "Glamorous Diastation",
+//           customerId: jsonResponse['customer'],
+//           customerEphemeralKeySecret: jsonResponse['ephemeralKey'],
+//           testEnv: true,
+//           merchantCountryCode: 'US',
+//         ),
+//       );
 
-      //  await Stripe.instance.apple
+//       //  await Stripe.instance.apple
 
-      final bool appleDone = await ApplePay(amount);
+//       final bool appleDone = await ApplePay(amount);
 
-      if (appleDone == true) {
-        showTopSnackBar(
-          ctx,
-          CustomSnackBar.success(
-            message: "Payment Successful",
-          ),
-        );
+//       if (appleDone == true) {
+//         showTopSnackBar(
+//           ctx,
+//           CustomSnackBar.success(
+//             message: "Payment Successful",
+//           ),
+//         );
 
-        CoolAlert.show(
-          context: context,
-          type: CoolAlertType.loading,
-          text: "Saving to your collection",
-          barrierDismissible: false,
-        );
+//         CoolAlert.show(
+//           context: context,
+//           type: CoolAlertType.loading,
+//           text: "Saving to your collection",
+//           barrierDismissible: false,
+//         );
 
-        await Provider.of<FirebaseOperations>(context, listen: false)
-            .addToMyCollection(
-          videoOwnerId: widget.video.useruid,
-          amount: int.parse((double.parse(amount) / 100).toStringAsFixed(0)),
-          videoItem: widget.video,
-          isFree: widget.video.isFree,
-          ctx: context,
-          videoId: widget.video.id,
-        );
-      }
-      // ignore: avoid_catches_without_on_clauses
-    } catch (e) {
-      print(e.toString());
-      if (e is StripeException) {
-        showTopSnackBar(
-          ctx,
-          CustomSnackBar.error(
-            message: "Payment Error ${e.error.localizedMessage}",
-          ),
-        );
-      } else {
-        showTopSnackBar(
-          ctx,
-          CustomSnackBar.error(
-            message: "Payment Error ${e.toString()}",
-          ),
-        );
-      }
-    }
-  }
+//         await Provider.of<FirebaseOperations>(context, listen: false)
+//             .addToMyCollection(
+//           videoOwnerId: widget.video.useruid,
+//           amount: int.parse((double.parse(amount) / 100).toStringAsFixed(0)),
+//           videoItem: widget.video,
+//           isFree: widget.video.isFree,
+//           ctx: context,
+//           videoId: widget.video.id,
+//         );
+//       }
+//       // ignore: avoid_catches_without_on_clauses
+//     } catch (e) {
+//       print(e.toString());
+//       if (e is StripeException) {
+//         showTopSnackBar(
+//           ctx,
+//           CustomSnackBar.error(
+//             message: "Payment Error ${e.error.localizedMessage}",
+//           ),
+//         );
+//       } else {
+//         showTopSnackBar(
+//           ctx,
+//           CustomSnackBar.error(
+//             message: "Payment Error ${e.toString()}",
+//           ),
+//         );
+//       }
+//     }
+//   }
 
-  Future<bool> ApplePay(String amount) async {
-    try {
-      await Stripe.instance.presentApplePay(
-        ApplePayPresentParams(
-          cartItems: [
-            ApplePayCartSummaryItem(
-              label: widget.video.videotitle,
-              amount: (double.parse(amount) / 100).toStringAsFixed(0),
-            )
-          ],
-          currency: "USD",
-          requiredBillingContactFields: [
-            ApplePayContactFieldsType.name,
-            ApplePayContactFieldsType.emailAddress,
-            ApplePayContactFieldsType.phoneNumber,
-          ],
-          country: "US",
-        ),
-      );
-      log("true value");
-      return true;
-    } catch (e) {
-      log("error === $e");
-      return false;
-    }
-  }
+//   Future<bool> ApplePay(String amount) async {
+//     try {
+//       await Stripe.instance.presentApplePay(
+//         ApplePayPresentParams(
+//           cartItems: [
+//             ApplePayCartSummaryItem(
+//               label: widget.video.videotitle,
+//               amount: (double.parse(amount) / 100).toStringAsFixed(0),
+//             )
+//           ],
+//           currency: "USD",
+//           requiredBillingContactFields: [
+//             ApplePayContactFieldsType.name,
+//             ApplePayContactFieldsType.emailAddress,
+//             ApplePayContactFieldsType.phoneNumber,
+//           ],
+//           country: "US",
+//         ),
+//       );
+//       log("true value");
+//       return true;
+//     } catch (e) {
+//       log("error === $e");
+//       return false;
+//     }
+//   }
 
   @override
   Widget build(BuildContext context) {
@@ -1673,12 +1673,12 @@ class _VideoPostItemState extends State<VideoPostItem> {
                           padding: const EdgeInsets.only(bottom: 10),
                           child: InkWell(
                             onTap: () async {
-                              await initApplePayment(
-                                ctx: ctxIn,
-                                amount:
-                                    "${widget.video.price * (1 - widget.video.discountAmount / 100) * 100}",
-                                email: firebaseOperations.initUserEmail,
-                              );
+                              // await initApplePayment(
+                              //   ctx: ctxIn,
+                              //   amount:
+                              //       "${widget.video.price * (1 - widget.video.discountAmount / 100) * 100}",
+                              //   email: firebaseOperations.initUserEmail,
+                              // );
                             },
                             child: Container(
                               height: 50,
@@ -1706,12 +1706,12 @@ class _VideoPostItemState extends State<VideoPostItem> {
                         ),
                         InkWell(
                           onTap: () async {
-                            await initPayment(
-                              ctx: ctxIn,
-                              amount:
-                                  "${widget.video.price * (1 - widget.video.discountAmount / 100) * 100}",
-                              email: firebaseOperations.initUserEmail,
-                            );
+                            // await initPayment(
+                            //   ctx: ctxIn,
+                            //   amount:
+                            //       "${widget.video.price * (1 - widget.video.discountAmount / 100) * 100}",
+                            //   email: firebaseOperations.initUserEmail,
+                            // );
                           },
                           child: Container(
                             height: 50,
