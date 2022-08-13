@@ -30,7 +30,6 @@ config() async {
       "pk_test_51JaczJFX9V9rzaGSZhdkhBZ9btHj8Kp0GuggSluKf0lvIKqzpvJrTKjAVBz07t2Nk8TBBB2ukntbKZJk026M3n8t00aWAldRZJ";
   Stripe.merchantIdentifier = 'merchant.com.diamant.jp.diamond-app';
   await Stripe.instance.applySettings();
-  await Firebase.initializeApp();
   // await FirebaseAppCheck.instance.activate(
   //   webRecaptchaSiteKey: 'recaptcha-v3-site-key',
   // );

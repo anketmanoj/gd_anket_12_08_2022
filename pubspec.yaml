@@ -31,7 +31,7 @@ dependencies:
   cached_network_image: ^3.1.0
   camera: ^0.10.0
   chewie: ^1.1.0
-  cloud_firestore: ^3.4.3
+  cloud_firestore: ^3.4.4
   connectivity: ^3.0.6
   cool_alert: ^1.1.0
   country_code_picker: ^2.0.2
@@ -100,7 +100,7 @@ dependencies:
   package_info_plus: ^1.0.6
   page_transition: ^2.0.5
   path_provider: ^2.0.5
-  permission_handler: ^10.0.0
+  permission_handler: 9.2.0
   persistent_bottom_nav_bar: ^4.0.2
   photo_view: ^0.14.0
   pin_code_fields: ^7.3.0
