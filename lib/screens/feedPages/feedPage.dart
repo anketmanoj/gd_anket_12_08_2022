@@ -8,6 +8,7 @@ import 'package:diamon_rose_app/providers/recommendedProvider.dart';
 import 'package:diamon_rose_app/screens/NotificationPage/notificationScreen.dart';
 import 'package:diamon_rose_app/screens/PostPage/postScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/profile_screen.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/videoFeedScreen.dart';
 import 'package:diamon_rose_app/screens/VideoWorkAll/select_model/select_model_screen.dart';
 import 'package:diamon_rose_app/screens/homePage/homescreen.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
@@ -140,7 +141,8 @@ class _FeedPageState extends State<FeedPage> {
                   },
                   children: [
                     // * testing out new way to load videos
-                    HomeScreen(),
+                    VideoFeedScreen(),
+                    // HomeScreen(),
                     SearchScreen(),
                     // PostScreen(),
                     // TestVideoEditor(),

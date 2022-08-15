@@ -1,5 +1,6 @@
 import 'package:diamon_rose_app/constants/appleSignInCheck.dart';
 import 'package:diamon_rose_app/controllers/global_messages_controller.dart';
+import 'package:diamon_rose_app/services/feed_viewmodel.dart';
 import 'package:diamon_rose_app/services/get_http_client.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:dio/dio.dart';
@@ -39,6 +40,8 @@ config() async {
 
     importance: Importance.max,
   );
+
+  getIt.registerSingleton<FeedViewModel>(FeedViewModel());
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print('Got a message whilst in the foreground!');

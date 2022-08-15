@@ -1,5 +1,5 @@
+import 'package:cached_video_player/cached_video_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:video_player/video_player.dart';
 
 class Video {
   String id;
@@ -26,7 +26,7 @@ class Video {
   bool? verifiedUser;
   String? videoType;
 
-  VideoPlayerController? controller;
+  CachedVideoPlayerController? controller;
 
   // create video constructor
   Video({
@@ -114,8 +114,8 @@ class Video {
   }
 
   Future<Null> loadController() async {
-    controller = VideoPlayerController.network(videourl);
+    controller = CachedVideoPlayerController.network(videourl);
     await controller?.initialize();
-    controller?.setLooping(true);
+    // controller?.setLooping(true);
   }
 }
