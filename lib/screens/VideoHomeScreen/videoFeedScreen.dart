@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
@@ -20,6 +22,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
@@ -84,10 +87,28 @@ class _VideoFeedScreenState extends State<VideoFeedScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Expanded(child: currentScreen()),
+        Expanded(child: feedVideos()),
         // BottomBar(),
       ],
     );
+  }
+
+  Future<void> _deleteCacheDir() async {
+    final cacheDir = await getTemporaryDirectory();
+
+    if (cacheDir.existsSync()) {
+      cacheDir.deleteSync(recursive: true);
+      log("deleted cache");
+    }
+  }
+
+  Future<void> _deleteAppDir() async {
+    final appDir = await getApplicationSupportDirectory();
+
+    if (appDir.existsSync()) {
+      appDir.deleteSync(recursive: true);
+      log("deleted app dir");
+    }
   }
 
   Widget feedVideos() {
@@ -99,9 +120,15 @@ class _VideoFeedScreenState extends State<VideoFeedScreen> {
             viewportFraction: 1,
           ),
           itemCount: feedViewModel.videos.length,
-          onPageChanged: (index) {
+          onPageChanged: (index) async {
             index = index % (feedViewModel.videos.length);
+            log("index== $index");
             feedViewModel.changeVideo(index);
+
+            if (index % 5 == 0) {
+              await _deleteCacheDir();
+              await _deleteAppDir();
+            }
           },
           scrollDirection: Axis.vertical,
           itemBuilder: (context, index) {

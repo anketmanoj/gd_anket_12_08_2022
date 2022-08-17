@@ -45,7 +45,7 @@ class FavoritesPage extends StatelessWidget {
                                 PageTransition(
                                     child: PostDetailsScreen(
                                       videoId: snapshot.data!.docs[index]
-                                          ["videoId"],
+                                          ["videoid"],
                                     ),
                                     type: PageTransitionType.fade));
                           } catch (e) {

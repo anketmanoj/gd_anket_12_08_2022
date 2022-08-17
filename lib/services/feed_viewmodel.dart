@@ -80,11 +80,12 @@ class FeedViewModel extends BaseViewModel {
     }
   }
 
-  void setActualScreen(index) {
+  void setActualScreen(index) async {
     actualScreen = index;
     if (index == 0) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     } else {
+      await videos[prevVideo].controller?.pause();
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     }
     notifyListeners();

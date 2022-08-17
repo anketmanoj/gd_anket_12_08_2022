@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_sequence_animator/image_sequence_animator.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:sizer/sizer.dart';
 import 'package:spring_button/spring_button.dart';
 
 class ImageSeqAniScreen extends StatefulWidget {
@@ -144,272 +145,125 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
     );
   }
 
+  List<IconData> iconsList = [
+    Icons.play_arrow,
+    Icons.pause,
+    Icons.stop,
+    Icons.restart_alt,
+    Icons.fast_rewind,
+    Icons.loop,
+    Icons.low_priority,
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final List<void Function()> functionList = [
+      () {
+        // setState(() {
+        imageSequenceAnimator!.play();
+        if (widget.MyAR.audioFlag == true) _player!.play();
+        // });
+      },
+      () {
+        // setState(() {
+        if (imageSequenceAnimator!.isPlaying) {
+          if (widget.MyAR.audioFlag == true) _player!.pause();
+          imageSequenceAnimator!.pause();
+        }
+        // });
+      },
+      () {
+        imageSequenceAnimator!.stop();
+        if (widget.MyAR.audioFlag == true) _player!.stop();
+      },
+      () async {
+        if (widget.MyAR.audioFlag == true) {
+          await _player!.seek(Duration.zero);
+          await _player!.play();
+        }
+        imageSequenceAnimator!.restart();
+      },
+      () {
+        imageSequenceAnimator!.rewind();
+      },
+      () async {
+        switch (widget.MyAR.audioFlag) {
+          case true:
+            imageSequenceAnimator!.skip(0);
+
+            setState(() {
+              loopText =
+                  imageSequenceAnimator!.isLooping ? "Start Loop" : "Stop Loop";
+              boomerangText = "Start Boomerang";
+              imageSequenceAnimator!
+                  .setIsLooping(!imageSequenceAnimator!.isLooping);
+            });
+
+            await _player!.seek(Duration.zero);
+            await _player!.setLoopMode(!imageSequenceAnimator!.isLooping == true
+                ? LoopMode.off
+                : LoopMode.all);
+            await _player!.play();
+            imageSequenceAnimator!.play();
+
+            // Navigator.pop(context);
+
+            break;
+          case false:
+            imageSequenceAnimator!.skip(0);
+
+            setState(() {
+              loopText =
+                  imageSequenceAnimator!.isLooping ? "Start Loop" : "Stop Loop";
+              boomerangText = "Start Boomerang";
+              imageSequenceAnimator!
+                  .setIsLooping(!imageSequenceAnimator!.isLooping);
+            });
+
+            imageSequenceAnimator!.play();
+
+            // Navigator.pop(context);
+
+            break;
+        }
+      },
+      () async {
+        setState(() {
+          loopText = "Start Loop";
+          boomerangText = imageSequenceAnimator!.isBoomerang
+              ? "Start Boomerang"
+              : "Stop Boomerang";
+          imageSequenceAnimator!
+              .setIsBoomerang(!imageSequenceAnimator!.isBoomerang);
+        });
+
+        // Navigator.pop(context);
+        Get.snackbar(
+          'Boomerang is only applicable to video',
+          "In Boomerang mode, no audio will be played. Only the video will be played in boomerang mode.",
+          duration: Duration(seconds: 5),
+          overlayColor: constantColors.navButton,
+          colorText: constantColors.black,
+          snackPosition: SnackPosition.TOP,
+          forwardAnimationCurve: Curves.elasticInOut,
+          reverseAnimationCurve: Curves.easeOut,
+          backgroundColor: constantColors.navButton.withOpacity(0.6),
+        );
+      },
+    ];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: constantColors.navButton,
         title: Text("Ar Viewer"),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.camera_alt_outlined),
             onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  final point = ValueNotifier<double>(0);
-                  if (widget.MyAR.audioFlag == true)
-                    final point = ValueNotifier<double>(_player!.volume);
-                  return Container(
-                    height: MediaQuery.of(context).size.height * 0.8,
-                    color: constantColors.navButton,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Column(
-                            children: [
-                              Text(
-                                "AR Control Options",
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: constantColors.whiteColor),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: SpringButton(
-                                      SpringButtonType.OnlyScale,
-                                      row(
-                                        "Play/Pause",
-                                        Colors.deepOrangeAccent,
-                                      ),
-                                      onTap: () {
-                                        setState(() {
-                                          if (imageSequenceAnimator!
-                                              .isPlaying) {
-                                            if (widget.MyAR.audioFlag == true)
-                                              _player!.pause();
-                                            imageSequenceAnimator!.pause();
-                                          } else {
-                                            imageSequenceAnimator!.play();
-                                            if (widget.MyAR.audioFlag == true)
-                                              _player!.play();
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: SpringButton(
-                                      SpringButtonType.OnlyScale,
-                                      row(
-                                        "Stop",
-                                        Colors.green,
-                                      ),
-                                      onTap: () {
-                                        imageSequenceAnimator!.stop();
-                                        if (widget.MyAR.audioFlag == true)
-                                          _player!.stop();
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: SpringButton(
-                                      SpringButtonType.OnlyScale,
-                                      row(
-                                        "Restart",
-                                        Colors.teal,
-                                      ),
-                                      onTap: () async {
-                                        if (widget.MyAR.audioFlag == true) {
-                                          await _player!.seek(Duration.zero);
-                                          await _player!.play();
-                                        }
-                                        imageSequenceAnimator!.restart();
-                                      },
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: SpringButton(
-                                      SpringButtonType.OnlyScale,
-                                      row(
-                                        "Rewind",
-                                        Colors.indigoAccent,
-                                      ),
-                                      onTap: () {
-                                        imageSequenceAnimator!.rewind();
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: SpringButton(
-                                      SpringButtonType.OnlyScale,
-                                      row(
-                                        loopText,
-                                        Colors.cyan,
-                                      ),
-                                      useCache: false,
-                                      onTap: () async {
-                                        switch (widget.MyAR.audioFlag) {
-                                          case true:
-                                            imageSequenceAnimator!.skip(0);
-
-                                            setState(() {
-                                              loopText = imageSequenceAnimator!
-                                                      .isLooping
-                                                  ? "Start Loop"
-                                                  : "Stop Loop";
-                                              boomerangText = "Start Boomerang";
-                                              imageSequenceAnimator!
-                                                  .setIsLooping(
-                                                      !imageSequenceAnimator!
-                                                          .isLooping);
-                                            });
-
-                                            await _player!.seek(Duration.zero);
-                                            await _player!.setLoopMode(
-                                                !imageSequenceAnimator!
-                                                            .isLooping ==
-                                                        true
-                                                    ? LoopMode.off
-                                                    : LoopMode.all);
-                                            await _player!.play();
-                                            imageSequenceAnimator!.play();
-
-                                            Navigator.pop(context);
-
-                                            break;
-                                          case false:
-                                            imageSequenceAnimator!.skip(0);
-
-                                            setState(() {
-                                              loopText = imageSequenceAnimator!
-                                                      .isLooping
-                                                  ? "Start Loop"
-                                                  : "Stop Loop";
-                                              boomerangText = "Start Boomerang";
-                                              imageSequenceAnimator!
-                                                  .setIsLooping(
-                                                      !imageSequenceAnimator!
-                                                          .isLooping);
-                                            });
-
-                                            imageSequenceAnimator!.play();
-
-                                            Navigator.pop(context);
-
-                                            break;
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: SpringButton(
-                                      SpringButtonType.OnlyScale,
-                                      row(
-                                        boomerangText,
-                                        Colors.deepPurpleAccent,
-                                      ),
-                                      useCache: false,
-                                      onTap: () async {
-                                        setState(() {
-                                          loopText = "Start Loop";
-                                          boomerangText =
-                                              imageSequenceAnimator!.isBoomerang
-                                                  ? "Start Boomerang"
-                                                  : "Stop Boomerang";
-                                          imageSequenceAnimator!.setIsBoomerang(
-                                              !imageSequenceAnimator!
-                                                  .isBoomerang);
-                                        });
-
-                                        Navigator.pop(context);
-                                        Get.snackbar(
-                                          'Boomerang is only applicable to video',
-                                          "In Boomerang mode, no audio will be played. Only the video will be played in boomerang mode.",
-                                          duration: Duration(seconds: 5),
-                                          overlayColor:
-                                              constantColors.navButton,
-                                          colorText: constantColors.black,
-                                          snackPosition: SnackPosition.TOP,
-                                          forwardAnimationCurve:
-                                              Curves.elasticInOut,
-                                          reverseAnimationCurve: Curves.easeOut,
-                                          backgroundColor: constantColors
-                                              .navButton
-                                              .withOpacity(0.6),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Divider(),
-                              Row(
-                                children: [
-                                  Icon(Icons.volume_down),
-                                  Expanded(
-                                    child: ValueListenableBuilder<double>(
-                                      valueListenable: point,
-                                      builder: (context, mark, _) {
-                                        return CupertinoSlider(
-                                          value: mark,
-                                          min: 0,
-                                          max: 1,
-                                          onChanged: (double value) async {
-                                            if (widget.MyAR.audioFlag == true) {
-                                              point.value = value;
-
-                                              await _player!
-                                                  .setVolume(point.value);
-                                            }
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  Icon(Icons.volume_up_rounded),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              SpringButton(
-                                SpringButtonType.OnlyScale,
-                                row(
-                                  backgroundText,
-                                  Colors.deepOrangeAccent,
-                                ),
-                                useCache: false,
-                                onTap: () {
-                                  setState(() {
-                                    backgroundText = "Hide Camera Feed";
-                                    showCamera = !showCamera;
-                                  });
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
+              setState(() {
+                backgroundText = "Hide Camera Feed";
+                showCamera = !showCamera;
+              });
+              // Navigator.pop(context);
             },
           ),
         ],
@@ -566,64 +420,103 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
             ),
           ),
           Expanded(
-            child: Row(
+            child: Column(
               children: [
-                Expanded(
-                  flex: 4,
-                  child: CupertinoSlider(
-                    value: imageSequenceAnimator == null
-                        ? 0.0
-                        : imageSequenceAnimator!.currentProgress,
-                    min: 0.0,
-                    max: imageSequenceAnimator == null
-                        ? 100.0
-                        : imageSequenceAnimator!.totalProgress,
-                    onChangeStart: (double value) async {
-                      wasPlaying = imageSequenceAnimator!.isPlaying;
-                      imageSequenceAnimator!.pause();
-                      if (widget.MyAR.audioFlag == true) {
-                        await _player!.pause();
-                      }
-                    },
-                    onChanged: (double value) async {
-                      imageSequenceAnimator!.skip(value);
-                      if (widget.MyAR.audioFlag == true) {
-                        await _player!.seek(Duration(
-                          milliseconds: int.parse(imageSequenceAnimator!
-                              .currentTime
-                              .toStringAsFixed(0)),
-                        ));
-                      }
-                    },
-                    onChangeEnd: (double value) async {
-                      if (wasPlaying) {
-                        if (widget.MyAR.audioFlag == true) {
-                          imageSequenceAnimator!.play();
-                          await _player!.play();
-                        } else {
-                          imageSequenceAnimator!.play();
-                        }
-                      }
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: Text(
-                      imageSequenceAnimator == null
-                          ? "0.0"
-                          : ((imageSequenceAnimator!.currentTime.ceil() / 1000)
-                                  .toStringAsFixed(0) +
-                              "/" +
-                              (imageSequenceAnimator!.totalTime.ceil() / 1000)
+                Container(
+                    height: 60,
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) => SizedBox(
+                        height: 10,
+                      ),
+                      scrollDirection: Axis.horizontal,
+                      physics: BouncingScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: iconsList.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: InkWell(
+                            onTap: functionList[index],
+                            child: Container(
+                              width: 100.w / 8,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: constantColors.bioBg,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Icon(
+                                iconsList[index],
+                                color: constantColors.bioBg,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    )),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: CupertinoSlider(
+                        value: imageSequenceAnimator == null
+                            ? 0.0
+                            : imageSequenceAnimator!.currentProgress,
+                        min: 0.0,
+                        max: imageSequenceAnimator == null
+                            ? 100.0
+                            : imageSequenceAnimator!.totalProgress,
+                        onChangeStart: (double value) async {
+                          wasPlaying = imageSequenceAnimator!.isPlaying;
+                          imageSequenceAnimator!.pause();
+                          if (widget.MyAR.audioFlag == true) {
+                            await _player!.pause();
+                          }
+                        },
+                        onChanged: (double value) async {
+                          imageSequenceAnimator!.skip(value);
+                          if (widget.MyAR.audioFlag == true) {
+                            await _player!.seek(Duration(
+                              milliseconds: int.parse(imageSequenceAnimator!
+                                  .currentTime
                                   .toStringAsFixed(0)),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 12.5,
-                        color: Colors.white,
+                            ));
+                          }
+                        },
+                        onChangeEnd: (double value) async {
+                          if (wasPlaying) {
+                            if (widget.MyAR.audioFlag == true) {
+                              imageSequenceAnimator!.play();
+                              await _player!.play();
+                            } else {
+                              imageSequenceAnimator!.play();
+                            }
+                          }
+                        },
                       ),
                     ),
-                  ),
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          imageSequenceAnimator == null
+                              ? "0.0"
+                              : ((imageSequenceAnimator!.currentTime.ceil() /
+                                          1000)
+                                      .toStringAsFixed(0) +
+                                  "/" +
+                                  (imageSequenceAnimator!.totalTime.ceil() /
+                                          1000)
+                                      .toStringAsFixed(0)),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 12.5,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

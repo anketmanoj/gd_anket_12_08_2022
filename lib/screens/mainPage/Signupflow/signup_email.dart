@@ -31,8 +31,11 @@ class _SignUpEmailState extends State<SignUpEmail> {
   late String _otp;
 
   void createOtp() {
+    final int min = 1000;
+    final int max = 9999;
     final Random random = Random();
-    final int otp = random.nextInt(9999);
+    final int otp = min + random.nextInt(max - min);
+    random.nextInt(9999);
     dev.log(otp.toString());
     setState(() {
       _otp = otp.toString();
@@ -104,6 +107,7 @@ class _SignUpEmailState extends State<SignUpEmail> {
                     height: MediaQuery.of(context).size.height * 0.05,
                   ),
                   TextFormField(
+                    enableInteractiveSelection: false,
                     validator: (value) {
                       if (value!.isEmpty || !value.contains("@")) {
                         return 'Invalid Email';
@@ -140,6 +144,7 @@ class _SignUpEmailState extends State<SignUpEmail> {
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: TextFormField(
+                      enableInteractiveSelection: false,
                       validator: (value) {
                         if (value!.isEmpty || !value.contains("@")) {
                           return 'Invalid Email';
@@ -199,22 +204,33 @@ class _SignUpEmailState extends State<SignUpEmail> {
                     text: "We are sending you an email",
                   );
                   createOtp();
-                  await sendMail().whenComplete(() {
-                    Provider.of<SignUpUser>(context, listen: false)
-                        .setEmail(_emailController.text);
-                    Provider.of<SignUpUser>(context, listen: false)
-                        .setOtp(_otp);
-                  }).then((value) {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        type: PageTransitionType.fade,
-                        child: SignUpOTP(
-                          email: _emailController.text,
+                  try {
+                    await sendMail().whenComplete(() {
+                      Provider.of<SignUpUser>(context, listen: false)
+                          .setEmail(_emailController.text);
+                      Provider.of<SignUpUser>(context, listen: false)
+                          .setOtp(_otp);
+                    }).then((value) {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          child: SignUpOTP(
+                            email: _emailController.text,
+                          ),
                         ),
-                      ),
-                    );
-                  });
+                      );
+                    });
+                    // ignore: avoid_catches_without_on_clauses
+                  } catch (e) {
+                    // ignore: unawaited_futures
+                    CoolAlert.show(
+                        context: context,
+                        type: CoolAlertType.info,
+                        title: "Error Sending OTP",
+                        text:
+                            "There was an error sending an email to ${_emailController.text} || ${e.toString()}");
+                  }
                 }
               },
             ),
