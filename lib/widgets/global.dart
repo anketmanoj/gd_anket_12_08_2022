@@ -1,21 +1,37 @@
 import 'dart:developer';
 import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/services/GoogleSheetsAPI/controller.dart';
 import 'package:diamon_rose_app/services/GoogleSheetsAPI/form.dart';
-import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:provider/provider.dart';
-import 'package:top_snackbar_flutter/custom_snack_bar.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 ConstantColors constantColors = ConstantColors();
+
+Widget ImageNetworkLoader({required String imageUrl}) {
+  return Image.network(
+    imageUrl,
+    fit: BoxFit.cover,
+    loadingBuilder:
+        (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+      if (loadingProgress == null) return child;
+      return Center(
+        child: CircularProgressIndicator(
+          value: loadingProgress.expectedTotalBytes != null
+              ? loadingProgress.cumulativeBytesLoaded /
+                  loadingProgress.expectedTotalBytes!
+              : null,
+        ),
+      );
+    },
+    errorBuilder: (BuildContext context, val, _) {
+      return Center(
+        child: Icon(Icons.error),
+      );
+    },
+  );
+}
 
 Widget privacyPolicyLinkAndTermsOfService() {
   return Container(
@@ -176,6 +192,8 @@ class ProfileUserDetails extends StatelessWidget {
     this.prefixIcon,
     this.hide,
     this.suffixIcon,
+    this.showPrefixText,
+    this.showHintText,
   }) : super(key: key);
 
   final TextEditingController controller;
@@ -186,6 +204,8 @@ class ProfileUserDetails extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final bool? hide;
+  final String? showPrefixText;
+  final String? showHintText;
 
   @override
   Widget build(BuildContext context) {
@@ -195,11 +215,16 @@ class ProfileUserDetails extends StatelessWidget {
       obscureText: hide ?? false,
       maxLines: lines ?? 1,
       textAlign: TextAlign.start,
-      keyboardType: TextInputType.emailAddress,
+      keyboardType: TextInputType.text,
       decoration: InputDecoration(
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         labelText: labelText,
+        prefixText: showPrefixText,
+        hintText: showHintText,
+        hintStyle: TextStyle(
+          fontSize: 10,
+        ),
         labelStyle: TextStyle(color: Colors.black),
         border: OutlineInputBorder(),
         enabledBorder: OutlineInputBorder(

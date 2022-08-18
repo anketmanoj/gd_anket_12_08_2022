@@ -105,7 +105,7 @@ class GDARNotificationScreen extends StatelessWidget {
                     }
                   },
                   title: Text("${arPendingModel.ownerName}"),
-                  leading: Image.network(arPendingModel.gif),
+                  leading: ImageNetworkLoader(imageUrl: arPendingModel.gif),
                   trailing: Container(
                     decoration: BoxDecoration(
                       color: snaps.data!.docs[index]['main'] == null

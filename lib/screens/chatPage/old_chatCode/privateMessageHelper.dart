@@ -5,6 +5,7 @@ import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/seeChatImage.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -138,19 +139,9 @@ class PrivateMessageHelper with ChangeNotifier {
                                             child: SizedBox(
                                               height: 250,
                                               width: 250,
-                                              child: CachedNetworkImage(
-                                                imageUrl: msgSnap['imageurl'],
-                                                fit: BoxFit.cover,
-                                                progressIndicatorBuilder: (context,
-                                                        url,
-                                                        downloadProgress) =>
-                                                    Center(
-                                                        child:
-                                                            CircularProgressIndicator()),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        const Icon(Icons.error),
-                                              ),
+                                              child: ImageNetworkLoader(
+                                                  imageUrl:
+                                                      msgSnap['imageurl']),
                                             ),
                                           ),
                                     const SizedBox(

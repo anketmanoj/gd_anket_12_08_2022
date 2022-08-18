@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/homeScreenProvider.dart';
+import 'package:diamon_rose_app/providers/social_media_links_provider.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
@@ -36,6 +37,149 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
   bool paidClicked = false;
 
   final GlobalKey webViewKey = GlobalKey();
+
+  Future showLinksBottomSheet(BuildContext context) {
+    final socialMedias =
+        Provider.of<SocialMediaLinksProvider>(context, listen: false);
+    return showModalBottomSheet(
+        backgroundColor: Colors.white,
+        context: context,
+        builder: (context) {
+          return StreamBuilder<DocumentSnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(widget.userModel.useruid)
+                  .collection("socialMedia")
+                  .doc("links")
+                  .snapshots(),
+              builder: (context, linkSnap) {
+                if (linkSnap.hasData) {
+                  final links = linkSnap.data!;
+
+                  return SafeArea(
+                    bottom: true,
+                    child: Container(
+                      height: 30.h,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 150),
+                            child: Divider(
+                              thickness: 4,
+                              color: constantColors.black.withOpacity(0.5),
+                            ),
+                          ),
+                          Visibility(
+                            visible: links['url'] != "" ? true : false,
+                            child: ListTile(
+                                leading: Icon(FontAwesomeIcons.globe,
+                                    color: Colors.blue),
+                                title: Text('Website'),
+                                onTap: () async {
+                                  var url = '${links['url']}';
+
+                                  if (await canLaunchUrl(Uri.parse(url))) {
+                                    await launchUrl(Uri.parse(url),
+                                        mode: LaunchMode.externalApplication);
+                                  } else {
+                                    throw 'There was a problem to open the url: $url';
+                                  }
+                                }),
+                          ),
+                          Visibility(
+                            visible: links['instagramurl'] != "" ? true : false,
+                            child: ListTile(
+                              leading: GradientIcon(
+                                FontAwesomeIcons.instagram,
+                                30.0,
+                                LinearGradient(
+                                  colors: <Color>[
+                                    Colors.yellow,
+                                    Colors.red,
+                                    Colors.blue,
+                                  ],
+                                  begin: Alignment.topRight,
+                                  end: Alignment.bottomLeft,
+                                ),
+                              ),
+                              title: Text('Instagram'),
+                              onTap: () async {
+                                var url =
+                                    'https://www.instagram.com/${links['instagramurl']}/';
+
+                                if (await canLaunch(url)) {
+                                  await launch(
+                                    url,
+                                    universalLinksOnly: true,
+                                  );
+                                } else {
+                                  throw 'There was a problem to open the url: $url';
+                                }
+                              },
+                            ),
+                          ),
+                          Visibility(
+                            visible: links['twitterurl'] != "" ? true : false,
+                            child: ListTile(
+                              leading: Icon(
+                                FontAwesomeIcons.twitter,
+                                color: Colors.blue,
+                              ),
+                              title: Text('Twitter'),
+                              onTap: () async {
+                                var url =
+                                    'https://twitter.com/${links['twitterurl']}/';
+
+                                if (await canLaunch(url)) {
+                                  await launch(
+                                    url,
+                                    universalLinksOnly: true,
+                                  );
+                                } else {
+                                  throw 'There was a problem to open the url: $url';
+                                }
+                              },
+                            ),
+                          ),
+                          Visibility(
+                            visible: links['youtubeurl'] != "" ? true : false,
+                            child: ListTile(
+                              leading: Icon(
+                                FontAwesomeIcons.youtube,
+                                color: Colors.red,
+                              ),
+                              title: Text('Youtube'),
+                              onTap: () async {
+                                var url =
+                                    'https://www.youtube.com/c/${links['youtubeurl']}';
+
+                                if (await canLaunch(url)) {
+                                  await launch(
+                                    url,
+                                    universalLinksOnly: true,
+                                  );
+                                } else {
+                                  throw 'There was a problem to open the url: $url';
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  return Container(
+                    height: 20.h,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+              });
+        });
+  }
 
   InAppWebViewController? webViewController;
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
@@ -124,9 +268,14 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 10),
-                            child: Icon(
-                              FontAwesomeIcons.link,
-                              size: 15,
+                            child: InkWell(
+                              onTap: () {
+                                showLinksBottomSheet(context);
+                              },
+                              child: Icon(
+                                FontAwesomeIcons.link,
+                                size: 15,
+                              ),
                             ),
                           ),
                         ],
@@ -713,16 +862,9 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                               borderRadius: BorderRadius.circular(30),
                               child: Container(
                                 color: Colors.grey,
-                                child: CachedNetworkImage(
-                                  imageUrl: snapshot.data!.docs[index]
-                                      ["thumbnailurl"],
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) => Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      Icon(Icons.error),
-                                ),
+                                child: ImageNetworkLoader(
+                                    imageUrl: snapshot.data!.docs[index]
+                                        ["thumbnailurl"]),
                               ),
                             ),
                           );
@@ -962,16 +1104,8 @@ class _TopProfileStackState extends State<TopProfileStack> {
         Container(
           height: widget.size.height * 0.6,
           width: widget.size.width,
-          child: CachedNetworkImage(
-            fit: BoxFit.cover,
+          child: ImageNetworkLoader(
             imageUrl: widget.userModel.usercover!,
-            progressIndicatorBuilder: (context, url, downloadProgress) =>
-                Center(
-              child: CircularProgressIndicator(
-                color: widget.constantColors.mainColor,
-              ),
-            ),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
         ),
         Positioned(
@@ -1021,17 +1155,8 @@ class _TopProfileStackState extends State<TopProfileStack> {
                         width: 80,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(40),
-                          child: CachedNetworkImage(
-                            fit: BoxFit.cover,
+                          child: ImageNetworkLoader(
                             imageUrl: widget.userModel.userimage,
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => Center(
-                              child: CircularProgressIndicator(
-                                color: widget.constantColors.mainColor,
-                              ),
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
                           ),
                         ),
                       ),

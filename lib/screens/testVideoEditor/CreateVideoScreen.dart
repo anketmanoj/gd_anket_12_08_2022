@@ -2520,17 +2520,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                 child: Container(
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
-                                    child: CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      imageUrl: myArCollection.gif,
-                                      progressIndicatorBuilder: (context, url,
-                                              downloadProgress) =>
-                                          Center(
-                                              child:
-                                                  CircularProgressIndicator()),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
-                                    ),
+                                    child: ImageNetworkLoader(
+                                        imageUrl: myArCollection.gif),
                                   ),
                                 ),
                               );
@@ -2692,19 +2683,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                 },
                                 child: Container(
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      imageUrl: "${myArCollectionSnap['gif']}",
-                                      progressIndicatorBuilder: (context, url,
-                                              downloadProgress) =>
-                                          Center(
-                                              child:
-                                                  CircularProgressIndicator()),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
-                                    ),
-                                  ),
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: ImageNetworkLoader(
+                                          imageUrl:
+                                              "${myArCollectionSnap['gif']}")),
                                 ),
                               );
                             },

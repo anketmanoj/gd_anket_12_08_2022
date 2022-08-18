@@ -424,24 +424,11 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                                               height: 40,
                                                               width: 40,
                                                               child:
-                                                                  CachedNetworkImage(
+                                                                  ImageNetworkLoader(
                                                                 imageUrl: snapshot
                                                                         .data!
                                                                         .docs[
                                                                     index]["gif"],
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                progressIndicatorBuilder: (context,
-                                                                        url,
-                                                                        downloadProgress) =>
-                                                                    Center(
-                                                                        child:
-                                                                            CircularProgressIndicator()),
-                                                                errorWidget: (context,
-                                                                        url,
-                                                                        error) =>
-                                                                    const Icon(Icons
-                                                                        .error),
                                                               ),
                                                             ),
                                                             title: Text(
@@ -517,24 +504,11 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                                               height: 40,
                                                               width: 40,
                                                               child:
-                                                                  CachedNetworkImage(
+                                                                  ImageNetworkLoader(
                                                                 imageUrl: snapshot
                                                                         .data!
                                                                         .docs[
                                                                     index]["gif"],
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                progressIndicatorBuilder: (context,
-                                                                        url,
-                                                                        downloadProgress) =>
-                                                                    Center(
-                                                                        child:
-                                                                            CircularProgressIndicator()),
-                                                                errorWidget: (context,
-                                                                        url,
-                                                                        error) =>
-                                                                    const Icon(Icons
-                                                                        .error),
                                                               ),
                                                             ),
                                                             title: Text(
@@ -989,20 +963,9 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                                   leading: Container(
                                                     height: 40,
                                                     width: 40,
-                                                    child: CachedNetworkImage(
+                                                    child: ImageNetworkLoader(
                                                       imageUrl: snapshot.data!
                                                           .docs[index]["gif"],
-                                                      fit: BoxFit.cover,
-                                                      progressIndicatorBuilder:
-                                                          (context, url,
-                                                                  downloadProgress) =>
-                                                              Center(
-                                                                  child:
-                                                                      CircularProgressIndicator()),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          const Icon(
-                                                              Icons.error),
                                                     ),
                                                   ),
                                                   title: Text(
@@ -1078,20 +1041,9 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                                   leading: Container(
                                                     height: 40,
                                                     width: 40,
-                                                    child: CachedNetworkImage(
+                                                    child: ImageNetworkLoader(
                                                       imageUrl: snapshot.data!
                                                           .docs[index]["gif"],
-                                                      fit: BoxFit.cover,
-                                                      progressIndicatorBuilder:
-                                                          (context, url,
-                                                                  downloadProgress) =>
-                                                              Center(
-                                                                  child:
-                                                                      CircularProgressIndicator()),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          const Icon(
-                                                              Icons.error),
                                                     ),
                                                   ),
                                                   title: Text(

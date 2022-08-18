@@ -65,7 +65,26 @@ class NotificationScreen extends StatelessWidget {
                             type: PageTransitionType.fade));
                   },
                   leading: CircleAvatar(
-                    backgroundImage: NetworkImage(notification.userimage),
+                    backgroundImage: Image.network(
+                      notification.userimage,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                      errorBuilder: (BuildContext context, val, _) {
+                        return Center(
+                          child: Icon(Icons.error),
+                        );
+                      },
+                    ).image,
                   ),
                   title: Text(notification.username),
                   subtitle: Text(

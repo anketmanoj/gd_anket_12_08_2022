@@ -7,6 +7,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/image_utils_provider.dart';
 import 'package:diamon_rose_app/providers/social_media_links_provider.dart';
+import 'package:diamon_rose_app/screens/ArViewCollection/arViewCollectionScreen.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ProfileCoverImageSelector.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ProfileImageSelector.dart';
@@ -493,16 +494,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   borderRadius: BorderRadius.circular(20),
                                   child: Container(
                                     color: Colors.grey,
-                                    child: CachedNetworkImage(
-                                      imageUrl: snapshot.data!.docs[index]
-                                          ["thumbnailurl"],
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) => Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          Icon(Icons.error),
-                                    ),
+                                    child: ImageNetworkLoader(
+                                        imageUrl: snapshot.data!.docs[index]
+                                            ["thumbnailurl"]),
                                   ),
                                 ),
                               );
@@ -1267,21 +1261,8 @@ class _TopProfileStackState extends State<TopProfileStack> {
                 decoration: BoxDecoration(
                   color: constantColors.bioBg,
                 ),
-                child: CachedNetworkImage(
-                  fit: BoxFit.cover,
-                  imageUrl: snapshot.data!['usercover'],
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      SizedBox(
-                    height: 50,
-                    width: 50,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: widget.constantColors.mainColor,
-                      ),
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                ),
+                child:
+                    ImageNetworkLoader(imageUrl: snapshot.data!['usercover']),
               ),
               Positioned(
                 top: widget.size.height * 0.07,
@@ -1346,22 +1327,8 @@ class _TopProfileStackState extends State<TopProfileStack> {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(40),
                                   child: Container(
-                                    child: CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      imageUrl: snapshot.data!['userimage'],
-                                      progressIndicatorBuilder:
-                                          (context, url, downloadProgress) =>
-                                              SizedBox(
-                                        height: 50,
-                                        width: 50,
-                                        child: CircularProgressIndicator(
-                                          color:
-                                              widget.constantColors.mainColor,
-                                        ),
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
-                                    ),
+                                    child: ImageNetworkLoader(
+                                        imageUrl: snapshot.data!['userimage']),
                                   ),
                                 ),
                               ),
@@ -1408,28 +1375,59 @@ class _TopProfileStackState extends State<TopProfileStack> {
                               ),
                             ],
                           ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: constantColors.black.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        child: ProfileCoverImageSelector(
-                                            title: "Cover Image"),
-                                        type: PageTransitionType.rightToLeft));
+                          Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: constantColors.black.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          child: ArViewcollectionScreen(),
+                                          type: PageTransitionType.rightToLeft),
+                                    );
 
-                                // await selectBackgroundOptionsSheet(context);
-                                // setState(() {});
-                              },
-                              icon: Icon(
-                                Icons.camera_alt,
-                                color: Colors.white,
+                                    // await selectBackgroundOptionsSheet(context);
+                                    // setState(() {});
+                                  },
+                                  icon: Icon(
+                                    FontAwesomeIcons.solidFileVideo,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: constantColors.black.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            child: ProfileCoverImageSelector(
+                                                title: "Cover Image"),
+                                            type: PageTransitionType
+                                                .rightToLeft));
+
+                                    // await selectBackgroundOptionsSheet(context);
+                                    // setState(() {});
+                                  },
+                                  icon: Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

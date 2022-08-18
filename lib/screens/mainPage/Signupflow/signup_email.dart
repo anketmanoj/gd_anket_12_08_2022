@@ -6,6 +6,7 @@ import 'dart:developer' as dev;
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/logincreds.dart';
 import 'package:diamon_rose_app/providers/user_signup_provider.dart';
+import 'package:diamon_rose_app/screens/mainPage/Signupflow/FAQ_screen.dart';
 import 'package:diamon_rose_app/screens/mainPage/Signupflow/signup_otp.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
@@ -202,34 +203,48 @@ class _SignUpEmailState extends State<SignUpEmail> {
                     type: CoolAlertType.info,
                     title: "Please wait",
                     text: "We are sending you an email",
+                    barrierDismissible: false,
                   );
                   createOtp();
                   try {
-                    await sendMail().whenComplete(() {
-                      Provider.of<SignUpUser>(context, listen: false)
-                          .setEmail(_emailController.text);
-                      Provider.of<SignUpUser>(context, listen: false)
-                          .setOtp(_otp);
-                    }).then((value) {
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.fade,
-                          child: SignUpOTP(
-                            email: _emailController.text,
-                          ),
+                    await sendMail();
+
+                    Provider.of<SignUpUser>(context, listen: false)
+                        .setEmail(_emailController.text);
+                    Provider.of<SignUpUser>(context, listen: false)
+                        .setOtp(_otp);
+
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.fade,
+                        child: SignUpOTP(
+                          email: _emailController.text,
                         ),
-                      );
-                    });
+                      ),
+                    );
                     // ignore: avoid_catches_without_on_clauses
                   } catch (e) {
+                    // Navigator.pop(context);
                     // ignore: unawaited_futures
                     CoolAlert.show(
                         context: context,
                         type: CoolAlertType.info,
+                        showCancelBtn: true,
+                        cancelBtnText: "FAQ",
+                        confirmBtnText: "Okay",
+                        onCancelBtnTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: FAQScreen(),
+                              type: PageTransitionType.fade,
+                            ),
+                          );
+                        },
                         title: "Error Sending OTP",
                         text:
-                            "There was an error sending an email to ${_emailController.text} || ${e.toString()}");
+                            "There was an error sending an email to ${_emailController.text} || This is most likely due to an unstable network connection. Please check your network connection and try again.");
                   }
                 }
               },

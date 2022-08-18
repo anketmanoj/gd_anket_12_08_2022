@@ -70,14 +70,8 @@ class ShowLikesPage extends StatelessWidget {
                               width: 40,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
-                                child: CachedNetworkImage(
-                                  fit: BoxFit.cover,
+                                child: ImageNetworkLoader(
                                   imageUrl: documentSnapshot['userimage'],
-                                  progressIndicatorBuilder:
-                                      (context, url, downloadProgress) =>
-                                          CircularProgressIndicator(),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
                                 ),
                               ),
                             ),

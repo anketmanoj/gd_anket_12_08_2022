@@ -101,17 +101,9 @@ class _ShowCommentsPageState extends State<ShowCommentsPage> {
                                             child: ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(15),
-                                              child: CachedNetworkImage(
-                                                fit: BoxFit.cover,
+                                              child: ImageNetworkLoader(
                                                 imageUrl:
                                                     commentDocSnap['userimage'],
-                                                progressIndicatorBuilder: (context,
-                                                        url,
-                                                        downloadProgress) =>
-                                                    CircularProgressIndicator(),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        const Icon(Icons.error),
                                               ),
                                             ),
                                           ),
@@ -288,14 +280,8 @@ class _ShowCommentsPageState extends State<ShowCommentsPage> {
                           backgroundColor: Colors.white,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(15),
-                            child: CachedNetworkImage(
-                              fit: BoxFit.cover,
+                            child: ImageNetworkLoader(
                               imageUrl: firebaseOperations.initUserImage,
-                              progressIndicatorBuilder:
-                                  (context, url, downloadProgress) =>
-                                      CircularProgressIndicator(),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
                             ),
                           ),
                         ),

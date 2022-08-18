@@ -351,13 +351,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
-  country_state_city_pro:
+  country_picker:
     dependency: "direct main"
     description:
-      name: country_state_city_pro
+      name: country_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.3"
+    version: "2.0.15"
   crawl_splash:
     dependency: "direct main"
     description:

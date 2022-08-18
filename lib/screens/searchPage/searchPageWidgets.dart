@@ -10,6 +10,7 @@ import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
@@ -143,24 +144,10 @@ class UserSearch extends StatelessWidget {
                           leading: ClipRRect(
                             borderRadius: BorderRadius.circular(30),
                             child: Container(
-                              height: 50,
-                              width: 50,
-                              child: CachedNetworkImage(
-                                fit: BoxFit.cover,
-                                imageUrl: userData['userimage'],
-                                progressIndicatorBuilder:
-                                    (context, url, downloadProgress) =>
-                                        SizedBox(
-                                  height: 50,
-                                  width: 50,
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                              ),
-                            ),
+                                height: 50,
+                                width: 50,
+                                child: ImageNetworkLoader(
+                                    imageUrl: userData['userimage'])),
                           ),
                           title: Text(
                             userData['username'],
@@ -263,24 +250,10 @@ class VideoSearch extends StatelessWidget {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(30),
                             child: Container(
-                              height: 50,
-                              width: 50,
-                              child: CachedNetworkImage(
-                                fit: BoxFit.cover,
-                                imageUrl: video.thumbnailurl,
-                                progressIndicatorBuilder:
-                                    (context, url, downloadProgress) =>
-                                        SizedBox(
-                                  height: 50,
-                                  width: 50,
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                              ),
-                            ),
+                                height: 50,
+                                width: 50,
+                                child: ImageNetworkLoader(
+                                    imageUrl: video.thumbnailurl)),
                           ),
                         ),
                       );
@@ -471,21 +444,8 @@ class NoSearchText extends StatelessWidget {
                             child: Container(
                               height: 50,
                               width: 50,
-                              child: CachedNetworkImage(
-                                fit: BoxFit.cover,
-                                imageUrl: userData['userimage'],
-                                progressIndicatorBuilder:
-                                    (context, url, downloadProgress) =>
-                                        SizedBox(
-                                  height: 50,
-                                  width: 50,
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                              ),
+                              child: ImageNetworkLoader(
+                                  imageUrl: userData['userimage']),
                             ),
                           ),
                           title: Text(

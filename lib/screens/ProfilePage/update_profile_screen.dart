@@ -36,6 +36,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     final TextEditingController _userbioController =
         TextEditingController(text: userProvider.userbio);
     Timestamp _birthdayController = userProvider.userdob;
+    String countryValue;
 
     String countryCode = userProvider.usercountrycode;
     String genderValue = userProvider.usergender;

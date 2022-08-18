@@ -36,7 +36,7 @@ dependencies:
   connectivity: ^3.0.6
   cool_alert: ^1.1.0
   country_code_picker: ^2.0.2
-  country_state_city_pro: ^0.0.3
+  country_picker: ^2.0.15
   crawl_splash: ^0.1.0
   cupertino_icons: ^1.0.3
   custom_navigation_bar: ^0.8.2

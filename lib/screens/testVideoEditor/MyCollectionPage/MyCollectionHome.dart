@@ -248,29 +248,12 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                                               borderRadius:
                                                   BorderRadius.circular(30),
                                               child: Container(
-                                                height: 50,
-                                                width: 50,
-                                                child: CachedNetworkImage(
-                                                  fit: BoxFit.cover,
-                                                  imageUrl:
-                                                      videoSnap["thumbnailurl"]
-                                                          .toString(),
-                                                  progressIndicatorBuilder:
-                                                      (context, url,
-                                                              downloadProgress) =>
-                                                          SizedBox(
-                                                    height: 50,
-                                                    width: 50,
-                                                    child: Center(
-                                                      child:
-                                                          CircularProgressIndicator(),
-                                                    ),
-                                                  ),
-                                                  errorWidget: (context, url,
-                                                          error) =>
-                                                      const Icon(Icons.error),
-                                                ),
-                                              ),
+                                                  height: 50,
+                                                  width: 50,
+                                                  child: ImageNetworkLoader(
+                                                      imageUrl: videoSnap[
+                                                              "thumbnailurl"]
+                                                          .toString())),
                                             ),
                                           ),
                                         );
@@ -348,28 +331,10 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                                                         )),
                                                         height: 50,
                                                         width: 50,
-                                                        child:
-                                                            CachedNetworkImage(
-                                                          fit: BoxFit.cover,
-                                                          imageUrl:
-                                                              arSnap["gif"]
-                                                                  .toString(),
-                                                          progressIndicatorBuilder:
-                                                              (context, url,
-                                                                      downloadProgress) =>
-                                                                  SizedBox(
-                                                            height: 50,
-                                                            width: 50,
-                                                            child: Center(
-                                                              child:
-                                                                  CircularProgressIndicator(),
-                                                            ),
-                                                          ),
-                                                          errorWidget: (context,
-                                                                  url, error) =>
-                                                              const Icon(
-                                                                  Icons.error),
-                                                        ),
+                                                        child: ImageNetworkLoader(
+                                                            imageUrl: arSnap[
+                                                                    "gif"]
+                                                                .toString()),
                                                       ),
                                                     ),
                                                   ),
@@ -447,26 +412,9 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                                                     )),
                                                     height: 50,
                                                     width: 50,
-                                                    child: CachedNetworkImage(
-                                                      fit: BoxFit.cover,
-                                                      imageUrl: arSnap["gif"]
-                                                          .toString(),
-                                                      progressIndicatorBuilder:
-                                                          (context, url,
-                                                                  downloadProgress) =>
-                                                              SizedBox(
-                                                        height: 50,
-                                                        width: 50,
-                                                        child: Center(
-                                                          child:
-                                                              CircularProgressIndicator(),
-                                                        ),
-                                                      ),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          const Icon(
-                                                              Icons.error),
-                                                    ),
+                                                    child: ImageNetworkLoader(
+                                                        imageUrl: arSnap["gif"]
+                                                            .toString()),
                                                   ),
                                                 ),
                                               ),
@@ -537,26 +485,9 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                                                     )),
                                                     height: 50,
                                                     width: 50,
-                                                    child: CachedNetworkImage(
-                                                      fit: BoxFit.cover,
-                                                      imageUrl: arSnap["gif"]
-                                                          .toString(),
-                                                      progressIndicatorBuilder:
-                                                          (context, url,
-                                                                  downloadProgress) =>
-                                                              SizedBox(
-                                                        height: 50,
-                                                        width: 50,
-                                                        child: Center(
-                                                          child:
-                                                              CircularProgressIndicator(),
-                                                        ),
-                                                      ),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          const Icon(
-                                                              Icons.error),
-                                                    ),
+                                                    child: ImageNetworkLoader(
+                                                        imageUrl: arSnap["gif"]
+                                                            .toString()),
                                                   ),
                                                 ),
                                               ),
@@ -618,26 +549,10 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                                               child: Container(
                                                 height: 50,
                                                 width: 50,
-                                                child: CachedNetworkImage(
-                                                  fit: BoxFit.cover,
-                                                  imageUrl:
-                                                      videoSnap["thumbnailurl"]
-                                                          .toString(),
-                                                  progressIndicatorBuilder:
-                                                      (context, url,
-                                                              downloadProgress) =>
-                                                          SizedBox(
-                                                    height: 50,
-                                                    width: 50,
-                                                    child: Center(
-                                                      child:
-                                                          CircularProgressIndicator(),
-                                                    ),
-                                                  ),
-                                                  errorWidget: (context, url,
-                                                          error) =>
-                                                      const Icon(Icons.error),
-                                                ),
+                                                child: ImageNetworkLoader(
+                                                    imageUrl: videoSnap[
+                                                            "thumbnailurl"]
+                                                        .toString()),
                                               ),
                                             ),
                                           ),
@@ -715,28 +630,10 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                                                         )),
                                                         height: 50,
                                                         width: 50,
-                                                        child:
-                                                            CachedNetworkImage(
-                                                          fit: BoxFit.cover,
-                                                          imageUrl:
-                                                              arSnap["gif"]
-                                                                  .toString(),
-                                                          progressIndicatorBuilder:
-                                                              (context, url,
-                                                                      downloadProgress) =>
-                                                                  SizedBox(
-                                                            height: 50,
-                                                            width: 50,
-                                                            child: Center(
-                                                              child:
-                                                                  CircularProgressIndicator(),
-                                                            ),
-                                                          ),
-                                                          errorWidget: (context,
-                                                                  url, error) =>
-                                                              const Icon(
-                                                                  Icons.error),
-                                                        ),
+                                                        child: ImageNetworkLoader(
+                                                            imageUrl: arSnap[
+                                                                    "gif"]
+                                                                .toString()),
                                                       ),
                                                     ),
                                                   ),
@@ -814,26 +711,9 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                                                     )),
                                                     height: 50,
                                                     width: 50,
-                                                    child: CachedNetworkImage(
-                                                      fit: BoxFit.cover,
-                                                      imageUrl: arSnap["gif"]
-                                                          .toString(),
-                                                      progressIndicatorBuilder:
-                                                          (context, url,
-                                                                  downloadProgress) =>
-                                                              SizedBox(
-                                                        height: 50,
-                                                        width: 50,
-                                                        child: Center(
-                                                          child:
-                                                              CircularProgressIndicator(),
-                                                        ),
-                                                      ),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          const Icon(
-                                                              Icons.error),
-                                                    ),
+                                                    child: ImageNetworkLoader(
+                                                        imageUrl: arSnap["gif"]
+                                                            .toString()),
                                                   ),
                                                 ),
                                               ),
@@ -894,36 +774,20 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                                                   borderRadius:
                                                       BorderRadius.circular(30),
                                                   child: Container(
-                                                    decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                      fit: BoxFit.cover,
-                                                      image: Image.asset(
-                                                              "assets/arViewer/bg.png")
-                                                          .image,
-                                                    )),
-                                                    height: 50,
-                                                    width: 50,
-                                                    child: CachedNetworkImage(
-                                                      fit: BoxFit.cover,
-                                                      imageUrl: arSnap["gif"]
-                                                          .toString(),
-                                                      progressIndicatorBuilder:
-                                                          (context, url,
-                                                                  downloadProgress) =>
-                                                              SizedBox(
-                                                        height: 50,
-                                                        width: 50,
-                                                        child: Center(
-                                                          child:
-                                                              CircularProgressIndicator(),
-                                                        ),
-                                                      ),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          const Icon(
-                                                              Icons.error),
-                                                    ),
-                                                  ),
+                                                      decoration: BoxDecoration(
+                                                          image:
+                                                              DecorationImage(
+                                                        fit: BoxFit.cover,
+                                                        image: Image.asset(
+                                                                "assets/arViewer/bg.png")
+                                                            .image,
+                                                      )),
+                                                      height: 50,
+                                                      width: 50,
+                                                      child: ImageNetworkLoader(
+                                                          imageUrl:
+                                                              arSnap["gif"]
+                                                                  .toString())),
                                                 ),
                                               ),
                                             );
@@ -997,26 +861,9 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                                                     )),
                                                     height: 50,
                                                     width: 50,
-                                                    child: CachedNetworkImage(
-                                                      fit: BoxFit.cover,
-                                                      imageUrl: arSnap["gif"]
-                                                          .toString(),
-                                                      progressIndicatorBuilder:
-                                                          (context, url,
-                                                                  downloadProgress) =>
-                                                              SizedBox(
-                                                        height: 50,
-                                                        width: 50,
-                                                        child: Center(
-                                                          child:
-                                                              CircularProgressIndicator(),
-                                                        ),
-                                                      ),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          const Icon(
-                                                              Icons.error),
-                                                    ),
+                                                    child: ImageNetworkLoader(
+                                                        imageUrl: arSnap["gif"]
+                                                            .toString()),
                                                   ),
                                                 ),
                                               ),
@@ -1088,25 +935,9 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                                                 )),
                                                 height: 50,
                                                 width: 50,
-                                                child: CachedNetworkImage(
-                                                  fit: BoxFit.cover,
-                                                  imageUrl:
-                                                      arSnap["gif"].toString(),
-                                                  progressIndicatorBuilder:
-                                                      (context, url,
-                                                              downloadProgress) =>
-                                                          SizedBox(
-                                                    height: 50,
-                                                    width: 50,
-                                                    child: Center(
-                                                      child:
-                                                          CircularProgressIndicator(),
-                                                    ),
-                                                  ),
-                                                  errorWidget: (context, url,
-                                                          error) =>
-                                                      const Icon(Icons.error),
-                                                ),
+                                                child: ImageNetworkLoader(
+                                                    imageUrl: arSnap["gif"]
+                                                        .toString()),
                                               ),
                                             ),
                                           ),

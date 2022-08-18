@@ -16,6 +16,7 @@ import 'package:diamon_rose_app/services/dynamic_link_service.dart';
 import 'package:diamon_rose_app/services/feed_viewmodel.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -440,21 +441,10 @@ class _VideoFeedScreenState extends State<VideoFeedScreen> {
                                                   leading: Container(
                                                     height: 40,
                                                     width: 40,
-                                                    child: CachedNetworkImage(
-                                                      imageUrl: snapshot.data!
-                                                          .docs[index]["gif"],
-                                                      fit: BoxFit.cover,
-                                                      progressIndicatorBuilder:
-                                                          (context, url,
-                                                                  downloadProgress) =>
-                                                              Center(
-                                                                  child:
-                                                                      CircularProgressIndicator()),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          const Icon(
-                                                              Icons.error),
-                                                    ),
+                                                    child: ImageNetworkLoader(
+                                                        imageUrl: snapshot.data!
+                                                                .docs[index]
+                                                            ["gif"]),
                                                   ),
                                                   title: Text(
                                                     "${snapshot.data!.docs[index]["layerType"]} by ${video.username}",
@@ -529,21 +519,10 @@ class _VideoFeedScreenState extends State<VideoFeedScreen> {
                                                   leading: Container(
                                                     height: 40,
                                                     width: 40,
-                                                    child: CachedNetworkImage(
-                                                      imageUrl: snapshot.data!
-                                                          .docs[index]["gif"],
-                                                      fit: BoxFit.cover,
-                                                      progressIndicatorBuilder:
-                                                          (context, url,
-                                                                  downloadProgress) =>
-                                                              Center(
-                                                                  child:
-                                                                      CircularProgressIndicator()),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          const Icon(
-                                                              Icons.error),
-                                                    ),
+                                                    child: ImageNetworkLoader(
+                                                        imageUrl: snapshot.data!
+                                                                .docs[index]
+                                                            ["gif"]),
                                                   ),
                                                   title: Text(
                                                     "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",

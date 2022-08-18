@@ -450,26 +450,11 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                             leading: Container(
                                                               height: 40,
                                                               width: 40,
-                                                              child:
-                                                                  CachedNetworkImage(
-                                                                imageUrl: snapshot
-                                                                        .data!
-                                                                        .docs[
-                                                                    index]["gif"],
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                progressIndicatorBuilder: (context,
-                                                                        url,
-                                                                        downloadProgress) =>
-                                                                    Center(
-                                                                        child:
-                                                                            CircularProgressIndicator()),
-                                                                errorWidget: (context,
-                                                                        url,
-                                                                        error) =>
-                                                                    const Icon(Icons
-                                                                        .error),
-                                                              ),
+                                                              child: ImageNetworkLoader(
+                                                                  imageUrl: snapshot
+                                                                          .data!
+                                                                          .docs[
+                                                                      index]["gif"]),
                                                             ),
                                                             title: Text(
                                                               "${snapshot.data!.docs[index]["layerType"]} by ${video!.username}",
@@ -543,26 +528,11 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                             leading: Container(
                                                               height: 40,
                                                               width: 40,
-                                                              child:
-                                                                  CachedNetworkImage(
-                                                                imageUrl: snapshot
-                                                                        .data!
-                                                                        .docs[
-                                                                    index]["gif"],
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                progressIndicatorBuilder: (context,
-                                                                        url,
-                                                                        downloadProgress) =>
-                                                                    Center(
-                                                                        child:
-                                                                            CircularProgressIndicator()),
-                                                                errorWidget: (context,
-                                                                        url,
-                                                                        error) =>
-                                                                    const Icon(Icons
-                                                                        .error),
-                                                              ),
+                                                              child: ImageNetworkLoader(
+                                                                  imageUrl: snapshot
+                                                                          .data!
+                                                                          .docs[
+                                                                      index]["gif"]),
                                                             ),
                                                             title: Text(
                                                               "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",

@@ -75,14 +75,8 @@ class BlockedAccountScreen extends StatelessWidget {
                             width: 50,
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
-                              child: CachedNetworkImage(
+                              child: ImageNetworkLoader(
                                 imageUrl: blockedAccounts[index].userimage,
-                                fit: BoxFit.cover,
-                                progressIndicatorBuilder: (context, url,
-                                        downloadProgress) =>
-                                    Center(child: CircularProgressIndicator()),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
                               ),
                             ),
                           ),

@@ -82,19 +82,21 @@ class ArViewcollectionScreen extends StatelessWidget {
                           )),
                           height: 50,
                           width: 50,
-                          child: CachedNetworkImage(
-                            fit: BoxFit.cover,
-                            imageUrl: arSnap["gif"].toString(),
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => SizedBox(
-                              height: 50,
-                              width: 50,
-                              child: Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
+                          child: Image.network(
+                            arSnap["gif"].toString(),
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),
