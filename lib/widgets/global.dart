@@ -6,30 +6,57 @@ import 'package:diamon_rose_app/services/GoogleSheetsAPI/form.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:sizer/sizer.dart';
 
 ConstantColors constantColors = ConstantColors();
 
-Widget ImageNetworkLoader({required String imageUrl}) {
-  return Image.network(
-    imageUrl,
-    fit: BoxFit.cover,
-    loadingBuilder:
-        (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-      if (loadingProgress == null) return child;
-      return Center(
-        child: CircularProgressIndicator(
-          value: loadingProgress.expectedTotalBytes != null
-              ? loadingProgress.cumulativeBytesLoaded /
-                  loadingProgress.expectedTotalBytes!
-              : null,
+Widget ImageNetworkLoader({required String imageUrl, bool hide = false}) {
+  return Stack(
+    children: [
+      Container(
+        height: 100.h,
+        width: 100.w,
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent? loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                    : null,
+              ),
+            );
+          },
+          errorBuilder: (BuildContext context, val, _) {
+            return Center(
+              child: Icon(Icons.error),
+            );
+          },
         ),
-      );
-    },
-    errorBuilder: (BuildContext context, val, _) {
-      return Center(
-        child: Icon(Icons.error),
-      );
-    },
+      ),
+      Visibility(
+        visible: hide,
+        child: Positioned(
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            alignment: Alignment.center,
+            color: constantColors.black.withOpacity(0.8),
+            child: Icon(
+              Icons.lock_outline,
+              color: constantColors.whiteColor,
+              size: 40,
+            ),
+          ),
+        ),
+      )
+    ],
   );
 }
 

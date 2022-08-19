@@ -845,7 +845,9 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                   cancelBtnText: "Nevermind",
                                   confirmBtnColor: constantColors.navButton,
                                   showCancelBtn: true,
-                                  onCancelBtnTap: () => Navigator.pop(context),
+                                  onCancelBtnTap: () {
+                                    Navigator.pop(context);
+                                  },
                                   onConfirmBtnTap: () => ViewPaidVideoWeb(
                                       context, video, videoUrl),
                                   confirmBtnTextStyle: TextStyle(
@@ -864,7 +866,17 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                 color: Colors.grey,
                                 child: ImageNetworkLoader(
                                     imageUrl: snapshot.data!.docs[index]
-                                        ["thumbnailurl"]),
+                                        ["thumbnailurl"],
+                                    hide: video.isFree ||
+                                            video.boughtBy.contains(context
+                                                .read<Authentication>()
+                                                .getUserId) ||
+                                            context
+                                                    .read<Authentication>()
+                                                    .getUserId ==
+                                                "dRnvDRXqrPgZmDfYMSGUJlx0Gbo2"
+                                        ? false
+                                        : true),
                               ),
                             ),
                           );
