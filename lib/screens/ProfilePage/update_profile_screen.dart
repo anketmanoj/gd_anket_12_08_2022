@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
@@ -106,6 +108,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               userProvider.setCountryCode(value.toString());
                             },
                             initialSelection: userProvider.usercountrycode,
+                            showCountryOnly: true,
                             favorite: ['+971', 'JP'],
                             showOnlyCountryWhenClosed: false,
                             showFlagMain: false,
@@ -126,12 +129,33 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 25),
-                  child: ProfileUserDetails(
-                    onSubmit:
-                        userProvider.setUserAddress(_addressController.text),
-                    controller: _addressController,
-                    labelText: "Address",
-                    lines: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Select Country"),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CountryCodePicker(
+                              showDropDownButton: true,
+                              onChanged: (value) {
+                                log(value.name!);
+                                userProvider
+                                    .setUserAddress(value.name.toString());
+                                _addressController.text = value.name!;
+                              },
+                              initialSelection: _addressController.text,
+                              showCountryOnly: true,
+                              favorite: ['+971', 'JP'],
+                              showOnlyCountryWhenClosed: true,
+                              showFlagMain: true,
+                              showFlag: true,
+                              showFlagDialog: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
                 Padding(

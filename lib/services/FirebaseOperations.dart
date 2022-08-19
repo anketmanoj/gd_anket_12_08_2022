@@ -150,6 +150,7 @@ class FirebaseOperations with ChangeNotifier {
 
   // set user address
   Function(String) setUserAddress(String address) {
+    log("address == $address");
     return (String address) {
       userAddress = address;
       notifyListeners();

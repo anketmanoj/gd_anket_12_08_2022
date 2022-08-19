@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:diamon_rose_app/providers/user_signup_provider.dart';
 import 'package:diamon_rose_app/screens/mainPage/Signupflow/signup_username.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
@@ -41,53 +44,44 @@ class _SignUpLocationState extends State<SignUpLocation> {
             child: Form(
               key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Where do you live",
+                    "Select Country",
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 30,
                       color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.2,
+                    height: MediaQuery.of(context).size.height * 0.05,
                   ),
-                  TextFormField(
-                    controller: _locationController,
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter your location';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.location_on,
-                        color: Colors.white,
-                      ),
-                      hintText: 'Enter your location',
-                      hintStyle: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.white,
-                          width: 2,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: constantColors.whiteColor,
+                              borderRadius: BorderRadius.circular(30)),
+                          child: CountryCodePicker(
+                            showDropDownButton: true,
+                            onChanged: (value) {
+                              log(value.name!);
+
+                              _locationController.text = value.name!;
+                            },
+                            initialSelection: _locationController.text,
+                            showCountryOnly: true,
+                            favorite: ['+971', 'JP'],
+                            showOnlyCountryWhenClosed: true,
+                            showFlagMain: true,
+                            showFlag: true,
+                            showFlagDialog: true,
+                          ),
                         ),
-                        borderRadius: BorderRadius.circular(20),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.white,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
+                    ],
                   ),
                 ],
               ),
