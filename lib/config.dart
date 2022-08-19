@@ -1,5 +1,6 @@
 import 'package:diamon_rose_app/constants/appleSignInCheck.dart';
 import 'package:diamon_rose_app/controllers/global_messages_controller.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/injection.dart';
 import 'package:diamon_rose_app/services/feed_viewmodel.dart';
 import 'package:diamon_rose_app/services/get_http_client.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
 
 // import 'package:mared_social/constants/appleSignInCheck.dart';
 // import 'package:mared_social/controllers/global_messages_controller.dart';
@@ -26,6 +28,7 @@ config() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await FirebaseMessaging.instance.requestPermission();
+  configureInjection(Environment.prod);
   SystemChrome.setEnabledSystemUIOverlays([]);
   // Stripe.publishableKey =
   //     "pk_test_51JaczJFX9V9rzaGSZhdkhBZ9btHj8Kp0GuggSluKf0lvIKqzpvJrTKjAVBz07t2Nk8TBBB2ukntbKZJk026M3n8t00aWAldRZJ";
@@ -41,7 +44,7 @@ config() async {
     importance: Importance.max,
   );
 
-  getIt.registerSingleton<FeedViewModel>(FeedViewModel());
+  // getIt.registerSingleton<FeedViewModel>(FeedViewModel());
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print('Got a message whilst in the foreground!');

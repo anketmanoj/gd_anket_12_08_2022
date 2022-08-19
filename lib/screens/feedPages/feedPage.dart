@@ -8,7 +8,10 @@ import 'package:diamon_rose_app/providers/recommendedProvider.dart';
 import 'package:diamon_rose_app/screens/NotificationPage/notificationScreen.dart';
 import 'package:diamon_rose_app/screens/PostPage/postScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/profile_screen.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/injection.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/videoFeedScreen.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/video_page.dart';
 import 'package:diamon_rose_app/screens/VideoWorkAll/select_model/select_model_screen.dart';
 import 'package:diamon_rose_app/screens/homePage/homescreen.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
@@ -24,6 +27,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -141,7 +145,8 @@ class _FeedPageState extends State<FeedPage> {
                   },
                   children: [
                     // * testing out new way to load videos
-                    VideoFeedScreen(),
+                    // VideoFeedScreen(),
+                    VideoPage(),
                     // HomeScreen(),
                     SearchScreen(),
                     // PostScreen(),
