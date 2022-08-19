@@ -141,8 +141,8 @@ class _FeedPageState extends State<FeedPage> {
                   },
                   children: [
                     // * testing out new way to load videos
-                    // VideoFeedScreen(),
-                    HomeScreen(),
+                    VideoFeedScreen(),
+                    // HomeScreen(),
                     SearchScreen(),
                     // PostScreen(),
                     // TestVideoEditor(),

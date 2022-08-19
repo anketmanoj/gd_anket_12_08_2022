@@ -713,6 +713,27 @@ class FirebaseOperations with ChangeNotifier {
   }) {
     return FirebaseFirestore.instance.collection("users").doc(uid).update({
       'userimage': imageUrl,
+    }).then((value) async {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(uid)
+          .collection("followers")
+          .get()
+          .then((followers) async {
+        followers.docs.forEach((followerDoc) async {
+          bool exists = await checkUserExists(useruid: followerDoc.id);
+          if (exists == true) {
+            await FirebaseFirestore.instance
+                .collection("users")
+                .doc(followerDoc.id)
+                .collection("following")
+                .doc(uid)
+                .update({
+              'userimage': imageUrl,
+            });
+          }
+        });
+      });
     });
   }
 
