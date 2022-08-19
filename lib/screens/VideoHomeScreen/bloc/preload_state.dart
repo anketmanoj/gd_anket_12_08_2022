@@ -3,7 +3,7 @@ part of 'preload_bloc.dart';
 @Freezed()
 class PreloadState with _$PreloadState {
   factory PreloadState({
-    required List<String> urls,
+    required List<Video> urls,
     required Map<int, VideoPlayerController> controllers,
     required int focusedIndex,
     required int reloadCounter,

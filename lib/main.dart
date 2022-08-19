@@ -26,6 +26,7 @@ import 'package:diamon_rose_app/screens/splashscreen/splashscreen.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/video.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -96,8 +97,8 @@ void getVideosTask(SendPort mySendPort) async {
       final int index = message[0];
 
       final SendPort isolateResponseSendPort = message[1];
-
-      final List<String> _urls =
+      await ApiService.load();
+      final List<Video> _urls =
           await ApiService.getVideos(id: index + kPreloadLimit);
 
       isolateResponseSendPort.send(_urls);

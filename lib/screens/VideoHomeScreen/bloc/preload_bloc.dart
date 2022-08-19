@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:diamon_rose_app/main.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/core/constants.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/service/api_service.dart';
+import 'package:diamon_rose_app/services/video.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:video_player/video_player.dart';
@@ -28,7 +29,8 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
       },
       getVideosFromApi: (e) async* {
         /// Fetch first 5 videos from api
-        final List<String> _urls = await ApiService.getVideos();
+        await ApiService.load();
+        final List<Video> _urls = await ApiService.getVideos();
         state.urls.addAll(_urls);
 
         /// Initialize 1st video
@@ -109,7 +111,7 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
     if (state.urls.length > index && index >= 0) {
       /// Create new controller
       final VideoPlayerController _controller =
-          VideoPlayerController.network(state.urls[index]);
+          VideoPlayerController.network(state.urls[index].videourl);
 
       /// Add to [controllers] list
       state.controllers[index] = _controller;
@@ -128,6 +130,7 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
 
       /// Play controller
       _controller.play();
+      _controller.setLooping(true);
 
       log('🚀🚀🚀 PLAYING $index');
     }

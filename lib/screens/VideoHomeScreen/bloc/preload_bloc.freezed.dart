@@ -24,7 +24,7 @@ class _$PreloadEventTearOff {
     return const _SetLoading();
   }
 
-  _UpdateUrls updateUrls(List<String> urls) {
+  _UpdateUrls updateUrls(List<Video> urls) {
     return _UpdateUrls(
       urls,
     );
@@ -46,7 +46,7 @@ mixin _$PreloadEvent {
   TResult when<TResult extends Object?>({
     required TResult Function() getVideosFromApi,
     required TResult Function() setLoading,
-    required TResult Function(List<String> urls) updateUrls,
+    required TResult Function(List<Video> urls) updateUrls,
     required TResult Function(int index) onVideoIndexChanged,
   }) =>
       throw _privateConstructorUsedError;
@@ -54,7 +54,7 @@ mixin _$PreloadEvent {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
     TResult Function()? setLoading,
-    TResult Function(List<String> urls)? updateUrls,
+    TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     required TResult orElse(),
   }) =>
@@ -136,7 +136,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
   TResult when<TResult extends Object?>({
     required TResult Function() getVideosFromApi,
     required TResult Function() setLoading,
-    required TResult Function(List<String> urls) updateUrls,
+    required TResult Function(List<Video> urls) updateUrls,
     required TResult Function(int index) onVideoIndexChanged,
   }) {
     return getVideosFromApi();
@@ -147,7 +147,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
     TResult Function()? setLoading,
-    TResult Function(List<String> urls)? updateUrls,
+    TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     required TResult orElse(),
   }) {
@@ -229,7 +229,7 @@ class _$_SetLoading implements _SetLoading {
   TResult when<TResult extends Object?>({
     required TResult Function() getVideosFromApi,
     required TResult Function() setLoading,
-    required TResult Function(List<String> urls) updateUrls,
+    required TResult Function(List<Video> urls) updateUrls,
     required TResult Function(int index) onVideoIndexChanged,
   }) {
     return setLoading();
@@ -240,7 +240,7 @@ class _$_SetLoading implements _SetLoading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
     TResult Function()? setLoading,
-    TResult Function(List<String> urls)? updateUrls,
+    TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     required TResult orElse(),
   }) {
@@ -286,7 +286,7 @@ abstract class _$UpdateUrlsCopyWith<$Res> {
   factory _$UpdateUrlsCopyWith(
           _UpdateUrls value, $Res Function(_UpdateUrls) then) =
       __$UpdateUrlsCopyWithImpl<$Res>;
-  $Res call({List<String> urls});
+  $Res call({List<Video> urls});
 }
 
 /// @nodoc
@@ -307,7 +307,7 @@ class __$UpdateUrlsCopyWithImpl<$Res> extends _$PreloadEventCopyWithImpl<$Res>
       urls == freezed
           ? _value.urls
           : urls // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<Video>,
     ));
   }
 }
@@ -318,7 +318,7 @@ class _$_UpdateUrls implements _UpdateUrls {
   const _$_UpdateUrls(this.urls);
 
   @override
-  final List<String> urls;
+  final List<Video> urls;
 
   @override
   String toString() {
@@ -347,7 +347,7 @@ class _$_UpdateUrls implements _UpdateUrls {
   TResult when<TResult extends Object?>({
     required TResult Function() getVideosFromApi,
     required TResult Function() setLoading,
-    required TResult Function(List<String> urls) updateUrls,
+    required TResult Function(List<Video> urls) updateUrls,
     required TResult Function(int index) onVideoIndexChanged,
   }) {
     return updateUrls(urls);
@@ -358,7 +358,7 @@ class _$_UpdateUrls implements _UpdateUrls {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
     TResult Function()? setLoading,
-    TResult Function(List<String> urls)? updateUrls,
+    TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     required TResult orElse(),
   }) {
@@ -396,9 +396,9 @@ class _$_UpdateUrls implements _UpdateUrls {
 }
 
 abstract class _UpdateUrls implements PreloadEvent {
-  const factory _UpdateUrls(List<String> urls) = _$_UpdateUrls;
+  const factory _UpdateUrls(List<Video> urls) = _$_UpdateUrls;
 
-  List<String> get urls => throw _privateConstructorUsedError;
+  List<Video> get urls => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   _$UpdateUrlsCopyWith<_UpdateUrls> get copyWith =>
       throw _privateConstructorUsedError;
@@ -472,7 +472,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
   TResult when<TResult extends Object?>({
     required TResult Function() getVideosFromApi,
     required TResult Function() setLoading,
-    required TResult Function(List<String> urls) updateUrls,
+    required TResult Function(List<Video> urls) updateUrls,
     required TResult Function(int index) onVideoIndexChanged,
   }) {
     return onVideoIndexChanged(index);
@@ -483,7 +483,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
     TResult Function()? setLoading,
-    TResult Function(List<String> urls)? updateUrls,
+    TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     required TResult orElse(),
   }) {
@@ -534,7 +534,7 @@ class _$PreloadStateTearOff {
   const _$PreloadStateTearOff();
 
   _PreloadState call(
-      {required List<String> urls,
+      {required List<Video> urls,
       required Map<int, VideoPlayerController> controllers,
       required int focusedIndex,
       required int reloadCounter,
@@ -554,7 +554,7 @@ const $PreloadState = _$PreloadStateTearOff();
 
 /// @nodoc
 mixin _$PreloadState {
-  List<String> get urls => throw _privateConstructorUsedError;
+  List<Video> get urls => throw _privateConstructorUsedError;
   Map<int, VideoPlayerController> get controllers =>
       throw _privateConstructorUsedError;
   int get focusedIndex => throw _privateConstructorUsedError;
@@ -572,7 +572,7 @@ abstract class $PreloadStateCopyWith<$Res> {
           PreloadState value, $Res Function(PreloadState) then) =
       _$PreloadStateCopyWithImpl<$Res>;
   $Res call(
-      {List<String> urls,
+      {List<Video> urls,
       Map<int, VideoPlayerController> controllers,
       int focusedIndex,
       int reloadCounter,
@@ -599,7 +599,7 @@ class _$PreloadStateCopyWithImpl<$Res> implements $PreloadStateCopyWith<$Res> {
       urls: urls == freezed
           ? _value.urls
           : urls // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<Video>,
       controllers: controllers == freezed
           ? _value.controllers
           : controllers // ignore: cast_nullable_to_non_nullable
@@ -628,7 +628,7 @@ abstract class _$PreloadStateCopyWith<$Res>
       __$PreloadStateCopyWithImpl<$Res>;
   @override
   $Res call(
-      {List<String> urls,
+      {List<Video> urls,
       Map<int, VideoPlayerController> controllers,
       int focusedIndex,
       int reloadCounter,
@@ -657,7 +657,7 @@ class __$PreloadStateCopyWithImpl<$Res> extends _$PreloadStateCopyWithImpl<$Res>
       urls: urls == freezed
           ? _value.urls
           : urls // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<Video>,
       controllers: controllers == freezed
           ? _value.controllers
           : controllers // ignore: cast_nullable_to_non_nullable
@@ -689,7 +689,7 @@ class _$_PreloadState implements _PreloadState {
       required this.isLoading});
 
   @override
-  final List<String> urls;
+  final List<Video> urls;
   @override
   final Map<int, VideoPlayerController> controllers;
   @override
@@ -741,14 +741,14 @@ class _$_PreloadState implements _PreloadState {
 
 abstract class _PreloadState implements PreloadState {
   factory _PreloadState(
-      {required List<String> urls,
+      {required List<Video> urls,
       required Map<int, VideoPlayerController> controllers,
       required int focusedIndex,
       required int reloadCounter,
       required bool isLoading}) = _$_PreloadState;
 
   @override
-  List<String> get urls => throw _privateConstructorUsedError;
+  List<Video> get urls => throw _privateConstructorUsedError;
   @override
   Map<int, VideoPlayerController> get controllers =>
       throw _privateConstructorUsedError;
