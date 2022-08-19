@@ -2470,6 +2470,41 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                             );
                           }
 
+                          if (snapshot.data!.docs.isEmpty) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "No AR Materials have been created yet",
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    color: constantColors.whiteColor,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  "To create your first Material AR:",
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    color: constantColors.whiteColor,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  "AR Options > Select Video > Submit as Material",
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    color: constantColors.whiteColor,
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+
                           return GridView.builder(
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
@@ -2605,6 +2640,32 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                               ConnectionState.waiting) {
                             return Center(
                               child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          if (snapshot.data!.docs.isEmpty) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "No Effects previously used",
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    color: constantColors.whiteColor,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  "To use Effect, they must be saved on your phone in GIF Format",
+                                  textAlign: TextAlign.center,
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    color: constantColors.whiteColor,
+                                  ),
+                                ),
+                              ],
                             );
                           }
 
