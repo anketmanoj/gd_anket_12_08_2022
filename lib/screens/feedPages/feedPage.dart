@@ -130,7 +130,7 @@ class _FeedPageState extends State<FeedPage> {
                 }
               },
               child: Scaffold(
-                backgroundColor: Colors.white,
+                backgroundColor: Colors.black,
                 body: PageView(
                   controller: homepageController,
                   physics: const NeverScrollableScrollPhysics(),
