@@ -1,8 +1,10 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/screens/Admin/upload_video_screen.dart';
 import 'package:diamon_rose_app/screens/ArPreviewSetting/ArPreviewScreen.dart';
 import 'package:diamon_rose_app/screens/ArViewCollection/arViewCollectionScreen.dart';
 import 'package:diamon_rose_app/screens/HelpScreen/helpScreen.dart';
@@ -18,6 +20,7 @@ import 'package:diamon_rose_app/screens/blockedAccounts/blockedAccountsScreen.da
 import 'package:diamon_rose_app/screens/closeAccount/closeAccountScreen.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
+import 'package:diamon_rose_app/services/adminUserModels.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/dbService.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
@@ -51,6 +54,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
         Provider.of<Authentication>(context, listen: false);
     return SafeArea(
       top: false,
+      bottom: Platform.isIOS ? false : true,
       child: Scaffold(
         backgroundColor: constantColors.black,
         appBar: AppBar(
@@ -554,6 +558,42 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "Delete Account",
                 ),
+                StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("debug")
+                        .doc("adminUsers")
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      AdminList adminList = AdminList.fromMap(
+                          snapshot.data!.data() as Map<String, dynamic>);
+
+                      if (adminList.adminList
+                          .contains(context.read<Authentication>().getUserId)) {
+                        return ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: UploadVideoScreen(),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          title: Text(
+                            "Admin Upload",
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.yellow,
+                          ),
+                        );
+                      }
+                      return SizedBox();
+                    }),
                 ListTile(
                   onTap: () {
                     logOutDialog(context);

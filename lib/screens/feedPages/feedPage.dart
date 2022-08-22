@@ -115,7 +115,7 @@ class _FeedPageState extends State<FeedPage> {
         builder: (context, page, _) {
           return SafeArea(
             top: false,
-            bottom: true,
+            bottom: Platform.isIOS ? false : true,
             child: WillPopScope(
               onWillPop: () async {
                 if (pageIndex == 0) {

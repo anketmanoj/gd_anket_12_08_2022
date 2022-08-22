@@ -152,7 +152,10 @@ class ArPreviewSetting extends StatelessWidget {
     return Scaffold(
       backgroundColor: constantColors.whiteColor,
       appBar: AppBarWidget(
-          text: "AR Preview Settings", context: context, goBack: false),
+        text: "AR Preview Settings",
+        context: context,
+        goBack: true,
+      ),
       body: GestureDetector(
         onTap: () {
           final FocusScopeNode currentFocus = FocusScope.of(context);

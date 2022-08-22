@@ -44,7 +44,7 @@ class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
   void initState() {
     _controller = VideoEditorController.file(
       widget.file,
-      maxDuration: const Duration(seconds: 30),
+      maxDuration: const Duration(seconds: 60),
       trimStyle: TrimSliderStyle(),
     )..initialize().then((_) => setState(() {}));
     super.initState();

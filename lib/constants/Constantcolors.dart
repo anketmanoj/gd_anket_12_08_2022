@@ -10,7 +10,7 @@ class ConstantColors {
   final Color redColor = Colors.red;
   final Color whiteColor = Colors.white;
   final Color blueGreyColor = Colors.blueGrey.shade900;
-  final Color greenColor = Colors.greenAccent;
+  final Color greenColor = Color.fromARGB(255, 0, 144, 5);
   final Color yellowColor = Colors.yellow;
   final Color transperant = Colors.transparent;
   final Color greyColor = Colors.grey.shade600;

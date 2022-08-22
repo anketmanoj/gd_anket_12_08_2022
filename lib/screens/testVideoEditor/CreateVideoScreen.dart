@@ -190,7 +190,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
     _controller = VideoEditorController.file(
       widget.file,
-      maxDuration: const Duration(seconds: 30),
+      maxDuration: const Duration(seconds: 60),
       trimStyle: TrimSliderStyle(),
     )..initialize().then((_) {
         _controller.video.setLooping(false);

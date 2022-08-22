@@ -77,7 +77,10 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                     color: Colors.blue),
                                 title: Text('Website'),
                                 onTap: () async {
-                                  var url = '${links['url']}';
+                                  var url =
+                                      links['url'].toString().contains("http")
+                                          ? '${links['url']}'
+                                          : 'https://${links['url']}';
 
                                   if (await canLaunchUrl(Uri.parse(url))) {
                                     await launchUrl(Uri.parse(url),

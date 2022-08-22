@@ -55,7 +55,7 @@ class _ArVideoEditorScreenState extends State<ArVideoEditorScreen> {
   void initState() {
     _controller = VideoEditorController.file(
       widget.file,
-      maxDuration: const Duration(seconds: 15),
+      maxDuration: const Duration(seconds: 60),
       trimStyle: TrimSliderStyle(),
     )..initialize().then((_) => setState(() {}));
     super.initState();
