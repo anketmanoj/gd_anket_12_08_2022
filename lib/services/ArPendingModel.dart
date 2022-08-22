@@ -15,7 +15,7 @@ class ArPendingModel {
     required this.ownerId,
     required this.ownerName,
     required this.usage,
-    main,
+    this.main,
   });
 
   String gif;

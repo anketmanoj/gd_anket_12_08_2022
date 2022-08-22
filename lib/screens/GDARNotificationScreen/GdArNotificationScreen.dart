@@ -60,6 +60,7 @@ class GDARNotificationScreen extends StatelessWidget {
               itemBuilder: (ctx, index) {
                 final ArPendingModel arPendingModel = ArPendingModel.fromMap(
                     snaps.data!.docs[index].data() as Map<String, dynamic>);
+
                 return ListTile(
                   onTap: () async {
                     if (snaps.data!.docs[index]['main'] == null) {
@@ -105,7 +106,11 @@ class GDARNotificationScreen extends StatelessWidget {
                     }
                   },
                   title: Text("${arPendingModel.ownerName}"),
-                  leading: ImageNetworkLoader(imageUrl: arPendingModel.gif),
+                  leading: Container(
+                    height: 50,
+                    width: 50,
+                    child: ImageNetworkLoader(imageUrl: arPendingModel.gif),
+                  ),
                   trailing: Container(
                     decoration: BoxDecoration(
                       color: snaps.data!.docs[index]['main'] == null

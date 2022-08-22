@@ -21,6 +21,7 @@ class _NotificationsTabState extends State<NotificationsTab> {
     return DefaultTabController(
         length: 3,
         child: Scaffold(
+          backgroundColor: constantColors.whiteColor,
           appBar: AppBar(
             backgroundColor: constantColors.navButton,
             title: const Text('Interactions'),
