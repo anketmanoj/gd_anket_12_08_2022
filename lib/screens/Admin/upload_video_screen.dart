@@ -92,19 +92,19 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
   ];
 
   _pickVideo({required BuildContext context, String type = "main"}) async {
-    final XFile? file = await _picker.pickVideo(
-      source: ImageSource.gallery,
+    FilePickerResult? file = await FilePicker.platform.pickFiles(
+      type: FileType.video,
     );
     if (file != null) {
       switch (type) {
         case "main":
           setState(() {
-            mainVideo = File(file.path);
+            mainVideo = File(file.files.single.path!);
           });
           break;
         case "alpha":
           setState(() {
-            alphaVideo = File(file.path);
+            alphaVideo = File(file.files.single.path!);
           });
           break;
       }
@@ -500,7 +500,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                                             "st6hCmrpkk1E3ST23szLx6nofF9dXaQXtGrw0WaL",
                                                         bucket:
                                                             "anketvideobucket",
-                                                        file: mainVideo!,
+                                                        file: alphaVideo!,
                                                         filename:
                                                             "${fileName}_alpha.mp4",
                                                         region: "us-east-1",
@@ -540,8 +540,11 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                                       .value!.username,
                                                   isVerified: selectedUser
                                                       .value!.isverified!,
-                                                  price: double.parse(
-                                                      _arPrice.value.text),
+                                                  price: _arPrice
+                                                          .value.text.isEmpty
+                                                      ? 0
+                                                      : double.parse(
+                                                          _arPrice.value.text),
                                                   genre:
                                                       _selectedRecommendedOptions,
                                                   isFree: _isFree.value,

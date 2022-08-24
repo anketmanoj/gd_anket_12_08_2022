@@ -942,39 +942,21 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                     if (uri!.toString().contains("success")) {
                       await Provider.of<FirebaseOperations>(context,
                               listen: false)
-                          .addToMyCollection(
-                        videoOwnerId: video.useruid,
-                        amount: int.parse((double.parse(
-                                    "${video.price * (1 - video.discountAmount / 100) * 100}") /
-                                100)
-                            .toStringAsFixed(0)),
+                          .addToCart(
+                        useruid: context.read<Authentication>().getUserId,
                         videoItem: video,
                         isFree: video.isFree,
                         ctx: context,
                         videoId: video.id,
                       );
 
-                      log("amount transfered == ${(double.parse("${video.price * (1 - video.discountAmount / 100) * 100}") / 100).toStringAsFixed(0)}");
+                      // log("amount transfered == ${(double.parse("${video.price * (1 - video.discountAmount / 100) * 100}") / 100).toStringAsFixed(0)}");
 
-                      Get.snackbar(
-                        'Payment Successful',
-                        'Video has been successfully purchased and can be viewed from GD now and the materials used to create the video has been added to your collection!',
-                        overlayColor: constantColors.navButton,
-                        colorText: constantColors.whiteColor,
-                        snackPosition: SnackPosition.TOP,
-                        forwardAnimationCurve: Curves.elasticInOut,
-                        reverseAnimationCurve: Curves.easeOut,
-                      );
-
-                      Provider.of<HomeScreenProvider>(context, listen: false)
-                          .setHomeScreen(false);
-
-                      Get.to(PostDetailsScreen(videoId: video.id));
                     } else if (uri.toString().contains("cancel")) {
                       Navigator.pop(context);
                       Get.snackbar(
-                        'Payment Unsuccessful',
-                        'Please check with your payment method provider',
+                        'Video Cart Error',
+                        'Error adding video to cart',
                         overlayColor: constantColors.navButton,
                         colorText: constantColors.whiteColor,
                         snackPosition: SnackPosition.TOP,

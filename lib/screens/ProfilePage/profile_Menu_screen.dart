@@ -7,6 +7,7 @@ import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/Admin/upload_video_screen.dart';
 import 'package:diamon_rose_app/screens/ArPreviewSetting/ArPreviewScreen.dart';
 import 'package:diamon_rose_app/screens/ArViewCollection/arViewCollectionScreen.dart';
+import 'package:diamon_rose_app/screens/CartScreen/cartScreen.dart';
 import 'package:diamon_rose_app/screens/HelpScreen/helpScreen.dart';
 import 'package:diamon_rose_app/screens/MonitisationPage/monitisationScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ArViewerScreen.dart';
@@ -302,15 +303,22 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   text: "Post Recommendations",
                 ),
 
-                // ListTileOption(
-                //   constantColors: constantColors,
-                //   onTap: () {
-                //     // TODO: Navigate to payment methods
-                //   },
-                //   leadingIcon: EvaIcons.creditCardOutline,
-                //   trailingIcon: Icons.arrow_forward_ios,
-                //   text: "Payment Methods",
-                // ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          child: CartScreen(
+                              useruid:
+                                  context.read<Authentication>().getUserId),
+                          type: PageTransitionType.rightToLeft),
+                    );
+                  },
+                  leadingIcon: EvaIcons.shoppingCartOutline,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Cart",
+                ),
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () {

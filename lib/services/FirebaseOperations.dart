@@ -1606,6 +1606,118 @@ class FirebaseOperations with ChangeNotifier {
     });
   }
 
+  Future addToCart({
+    required String videoId,
+    required BuildContext ctx,
+    required Video videoItem,
+    required String useruid,
+    required bool isFree,
+  }) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(useruid)
+        .collection("cart")
+        .doc(videoId)
+        .set(videoItem.toJson());
+
+    await FirebaseFirestore.instance
+        .collection("posts")
+        .doc(videoId)
+        .collection("materials")
+        .get()
+        .then((value) {
+      value.docs.forEach((arSnapshot) async {
+        switch (arSnapshot.data()['layerType']) {
+          case "AR":
+            if (arSnapshot.data()['videoId'] == videoId) {
+              await FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(useruid)
+                  .collection("cart")
+                  .doc(videoId)
+                  .collection("materials")
+                  .doc(arSnapshot.id)
+                  .set({
+                "alpha": arSnapshot.data()['alpha'],
+                "audioFile": arSnapshot.data()['audioFile'],
+                "audioFlag": arSnapshot.data()['audioFlag'],
+                "gif": arSnapshot.data()['gif'],
+                "id": "${arSnapshot.data()['id']}",
+                "imgSeq": arSnapshot.data()['imgSeq'],
+                "layerType": arSnapshot.data()['layerType'],
+                "main": arSnapshot.data()['main'],
+                "timestamp": arSnapshot.data()['timestamp'],
+                "valueType": arSnapshot.data()['valueType'],
+                "ownerId": arSnapshot.data()['ownerId'],
+                "ownerName": arSnapshot.data()['ownerName'],
+                "videoId": arSnapshot.data()['videoId'],
+                "usage": arSnapshot.data()['usage'],
+              });
+              log("AR ADDED | ${arSnapshot.data()['videoId']}");
+            }
+            break;
+          case "Effect":
+            if (arSnapshot.data()['videoId'] == videoId) {
+              await FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(useruid)
+                  .collection("cart")
+                  .doc(videoId)
+                  .collection("materials")
+                  .doc(arSnapshot.id)
+                  .set({
+                "gif": arSnapshot.data()['gif'],
+                "layerType": arSnapshot.data()['layerType'],
+                "timestamp": arSnapshot.data()['timestamp'],
+                "id": arSnapshot.data()['id'],
+                "valueType": isFree ? "free" : "paid",
+                "itemType": "material",
+                "ownerId": arSnapshot.data()['ownerId'],
+                "ownerName": arSnapshot.data()['ownerName'],
+                "videoId": arSnapshot.data()['videoId'],
+              });
+              log("EFFECT ADDED | ${arSnapshot.data()['videoId']}");
+            }
+            break;
+          case "Background":
+            if (arSnapshot.data()['videoId'] == videoId) {
+              await FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(useruid)
+                  .collection("cart")
+                  .doc(videoId)
+                  .collection("materials")
+                  .doc(arSnapshot.id)
+                  .set({
+                "main": arSnapshot.data()['main'],
+                "gif": arSnapshot.data()['gif'],
+                "layerType": arSnapshot.data()['layerType'],
+                "timestamp": arSnapshot.data()['timestamp'],
+                "id": arSnapshot.data()['id'],
+                "valueType": isFree ? "free" : "paid",
+                "itemType": "material",
+                "ownerId": arSnapshot.data()['ownerId'],
+                "ownerName": arSnapshot.data()['ownerName'],
+                "videoId": arSnapshot.data()['videoId'],
+              });
+              log("BACKGROUND ADDED | ${arSnapshot.data()['videoId']}");
+            }
+            break;
+        }
+      });
+
+      Navigator.pop(ctx);
+      Navigator.pop(ctx);
+
+      showTopSnackBar(
+        ctx,
+        CustomSnackBar.success(
+          message: "Added To Cart!",
+        ),
+      );
+    });
+  }
+
   Future addToMyCollection({
     required String videoId,
     required BuildContext ctx,
