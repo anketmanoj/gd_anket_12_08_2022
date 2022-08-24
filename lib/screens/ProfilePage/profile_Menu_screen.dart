@@ -560,7 +560,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 ),
                 StreamBuilder<DocumentSnapshot>(
                     stream: FirebaseFirestore.instance
-                        .collection("debug")
+                        .collection("admin")
                         .doc("adminUsers")
                         .snapshots(),
                     builder: (context, snapshot) {

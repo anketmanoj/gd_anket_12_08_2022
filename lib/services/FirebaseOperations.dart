@@ -1183,7 +1183,7 @@ class FirebaseOperations with ChangeNotifier {
           secretKey: "st6hCmrpkk1E3ST23szLx6nofF9dXaQXtGrw0WaL",
           bucket: "anketvideobucket",
           file: videoThumbnail,
-          filename: "${Timestamp.now().millisecondsSinceEpoch}thumbnailGif.gif",
+          filename: "${Timestamp.now().millisecondsSinceEpoch}  .gif",
           region: "us-east-1",
           destDir: "LZF1TxU9TabQ3hhbUXZH6uC22dH3");
 
@@ -1803,6 +1803,79 @@ class FirebaseOperations with ChangeNotifier {
       // ignore: unawaited_futures
       log("Anket Error RVM ${response.statusCode}");
       return null;
+    }
+  }
+
+  Future<int> uploadDataForUser({
+    required String mainUrl,
+    required String alphaUrl,
+    required String fileName,
+    required String useruid,
+    required String title,
+    required String caption,
+    required List<String?> genre,
+    required bool isFree,
+    required bool isPaid,
+    bool issubscription = false,
+    required double price,
+    double discountAmount = 0,
+    required List<String> searchindexList,
+    required String registrationId,
+    required String ownerName,
+    required String videoId,
+    required String userimageUrl,
+    String? startDiscountDate,
+    String? endDiscountDate,
+    String contentAvailability = "All",
+    required String fcmToken,
+    required bool isVerified,
+  }) async {
+    // ignore: unawaited_futures
+
+    var response = await http.post(
+      Uri.parse(
+          "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api_ad1/adminpost/"),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(
+        {
+          "mainUrl": mainUrl,
+          "alphaUrl": alphaUrl,
+          "fileName": fileName,
+          "Useruid": useruid,
+          "title": title,
+          "caption": caption,
+          "genre": genre,
+          "isFree": isFree,
+          "isPaid": isPaid,
+          "issubscription": false,
+          "Price": price,
+          "discountAmount": 0,
+          "searchindexList": searchindexList,
+          "registrationId": registrationId,
+          "ownerName": ownerName,
+          "videoId": videoId,
+          "userimageUrl": userimageUrl,
+          "startDiscountDate": startDiscountDate,
+          "endDiscountDate": endDiscountDate,
+          "contentAvailability": "All",
+          "fcmToken": fcmToken,
+          "isverified": isVerified
+        },
+      ),
+    );
+
+    // log(response.statusCode)
+
+    if (response.statusCode == 200) {
+      log("Anket response OK");
+
+      log("response full = ${response.body}");
+
+      return response.statusCode;
+    } else {
+      // ignore: unawaited_futures
+      log("Anket Error RVM ${response.statusCode}");
+      return response.statusCode;
     }
   }
 

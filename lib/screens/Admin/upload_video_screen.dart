@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
@@ -12,6 +13,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:nanoid/nanoid.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:file_picker/file_picker.dart';
@@ -113,6 +116,8 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    final FirebaseOperations firebaseOperations =
+        Provider.of<FirebaseOperations>(context, listen: false);
     return Scaffold(
       backgroundColor: constantColors.bioBg,
       appBar: AppBarWidget(text: "Upload Video", context: context),
@@ -455,6 +460,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                         padding: const EdgeInsets.only(
                                             top: 30, bottom: 30),
                                         child: SubmitButton(
+                                          text: "Upload Video",
                                           function: () async {
                                             if (_formKey.currentState!
                                                     .validate() &&
@@ -500,6 +506,68 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                                         region: "us-east-1",
                                                         destDir:
                                                             "LZF1TxU9TabQ3hhbUXZH6uC22dH3");
+
+                                                String name =
+                                                    "${_arCaptionController.text} ${_arTitleController.text}";
+
+                                                List<String> splitList =
+                                                    name.split(" ");
+                                                List<String> indexList = [];
+
+                                                for (int i = 0;
+                                                    i < splitList.length;
+                                                    i++) {
+                                                  for (int j = 0;
+                                                      j < splitList[i].length;
+                                                      j++) {
+                                                    indexList.add(splitList[i]
+                                                        .substring(0, j + 1)
+                                                        .toLowerCase());
+                                                  }
+                                                }
+
+                                                final String videoId = nanoid();
+
+                                                final int response =
+                                                    await firebaseOperations
+                                                        .uploadDataForUser(
+                                                  mainUrl: mainVideoUrl!,
+                                                  alphaUrl: alphaVideoUrl!,
+                                                  fileName: fileName,
+                                                  useruid: selectedUser
+                                                      .value!.useruid,
+                                                  ownerName: selectedUser
+                                                      .value!.username,
+                                                  isVerified: selectedUser
+                                                      .value!.isverified!,
+                                                  price: double.parse(
+                                                      _arPrice.value.text),
+                                                  genre:
+                                                      _selectedRecommendedOptions,
+                                                  isFree: _isFree.value,
+                                                  isPaid: _isPaid.value,
+                                                  userimageUrl: selectedUser
+                                                      .value!.userimage,
+                                                  searchindexList: indexList,
+                                                  caption:
+                                                      _arCaptionController.text,
+                                                  fcmToken:
+                                                      selectedUser.value!.token,
+                                                  registrationId:
+                                                      selectedUser.value!.token,
+                                                  title:
+                                                      _arTitleController.text,
+                                                  videoId: videoId,
+                                                  startDiscountDate:
+                                                      DateTime.now().toString(),
+                                                  endDiscountDate:
+                                                      DateTime.now().toString(),
+                                                );
+
+                                                if (response == 200) {
+                                                  Navigator.pop(context);
+                                                  log("done uploading to videoid = $videoId and AR fileName = $fileName ");
+                                                }
 
                                                 log("Results\nmainUrl: $mainVideoUrl\nalphaUrl: $alphaVideoUrl\nfileName: $fileName\nUseruid: ${selectedUser.value!.useruid}\ntitle: ${_arTitleController.text}\ncaption: ${_arCaptionController.text}\ngenre: $_selectedRecommendedOptions\nisFree: ${_isFree.value}\nisPaid: ${_isPaid.value}\nPrice: ${_arPrice.value.text}");
                                               } catch (e) {
