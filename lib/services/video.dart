@@ -52,7 +52,7 @@ class Video {
     required this.boughtBy,
     this.totalBilled,
     this.verifiedUser,
-    this.videoType,
+    this.videoType = "video",
   });
 
   // create video from json
@@ -95,7 +95,7 @@ class Video {
       'price': price,
       'discountamount': discountAmount,
       'startdiscountdate': startDiscountDate,
-      'enddiscountDate': endDiscountDate,
+      'enddiscountdate': endDiscountDate,
       'issubscription': isSubscription,
       'contentavailability': contentAvailability,
       'isfree': isFree,

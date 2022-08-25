@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:developer';
 import 'dart:io';
 
@@ -17,6 +18,7 @@ import 'package:diamon_rose_app/screens/ProfilePage/social_media_screen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/update_email_screen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/update_password_screen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/update_profile_screen.dart';
+import 'package:diamon_rose_app/screens/PurchaseHistory/purchaseHistroy.dart';
 import 'package:diamon_rose_app/screens/blockedAccounts/blockedAccountsScreen.dart';
 import 'package:diamon_rose_app/screens/closeAccount/closeAccountScreen.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
@@ -25,15 +27,19 @@ import 'package:diamon_rose_app/services/adminUserModels.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/dbService.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
+import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileMenuScreen extends StatefulWidget {
   ProfileMenuScreen({Key? key}) : super(key: key);
@@ -48,11 +54,30 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
   bool accountInfo = false;
   bool profileDrop = false;
   bool subscriptionDrop = false;
+  final GlobalKey webViewKey = GlobalKey();
+
+  InAppWebViewController? webViewController;
+  InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
+      crossPlatform: InAppWebViewOptions(
+          useShouldOverrideUrlLoading: true,
+          mediaPlaybackRequiresUserGesture: false),
+      android: AndroidInAppWebViewOptions(
+        useHybridComposition: true,
+      ),
+      ios: IOSInAppWebViewOptions(
+        allowsInlineMediaPlayback: true,
+      ));
+  final urlController = TextEditingController();
+  String url = "";
+  double progress = 0;
 
   @override
   Widget build(BuildContext context) {
     final Authentication _auth =
         Provider.of<Authentication>(context, listen: false);
+    final FirebaseOperations _firebaseOperation =
+        Provider.of<FirebaseOperations>(context, listen: false);
+
     return SafeArea(
       top: false,
       bottom: Platform.isIOS ? false : true,
@@ -306,19 +331,104 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                          child: CartScreen(
-                              useruid:
-                                  context.read<Authentication>().getUserId),
-                          type: PageTransitionType.rightToLeft),
+                    final String cartUrl =
+                        "https://gdfe-ac584.firebaseapp.com/#/cart/${_auth.getUserId}";
+
+                    log(cartUrl);
+                    // "https://gdfe-ac584.web.app/#/video/0ReK4oZIhGdbuYxBiUG5J/sjhbjhs";
+
+                    CoolAlert.show(
+                      context: context,
+                      type: CoolAlertType.info,
+                      title: "Shoping Cart",
+                      text:
+                          "You cannot unlock content within the app; please unlock the content from the shopping cart on the Glamorous Diastation website and you'll be able to view it on the Glamorous Diastation app or in the web browser. Click on 'Show Cart' to view your cart on the web",
+                      confirmBtnText: "Show Cart",
+                      cancelBtnText: "Nevermind",
+                      confirmBtnColor: constantColors.navButton,
+                      showCancelBtn: true,
+                      onCancelBtnTap: () {
+                        Navigator.pop(context);
+                      },
+                      onConfirmBtnTap: () => ViewPaidVideoWeb(
+                          context, cartUrl, _auth, _firebaseOperation),
+                      confirmBtnTextStyle: TextStyle(
+                        fontSize: 14,
+                        color: constantColors.whiteColor,
+                      ),
+                      cancelBtnTextStyle: TextStyle(
+                        fontSize: 14,
+                      ),
                     );
                   },
                   leadingIcon: EvaIcons.shoppingCartOutline,
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "Cart",
                 ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          child: PurchaseHistoryScreen(),
+                          type: PageTransitionType.rightToLeft),
+                    );
+                  },
+                  leadingIcon: Icons.history,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Purchase Histroy",
+                ),
+
+                // ! fix all enddiscountDate error
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () async {
+                //     await FirebaseFirestore.instance
+                //         .collection("users")
+                //         .get()
+                //         .then((value) {
+                //       value.docs.forEach((element) async {
+                //         await FirebaseFirestore.instance
+                //             .collection("users")
+                //             .doc(element.id)
+                //             .collection("MyCollection")
+                //             .get()
+                //             .then((collectionVal) {
+                //           collectionVal.docs.forEach((collectionElement) async {
+                //             await FirebaseFirestore.instance
+                //                 .collection("users")
+                //                 .doc(element.id)
+                //                 .collection("MyCollection")
+                //                 .doc(collectionElement.id)
+                //                 .get()
+                //                 .then((colDoc) async {
+                //               if (!colDoc.data()!.containsKey("videoType")) {
+                //                 log(colDoc.data().toString());
+
+                //                 if (colDoc.data()!.containsKey("videotitle")) {
+                //                   await FirebaseFirestore.instance
+                //                     .collection("users")
+                //                     .doc(element.id)
+                //                     .collection("MyCollection")
+                //                     .doc(collectionElement.id)
+                //                     .update({
+                //                   "videoType": colDoc['enddiscountDate'],
+                //                 });
+                //                 }
+                //               }
+                //             });
+                //           });
+                //         });
+                //       });
+                //     });
+
+                //     log("done");
+                //   },
+                //   leadingIcon: Icons.history,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "Fix all",
+                // ),
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () {
@@ -661,6 +771,296 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
         decorationColor: constantColors.redColor,
       ),
       onCancelBtnTap: () => Navigator.pop(context),
+    );
+  }
+
+  // ignore: type_annotate_public_apis, always_declare_return_types
+  ViewPaidVideoWeb(BuildContext context, String cartUrl, Authentication auth,
+      FirebaseOperations firebaseOperations) async {
+    // ignore: unawaited_futures
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      isScrollControlled: true,
+      enableDrag: false,
+      builder: (context) {
+        return Container(
+          height: 95.h,
+          width: 100.w,
+          decoration: BoxDecoration(
+            color: constantColors.black,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 20, 0, 10),
+                child: Row(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "Done",
+                        style: TextStyle(
+                          color: constantColors.bioBg,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: InAppWebView(
+                  key: webViewKey,
+                  onUpdateVisitedHistory: (controller, uri, _) async {
+                    if (uri!.toString().contains("success")) {
+                      log("success!");
+                      // Payment succesful, now iterate through each video and AddtoMycollection
+
+                      await FirebaseFirestore.instance
+                          .collection("users")
+                          .doc(auth.getUserId)
+                          .collection("cart")
+                          .get()
+                          .then((cartDocs) {
+                        cartDocs.docs.forEach((cartVideos) async {
+                          final Video videoModel =
+                              Video.fromJson(cartVideos.data());
+
+                          log("here ${videoModel.timestamp}");
+                          log("amount transfered == ${(double.parse("${cartVideos['price'] * (1 - cartVideos['discountamount'] / 100) * 100}") / 100).toStringAsFixed(0)}");
+                          try {
+                            await firebaseOperations.addToMyCollectionFromCart(
+                              auth: auth,
+                              videoOwnerId: videoModel.useruid,
+                              amount: int.parse((double.parse(
+                                          "${videoModel.price * (1 - videoModel.discountAmount / 100) * 100}") /
+                                      100)
+                                  .toStringAsFixed(0)),
+                              videoItem: videoModel,
+                              isFree: videoModel.isFree,
+                              videoId: videoModel.id,
+                            );
+
+                            log("success added to cart!");
+                          } catch (e) {
+                            log("error saving cart to my collection ${e.toString()}");
+                          }
+
+                          try {
+                            await FirebaseFirestore.instance
+                                .collection("users")
+                                .doc(auth.getUserId)
+                                .collection("cart")
+                                .doc(cartVideos.id)
+                                .delete();
+
+                            log("deleted");
+                          } catch (e) {
+                            log("error deleting cart  ${e.toString()}");
+                          }
+                        });
+                      }).whenComplete(() {
+                        log("done");
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      });
+                      Get.snackbar(
+                        'Purchase Sucessful 🎉',
+                        'All video purchased have been added to your purchase history',
+                        overlayColor: constantColors.navButton,
+                        colorText: constantColors.whiteColor,
+                        snackPosition: SnackPosition.TOP,
+                        forwardAnimationCurve: Curves.elasticInOut,
+                        reverseAnimationCurve: Curves.easeOut,
+                      );
+
+                      // ignore: unawaited_futures, cascade_invocations
+                      Get.dialog(
+                        SimpleDialog(
+                          backgroundColor: constantColors.whiteColor,
+                          title: Text(
+                            "Your purchase was successfully completed.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: constantColors.black,
+                            ),
+                          ),
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Text(
+                                "You can enjoy the purchased contents from your purchase history. Please enjoy!",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: constantColors.black),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      style: ButtonStyle(
+                                        foregroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.white),
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                constantColors.navButton),
+                                        shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                        ),
+                                      ),
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text(
+                                        "Understood!",
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      style: ButtonStyle(
+                                        foregroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.white),
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                constantColors.navButton),
+                                        shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        Get.to(PurchaseHistoryScreen());
+                                      },
+                                      child: Text(
+                                        "View Items",
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        barrierDismissible: false,
+                      );
+
+                      //  await Provider.of<FirebaseOperations>(context,
+                      //           listen: false)
+                      //       .addToMyCollection(
+                      //     videoOwnerId: video.useruid,
+                      //     amount: int.parse((double.parse(
+                      //                 "${video.price * (1 - video.discountAmount / 100) * 100}") /
+                      //             100)
+                      //         .toStringAsFixed(0)),
+                      //     videoItem: video,
+                      //     isFree: video.isFree,
+                      //     ctx: context,
+                      //     videoId: video.id,
+                      //   );
+
+                      // log("amount transfered == ${(double.parse("${video.price * (1 - video.discountAmount / 100) * 100}") / 100).toStringAsFixed(0)}");
+
+                    } else if (uri.toString().contains("cancel")) {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      Get.snackbar(
+                        'Video Cart Error',
+                        'Error adding video to cart',
+                        overlayColor: constantColors.navButton,
+                        colorText: constantColors.whiteColor,
+                        snackPosition: SnackPosition.TOP,
+                        forwardAnimationCurve: Curves.elasticInOut,
+                        reverseAnimationCurve: Curves.easeOut,
+                      );
+                    }
+                  },
+                  initialUrlRequest: URLRequest(
+                    url: Uri.parse(cartUrl),
+                  ),
+                  initialUserScripts: UnmodifiableListView<UserScript>([]),
+                  initialOptions: options,
+                  onWebViewCreated: (controller) {
+                    webViewController = controller;
+                  },
+                  onLoadStart: (controller, url) {
+                    setState(() {
+                      urlController.text = this.url;
+                    });
+                  },
+                  androidOnPermissionRequest:
+                      (controller, origin, resources) async {
+                    return PermissionRequestResponse(
+                        resources: resources,
+                        action: PermissionRequestResponseAction.GRANT);
+                  },
+                  shouldOverrideUrlLoading:
+                      (controller, navigationAction) async {
+                    var uri = navigationAction.request.url!;
+
+                    if (![
+                      "http",
+                      "https",
+                      "file",
+                      "chrome",
+                      "data",
+                      "javascript",
+                      "about"
+                    ].contains(uri.scheme)) {
+                      if (await canLaunch(cartUrl)) {
+                        // Launch the App
+                        await launch(
+                          cartUrl,
+                        );
+                        // and cancel the request
+                        return NavigationActionPolicy.CANCEL;
+                      }
+                    }
+
+                    return NavigationActionPolicy.ALLOW;
+                  },
+                  onLoadStop: (controller, url) async {
+                    setState(() {
+                      this.url = url.toString();
+                      urlController.text = this.url;
+                    });
+                  },
+                  onLoadError: (controller, url, code, message) {},
+                  onProgressChanged: (controller, progress) {
+                    if (progress == 100) {}
+                    setState(() {
+                      this.progress = progress / 100;
+                      urlController.text = this.url;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

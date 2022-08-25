@@ -1591,7 +1591,7 @@ class FirebaseOperations with ChangeNotifier {
     required String videoOwnerId,
     required int month,
     required double amount,
-    required BuildContext ctx,
+    // required BuildContext ctx,
   }) async {
     final String id = nanoid();
     await FirebaseFirestore.instance
@@ -1725,6 +1725,7 @@ class FirebaseOperations with ChangeNotifier {
     required Video videoItem,
     required String videoOwnerId,
     int amount = 0,
+    bool canPop = true,
   }) async {
     await FirebaseFirestore.instance.collection("posts").doc(videoId).update({
       'totalBilled': videoItem.totalBilled! + amount,
@@ -1750,7 +1751,7 @@ class FirebaseOperations with ChangeNotifier {
             amount: (value.data()!['totalmade'] + amount) *
                 value.data()!['percentage'] /
                 100,
-            ctx: ctx,
+            // ctx: ctx,
           );
         }
       });
@@ -1845,14 +1846,147 @@ class FirebaseOperations with ChangeNotifier {
         }
       });
 
-      Navigator.pop(ctx);
+      log("now delete");
 
-      showTopSnackBar(
-        ctx,
-        CustomSnackBar.success(
-          message: "Added To Your Collection!",
-        ),
-      );
+      if (canPop == true) {
+        Navigator.pop(ctx);
+
+        showTopSnackBar(
+          ctx,
+          CustomSnackBar.success(
+            message: "Added To Your Collection!",
+          ),
+        );
+      }
+    });
+  }
+
+  Future addToMyCollectionFromCart({
+    required String videoId,
+    // required BuildContext ctx,
+    required Authentication auth,
+    required bool isFree,
+    required Video videoItem,
+    required String videoOwnerId,
+    int amount = 0,
+  }) async {
+    await FirebaseFirestore.instance.collection("posts").doc(videoId).update({
+      'totalBilled': videoItem.totalBilled! + amount,
+      'boughtBy': FieldValue.arrayUnion([
+        auth.getUserId,
+      ]),
+    });
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(videoOwnerId)
+        .get()
+        .then((value) async {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(value.id)
+          .update({
+        "totalmade": value.data()!['totalmade'] + amount,
+      }).then((_) async {
+        if (isFree == false) {
+          await addToGraph(
+            videoOwnerId: videoOwnerId,
+            month: DateTime.now().month,
+            amount: (value.data()!['totalmade'] + amount) *
+                value.data()!['percentage'] /
+                100,
+            // ctx: ctx,
+          );
+        }
+      });
+    });
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(auth.getUserId)
+        .collection("MyCollection")
+        .doc(videoId)
+        .set(videoItem.toJson());
+
+    await FirebaseFirestore.instance
+        .collection("posts")
+        .doc(videoId)
+        .collection("materials")
+        .get()
+        .then((value) {
+      value.docs.forEach((arSnapshot) async {
+        switch (arSnapshot.data()['layerType']) {
+          case "AR":
+            if (arSnapshot.data()['videoId'] == videoId) {
+              await FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(auth.getUserId)
+                  .collection("MyCollection")
+                  .doc(arSnapshot.id)
+                  .set({
+                "alpha": arSnapshot.data()['alpha'],
+                "audioFile": arSnapshot.data()['audioFile'],
+                "audioFlag": arSnapshot.data()['audioFlag'],
+                "gif": arSnapshot.data()['gif'],
+                "id": "${arSnapshot.data()['id']}",
+                "imgSeq": arSnapshot.data()['imgSeq'],
+                "layerType": arSnapshot.data()['layerType'],
+                "main": arSnapshot.data()['main'],
+                "timestamp": arSnapshot.data()['timestamp'],
+                "valueType": arSnapshot.data()['valueType'],
+                "ownerId": arSnapshot.data()['ownerId'],
+                "ownerName": arSnapshot.data()['ownerName'],
+                "videoId": arSnapshot.data()['videoId'],
+                "usage": arSnapshot.data()['usage'],
+              });
+              log("AR ADDED | ${arSnapshot.data()['videoId']}");
+            }
+            break;
+          case "Effect":
+            if (arSnapshot.data()['videoId'] == videoId) {
+              await FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(auth.getUserId)
+                  .collection("MyCollection")
+                  .doc(arSnapshot.id)
+                  .set({
+                "gif": arSnapshot.data()['gif'],
+                "layerType": arSnapshot.data()['layerType'],
+                "timestamp": arSnapshot.data()['timestamp'],
+                "id": arSnapshot.data()['id'],
+                "valueType": isFree ? "free" : "paid",
+                "itemType": "material",
+                "ownerId": arSnapshot.data()['ownerId'],
+                "ownerName": arSnapshot.data()['ownerName'],
+                "videoId": arSnapshot.data()['videoId'],
+              });
+              log("EFFECT ADDED | ${arSnapshot.data()['videoId']}");
+            }
+            break;
+          case "Background":
+            if (arSnapshot.data()['videoId'] == videoId) {
+              await FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(auth.getUserId)
+                  .collection("MyCollection")
+                  .doc(arSnapshot.id)
+                  .set({
+                "main": arSnapshot.data()['main'],
+                "gif": arSnapshot.data()['gif'],
+                "layerType": arSnapshot.data()['layerType'],
+                "timestamp": arSnapshot.data()['timestamp'],
+                "id": arSnapshot.data()['id'],
+                "valueType": isFree ? "free" : "paid",
+                "itemType": "material",
+                "ownerId": arSnapshot.data()['ownerId'],
+                "ownerName": arSnapshot.data()['ownerName'],
+                "videoId": arSnapshot.data()['videoId'],
+              });
+              log("BACKGROUND ADDED | ${arSnapshot.data()['videoId']}");
+            }
+            break;
+        }
+      });
+
+      log("now delete");
     });
   }
 
