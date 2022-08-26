@@ -923,7 +923,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                                           ),
                                         ),
                                       ),
-                                      onPressed: () => Navigator.pop(context),
+                                      onPressed: () => Get.back(),
                                       child: Text(
                                         "Understood!",
                                         style: TextStyle(fontSize: 12),
@@ -951,7 +951,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        Navigator.pop(context);
+                                        Get.back();
                                         Get.to(PurchaseHistoryScreen());
                                       },
                                       child: Text(

@@ -340,7 +340,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             final List<String> _fullPathsOnline = myAr.imgSeq;
 
             File? audioFile;
-            final _player = AudioPlayer();
+            final AudioPlayer? _player = AudioPlayer();
 
             if (myAr.audioFlag == true) {
               try {
@@ -357,7 +357,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
               print(audioFile!.path + "out");
 
-              await _player.setFilePath(audioFile!.path);
+              await _player!.setFilePath(audioFile!.path);
               await _player.pause();
             }
 
@@ -2221,44 +2221,66 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
     print("path : $bgVideoPath");
 
-    final String commandToExecute =
-        "-v error -y -i ${bgVideoPath}" + ffmpegArCommand + " ${outputPath}";
+    final String commandToExecute = "-v error -y -i ${bgVideoPath}" +
+        ffmpegArCommand +
+        " -crf 30 ${outputPath}";
 
     print("command : $commandToExecute");
 
-    // PROGRESS CALLBACKS
-    await FFmpegKit.executeAsync(
-      commandToExecute,
-      (session) async {
-        final state =
-            FFmpegKitConfig.sessionStateToString(await session.getState());
-        final code = await session.getReturnCode();
-        final failStackTrace = await session.getFailStackTrace();
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        dev.log(' network connected');
+        // PROGRESS CALLBACKS
+        await FFmpegKit.executeAsync(
+          commandToExecute,
+          (session) async {
+            final state =
+                FFmpegKitConfig.sessionStateToString(await session.getState());
+            final code = await session.getReturnCode();
+            final failStackTrace = await session.getFailStackTrace();
 
-        debugPrint(
-            "FFmpeg process exited with state $state and return code $code.${(failStackTrace == null) ? "" : "\\n" + failStackTrace}");
+            debugPrint(
+                "FFmpeg process exited with state $state and return code $code.${(failStackTrace == null) ? "" : "\\n" + failStackTrace}");
 
-        if (code != 0) {
-          Navigator.pop(context);
-          CoolAlert.show(
-            context: context,
-            type: CoolAlertType.error,
-            title: "Error Processing Video",
-          );
-        }
-
-        onCompleted(code?.isValueSuccess() == true ? File(outputPath) : null);
-      },
-      null,
-      onProgress != null
-          ? (stats) {
-              // Progress value of encoded video
-              double progressValue = stats.getTime() /
-                  (Duration.zero - bgVideoDuartion).inMilliseconds;
-              onProgress(stats, progressValue.clamp(0.0, 1.0));
+            if (code != 0) {
+              Navigator.pop(context);
+              CoolAlert.show(
+                context: context,
+                type: CoolAlertType.error,
+                title: "Error Processing Video",
+                text:
+                    "Device RAM issue. Please free up space on your phone to be able to process the video properly",
+              );
             }
-          : null,
-    );
+
+            // dev.log(File("$tempPath/output.mp4").)
+
+            onCompleted(
+                code?.isValueSuccess() == true ? File(outputPath) : null);
+          },
+          null,
+          onProgress != null
+              ? (stats) {
+                  // Progress value of encoded video
+                  double progressValue = stats.getTime() /
+                      (Duration.zero - bgVideoDuartion).inMilliseconds;
+                  onProgress(stats, progressValue.clamp(0.0, 1.0));
+                }
+              : null,
+        );
+      }
+    } on SocketException catch (_) {
+      dev.log('network not connected');
+      Navigator.pop(context);
+      CoolAlert.show(
+        context: context,
+        type: CoolAlertType.error,
+        title: "Error Processing Video",
+        text:
+            "This is due to poor network  / wifi connection. Please ensure you have a strong stable connection and try again!",
+      );
+    }
   }
 
   // Future<void> combineBgEffect({
