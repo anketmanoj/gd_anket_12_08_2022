@@ -209,6 +209,7 @@ class VideoSearch extends StatelessWidget {
                 .collection("posts")
                 .where('searchindexList',
                     arrayContains: videoSearchVal.toLowerCase())
+                .where("ispaid", isEqualTo: false)
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
