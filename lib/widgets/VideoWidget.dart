@@ -219,9 +219,7 @@ class VideoWidget extends StatelessWidget {
                       ),
                       SpeedDialChild(
                         // visible: video.isPaid,
-                        child: Icon(
-                          FontAwesomeIcons.shoppingCart,
-                        ),
+                        child: Icon(Icons.filter),
                         onTap: () {
                           showModalBottomSheet(
                             context: context,

@@ -5,6 +5,7 @@ import 'package:diamon_rose_app/services/GoogleSheetsAPI/controller.dart';
 import 'package:diamon_rose_app/services/GoogleSheetsAPI/form.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sizer/sizer.dart';
 
@@ -41,17 +42,20 @@ Widget ImageNetworkLoader({required String imageUrl, bool hide = false}) {
       Visibility(
         visible: hide,
         child: Positioned(
-          top: 0,
           bottom: 0,
-          left: 0,
           right: 0,
           child: Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              color: constantColors.black.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(30),
+            ),
             alignment: Alignment.center,
-            color: constantColors.black.withOpacity(0.8),
             child: Icon(
               Icons.lock_outline,
               color: constantColors.whiteColor,
-              size: 40,
+              size: 30,
             ),
           ),
         ),

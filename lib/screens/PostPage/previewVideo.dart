@@ -581,8 +581,11 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                       ),
                                     ],
                                   ),
+
                                   Padding(
-                                    padding: EdgeInsets.only(top: 10),
+                                    padding: EdgeInsets.only(
+                                      top: 10,
+                                    ),
                                     // Row widget where the user can set the discount amount
                                     child: Row(
                                       children: [
@@ -710,6 +713,17 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                                 "${DateFormat("E, MMM, d").format(_endDiscountDate)}"),
                                           ),
                                         ],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 10,
+                                    ),
+                                    child: Text(
+                                      "*Due to the regulations of the App Stores, purchases made with in-app payment by the user will result in price differences to accommodate the split between the Creator, Glamorous Diastation and the App Stores.",
+                                      style: TextStyle(
+                                        fontSize: 12,
                                       ),
                                     ),
                                   ),
