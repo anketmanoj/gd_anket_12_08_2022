@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:async';
 
 import 'package:ffmpeg_kit_flutter_https_gpl/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_https_gpl/ffprobe_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
@@ -20,16 +22,45 @@ class FFmpegProvider extends ChangeNotifier {
   File get getBgThumbnailFile => bgThumbnailFile;
   File get getOutputFile => outputFile;
 
+  String formatTime(int seconds) {
+    return '${Duration(seconds: seconds)}'.split('.')[0].padLeft(8, '0');
+  }
+
   Future<File> thumbnailCreator({required String vidFilePath}) async {
     final Directory appDocumentDir = await getApplicationDocumentsDirectory();
     final String rawDocumentPath = appDocumentDir.path;
     final String outputPath = "${rawDocumentPath}/thumbnail.gif";
 
-    await FFmpegKit.execute(
-            "-y -i ${vidFilePath} -to 00:00:02 -vf scale=-2:480 -r 20/1 ${outputPath}")
+    await FFprobeKit.execute(
+            "-i ${vidFilePath} -show_entries format=duration -v quiet -of json")
         .then((value) {
-      thumbnailFile = File(outputPath);
-      notifyListeners();
+      value.getOutput().then((mapOutput) async {
+        final Map<String, dynamic> json = jsonDecode(mapOutput!);
+
+        String durationString = json['format']['duration'];
+
+        print("durationString final : $durationString");
+
+        if (double.parse(durationString) > 5) {
+          log("duration greater normal than 5s");
+          await FFmpegKit.execute(
+                  "-y -i ${vidFilePath} -to 00:00:05 -vf scale=-2:480 -r 20/1 ${outputPath}")
+              .then((value) {
+            thumbnailFile = File(outputPath);
+            notifyListeners();
+          });
+        } else {
+          log("duration less than 5s");
+          final double duration = double.parse(durationString) * 0.5;
+          log("duration i normal $duration");
+          await FFmpegKit.execute(
+                  "-y -i ${vidFilePath} -to ${formatTime(duration.toInt())} -vf scale=-2:480 -r 20/1 ${outputPath}")
+              .then((value) {
+            thumbnailFile = File(outputPath);
+            notifyListeners();
+          });
+        }
+      });
     });
 
     return thumbnailFile;
@@ -40,11 +71,36 @@ class FFmpegProvider extends ChangeNotifier {
     final String rawDocumentPath = appDocumentDir.path;
     final String outputPath = "${rawDocumentPath}/bgThumbnail.gif";
 
-    await FFmpegKit.execute(
-            "-y -i ${vidFilePath} -to 00:00:02 -vf scale=-2:480 -r 20/1 ${outputPath}")
+    await FFprobeKit.execute(
+            "-i ${vidFilePath} -show_entries format=duration -v quiet -of json")
         .then((value) {
-      bgThumbnailFile = File(outputPath);
-      notifyListeners();
+      value.getOutput().then((mapOutput) async {
+        final Map<String, dynamic> json = jsonDecode(mapOutput!);
+
+        String durationString = json['format']['duration'];
+
+        print("durationString final : $durationString");
+
+        if (double.parse(durationString) > 5) {
+          log("duration greater bg than 5s");
+          await FFmpegKit.execute(
+                  "-y -i ${vidFilePath} -to 00:00:05 -vf scale=-2:480 -r 20/1 ${outputPath}")
+              .then((value) {
+            bgThumbnailFile = File(outputPath);
+            notifyListeners();
+          });
+        } else {
+          log("duration less than 5s");
+          final double duration = double.parse(durationString) * 0.5;
+          log("duration is bg $duration");
+          await FFmpegKit.execute(
+                  "-y -i ${vidFilePath} -to ${formatTime(duration.toInt())} -vf scale=-2:480 -r 20/1 ${outputPath}")
+              .then((value) {
+            bgThumbnailFile = File(outputPath);
+            notifyListeners();
+          });
+        }
+      });
     });
 
     return bgThumbnailFile;
