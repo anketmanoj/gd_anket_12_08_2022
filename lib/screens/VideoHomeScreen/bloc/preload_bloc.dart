@@ -127,9 +127,10 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
     if (state.urls.length > index && index >= 0) {
       /// Get controller at [index]
       final VideoPlayerController _controller = state.controllers[index]!;
+      log("Loaded now come back to homescreen to play");
 
       /// Play controller
-      _controller.play();
+      // _controller.play();
       _controller.setLooping(true);
 
       log('🚀🚀🚀 PLAYING $index');
