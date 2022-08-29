@@ -71,6 +71,33 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
   String url = "";
   double progress = 0;
 
+  //   Future<bool> ApplePay(String amount) async {
+//     try {
+//       await Stripe.instance.presentApplePay(
+//         ApplePayPresentParams(
+//           cartItems: [
+//             ApplePayCartSummaryItem(
+//               label: widget.video.videotitle,
+//               amount: (double.parse(amount) / 100).toStringAsFixed(0),
+//             )
+//           ],
+//           currency: "USD",
+//           requiredBillingContactFields: [
+//             ApplePayContactFieldsType.name,
+//             ApplePayContactFieldsType.emailAddress,
+//             ApplePayContactFieldsType.phoneNumber,
+//           ],
+//           country: "US",
+//         ),
+//       );
+//       log("true value");
+//       return true;
+//     } catch (e) {
+//       log("error === $e");
+//       return false;
+//     }
+//   }
+
   @override
   Widget build(BuildContext context) {
     final Authentication _auth =
@@ -332,7 +359,8 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   constantColors: constantColors,
                   onTap: () {
                     final String cartUrl =
-                        "https://gdfe-ac584.firebaseapp.com/#/cart/${_auth.getUserId}";
+                        "http://192.168.1.8:8080/#/cart/${_auth.getUserId}";
+                    // "https://gdfe-ac584.firebaseapp.com/#/cart/${_auth.getUserId}";
 
                     log(cartUrl);
                     // "https://gdfe-ac584.web.app/#/video/0ReK4oZIhGdbuYxBiUG5J/sjhbjhs";
@@ -869,8 +897,8 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         });
                       }).whenComplete(() {
                         log("done");
-                        Navigator.pop(context);
-                        Navigator.pop(context);
+                        Get.back();
+                        Get.back();
                       });
                       Get.snackbar(
                         'Purchase Sucessful 🎉',
@@ -984,8 +1012,8 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                       // log("amount transfered == ${(double.parse("${video.price * (1 - video.discountAmount / 100) * 100}") / 100).toStringAsFixed(0)}");
 
                     } else if (uri.toString().contains("cancel")) {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
+                      Get.back();
+                      Get.back();
                       Get.snackbar(
                         'Video Cart Error',
                         'Error adding video to cart',
@@ -995,6 +1023,12 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         forwardAnimationCurve: Curves.elasticInOut,
                         reverseAnimationCurve: Curves.easeOut,
                       );
+                    } else if (uri.toString().contains("applePay")) {
+                      log(uri.toString() + "this");
+                      final String totalPrice = uri.toString().split("/").last;
+                      Get.back();
+                      Get.back();
+                      log("price == $totalPrice");
                     }
                   },
                   initialUrlRequest: URLRequest(
