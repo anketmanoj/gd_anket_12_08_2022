@@ -11,7 +11,7 @@ import 'package:diamon_rose_app/screens/ProfilePage/profile_screen.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/injection.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/videoFeedScreen.dart';
-import 'package:diamon_rose_app/screens/VideoHomeScreen/video_page.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/recommended_video_page.dart';
 import 'package:diamon_rose_app/screens/VideoWorkAll/select_model/select_model_screen.dart';
 import 'package:diamon_rose_app/screens/homePage/homescreen.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
@@ -78,7 +78,7 @@ class _FeedPageState extends State<FeedPage> {
     await Provider.of<RecommendedProvider>(context, listen: false)
         .setFollowingUsers(context: context)
         .whenComplete(() {
-      print("following users set");
+      log("following users set");
     });
   }
 
@@ -146,8 +146,8 @@ class _FeedPageState extends State<FeedPage> {
                   children: [
                     // * testing out new way to load videos
                     // VideoFeedScreen(),
-                    VideoPage(),
-                    // HomeScreen(),
+                    // VideoPage(),
+                    HomeScreen(),
                     SearchScreen(),
                     // PostScreen(),
                     // TestVideoEditor(),

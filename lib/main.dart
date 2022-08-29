@@ -16,6 +16,7 @@ import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/core/build_context.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/core/constants.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/following_bloc/following_preload_bloc.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/service/api_service.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/service/navigation_service.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateChatHelpers.dart';
@@ -68,6 +69,8 @@ Future createIsolate(int index) async {
   // Set loading to true
   BlocProvider.of<PreloadBloc>(context, listen: false)
       .add(PreloadEvent.setLoading());
+  BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
+      .add(FollowingPreloadEvent.setLoading());
 
   ReceivePort mainReceivePort = ReceivePort();
 
@@ -85,6 +88,8 @@ Future createIsolate(int index) async {
   // Update new urls
   BlocProvider.of<PreloadBloc>(context, listen: false)
       .add(PreloadEvent.updateUrls(_urls));
+  BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
+      .add(FollowingPreloadEvent.updateUrls(_urls));
 }
 
 void getVideosTask(SendPort mySendPort) async {
@@ -98,6 +103,7 @@ void getVideosTask(SendPort mySendPort) async {
 
       final SendPort isolateResponseSendPort = message[1];
       await ApiService.load();
+
       final List<Video> _urls =
           await ApiService.getVideos(id: index + kPreloadLimit);
 
@@ -112,8 +118,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ConstantColors constantColors = ConstantColors();
-    return BlocProvider(
-      create: (_) => getIt<PreloadBloc>()..add(PreloadEvent.getVideosFromApi()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) =>
+              getIt<PreloadBloc>()..add(PreloadEvent.getVideosFromApi()),
+        ),
+        BlocProvider(
+          create: (_) => getIt<FollowingPreloadBloc>()
+            ..add(FollowingPreloadEvent.getVideosFromApi()),
+        ),
+      ],
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => Authentication()),

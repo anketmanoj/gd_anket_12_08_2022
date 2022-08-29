@@ -20,8 +20,16 @@ class SharedPreferencesHelper {
     await prefs.setString(key, value);
   }
 
+  static setListString(String key, List<String> value) async {
+    await prefs.setStringList(key, value);
+  }
+
   static String getString(String key) {
     return prefs.getString(key) ?? "";
+  }
+
+  static List<String> getListString(String key) {
+    return prefs.getStringList(key) ?? [""];
   }
 
   static clearSharedPrefs() async {

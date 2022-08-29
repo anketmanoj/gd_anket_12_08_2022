@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/service/api_service.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -60,12 +62,14 @@ class RecommendedProvider extends ChangeNotifier {
         .doc(Provider.of<Authentication>(context, listen: false).getUserId)
         .collection("followers")
         .get()
-        .then((value) {
+        .then((value) async {
       if (value.docs.isNotEmpty) {
         _followingUsers = value.docs.map((doc) => doc.id).toList();
         _followingUsers.shuffle();
+        SharedPreferencesHelper.setListString("followersList", _followingUsers);
         _noFollowers = false;
         notifyListeners();
+        await ApiService.loadFollowingVideos();
       } else {
         _noFollowers = true;
         notifyListeners();
