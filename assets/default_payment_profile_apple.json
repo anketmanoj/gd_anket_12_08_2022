@@ -1,0 +1,13 @@
+{
+  "provider": "apple_pay",
+  "data": {
+    "merchantIdentifier": "merchant.com.diamant.jp.diamond-app",
+    "displayName": "Glamorous Diastation",
+    "merchantCapabilities": ["3DS", "debit", "credit"],
+    "supportedNetworks": ["amex", "visa", "discover", "masterCard"],
+    "countryCode": "US",
+    "currencyCode": "USD",
+    "requiredBillingContactFields": null,
+    "requiredShippingContactFields": null
+  }
+}

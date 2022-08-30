@@ -1,3 +1,5 @@
+// ignore_for_file: unawaited_futures
+
 import 'dart:collection';
 import 'dart:developer';
 import 'dart:io';
@@ -28,6 +30,7 @@ import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/dbService.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/widgets/apple_pay.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,6 +40,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:pay/pay.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -56,6 +60,10 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
   bool subscriptionDrop = false;
   final GlobalKey webViewKey = GlobalKey();
 
+  void onApplePayResult(paymentResult) {
+    debugPrint(paymentResult);
+  }
+
   InAppWebViewController? webViewController;
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
       crossPlatform: InAppWebViewOptions(
@@ -71,33 +79,6 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
   String url = "";
   double progress = 0;
 
-  //   Future<bool> ApplePay(String amount) async {
-//     try {
-//       await Stripe.instance.presentApplePay(
-//         ApplePayPresentParams(
-//           cartItems: [
-//             ApplePayCartSummaryItem(
-//               label: widget.video.videotitle,
-//               amount: (double.parse(amount) / 100).toStringAsFixed(0),
-//             )
-//           ],
-//           currency: "USD",
-//           requiredBillingContactFields: [
-//             ApplePayContactFieldsType.name,
-//             ApplePayContactFieldsType.emailAddress,
-//             ApplePayContactFieldsType.phoneNumber,
-//           ],
-//           country: "US",
-//         ),
-//       );
-//       log("true value");
-//       return true;
-//     } catch (e) {
-//       log("error === $e");
-//       return false;
-//     }
-//   }
-
   @override
   Widget build(BuildContext context) {
     final Authentication _auth =
@@ -105,6 +86,16 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
     final FirebaseOperations _firebaseOperation =
         Provider.of<FirebaseOperations>(context, listen: false);
 
+    final ApplePayButton applePayButton = ApplePayButton(
+      paymentConfigurationAsset: 'default_payment_profile_apple.json',
+      paymentItems: [
+        PaymentItem(
+            amount: "10.00",
+            label: "This is the label",
+            type: PaymentItemType.total),
+      ],
+      onPaymentResult: onApplePayResult,
+    );
     return SafeArea(
       top: false,
       bottom: Platform.isIOS ? false : true,
@@ -361,9 +352,6 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     final String cartUrl =
                         "http://192.168.1.8:8080/#/cart/${_auth.getUserId}";
                     // "https://gdfe-ac584.firebaseapp.com/#/cart/${_auth.getUserId}";
-
-                    log(cartUrl);
-                    // "https://gdfe-ac584.web.app/#/video/0ReK4oZIhGdbuYxBiUG5J/sjhbjhs";
 
                     CoolAlert.show(
                       context: context,
@@ -1029,6 +1017,9 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                       Get.back();
                       Get.back();
                       log("price == $totalPrice");
+                      Get.bottomSheet(ApplePayWidget(
+                        totalPrice: totalPrice,
+                      ));
                     }
                   },
                   initialUrlRequest: URLRequest(
