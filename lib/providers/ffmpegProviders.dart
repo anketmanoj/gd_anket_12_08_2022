@@ -62,7 +62,7 @@ class FFmpegProvider extends ChangeNotifier {
         }
       });
     });
-
+    log("thumbnail file == ${thumbnailFile.path}");
     return thumbnailFile;
   }
 
@@ -102,7 +102,7 @@ class FFmpegProvider extends ChangeNotifier {
         }
       });
     });
-
+    log("bgThumbnailFile file == ${bgThumbnailFile.path}");
     return bgThumbnailFile;
   }
 

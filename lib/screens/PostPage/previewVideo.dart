@@ -33,13 +33,15 @@ class PreviewVideoScreen extends StatefulWidget {
       required this.videoFile,
       required this.thumbnailFile,
       required this.arList,
-      required this.bgFile})
+      required this.bgFile,
+      required this.bgMaterialThumnailFile})
       : super(key: key);
   final VideoPlayerController videoPlayerController;
   final File videoFile;
   final File bgFile;
   final File thumbnailFile;
   final List<ARList> arList;
+  final File bgMaterialThumnailFile;
 
   @override
   State<PreviewVideoScreen> createState() => _PreviewVideoScreenState();
@@ -50,8 +52,6 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
   TextEditingController _videotitleController = TextEditingController();
   TextEditingController _videoCaptionController = TextEditingController();
   TextEditingController _contentPrice = TextEditingController();
-
-  File? bgMaterialThumnailFile;
 
   String? _setContentPrice;
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -140,15 +140,8 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
   void initState() {
     widget.videoPlayerController.setLooping(true);
     selectMaterials = widget.arList;
-    getBgMaterialFile();
-    super.initState();
-  }
 
-  getBgMaterialFile() async {
-    bgMaterialThumnailFile =
-        await Provider.of<FFmpegProvider>(context, listen: false)
-            .bgMaterialThumbnailCreator(vidFilePath: widget.bgFile.path);
-    setState(() {});
+    super.initState();
   }
 
   @override
@@ -169,669 +162,643 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
     return Scaffold(
       appBar: AppBarWidget(text: "Video Settings", context: context),
       backgroundColor: constantColors.bioBg,
-      body: bgMaterialThumnailFile != null
-          ? GestureDetector(
-              onTap: () {
-                final FocusScopeNode currentFocus = FocusScope.of(context);
-                if (!currentFocus.hasPrimaryFocus &&
-                    currentFocus.focusedChild != null) {
-                  FocusManager.instance.primaryFocus!.unfocus();
-                }
-              },
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        ImageTitleAndCaption(
-                          size: size,
-                          widget: widget,
-                          videotitleController: _videotitleController,
-                          videoCaptionController: _videoCaptionController,
+      body: GestureDetector(
+        onTap: () {
+          final FocusScopeNode currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus &&
+              currentFocus.focusedChild != null) {
+            FocusManager.instance.primaryFocus!.unfocus();
+          }
+        },
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  ImageTitleAndCaption(
+                    size: size,
+                    widget: widget,
+                    videotitleController: _videotitleController,
+                    videoCaptionController: _videoCaptionController,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Container(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: Text(
+                              "Content Available To",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            flex: 2,
+                            child: Container(
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Radio(
+                                            autofocus: true,
+                                            activeColor:
+                                                constantColors.navButton,
+                                            value: "All",
+                                            groupValue:
+                                                _contentAvailableToValue,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _contentAvailableToValue =
+                                                    value! as String;
+                                              });
+                                            },
+                                          ),
+                                          Text("All"),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Radio(
+                                            activeColor:
+                                                constantColors.navButton,
+                                            value: "Only Followers",
+                                            groupValue:
+                                                _contentAvailableToValue,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _contentAvailableToValue =
+                                                    value! as String;
+                                              });
+                                            },
+                                          ),
+                                          Text("Only Followers")
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  // Row(
+                                  //   children: [
+                                  //     Radio(
+                                  //       activeColor: constantColors.navButton,
+                                  //       value: "Private",
+                                  //       groupValue: _contentAvailableToValue,
+                                  //       onChanged: (value) {
+                                  //         setState(() {
+                                  //           _contentAvailableToValue =
+                                  //               value! as String;
+                                  //         });
+                                  //       },
+                                  //     ),
+                                  //     Text("Private"),
+                                  //   ],
+                                  // ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  NewDivider(constantColors: constantColors),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Container(
+                      child: MultiSelectChipField<String?>(
+                        headerColor: constantColors.navButton,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
                         ),
+                        selectedChipColor:
+                            constantColors.navButton.withOpacity(0.4),
+                        title: Text(
+                          "Select Genre",
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                            fontSize: 15,
+                          ),
+                        ),
+                        items: _recommendedOptions
+                            .map((e) => MultiSelectItem(e, e!))
+                            .toList(),
+                        onTap: (values) {
+                          // _recommendedOptions = values;
+                          _selectedRecommendedOptions = values;
+
+                          print(
+                              "length == ${_selectedRecommendedOptions.length}");
+                        },
+                      ),
+                    ),
+                  ),
+                  NewDivider(constantColors: constantColors),
+                  Container(
+                    color: constantColors.navButton,
+                    height: 35,
+                    child: Row(
+                      children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Container(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            "Add / Remove Materials",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ValueListenableBuilder<bool>(
+                      valueListenable: bgSelected,
+                      builder: (context, bgVal, _) {
+                        return ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: selectMaterials.length,
+                          itemBuilder: (context, index) {
+                            return ValueListenableBuilder<bool>(
+                                valueListenable:
+                                    selectMaterials[index].selectedMaterial!,
+                                builder: (context, selected, _) {
+                                  switch (index) {
+                                    case 0:
+                                      return Column(
+                                        children: [
+                                          ListTile(
+                                            trailing: Switch(
+                                              activeColor:
+                                                  constantColors.navButton,
+                                              value: bgVal,
+                                              onChanged: (val) {
+                                                bgSelected.value = val;
+                                              },
+                                            ),
+                                            leading: Container(
+                                              height: 50,
+                                              width: 50,
+                                              child: Image.file(widget
+                                                  .bgMaterialThumnailFile),
+                                            ),
+                                            title: Text(
+                                              "Background",
+                                            ),
+                                          ),
+                                          ListTile(
+                                            trailing: Switch(
+                                              activeColor:
+                                                  constantColors.navButton,
+                                              value: selected,
+                                              onChanged: (val) {
+                                                selectMaterials[index]
+                                                    .selectedMaterial!
+                                                    .value = val;
+
+                                                log(selectMaterials
+                                                    .where((element) =>
+                                                        element
+                                                            .selectedMaterial!
+                                                            .value ==
+                                                        true)
+                                                    .toList()
+                                                    .length
+                                                    .toString());
+                                              },
+                                            ),
+                                            leading: selectMaterials[index]
+                                                        .layerType ==
+                                                    LayerType.AR
+                                                ? Container(
+                                                    height: 50,
+                                                    width: 50,
+                                                    child: Image.network(
+                                                        selectMaterials[index]
+                                                            .pathsForVideoFrames![0]),
+                                                  )
+                                                : Container(
+                                                    height: 50,
+                                                    width: 50,
+                                                    child: Image.file(File(
+                                                        selectMaterials[index]
+                                                            .gifFilePath!)),
+                                                  ),
+                                            title: Text(
+                                              selectMaterials[index]
+                                                          .layerType ==
+                                                      LayerType.AR
+                                                  ? "AR Cut out"
+                                                  : "Effect Added",
+                                            ),
+                                          ),
+                                        ],
+                                      );
+
+                                    default:
+                                      return ListTile(
+                                        trailing: Switch(
+                                          activeColor: constantColors.navButton,
+                                          value: selected,
+                                          onChanged: (val) {
+                                            selectMaterials[index]
+                                                .selectedMaterial!
+                                                .value = val;
+
+                                            log(selectMaterials
+                                                .where((element) =>
+                                                    element.selectedMaterial!
+                                                        .value ==
+                                                    true)
+                                                .toList()
+                                                .length
+                                                .toString());
+                                          },
+                                        ),
+                                        leading:
+                                            selectMaterials[index].layerType ==
+                                                    LayerType.AR
+                                                ? Container(
+                                                    height: 50,
+                                                    width: 50,
+                                                    child: Image.network(
+                                                        selectMaterials[index]
+                                                            .pathsForVideoFrames![0]),
+                                                  )
+                                                : Container(
+                                                    height: 50,
+                                                    width: 50,
+                                                    child: Image.file(File(
+                                                        selectMaterials[index]
+                                                            .gifFilePath!)),
+                                                  ),
+                                        title: Text(
+                                          selectMaterials[index].layerType ==
+                                                  LayerType.AR
+                                              ? "AR Cut out"
+                                              : "Effect Added",
+                                        ),
+                                      );
+                                  }
+                                });
+                          },
+                        );
+                      }),
+                  NewDivider(constantColors: constantColors),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        leading: Icon(FontAwesomeIcons.cloudDownloadAlt),
+                        minLeadingWidth: 10,
+                        trailing: Switch(
+                            activeColor: constantColors.navButton,
+                            value: _isFree,
+                            onChanged: (value) {
+                              setState(() {
+                                _isFree = value;
+                                _isPaid = !value;
+                              });
+                            }),
+                        title: Text(
+                          "Free",
+                        ),
+                      ),
+                      // ListTile(
+                      //   leading: Icon(FontAwesomeIcons.users),
+                      //   minLeadingWidth: 10,
+                      //   trailing: Switch(
+                      //       activeColor: constantColors.navButton,
+                      //       value: _isSubscription,
+                      //       onChanged: (value) {
+                      //         setState(() {
+                      //           _isSubscription = value;
+                      //         });
+                      //       }),
+                      //   title: Text(
+                      //     "Subscription",
+                      //   ),
+                      // ),
+                      ListTile(
+                        leading: Icon(FontAwesomeIcons.moneyBillAlt),
+                        minLeadingWidth: 10,
+                        trailing: Switch(
+                          activeColor: constantColors.navButton,
+                          value: _isPaid,
+                          onChanged: (value) {
+                            setState(() {
+                              _isPaid = value;
+                              _isFree = !value;
+                            });
+                          },
+                        ),
+                        title: Text(
+                          "Premium",
+                        ),
+                      ),
+                      Visibility(
+                        visible: _isPaid,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
-                                Flexible(
-                                  flex: 1,
-                                  child: Text(
-                                    "Content Available To",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                Text(
+                                  "Price",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                Flexible(
-                                  flex: 2,
+                                SizedBox(
+                                  width: 40,
+                                ),
+                                Expanded(
                                   child: Container(
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Radio(
-                                                  autofocus: true,
-                                                  activeColor:
-                                                      constantColors.navButton,
-                                                  value: "All",
-                                                  groupValue:
-                                                      _contentAvailableToValue,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      _contentAvailableToValue =
-                                                          value! as String;
-                                                    });
-                                                  },
-                                                ),
-                                                Text("All"),
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Radio(
-                                                  activeColor:
-                                                      constantColors.navButton,
-                                                  value: "Only Followers",
-                                                  groupValue:
-                                                      _contentAvailableToValue,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      _contentAvailableToValue =
-                                                          value! as String;
-                                                    });
-                                                  },
-                                                ),
-                                                Text("Only Followers")
-                                              ],
-                                            ),
-                                          ],
+                                    height: 50,
+                                    child: TextFormField(
+                                      validator: (value) {
+                                        if (value!.isEmpty &&
+                                            int.parse(value) <= 0) {
+                                          return "Please enter a price";
+                                        }
+                                        return null;
+                                      },
+                                      controller: _contentPrice,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _setContentPrice = value;
+                                        });
+                                      },
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        suffixIcon: Icon(
+                                          FontAwesomeIcons.dollarSign,
+                                          size: 16,
+                                          color: constantColors.navButton,
                                         ),
-                                        // Row(
-                                        //   children: [
-                                        //     Radio(
-                                        //       activeColor: constantColors.navButton,
-                                        //       value: "Private",
-                                        //       groupValue: _contentAvailableToValue,
-                                        //       onChanged: (value) {
-                                        //         setState(() {
-                                        //           _contentAvailableToValue =
-                                        //               value! as String;
-                                        //         });
-                                        //       },
-                                        //     ),
-                                        //     Text("Private"),
-                                        //   ],
-                                        // ),
-                                      ],
+                                        labelStyle:
+                                            TextStyle(color: Colors.black),
+                                        border: OutlineInputBorder(),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black),
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black),
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                        NewDivider(constantColors: constantColors),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Container(
-                            child: MultiSelectChipField<String?>(
-                              headerColor: constantColors.navButton,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              selectedChipColor:
-                                  constantColors.navButton.withOpacity(0.4),
-                              title: Text(
-                                "Select Genre",
-                                style: TextStyle(
-                                  color: constantColors.whiteColor,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              items: _recommendedOptions
-                                  .map((e) => MultiSelectItem(e, e!))
-                                  .toList(),
-                              onTap: (values) {
-                                // _recommendedOptions = values;
-                                _selectedRecommendedOptions = values;
 
-                                print(
-                                    "length == ${_selectedRecommendedOptions.length}");
-                              },
-                            ),
-                          ),
-                        ),
-                        NewDivider(constantColors: constantColors),
-                        Container(
-                          color: constantColors.navButton,
-                          height: 35,
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Text(
-                                  "Add / Remove Materials",
-                                  style: TextStyle(
-                                    color: constantColors.whiteColor,
-                                    fontSize: 15,
-                                  ),
-                                ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: 10,
                               ),
-                            ],
-                          ),
-                        ),
-                        ValueListenableBuilder<bool>(
-                            valueListenable: bgSelected,
-                            builder: (context, bgVal, _) {
-                              return ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: selectMaterials.length,
-                                itemBuilder: (context, index) {
-                                  return ValueListenableBuilder<bool>(
-                                      valueListenable: selectMaterials[index]
-                                          .selectedMaterial!,
-                                      builder: (context, selected, _) {
-                                        switch (index) {
-                                          case 0:
-                                            return Column(
-                                              children: [
-                                                ListTile(
-                                                  trailing: Switch(
-                                                    activeColor: constantColors
-                                                        .navButton,
-                                                    value: bgVal,
-                                                    onChanged: (val) {
-                                                      bgSelected.value = val;
-                                                    },
-                                                  ),
-                                                  leading: Container(
-                                                    height: 50,
-                                                    width: 50,
-                                                    child: Image.file(
-                                                        bgMaterialThumnailFile!),
-                                                  ),
-                                                  title: Text(
-                                                    "Background",
-                                                  ),
-                                                ),
-                                                ListTile(
-                                                  trailing: Switch(
-                                                    activeColor: constantColors
-                                                        .navButton,
-                                                    value: selected,
-                                                    onChanged: (val) {
-                                                      selectMaterials[index]
-                                                          .selectedMaterial!
-                                                          .value = val;
-
-                                                      log(selectMaterials
-                                                          .where((element) =>
-                                                              element
-                                                                  .selectedMaterial!
-                                                                  .value ==
-                                                              true)
-                                                          .toList()
-                                                          .length
-                                                          .toString());
-                                                    },
-                                                  ),
-                                                  leading:
-                                                      selectMaterials[index]
-                                                                  .layerType ==
-                                                              LayerType.AR
-                                                          ? Container(
-                                                              height: 50,
-                                                              width: 50,
-                                                              child: Image.network(
-                                                                  selectMaterials[
-                                                                          index]
-                                                                      .pathsForVideoFrames![0]),
-                                                            )
-                                                          : Container(
-                                                              height: 50,
-                                                              width: 50,
-                                                              child: Image.file(File(
-                                                                  selectMaterials[
-                                                                          index]
-                                                                      .gifFilePath!)),
-                                                            ),
-                                                  title: Text(
-                                                    selectMaterials[index]
-                                                                .layerType ==
-                                                            LayerType.AR
-                                                        ? "AR Cut out"
-                                                        : "Effect Added",
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-
-                                          default:
-                                            return ListTile(
-                                              trailing: Switch(
-                                                activeColor:
-                                                    constantColors.navButton,
-                                                value: selected,
-                                                onChanged: (val) {
-                                                  selectMaterials[index]
-                                                      .selectedMaterial!
-                                                      .value = val;
-
-                                                  log(selectMaterials
-                                                      .where((element) =>
-                                                          element
-                                                              .selectedMaterial!
-                                                              .value ==
-                                                          true)
-                                                      .toList()
-                                                      .length
-                                                      .toString());
-                                                },
-                                              ),
-                                              leading: selectMaterials[index]
-                                                          .layerType ==
-                                                      LayerType.AR
-                                                  ? Container(
-                                                      height: 50,
-                                                      width: 50,
-                                                      child: Image.network(
-                                                          selectMaterials[index]
-                                                              .pathsForVideoFrames![0]),
-                                                    )
-                                                  : Container(
-                                                      height: 50,
-                                                      width: 50,
-                                                      child: Image.file(File(
-                                                          selectMaterials[index]
-                                                              .gifFilePath!)),
-                                                    ),
-                                              title: Text(
-                                                selectMaterials[index]
-                                                            .layerType ==
-                                                        LayerType.AR
-                                                    ? "AR Cut out"
-                                                    : "Effect Added",
-                                              ),
-                                            );
-                                        }
-                                      });
-                                },
-                              );
-                            }),
-                        NewDivider(constantColors: constantColors),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ListTile(
-                              leading: Icon(FontAwesomeIcons.cloudDownloadAlt),
-                              minLeadingWidth: 10,
-                              trailing: Switch(
-                                  activeColor: constantColors.navButton,
-                                  value: _isFree,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _isFree = value;
-                                      _isPaid = !value;
-                                    });
-                                  }),
-                              title: Text(
-                                "Free",
-                              ),
-                            ),
-                            // ListTile(
-                            //   leading: Icon(FontAwesomeIcons.users),
-                            //   minLeadingWidth: 10,
-                            //   trailing: Switch(
-                            //       activeColor: constantColors.navButton,
-                            //       value: _isSubscription,
-                            //       onChanged: (value) {
-                            //         setState(() {
-                            //           _isSubscription = value;
-                            //         });
-                            //       }),
-                            //   title: Text(
-                            //     "Subscription",
-                            //   ),
-                            // ),
-                            ListTile(
-                              leading: Icon(FontAwesomeIcons.moneyBillAlt),
-                              minLeadingWidth: 10,
-                              trailing: Switch(
-                                activeColor: constantColors.navButton,
-                                value: _isPaid,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _isPaid = value;
-                                    _isFree = !value;
-                                  });
-                                },
-                              ),
-                              title: Text(
-                                "Premium",
-                              ),
-                            ),
-                            Visibility(
-                              visible: _isPaid,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              // Row widget where the user can set the discount amount
+                              child: Row(
                                 children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "Price",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 40,
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          height: 50,
-                                          child: TextFormField(
-                                            validator: (value) {
-                                              if (value!.isEmpty &&
-                                                  int.parse(value) <= 0) {
-                                                return "Please enter a price";
-                                              }
-                                              return null;
-                                            },
-                                            controller: _contentPrice,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                _setContentPrice = value;
-                                              });
-                                            },
-                                            keyboardType: TextInputType.number,
-                                            decoration: InputDecoration(
-                                              suffixIcon: Icon(
-                                                FontAwesomeIcons.dollarSign,
-                                                size: 16,
-                                                color: constantColors.navButton,
-                                              ),
-                                              labelStyle: TextStyle(
-                                                  color: Colors.black),
-                                              border: OutlineInputBorder(),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.black),
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.black),
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      top: 10,
-                                    ),
-                                    // Row widget where the user can set the discount amount
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          "Discount",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Expanded(
-                                          child: Container(
-                                            height: 50,
-                                            child: TextFormField(
-                                              validator: (value) {
-                                                if (_isPaid == true &&
-                                                    value!.isNotEmpty) {
-                                                  final double endPrice = double
-                                                          .parse(_contentPrice
-                                                              .text) *
-                                                      (1 -
-                                                          double.parse(value) /
-                                                              100);
-
-                                                  if (endPrice >= 1.00) {
-                                                    return null;
-                                                  } else {
-                                                    return "Total price after discount too low";
-                                                  }
-                                                }
-                                                return null;
-                                              },
-                                              controller: _contentDiscount,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  _setContentDiscount = value;
-                                                });
-                                              },
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              decoration: InputDecoration(
-                                                suffixIcon: Icon(
-                                                  FontAwesomeIcons.percentage,
-                                                  size: 16,
-                                                  color:
-                                                      constantColors.navButton,
-                                                ),
-                                                labelStyle: TextStyle(
-                                                    color: Colors.black),
-                                                border: OutlineInputBorder(),
-                                                enabledBorder:
-                                                    OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.black),
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
-                                                ),
-                                                focusedBorder:
-                                                    OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.black),
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                  Text(
+                                    "Discount",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  // TextWidget saying "Sales Period"
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 10),
-                                    child: Text(
-                                      "Discount Period",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                      ),
-                                    ),
+                                  SizedBox(
+                                    width: 10,
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 10),
+                                  Expanded(
                                     child: Container(
-                                      height: 60,
-                                      decoration: BoxDecoration(
-                                        color: constantColors.navButton,
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          TextButton.icon(
-                                            style: TextButton.styleFrom(
-                                              primary: Colors.white,
-                                            ),
-                                            onPressed: () =>
-                                                _selectStartDate(context),
-                                            icon: Icon(Icons.calendar_month),
-                                            label: Text(
-                                              "${DateFormat("E, MMM, d").format(_startDiscountDate)}",
-                                            ),
+                                      height: 50,
+                                      child: TextFormField(
+                                        validator: (value) {
+                                          if (_isPaid == true &&
+                                              value!.isNotEmpty) {
+                                            final double endPrice = double
+                                                    .parse(_contentPrice.text) *
+                                                (1 - double.parse(value) / 100);
+
+                                            if (endPrice >= 1.00) {
+                                              return null;
+                                            } else {
+                                              return "Total price after discount too low";
+                                            }
+                                          }
+                                          return null;
+                                        },
+                                        controller: _contentDiscount,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _setContentDiscount = value;
+                                          });
+                                        },
+                                        keyboardType: TextInputType.number,
+                                        decoration: InputDecoration(
+                                          suffixIcon: Icon(
+                                            FontAwesomeIcons.percentage,
+                                            size: 16,
+                                            color: constantColors.navButton,
                                           ),
-                                          Text(
-                                            ">",
-                                            style: TextStyle(
-                                              color: constantColors.whiteColor,
-                                              fontSize: 40,
-                                            ),
+                                          labelStyle:
+                                              TextStyle(color: Colors.black),
+                                          border: OutlineInputBorder(),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide:
+                                                BorderSide(color: Colors.black),
+                                            borderRadius:
+                                                BorderRadius.circular(30),
                                           ),
-                                          TextButton.icon(
-                                            style: TextButton.styleFrom(
-                                              primary: Colors.white,
-                                            ),
-                                            onPressed: () =>
-                                                _selectEndDate(context),
-                                            icon: Icon(Icons.calendar_month),
-                                            label: Text(
-                                                "${DateFormat("E, MMM, d").format(_endDiscountDate)}"),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide:
+                                                BorderSide(color: Colors.black),
+                                            borderRadius:
+                                                BorderRadius.circular(30),
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 10,
-                                    ),
-                                    child: Text(
-                                      "*Due to the regulations of the App Stores, purchases made with in-app payment by the user will result in price differences to accommodate the split between the Creator, Glamorous Diastation and the App Stores.",
-                                      style: TextStyle(
-                                        fontSize: 12,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
+                            // TextWidget saying "Sales Period"
                             Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 30, bottom: 30),
-                              child: SubmitButton(function: () async {
-                                if (_formKey.currentState!.validate() &&
-                                    _selectedRecommendedOptions.length > 0) {
-                                  // ignore: unawaited_futures
-                                  CoolAlert.show(
-                                      barrierDismissible: false,
-                                      context: context,
-                                      type: CoolAlertType.loading,
-                                      text: "Uploading Video");
-                                  try {
-                                    await firebaseOperations
-                                        .uploadVideo(
-                                      addBgToMaterials: bgSelected.value,
-                                      ctx: context,
-                                      bgFile: widget.bgFile,
-                                      arListVal: selectMaterials
-                                          .where((element) =>
-                                              element.selectedMaterial!.value ==
-                                              true)
-                                          .toList(),
-                                      thumbnailFile: widget.thumbnailFile,
-                                      videoFile: widget.videoFile,
-                                      userUid: auth.getUserId,
-                                      caption: _videoCaptionController.text,
-                                      isPaid: _isPaid,
-                                      price: _contentPrice.text.isEmpty
-                                          ? 0
-                                          : double.parse(_contentPrice.text),
-                                      discountAmount: _contentDiscount
-                                              .text.isEmpty
-                                          ? 0
-                                          : double.parse(_contentDiscount.text),
-                                      startDiscountDate: Timestamp.fromDate(
-                                          _startDiscountDate),
-                                      endDiscountDate:
-                                          Timestamp.fromDate(_endDiscountDate),
-                                      isSubscription: _isSubscription,
-                                      contentAvailability:
-                                          _contentAvailableToValue,
-                                      isFree: _isFree,
-                                      video_title: _videotitleController.text,
-                                      genre: _selectedRecommendedOptions,
-                                    )
-                                        .whenComplete(() async {
-                                      widget.videoPlayerController.dispose();
-                                      widget.arList.forEach((arVal) {
-                                        deleteFile(arVal.pathsForVideoFrames!);
-                                      });
-                                      // Navigator.pushReplacement(
-                                      //   context,
-                                      //   PageTransition(
-                                      //       child: FeedPage(),
-                                      //       type: PageTransitionType.leftToRight),
-                                      // );
-                                      Provider.of<HomeScreenProvider>(context,
-                                              listen: false)
-                                          .setHomeScreen(true);
-                                      Navigator.pushReplacement(
-                                        context,
-                                        PageTransition(
-                                            child: FeedPage(),
-                                            type:
-                                                PageTransitionType.bottomToTop),
-                                      );
-                                    });
-                                    //ignore: avoid_catches_without_on_clauses
-                                  } catch (e) {
-                                    CoolAlert.show(
-                                      context: context,
-                                      type: CoolAlertType.error,
-                                      title: "Error Uploading Video",
-                                      text: e.toString(),
-                                    );
-                                    // ignore: unawaited_futures
-
-                                  }
-                                } else if (_selectedRecommendedOptions.length ==
-                                    0) {
-                                  CoolAlert.show(
-                                    context: context,
-                                    type: CoolAlertType.error,
-                                    title: "No Selected Genre",
-                                    text:
-                                        "Please Select a Genre for your video",
-                                  );
-                                }
-                              }),
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Text(
+                                "Discount Period",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Container(
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: constantColors.navButton,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    TextButton.icon(
+                                      style: TextButton.styleFrom(
+                                        primary: Colors.white,
+                                      ),
+                                      onPressed: () =>
+                                          _selectStartDate(context),
+                                      icon: Icon(Icons.calendar_month),
+                                      label: Text(
+                                        "${DateFormat("E, MMM, d").format(_startDiscountDate)}",
+                                      ),
+                                    ),
+                                    Text(
+                                      ">",
+                                      style: TextStyle(
+                                        color: constantColors.whiteColor,
+                                        fontSize: 40,
+                                      ),
+                                    ),
+                                    TextButton.icon(
+                                      style: TextButton.styleFrom(
+                                        primary: Colors.white,
+                                      ),
+                                      onPressed: () => _selectEndDate(context),
+                                      icon: Icon(Icons.calendar_month),
+                                      label: Text(
+                                          "${DateFormat("E, MMM, d").format(_endDiscountDate)}"),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: 10,
+                              ),
+                              child: Text(
+                                "*Due to the regulations of the App Stores, purchases made with in-app payment by the user will result in price differences to accommodate the split between the Creator, Glamorous Diastation and the App Stores.",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 30, bottom: 30),
+                        child: SubmitButton(function: () async {
+                          if (_formKey.currentState!.validate() &&
+                              _selectedRecommendedOptions.length > 0) {
+                            // ignore: unawaited_futures
+                            CoolAlert.show(
+                                barrierDismissible: false,
+                                context: context,
+                                type: CoolAlertType.loading,
+                                text: "Uploading Video");
+                            try {
+                              await firebaseOperations
+                                  .uploadVideo(
+                                addBgToMaterials: bgSelected.value,
+                                ctx: context,
+                                bgFile: widget.bgFile,
+                                arListVal: selectMaterials
+                                    .where((element) =>
+                                        element.selectedMaterial!.value == true)
+                                    .toList(),
+                                thumbnailFile: widget.thumbnailFile,
+                                videoFile: widget.videoFile,
+                                userUid: auth.getUserId,
+                                caption: _videoCaptionController.text,
+                                isPaid: _isPaid,
+                                price: _contentPrice.text.isEmpty
+                                    ? 0
+                                    : double.parse(_contentPrice.text),
+                                discountAmount: _contentDiscount.text.isEmpty
+                                    ? 0
+                                    : double.parse(_contentDiscount.text),
+                                startDiscountDate:
+                                    Timestamp.fromDate(_startDiscountDate),
+                                endDiscountDate:
+                                    Timestamp.fromDate(_endDiscountDate),
+                                isSubscription: _isSubscription,
+                                contentAvailability: _contentAvailableToValue,
+                                isFree: _isFree,
+                                video_title: _videotitleController.text,
+                                genre: _selectedRecommendedOptions,
+                              )
+                                  .whenComplete(() async {
+                                widget.videoPlayerController.dispose();
+                                widget.arList.forEach((arVal) {
+                                  deleteFile(arVal.pathsForVideoFrames!);
+                                });
+                                // Navigator.pushReplacement(
+                                //   context,
+                                //   PageTransition(
+                                //       child: FeedPage(),
+                                //       type: PageTransitionType.leftToRight),
+                                // );
+                                Provider.of<HomeScreenProvider>(context,
+                                        listen: false)
+                                    .setHomeScreen(true);
+                                Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                      child: FeedPage(pageIndexValue: 4),
+                                      type: PageTransitionType.bottomToTop),
+                                );
+                              });
+                              //ignore: avoid_catches_without_on_clauses
+                            } catch (e) {
+                              CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.error,
+                                title: "Error Uploading Video",
+                                text: e.toString(),
+                              );
+                              // ignore: unawaited_futures
+
+                            }
+                          } else if (_selectedRecommendedOptions.length == 0) {
+                            CoolAlert.show(
+                              context: context,
+                              type: CoolAlertType.error,
+                              title: "No Selected Genre",
+                              text: "Please Select a Genre for your video",
+                            );
+                          }
+                        }),
+                      ),
+                    ],
                   ),
-                ),
+                ],
               ),
-            )
-          : Center(
-              child: CircularProgressIndicator(),
             ),
+          ),
+        ),
+      ),
+
       // SingleChildScrollView(
       //   child: SafeArea(
       //     top: false,

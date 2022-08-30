@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:diamon_rose_app/services/aws/aws_policy.dart';
 import 'package:http/http.dart' as http;
@@ -59,10 +60,13 @@ class AwsAnketS3 {
     try {
       final res = await req.send();
 
-      if (res.statusCode == 204) return '$endpoint/$uploadDest';
+      if (res.statusCode == 204) {
+        return '$endpoint/$uploadDest';
+      }
     } catch (e) {
-      print('Failed to upload to AWS, with exception:');
-      print(e);
+      log('Failed to upload to AWS, with exception:');
+      log(e.toString());
+
       return null;
     }
   }

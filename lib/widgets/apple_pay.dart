@@ -58,12 +58,12 @@ class ApplePayWidget extends StatelessWidget {
           }
 
           try {
-            // await FirebaseFirestore.instance
-            //     .collection("users")
-            //     .doc(auth.getUserId)
-            //     .collection("cart")
-            //     .doc(cartVideos.id)
-            //     .delete();
+            await FirebaseFirestore.instance
+                .collection("users")
+                .doc(auth.getUserId)
+                .collection("cart")
+                .doc(cartVideos.id)
+                .delete();
 
             log("deleted");
           } catch (e) {
