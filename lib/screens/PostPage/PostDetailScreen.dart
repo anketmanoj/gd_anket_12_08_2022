@@ -6,6 +6,7 @@ import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/screens/PostPage/editPreviewVideo.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateMessage.dart';
 import 'package:diamon_rose_app/screens/homePage/showCommentScreen.dart';
 import 'package:diamon_rose_app/screens/homePage/showLikeScreen.dart';
@@ -14,14 +15,17 @@ import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/dynamic_link_service.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/widgets/OptionsWidget.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 // import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:sizer/sizer.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:video_player/video_player.dart';
@@ -167,6 +171,68 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
         Provider.of<FirebaseOperations>(context, listen: false);
     final Authentication authentication =
         Provider.of<Authentication>(context, listen: false);
+
+    Future<dynamic> otherUserOptionsMenu(
+        {required BuildContext context, required Video video}) {
+      final List<String> optionsList = [
+        "Delete Post",
+        "Edit Post",
+      ];
+      final List<void Function()> functionsList = [
+        () {
+          CoolAlert.show(
+              context: context,
+              type: CoolAlertType.info,
+              title: "Delete Video?",
+              text: "Are you sure you want to delete this video?",
+              onConfirmBtnTap: () async {
+                await firebaseOperations
+                    .deleteVideoPost(videoid: widget.videoId)
+                    .then((value) {
+                  Get.back();
+                  Get.back();
+                });
+              });
+        },
+        () {
+          Get.to(EditPreviewVideoScreen(
+            videoFile: video,
+          ));
+        },
+      ];
+      return showModalBottomSheet(
+        isDismissible: true,
+        isScrollControlled: true,
+        context: context,
+        builder: (context) {
+          return Container(
+            padding: EdgeInsets.all(15),
+            height: 25.h,
+            width: 100.w,
+            decoration: BoxDecoration(
+              color: constantColors.whiteColor,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Container(
+              child: ListView.builder(
+                itemCount: optionsList.length,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return Options(
+                    tapped: functionsList[index],
+                    text: optionsList[index],
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      );
+    }
+
     return SafeArea(
       top: false,
       bottom: Platform.isAndroid ? true : false,
@@ -210,24 +276,18 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                       right: 10,
                       child: IconButton(
                         icon: Icon(
-                          Icons.delete_forever,
+                          Icons.menu,
                           color: Colors.white,
                         ),
                         onPressed: () {
-                          CoolAlert.show(
-                              context: context,
-                              type: CoolAlertType.info,
-                              title: "Delete Video?",
-                              text:
-                                  "Are you sure you want to delete this video?",
-                              onConfirmBtnTap: () async {
-                                await firebaseOperations
-                                    .deleteVideoPost(videoid: widget.videoId)
-                                    .then((value) {
-                                  Navigator.pop(context);
-                                  Navigator.pop(context);
-                                });
-                              });
+                          //  ! options here
+                          setState(() {
+                            _videoPlayerController.value.isPlaying
+                                ? _videoPlayerController.pause()
+                                : null;
+                          });
+
+                          otherUserOptionsMenu(context: context, video: video!);
                         },
                       ),
                     ),

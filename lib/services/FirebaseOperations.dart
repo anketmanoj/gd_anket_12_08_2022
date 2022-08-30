@@ -759,6 +759,48 @@ class FirebaseOperations with ChangeNotifier {
     return file;
   }
 
+  Future updatePost({
+    required String caption,
+    required String video_title,
+    required String videoId,
+    required bool isFree,
+    required bool isPaid,
+    required double price,
+    required double discountAmount,
+    required Timestamp startDiscountDate,
+    required Timestamp endDiscountDate,
+    required List<String?> genre,
+    required String contentAvailability,
+  }) async {
+    String name = "${caption} ${video_title}";
+
+    List<String> splitList = name.split(" ");
+    List<String> indexList = [];
+
+    for (int i = 0; i < splitList.length; i++) {
+      for (int j = 0; j < splitList[i].length; j++) {
+        indexList.add(splitList[i].substring(0, j + 1).toLowerCase());
+      }
+    }
+
+    await FirebaseFirestore.instance.collection("posts").doc(videoId).update({
+      "videotitle": video_title,
+      "caption": caption,
+      "username": initUserName,
+      "userimage": initUserImage,
+      "isfree": isFree,
+      "ispaid": isPaid,
+      "price": price,
+      "discountamount": discountAmount,
+      "startdiscountdate": startDiscountDate,
+      "enddiscountdate": endDiscountDate,
+      "contentavailability": contentAvailability,
+      "searchindexList": indexList,
+      "genre": genre,
+      'verifiedUser': isverified,
+    });
+  }
+
   Future uploadVideo({
     required File bgFile,
     required String userUid,
