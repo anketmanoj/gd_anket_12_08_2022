@@ -11,6 +11,7 @@
 		09E68FD12A0BBE57E4C42248 /* Pods_ImageNotification.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A1A5B962B2BEB46B98AF695 /* Pods_ImageNotification.framework */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		20956C3C27E13F6D00F0C915 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 20956C3B27E13F6D00F0C915 /* GoogleService-Info.plist */; };
+		209C12FB28BDEA6700BB42AD /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209C12FA28BDEA6700BB42AD /* StoreKit.framework */; };
 		22B3624F273123800048F2B9 /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B3624E273123800048F2B9 /* NotificationService.m */; };
 		22B36253273123800048F2B9 /* ImageNotification.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 22B3624B273123800048F2B9 /* ImageNotification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
@@ -59,6 +60,7 @@
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		1B8AAB95866F3E5A757EC7DA /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		20956C3B27E13F6D00F0C915 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../GoogleService-Info.plist"; sourceTree = "<group>"; };
+		209C12FA28BDEA6700BB42AD /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		222B4E9D2727FB1C000D8AEA /* RunnerDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerDebug.entitlements; sourceTree = "<group>"; };
 		2250C4C3274E31F30015703C /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		22B3624B273123800048F2B9 /* ImageNotification.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ImageNotification.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,6 +101,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				081E6992112F0DF47E90EE60 /* Pods_Runner.framework in Frameworks */,
+				209C12FB28BDEA6700BB42AD /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,6 +184,7 @@
 		B59257A525E9FB42964328CE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				209C12FA28BDEA6700BB42AD /* StoreKit.framework */,
 				1B8AAB95866F3E5A757EC7DA /* Pods_Runner.framework */,
 				9A1A5B962B2BEB46B98AF695 /* Pods_ImageNotification.framework */,
 			);

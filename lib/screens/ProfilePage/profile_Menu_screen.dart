@@ -350,8 +350,8 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   constantColors: constantColors,
                   onTap: () {
                     final String cartUrl =
-                        "http://192.168.1.8:8080/#/cart/${_auth.getUserId}";
-                    // "https://gdfe-ac584.firebaseapp.com/#/cart/${_auth.getUserId}";
+                        // "http://192.168.1.8:8080/#/cart/${_auth.getUserId}";
+                        "https://gdfe-ac584.firebaseapp.com/#/cart/${_auth.getUserId}";
 
                     CoolAlert.show(
                       context: context,
