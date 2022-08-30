@@ -34,7 +34,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FeedPage extends StatefulWidget {
-  FeedPage({Key? key}) : super(key: key);
+  FeedPage({Key? key, this.pageIndexValue = 0}) : super(key: key);
+  final int pageIndexValue;
 
   @override
   State<FeedPage> createState() => _FeedPageState();
@@ -44,6 +45,17 @@ class _FeedPageState extends State<FeedPage> {
   final PageController homepageController = PageController();
   ValueNotifier<int> pageIndex = ValueNotifier<int>(0);
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+
+  void checkPage(int value) {
+    if (value != 0) {
+      log("jumping");
+      homepageController.jumpToPage(
+        value,
+      );
+      log("jumpiindex updated ng");
+      pageIndex.value = value;
+    }
+  }
 
   Future<void> load() async {
     if (Platform.isIOS) {
@@ -86,6 +98,7 @@ class _FeedPageState extends State<FeedPage> {
   void initState() {
     Future.delayed(Duration.zero, () async {
       SystemChrome.setEnabledSystemUIOverlays([]);
+      checkPage(widget.pageIndexValue);
       await load();
       await Provider.of<FirebaseOperations>(context, listen: false)
           .initUserData(context)
@@ -136,6 +149,7 @@ class _FeedPageState extends State<FeedPage> {
                   physics: const NeverScrollableScrollPhysics(),
                   onPageChanged: (page) {
                     pageIndex.value = page;
+                    // log("value == $page");
 
                     if (pageIndex.value == 0) {
                       homeScreenProvider.setHomeScreen(true);

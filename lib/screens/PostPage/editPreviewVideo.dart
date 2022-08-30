@@ -739,7 +739,9 @@ class _EditPreviewVideoScreenState extends State<EditPreviewVideoScreen> {
                                           _contentAvailableToValue,
                                     )
                                         .whenComplete(() {
-                                      Get.to(() => FeedPage());
+                                      Get.to(() => FeedPage(
+                                            pageIndexValue: 4,
+                                          ));
                                       Get.snackbar(
                                         'Video Updated ✅',
                                         "Your video has been updated!",
