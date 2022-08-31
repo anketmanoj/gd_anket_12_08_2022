@@ -219,7 +219,18 @@ class VideoWidget extends StatelessWidget {
                       ),
                       SpeedDialChild(
                         // visible: video.isPaid,
-                        child: Icon(Icons.filter),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: constantColors.whiteColor,
+                            image: DecorationImage(
+                              fit: BoxFit.fitHeight,
+                              image: AssetImage(
+                                "assets/icons/cat_icon.png",
+                              ),
+                            ),
+                          ),
+                        ),
                         onTap: () {
                           showModalBottomSheet(
                             context: context,

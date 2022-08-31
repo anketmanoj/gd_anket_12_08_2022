@@ -165,6 +165,7 @@ flutter:
   assets:
     - assets/
     - assets/static/
+    - assets/icons/
     - assets/images/
     - assets/images/gif/
     - assets/images/png/
