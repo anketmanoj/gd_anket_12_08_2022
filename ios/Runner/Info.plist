@@ -69,13 +69,6 @@
 	<string>78bcdc391bbbf9eb8fb93ea6ffc71c9c</string>
 	<key>FacebookDisplayName</key>
 	<string>Glamorous Diatstaion</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>fbapi</string>
-		<string>fb-messenger-share-api</string>
-		<string>fbauth2</string>
-		<string>fbshareextension</string>
-	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
