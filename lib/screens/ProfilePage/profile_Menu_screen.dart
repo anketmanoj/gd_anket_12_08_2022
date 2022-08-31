@@ -29,6 +29,7 @@ import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/adminUserModels.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/dbService.dart';
+import 'package:diamon_rose_app/services/dynamic_link_service.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/apple_pay.dart';
@@ -43,6 +44,7 @@ import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:pay/pay.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -588,6 +590,23 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   leadingIcon: Icons.help_outline,
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "Help",
+                ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () async {
+                    final generatedLink =
+                        await DynamicLinkService.createUserProfileDynamicLink(
+                            context.read<Authentication>().getUserId,
+                            short: true);
+                    final String message = generatedLink.toString();
+
+                    Share.share(
+                      'check out @${context.read<FirebaseOperations>().initUserName}\n\n$generatedLink',
+                    );
+                  },
+                  leadingIcon: Icons.person_search,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Share your profile",
                 ),
                 ListTileOption(
                   constantColors: constantColors,
