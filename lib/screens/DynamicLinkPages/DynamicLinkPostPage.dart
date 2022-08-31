@@ -18,11 +18,13 @@ import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/dynamic_link_service.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/widgets/ShareWidget.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 // import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -740,8 +742,11 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                 await DynamicLinkService.createDynamicLink(
                                     video!.id,
                                     short: true);
-                            Share.share(
-                              'check out this video $generatedLink',
+                            final String message = generatedLink.toString();
+
+                            Get.bottomSheet(
+                              ShareWidget(
+                                  msg: message, urlPath: video!.videourl),
                             );
                           },
                         ),

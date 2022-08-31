@@ -1,9 +1,15 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:diamon_rose_app/services/ShareButtons.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:path/path.dart';
 
 ///sharing platform
 enum Share {
@@ -18,12 +24,53 @@ enum Share {
   share_telegram
 }
 
-class ShareWidget extends StatelessWidget {
+class ShareWidget extends StatefulWidget {
   ShareWidget({Key? key, required this.msg, required this.urlPath})
       : super(key: key);
   final String msg;
   final String urlPath;
+
+  @override
+  State<ShareWidget> createState() => _ShareWidgetState();
+}
+
+class _ShareWidgetState extends State<ShareWidget> {
   final bool videoEnable = true;
+  File? videoFile;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () async {
+      await getImage(url: widget.urlPath);
+    });
+  }
+
+  Future<void> getImage({required String url}) async {
+    /// Get Image from server
+    final Response res = await Dio().get<List<int>>(
+      url,
+      options: Options(
+        responseType: ResponseType.bytes,
+      ),
+    );
+
+    /// Get App local storage
+    final Directory appDir = await getApplicationDocumentsDirectory();
+
+    /// Generate Image Name
+    final String imageName = url.split('/').last;
+
+    /// Create Empty File in app dir & fill with new image
+    final File file = File(join(appDir.path, imageName));
+    file.writeAsBytesSync(res.data as List<int>);
+
+    setState(() {
+      videoFile = file;
+    });
+
+    log("video Url = ${videoFile!.path}");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,17 +92,13 @@ class ShareWidget extends StatelessWidget {
         onButtonTop: () => onButtonTap(Share.share_instagram),
       ),
       ShareButtons(
-        iconData: FontAwesomeIcons.facebookMessenger,
-        onButtonTop: () => onButtonTap(Share.messenger),
-      ),
-      ShareButtons(
         iconData: FontAwesomeIcons.mobileScreenButton,
         onButtonTop: () => onButtonTap(Share.share_system),
       ),
     ];
 
     return Container(
-      height: 50.h,
+      height: 40.h,
       width: 100.w,
       decoration: BoxDecoration(
         color: constantColors.bioBg,
@@ -88,39 +131,71 @@ class ShareWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    msg,
+                    widget.msg,
                     textAlign: TextAlign.center,
                   ),
                 ),
               ),
             ),
-            GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 5,
-                mainAxisSpacing: 5,
-              ),
-              itemCount: listOfShares.length,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: listOfShares[index].onButtonTop,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: constantColors.navButton,
-                        width: 1,
-                      ),
-                    ),
-                    child: Icon(
-                      listOfShares[index].iconData,
-                      size: 40,
+            videoFile != null
+                ? Wrap(
+                    spacing: (10 / 100.w * 100).w, //vertical spacing
+                    runSpacing: 2.h, //horizontal spacing
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: listOfShares.map((shareVal) {
+                      return InkWell(
+                        onTap: shareVal.onButtonTop,
+                        child: Container(
+                          height: 10.h,
+                          width: 20.w,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: constantColors.navButton,
+                              width: 1,
+                            ),
+                          ),
+                          child: Icon(
+                            shareVal.iconData,
+                            size: 40,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  )
+                // GridView.builder(
+                //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                //       crossAxisCount: 3,
+                //       crossAxisSpacing: 5,
+                //       mainAxisSpacing: 5,
+                //     ),
+                //     itemCount: listOfShares.length,
+                //     shrinkWrap: true,
+                //     physics: NeverScrollableScrollPhysics(),
+                //     itemBuilder: (context, index) {
+                //       return InkWell(
+                //         onTap: listOfShares[index].onButtonTop,
+                //         child: Container(
+                //           decoration: BoxDecoration(
+                //             border: Border.all(
+                //               color: constantColors.navButton,
+                //               width: 1,
+                //             ),
+                //           ),
+                //           child: Icon(
+                //             listOfShares[index].iconData,
+                //             size: 40,
+                //           ),
+                //         ),
+                //       );
+                //     },
+                //   )
+                : Expanded(
+                    child: Center(
+                      child: CircularProgressIndicator(),
                     ),
                   ),
-                );
-              },
-            ),
           ],
         ),
       ),
@@ -132,40 +207,40 @@ class ShareWidget extends StatelessWidget {
     final FlutterShareMe flutterShareMe = FlutterShareMe();
     switch (share) {
       case Share.facebook:
-        response = await flutterShareMe.shareToFacebook(url: urlPath, msg: msg);
+        response = await flutterShareMe.shareToFacebook(
+            url: widget.msg,
+            msg: "Check out this video on Glamorous Diastation!");
         break;
-      case Share.messenger:
-        response =
-            await flutterShareMe.shareToMessenger(url: urlPath, msg: msg);
-        break;
+
       case Share.twitter:
-        response = await flutterShareMe.shareToTwitter(url: urlPath, msg: msg);
+        response = await flutterShareMe.shareToTwitter(
+            url: widget.msg,
+            msg: "Check out this video on Glamorous Diastation!");
         break;
       case Share.whatsapp:
-        if (urlPath != null) {
+        if (videoFile != null) {
           response = await flutterShareMe.shareToWhatsApp(
-              imagePath: urlPath,
-              fileType: videoEnable ? FileType.video : FileType.image);
+              imagePath: videoFile!.path, fileType: FileType.video);
         } else {
-          response = await flutterShareMe.shareToWhatsApp(msg: msg);
+          response = await flutterShareMe.shareToWhatsApp(msg: widget.msg);
         }
         break;
       case Share.whatsapp_business:
-        response = await flutterShareMe.shareToWhatsApp(msg: msg);
+        response = await flutterShareMe.shareToWhatsApp(msg: widget.msg);
         break;
       case Share.share_system:
-        response = await flutterShareMe.shareToSystem(msg: msg);
+        response = await flutterShareMe.shareToSystem(msg: widget.msg);
         break;
       case Share.whatsapp_personal:
         response = await flutterShareMe.shareWhatsAppPersonalMessage(
-            message: msg, phoneNumber: 'phone-number-with-country-code');
+            message: widget.msg, phoneNumber: 'phone-number-with-country-code');
         break;
       case Share.share_instagram:
         response = await flutterShareMe.shareToInstagram(
-            filePath: urlPath, fileType: FileType.video);
+            filePath: videoFile!.path, fileType: FileType.video);
         break;
       case Share.share_telegram:
-        response = await flutterShareMe.shareToTelegram(msg: msg);
+        response = await flutterShareMe.shareToTelegram(msg: widget.msg);
         break;
     }
     debugPrint(response);

@@ -11,6 +11,7 @@ import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/dynamic_link_service.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/OptionsWidget.dart';
@@ -21,12 +22,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sizer/sizer.dart';
 
 class OtherUserProfile extends StatefulWidget {
-  const OtherUserProfile({Key? key, required this.userModel}) : super(key: key);
+  const OtherUserProfile(
+      {Key? key, required this.userModel, this.fromLink = false})
+      : super(key: key);
   final UserModel userModel;
+  final bool? fromLink;
 
   @override
   State<OtherUserProfile> createState() => _OtherUserProfileState();
@@ -224,7 +229,12 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                 ),
                 child: IconButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Get.back();
+                      if (widget.fromLink == true) {
+                        Get.to(() => FeedPage(
+                              pageIndexValue: 0,
+                            ));
+                      }
                     },
                     icon: Icon(
                       Icons.arrow_back_ios,
@@ -1420,10 +1430,7 @@ class _TopProfileStackState extends State<TopProfileStack> {
   }
 
   Future<dynamic> otherUserOptionsMenu(BuildContext context) {
-    final List<String> optionsList = [
-      "Report",
-      "Block",
-    ];
+    final List<String> optionsList = ["Report", "Block", "Share"];
     final List<void Function()> functionsList = [
       () {
         reportAccountMenu(context);
@@ -1431,6 +1438,17 @@ class _TopProfileStackState extends State<TopProfileStack> {
       () {
         blockAccountMenu(context: context, userModel: widget.userModel);
       },
+      () async {
+        final generatedLink =
+            await DynamicLinkService.createUserProfileDynamicLink(
+                widget.userModel.useruid,
+                short: true);
+        final String message = generatedLink.toString();
+
+        Share.share(
+          'check out @${widget.userModel.username}\n\n$generatedLink',
+        );
+      }
     ];
     return showModalBottomSheet(
       isDismissible: true,
@@ -1439,7 +1457,7 @@ class _TopProfileStackState extends State<TopProfileStack> {
       builder: (context) {
         return Container(
           padding: EdgeInsets.all(15),
-          height: 25.h,
+          height: 30.h,
           width: 100.w,
           decoration: BoxDecoration(
             color: constantColors.whiteColor,

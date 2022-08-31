@@ -793,9 +793,8 @@ PODS:
   - flutter_native_splash (0.0.1):
     - Flutter
   - flutter_share_me (0.0.1):
-    - FBSDKCoreKit (~> 12.3.2)
-    - FBSDKLoginKit (~> 12.3.2)
-    - FBSDKShareKit (~> 12.3.2)
+    - FBSDKCoreKit
+    - FBSDKShareKit
     - Flutter
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
@@ -1195,7 +1194,7 @@ SPEC CHECKSUMS:
   flutter_inappwebview: bfd58618f49dc62f2676de690fc6dcda1d6c3721
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
-  flutter_share_me: 771a4916dcadac008d43428838a5b898d97e1568
+  flutter_share_me: 53e12ba3f220060893dbf242d29ec95cb2a4fb18
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   google_sign_in_ios: 4f85eb9f937450765c8573bb85fd8cd6a5af675c
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f

@@ -21,6 +21,7 @@ import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/services/stripe_payment_services/controllers/payment_controllers.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/widgets/ShareWidget.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
@@ -1225,8 +1226,10 @@ class _VideoPostItemState extends State<VideoPostItem> {
                       await DynamicLinkService.createDynamicLink(
                           widget.video.id,
                           short: true);
-                  Share.share(
-                    'check out this video ' + generatedLink.toString(),
+                  final String message = generatedLink.toString();
+
+                  Get.bottomSheet(
+                    ShareWidget(msg: message, urlPath: widget.video.videourl),
                   );
                 },
               ),
