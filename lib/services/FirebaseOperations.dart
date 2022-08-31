@@ -2430,4 +2430,36 @@ class FirebaseOperations with ChangeNotifier {
         .doc(userModel.useruid)
         .delete();
   }
+
+  Future updateUserDetailsAdmin(
+      {required bool isVerified,
+      required int percentage,
+      required String useruid}) async {
+    await FirebaseFirestore.instance.collection("users").doc(useruid).update({
+      'percentage': percentage,
+      "isverified": isVerified,
+    });
+
+    log("isVerified == $isVerified");
+
+    await FirebaseFirestore.instance
+        .collection("posts")
+        .where("useruid", isEqualTo: useruid)
+        .get()
+        .then((allVidsForThatUser) {
+      log("no of vids = ${allVidsForThatUser.docs.length}");
+      allVidsForThatUser.docs.forEach((element) async {
+        await FirebaseFirestore.instance
+            .collection("posts")
+            .doc(element.id)
+            .update({
+          'verifiedUser': isVerified,
+        }).then((value) {
+          log("done updating for id = ${element.id}");
+        });
+      });
+    });
+
+    log("updated all for that user");
+  }
 }

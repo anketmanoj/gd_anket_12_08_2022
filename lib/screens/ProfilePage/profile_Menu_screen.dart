@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/screens/Admin/set_user_data_admin.dart';
 import 'package:diamon_rose_app/screens/Admin/upload_video_screen.dart';
 import 'package:diamon_rose_app/screens/ArPreviewSetting/ArPreviewScreen.dart';
 import 'package:diamon_rose_app/screens/ArViewCollection/arViewCollectionScreen.dart';
@@ -703,27 +704,53 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
 
                       if (adminList.adminList
                           .contains(context.read<Authentication>().getUserId)) {
-                        return ListTile(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              PageTransition(
-                                child: UploadVideoScreen(),
-                                type: PageTransitionType.fade,
+                        return Column(
+                          children: [
+                            ListTile(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    child: UploadVideoScreen(),
+                                    type: PageTransitionType.fade,
+                                  ),
+                                );
+                              },
+                              title: Text(
+                                "Admin Upload",
+                                style: TextStyle(
+                                  color: Colors.yellow,
+                                  fontSize: 16,
+                                ),
                               ),
-                            );
-                          },
-                          title: Text(
-                            "Admin Upload",
-                            style: TextStyle(
-                              color: Colors.yellow,
-                              fontSize: 16,
+                              leading: Icon(
+                                Icons.admin_panel_settings,
+                                color: Colors.yellow,
+                              ),
                             ),
-                          ),
-                          leading: Icon(
-                            Icons.admin_panel_settings,
-                            color: Colors.yellow,
-                          ),
+                            ListTile(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    child: UserDataAdminControl(),
+                                    type: PageTransitionType.fade,
+                                  ),
+                                );
+                              },
+                              title: Text(
+                                "Admin User Control",
+                                style: TextStyle(
+                                  color: Colors.yellow,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              leading: Icon(
+                                Icons.admin_panel_settings,
+                                color: Colors.yellow,
+                              ),
+                            ),
+                          ],
                         );
                       }
                       return SizedBox();

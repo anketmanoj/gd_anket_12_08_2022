@@ -225,6 +225,7 @@ class ProfileUserDetails extends StatelessWidget {
     this.suffixIcon,
     this.showPrefixText,
     this.showHintText,
+    this.keyboardTypeVal,
   }) : super(key: key);
 
   final TextEditingController controller;
@@ -237,6 +238,7 @@ class ProfileUserDetails extends StatelessWidget {
   final bool? hide;
   final String? showPrefixText;
   final String? showHintText;
+  final TextInputType? keyboardTypeVal;
 
   @override
   Widget build(BuildContext context) {
@@ -246,7 +248,7 @@ class ProfileUserDetails extends StatelessWidget {
       obscureText: hide ?? false,
       maxLines: lines ?? 1,
       textAlign: TextAlign.start,
-      keyboardType: TextInputType.text,
+      keyboardType: keyboardTypeVal ?? TextInputType.text,
       decoration: InputDecoration(
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
