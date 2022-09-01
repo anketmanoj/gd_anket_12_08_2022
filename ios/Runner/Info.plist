@@ -40,6 +40,12 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FacebookAppID</key>
 	<string>264465402552974</string>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<false/>
+	<key>FacebookClientToken</key>
+	<string>78bcdc391bbbf9eb8fb93ea6ffc71c9c</string>
+	<key>FacebookDisplayName</key>
+	<string>Glamorous Diatstaion</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>tg</string>
@@ -63,12 +69,6 @@
 		<string>fbauth2</string>
 		<string>fbshareextension</string>
 	</array>
-	<key>FacebookAutoLogAppEventsEnabled</key>
-	<false/>
-	<key>FacebookClientToken</key>
-	<string>78bcdc391bbbf9eb8fb93ea6ffc71c9c</string>
-	<key>FacebookDisplayName</key>
-	<string>Glamorous Diatstaion</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

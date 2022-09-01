@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:pay/pay.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class ApplePayWidget extends StatelessWidget {
   ApplePayWidget({Key? key, required this.totalPrice}) : super(key: key);
@@ -195,6 +196,15 @@ class ApplePayWidget extends StatelessWidget {
             child: ApplePayButton(
               type: ApplePayButtonType.checkout,
               paymentConfigurationAsset: 'default_payment_profile_apple.json',
+              childOnError: Center(
+                child: Text(
+                  "Oops! Purchase with Apple Pay on GD only supports Visa, MasterCard, JCB and Amex. Please add one of those crads in your apple wallet and try again or checkout with credit card / paypal",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: constantColors.whiteColor,
+                  ),
+                ),
+              ),
               paymentItems: [
                 PaymentItem(
                     amount: totalPrice,
