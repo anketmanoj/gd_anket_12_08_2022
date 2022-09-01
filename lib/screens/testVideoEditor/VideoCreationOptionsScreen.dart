@@ -14,6 +14,7 @@ import 'package:diamon_rose_app/services/debugClass.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 
 import 'package:ffmpeg_kit_flutter_https_gpl/ffprobe_kit.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -42,11 +43,12 @@ class VideoCreationOptionsScreen extends StatelessWidget {
   }
 
   _pickVideo({required BuildContext context}) async {
-    final XFile? file = await _picker.pickVideo(
-      source: ImageSource.gallery,
+    FilePickerResult? filePicked = await FilePicker.platform.pickFiles(
+      type: FileType.video,
     );
-    if (file != null) {
-      final int audioFlag = await audioCheck(videoUrl: file.path);
+    if (filePicked != null) {
+      final PlatformFile file = filePicked.files.single;
+      final int audioFlag = await audioCheck(videoUrl: file.path!);
 
       switch (audioFlag) {
         case 1:
@@ -54,7 +56,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
               context,
               MaterialPageRoute<void>(
                   builder: (BuildContext context) =>
-                      InitVideoEditorScreen(file: File(file.path))));
+                      InitVideoEditorScreen(file: File(file.path!))));
           break;
         default:
           CoolAlert.show(
