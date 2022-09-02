@@ -359,13 +359,13 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     CoolAlert.show(
                       context: context,
                       type: CoolAlertType.info,
-                      title: "Shoping Cart",
+                      title: "Diamond Content",
                       text:
-                          "You cannot unlock content within the app; please unlock the content from the shopping cart on the Glamorous Diastation website and you'll be able to view it on the Glamorous Diastation app or in the web browser. Click on 'Show Cart' to view your cart on the web",
-                      confirmBtnText: "Show Cart",
+                          "Some content cannot be acquired by the application. You must configure your acquisition with our web service. It has nothing to do with Apple and Apple is not responsible.",
+                      confirmBtnText: "Show Diamonds",
                       cancelBtnText: "Nevermind",
                       confirmBtnColor: constantColors.navButton,
-                      showCancelBtn: true,
+                      showCancelBtn: false,
                       onCancelBtnTap: () {
                         Navigator.pop(context);
                       },
@@ -380,9 +380,9 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                       ),
                     );
                   },
-                  leadingIcon: EvaIcons.shoppingCartOutline,
+                  leadingIcon: FontAwesomeIcons.diamond,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Cart",
+                  text: "Diamond Content",
                 ),
                 ListTileOption(
                   constantColors: constantColors,
@@ -396,7 +396,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: Icons.history,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Purchase Histroy",
+                  text: "Diamond Histroy",
                 ),
 
                 // ! fix all enddiscountDate error
@@ -935,7 +935,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         Get.back();
                       });
                       Get.snackbar(
-                        'Purchase Sucessful 🎉',
+                        'Diamond Sucessful 🎉',
                         'All video purchased have been added to your purchase history',
                         overlayColor: constantColors.navButton,
                         colorText: constantColors.whiteColor,

@@ -82,7 +82,7 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                   constantColors.navButton,
                   constantColors.navButton,
                 ],
-                labels: ['My Items', 'Free', 'Paid'],
+                labels: ['My Items', 'Standard', 'Diamond'],
                 onToggle: (index) {
                   switch (index) {
                     case 0:

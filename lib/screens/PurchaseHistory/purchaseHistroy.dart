@@ -41,7 +41,7 @@ class PurchaseHistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: constantColors.whiteColor,
-      appBar: AppBarWidget(text: "Purchase Histroy", context: context),
+      appBar: AppBarWidget(text: "Diamond Histroy", context: context),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection("users")
@@ -52,7 +52,7 @@ class PurchaseHistoryScreen extends StatelessWidget {
         builder: (context, snaps) {
           if (snaps.hasError) {
             return Center(
-              child: Text("No Purchase History"),
+              child: Text("No Diamond History"),
             );
           }
 
