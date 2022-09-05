@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/video_editor.dart';
@@ -554,6 +556,51 @@ class VideoEditorController extends ChangeNotifier {
     return newPreset.isEmpty ? "" : "-preset $newPreset";
   }
 
+  String formatTime(int seconds) {
+    log("Duration == ${Duration(seconds: seconds).toString().split('.')[0].padLeft(8, '0')}");
+    return '${Duration(seconds: seconds)}'.split('.')[0].padLeft(8, '0');
+  }
+
+  Future<String> thumbnailGifCreator({required String vidFilePath}) async {
+    final Directory appDocumentDir = await getApplicationDocumentsDirectory();
+    final String rawDocumentPath = appDocumentDir.path;
+    final String outputPath = "${rawDocumentPath}/thumbnail.gif";
+
+    await FFprobeKit.execute(
+            "-i ${vidFilePath} -show_entries format=duration -v quiet -of json")
+        .then((value) {
+      value.getOutput().then((mapOutput) async {
+        final Map<String, dynamic> json = jsonDecode(mapOutput!);
+
+        String durationString = json['format']['duration'];
+
+        print("durationString final : $durationString");
+
+        if (double.parse(durationString) -
+                (selectedCoverVal!.timeMs.toDouble() / 1000) >
+            5) {
+          log("duration greater normal than 5s");
+          await FFmpegKit.execute(
+                  " -i ${vidFilePath} -ss ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt())}  -t ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt() + 5)} -vf scale=-2:480 -r 20/1 -y ${outputPath}")
+              .then((value) {
+            log("done with gif");
+          });
+        } else {
+          log("duration less than 5s");
+          final double duration = double.parse(durationString);
+          log("duration i normal $duration");
+          await FFmpegKit.execute(
+                  " -i ${vidFilePath} -ss ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt())}  -t ${formatTime(duration.toInt())} -vf scale=-2:480 -r 20/1 -y ${outputPath}")
+              .then((value) {
+            log("done with gif");
+          });
+        }
+      });
+    });
+    log("thumbnail file == ${File(outputPath).path}");
+    return outputPath;
+  }
+
   //------------//
   //COVER EXPORT//
   //------------//
@@ -564,13 +611,9 @@ class VideoEditorController extends ChangeNotifier {
   ///
   /// The [quality] param specifies the quality of the generated cover, from 0 to 100 (([more info](https://pub.dev/packages/video_thumbnail)))
   Future<String?> _generateCoverFile({int quality = 100}) async {
-    return await VideoThumbnail.thumbnailFile(
-      imageFormat: ImageFormat.JPEG,
-      thumbnailPath: (await getTemporaryDirectory()).path,
-      video: file.path,
-      timeMs: selectedCoverVal?.timeMs ?? startTrim.inMilliseconds,
-      quality: quality,
-    );
+    final String coverPath = await thumbnailGifCreator(vidFilePath: file.path);
+    log("time is ms : ${selectedCoverVal!.timeMs.toDouble() / 1000}");
+    return coverPath;
   }
 
   /// Export this selected cover, or by default the first one, return an image [File].
@@ -596,7 +639,7 @@ class VideoEditorController extends ChangeNotifier {
     required void Function(File? file) onCompleted,
     String? name,
     String? outDir,
-    String format = "jpg",
+    String format = "gif",
     double scale = 1.0,
     int quality = 100,
     void Function(Statistics)? onProgress,
@@ -607,47 +650,50 @@ class VideoEditorController extends ChangeNotifier {
     final String? _coverPath = await _generateCoverFile(
       quality: quality,
     );
+
     if (_coverPath == null) {
       debugPrint("ERROR ON COVER EXTRACTION WITH VideoThumbnail LIBRARY");
       return;
     }
-    name ??= path.basenameWithoutExtension(file.path);
-    final int epoch = DateTime.now().millisecondsSinceEpoch;
-    final String outputPath = "$tempPath/${name}_$epoch.$format";
 
-    // CALCULATE FILTERS
-    final String crop =
-        minCrop >= _min && maxCrop <= _max ? await _getCrop() : "";
-    final String rotation =
-        _rotation >= 360 || _rotation <= 0 ? "" : _getRotation();
-    final String scaleInstruction =
-        scale == 1.0 ? "" : "scale=iw*$scale:ih*$scale";
+    onCompleted(_coverPath != null ? File(_coverPath) : null);
+    // name ??= path.basenameWithoutExtension(file.path);
+    // final int epoch = DateTime.now().millisecondsSinceEpoch;
+    // final String outputPath = "$tempPath/${name}_$epoch.$format";
 
-    // VALIDATE FILTERS
-    final List<String> filters = [crop, scaleInstruction, rotation];
-    filters.removeWhere((item) => item.isEmpty);
-    final String filter = filters.isNotEmpty && isFiltersEnabled
-        ? "-filter:v " + filters.join(",")
-        : "";
-    // ignore: unnecessary_string_escapes
-    final String execute = "-i \'$_coverPath\' $filter -y $outputPath";
+    // // CALCULATE FILTERS
+    // final String crop =
+    //     minCrop >= _min && maxCrop <= _max ? await _getCrop() : "";
+    // final String rotation =
+    //     _rotation >= 360 || _rotation <= 0 ? "" : _getRotation();
+    // final String scaleInstruction =
+    //     scale == 1.0 ? "" : "scale=iw*$scale:ih*$scale";
 
-    // PROGRESS CALLBACKS
-    await FFmpegKit.executeAsync(
-      execute,
-      (session) async {
-        final state =
-            FFmpegKitConfig.sessionStateToString(await session.getState());
-        final code = await session.getReturnCode();
-        final failStackTrace = await session.getFailStackTrace();
+    // // VALIDATE FILTERS
+    // final List<String> filters = [crop, scaleInstruction, rotation];
+    // filters.removeWhere((item) => item.isEmpty);
+    // final String filter = filters.isNotEmpty && isFiltersEnabled
+    //     ? "-filter:v " + filters.join(",")
+    //     : "";
+    // // ignore: unnecessary_string_escapes
+    // final String execute = "-i \'$_coverPath\' $filter -y $outputPath";
 
-        debugPrint(
-            "FFmpeg process exited with state $state and return code $code.${(failStackTrace == null) ? "" : "\\n" + failStackTrace}");
+    // // PROGRESS CALLBACKS
+    // await FFmpegKit.executeAsync(
+    //   execute,
+    //   (session) async {
+    //     final state =
+    //         FFmpegKitConfig.sessionStateToString(await session.getState());
+    //     final code = await session.getReturnCode();
+    //     final failStackTrace = await session.getFailStackTrace();
 
-        onCompleted(code?.isValueSuccess() == true ? File(outputPath) : null);
-      },
-      null,
-      onProgress,
-    );
+    //     debugPrint(
+    //         "FFmpeg process exited with state $state and return code $code.${(failStackTrace == null) ? "" : "\\n" + failStackTrace}");
+
+    //     onCompleted(code?.isValueSuccess() == true ? File(_coverPath) : null);
+    //   },
+    //   null,
+    //   onProgress,
+    // );
   }
 }

@@ -173,33 +173,42 @@ class PurchaseHistoryScreen extends StatelessWidget {
                       );
                   }
                 } else {
-                  MyArCollection myArCollection = MyArCollection.fromJson(
-                      snaps.data!.docs[index].data() as Map<String, dynamic>);
-                  switch (myArCollection.usage) {
-                    case "Pending":
+                  switch (snaps.data!.docs[index]['main'].toString()) {
+                    case "null":
                       return Container();
 
                     default:
-                      switch (myArCollection.ownerId ==
-                          context.read<Authentication>().getUserId) {
-                        case false:
-                          return ListTile(
-                            onTap: () => runARCommand(
-                                context: context, myAr: myArCollection),
-                            title: Text(myArCollection.ownerName),
-                            leading: Container(
-                              height: 50,
-                              width: 50,
-                              child: ImageNetworkLoader(
-                                  imageUrl: myArCollection.gif),
-                            ),
-                            subtitle: Text(myArCollection.usage!),
-                          );
+                      MyArCollection myArCollection = MyArCollection.fromJson(
+                          snaps.data!.docs[index].data()
+                              as Map<String, dynamic>);
+                      switch (myArCollection.usage) {
+                        case "Pending":
+                          return Container();
 
                         default:
-                          return Container();
+                          switch (myArCollection.ownerId ==
+                              context.read<Authentication>().getUserId) {
+                            case false:
+                              return ListTile(
+                                onTap: () => runARCommand(
+                                    context: context, myAr: myArCollection),
+                                title: Text(myArCollection.ownerName),
+                                leading: Container(
+                                  height: 50,
+                                  width: 50,
+                                  child: ImageNetworkLoader(
+                                      imageUrl: myArCollection.gif),
+                                ),
+                                subtitle: Text(myArCollection.usage!),
+                              );
+
+                            default:
+                              return Container();
+                          }
                       }
                   }
+                  // return Container();
+
                 }
               }
             },

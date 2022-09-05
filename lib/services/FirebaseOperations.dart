@@ -837,7 +837,7 @@ class FirebaseOperations with ChangeNotifier {
           filename:
               "${Timestamp.now().millisecondsSinceEpoch}_bgThumbnailGif.gif",
           region: "us-east-1",
-          destDir: "LZF1TxU9TabQ3hhbUXZH6uC22dH3");
+          destDir: "${Timestamp.now().millisecondsSinceEpoch}");
 
       String? uploadedAWS_BgFile = await AwsAnketS3.uploadFile(
           accessKey: "AKIATF76MVYR3K3W62OX",
@@ -846,7 +846,9 @@ class FirebaseOperations with ChangeNotifier {
           file: bgFile,
           filename: "${Timestamp.now().millisecondsSinceEpoch}bgfile.mp4",
           region: "us-east-1",
-          destDir: "LZF1TxU9TabQ3hhbUXZH6uC22dH3");
+          destDir: "${Timestamp.now().millisecondsSinceEpoch}");
+
+      log("uploadedAWS_BgThumbnailFile = ${uploadedAWS_BgThumbnailFile} \n\n uploadedAWS_BgFile = ${uploadedAWS_BgFile}");
 
       String idVal = nanoid();
 
@@ -878,7 +880,7 @@ class FirebaseOperations with ChangeNotifier {
           file: thumbnailFile,
           filename: "${Timestamp.now().millisecondsSinceEpoch}thumbnailGif.gif",
           region: "us-east-1",
-          destDir: "LZF1TxU9TabQ3hhbUXZH6uC22dH3");
+          destDir: "${Timestamp.now().millisecondsSinceEpoch}");
 
       await AwsAnketS3.uploadFile(
               accessKey: "AKIATF76MVYR3K3W62OX",
@@ -888,7 +890,7 @@ class FirebaseOperations with ChangeNotifier {
               filename:
                   "${Timestamp.now().millisecondsSinceEpoch}videoFile.mp4",
               region: "us-east-1",
-              destDir: "LZF1TxU9TabQ3hhbUXZH6uC22dH3")
+              destDir: "${Timestamp.now().millisecondsSinceEpoch}")
           .then((url) {
         videoUrl = url!;
         print(videoUrl + "video url");
@@ -1227,7 +1229,7 @@ class FirebaseOperations with ChangeNotifier {
           file: videoThumbnail,
           filename: "${Timestamp.now().millisecondsSinceEpoch}  .gif",
           region: "us-east-1",
-          destDir: "LZF1TxU9TabQ3hhbUXZH6uC22dH3");
+          destDir: "${Timestamp.now().millisecondsSinceEpoch}");
 
       final String id = nanoid();
 
@@ -2048,7 +2050,7 @@ class FirebaseOperations with ChangeNotifier {
         file: file,
         filename: "${startingFileName}${endingFileName}",
         region: "us-east-1",
-        destDir: "LZF1TxU9TabQ3hhbUXZH6uC22dH3");
+        destDir: "${Timestamp.now().millisecondsSinceEpoch}");
 
     if (pop) {
       Navigator.pop(ctx);

@@ -490,7 +490,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                                             "${fileName}videoFile.mp4",
                                                         region: "us-east-1",
                                                         destDir:
-                                                            "LZF1TxU9TabQ3hhbUXZH6uC22dH3");
+                                                            "${Timestamp.now().millisecondsSinceEpoch}");
 
                                                 final String? alphaVideoUrl =
                                                     await AwsAnketS3.uploadFile(
@@ -505,7 +505,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                                             "${fileName}_alpha.mp4",
                                                         region: "us-east-1",
                                                         destDir:
-                                                            "LZF1TxU9TabQ3hhbUXZH6uC22dH3");
+                                                            "${Timestamp.now().millisecondsSinceEpoch}");
 
                                                 String name =
                                                     "${_arCaptionController.text} ${_arTitleController.text}";

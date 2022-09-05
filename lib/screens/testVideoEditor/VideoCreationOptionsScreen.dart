@@ -43,12 +43,11 @@ class VideoCreationOptionsScreen extends StatelessWidget {
   }
 
   _pickVideo({required BuildContext context}) async {
-    FilePickerResult? filePicked = await FilePicker.platform.pickFiles(
-      type: FileType.video,
+    final XFile? file = await _picker.pickVideo(
+      source: ImageSource.gallery,
     );
-    if (filePicked != null) {
-      final PlatformFile file = filePicked.files.single;
-      final int audioFlag = await audioCheck(videoUrl: file.path!);
+    if (file != null) {
+      final int audioFlag = await audioCheck(videoUrl: file.path);
 
       switch (audioFlag) {
         case 1:
@@ -56,7 +55,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
               context,
               MaterialPageRoute<void>(
                   builder: (BuildContext context) =>
-                      InitVideoEditorScreen(file: File(file.path!))));
+                      InitVideoEditorScreen(file: File(file.path))));
           break;
         default:
           CoolAlert.show(

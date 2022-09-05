@@ -18,6 +18,7 @@ import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/ui/frame/frame
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/ui/frame/frame_thumbnail_slider.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/ui/video_viewer.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/video_editor.dart';
+import 'package:diamon_rose_app/screens/testVideoEditor/VideoThumbnailSelectionScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/testingVideoOutput.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
@@ -1828,9 +1829,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                 final VideoPlayerController _videoController =
                                     VideoPlayerController.file(file);
 
-                                await Provider.of<FFmpegProvider>(context,
-                                        listen: false)
-                                    .thumbnailCreator(vidFilePath: file.path);
+                                // await Provider.of<FFmpegProvider>(context,
+                                //         listen: false)
+                                //     .thumbnailCreator(vidFilePath: file.path);
 
                                 final bgMaterialThumnailFile =
                                     await Provider.of<FFmpegProvider>(context,
@@ -1912,32 +1913,48 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                   ),
                                                   ElevatedButton(
                                                     onPressed: () {
-                                                      // ignore: unawaited_futures
+                                                      // * new transition to thumbnail selection
                                                       Navigator.pushReplacement(
                                                           context,
                                                           PageTransition(
                                                               child:
-                                                                  PreviewVideoScreen(
-                                                                bgMaterialThumnailFile:
-                                                                    bgMaterialThumnailFile,
-                                                                bgFile:
-                                                                    widget.file,
-                                                                thumbnailFile: Provider.of<
-                                                                            FFmpegProvider>(
-                                                                        context,
-                                                                        listen:
-                                                                            false)
-                                                                    .thumbnailFile,
-                                                                videoFile: File(
-                                                                    file.path),
-                                                                videoPlayerController:
-                                                                    _videoController,
+                                                                  VideothumbnailSelector(
                                                                 arList:
                                                                     list.value,
+                                                                file: file,
+                                                                bgMaterialThumnailFile:
+                                                                    bgMaterialThumnailFile,
                                                               ),
                                                               type:
                                                                   PageTransitionType
                                                                       .fade));
+                                                      // ! Old transition to video preview
+                                                      // ignore: unawaited_futures
+                                                      // Navigator.pushReplacement(
+                                                      //     context,
+                                                      //     PageTransition(
+                                                      //         child:
+                                                      //             PreviewVideoScreen(
+                                                      //           bgMaterialThumnailFile:
+                                                      //               bgMaterialThumnailFile,
+                                                      //           bgFile:
+                                                      //               widget.file,
+                                                      //           thumbnailFile: Provider.of<
+                                                      //                       FFmpegProvider>(
+                                                      //                   context,
+                                                      //                   listen:
+                                                      //                       false)
+                                                      //               .thumbnailFile,
+                                                      //           videoFile: File(
+                                                      //               file.path),
+                                                      //           videoPlayerController:
+                                                      //               _videoController,
+                                                      //           arList:
+                                                      //               list.value,
+                                                      //         ),
+                                                      //         type:
+                                                      //             PageTransitionType
+                                                      //                 .fade));
                                                     },
                                                     child: Text(
                                                       "Next",

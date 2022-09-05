@@ -713,10 +713,13 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                               _selectedRecommendedOptions.length > 0) {
                             // ignore: unawaited_futures
                             CoolAlert.show(
-                                barrierDismissible: false,
+                                barrierDismissible: true,
                                 context: context,
                                 type: CoolAlertType.loading,
                                 text: "Uploading Video");
+
+                            log("now");
+
                             try {
                               await firebaseOperations
                                   .uploadVideo(
@@ -748,20 +751,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                 video_title: _videotitleController.text,
                                 genre: _selectedRecommendedOptions,
                               )
-                                  .whenComplete(() async {
-                                widget.videoPlayerController.dispose();
-                                widget.arList.forEach((arVal) {
-                                  deleteFile(arVal.pathsForVideoFrames!);
-                                });
-                                // Navigator.pushReplacement(
-                                //   context,
-                                //   PageTransition(
-                                //       child: FeedPage(),
-                                //       type: PageTransitionType.leftToRight),
-                                // );
-                                Provider.of<HomeScreenProvider>(context,
-                                        listen: false)
-                                    .setHomeScreen(true);
+                                  .then((value) {
                                 Navigator.pushReplacement(
                                   context,
                                   PageTransition(
@@ -769,6 +759,19 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                       type: PageTransitionType.bottomToTop),
                                 );
                               });
+                              log("done uploading");
+
+                              // widget.videoPlayerController.dispose();
+                              // widget.arList.forEach((arVal) {
+                              //   deleteFile(arVal.pathsForVideoFrames!);
+                              // });
+                              // // Navigator.pushReplacement(
+                              // //   context,
+                              // //   PageTransition(
+                              // //       child: FeedPage(),
+                              // //       type: PageTransitionType.leftToRight),
+                              // // );
+
                               //ignore: avoid_catches_without_on_clauses
                             } catch (e) {
                               CoolAlert.show(
@@ -777,7 +780,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                 title: "Error Uploading Video",
                                 text: e.toString(),
                               );
-                              // ignore: unawaited_futures
+                              //   // ignore: unawaited_futures
 
                             }
                           } else if (_selectedRecommendedOptions.length == 0) {
