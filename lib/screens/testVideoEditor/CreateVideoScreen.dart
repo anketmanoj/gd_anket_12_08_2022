@@ -1823,15 +1823,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                             onProgress: (stats, value) =>
                                 _exportingProgress.value = value,
                             onCompleted: (file) async {
-                              _isExporting.value = false;
-                              if (!mounted) return;
                               if (file != null) {
-                                final VideoPlayerController _videoController =
-                                    VideoPlayerController.file(file);
-
-                                // await Provider.of<FFmpegProvider>(context,
-                                //         listen: false)
-                                //     .thumbnailCreator(vidFilePath: file.path);
+                                dev.log("we're here now");
 
                                 final bgMaterialThumnailFile =
                                     await Provider.of<FFmpegProvider>(context,
@@ -1839,141 +1832,35 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                         .bgMaterialThumbnailCreator(
                                             vidFilePath: widget.file.path);
 
-                                // ignore: unawaited_futures
-                                _videoController
-                                    .initialize()
-                                    .then((value) async {
-                                  setState(() {});
+                                dev.log("Send!");
+                                Get.to(() => VideothumbnailSelector(
+                                      arList: list.value,
+                                      file: file,
+                                      bgMaterialThumnailFile:
+                                          bgMaterialThumnailFile,
+                                    ));
 
-                                  _videoController.setLooping(true);
-                                  await showDialog(
-                                    context: context,
-                                    builder: (_) => Padding(
-                                      padding: const EdgeInsets.all(30),
-                                      child: Container(
-                                        color: Colors.black,
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              height: 50,
-                                              color: Colors.white,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    "Preview",
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 20,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Container(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.6,
-                                              child: Center(
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    _videoController
-                                                            .value.isPlaying
-                                                        ? _videoController
-                                                            .pause()
-                                                        : _videoController
-                                                            .play();
-                                                  },
-                                                  child: AspectRatio(
-                                                    aspectRatio:
-                                                        _videoController
-                                                            .value.aspectRatio,
-                                                    child: VideoPlayer(
-                                                        _videoController),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              color: Colors.white,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: Text(
-                                                      "Cancel",
-                                                    ),
-                                                  ),
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      // * new transition to thumbnail selection
-                                                      Navigator.pushReplacement(
-                                                          context,
-                                                          PageTransition(
-                                                              child:
-                                                                  VideothumbnailSelector(
-                                                                arList:
-                                                                    list.value,
-                                                                file: file,
-                                                                bgMaterialThumnailFile:
-                                                                    bgMaterialThumnailFile,
-                                                              ),
-                                                              type:
-                                                                  PageTransitionType
-                                                                      .fade));
-                                                      // ! Old transition to video preview
-                                                      // ignore: unawaited_futures
-                                                      // Navigator.pushReplacement(
-                                                      //     context,
-                                                      //     PageTransition(
-                                                      //         child:
-                                                      //             PreviewVideoScreen(
-                                                      //           bgMaterialThumnailFile:
-                                                      //               bgMaterialThumnailFile,
-                                                      //           bgFile:
-                                                      //               widget.file,
-                                                      //           thumbnailFile: Provider.of<
-                                                      //                       FFmpegProvider>(
-                                                      //                   context,
-                                                      //                   listen:
-                                                      //                       false)
-                                                      //               .thumbnailFile,
-                                                      //           videoFile: File(
-                                                      //               file.path),
-                                                      //           videoPlayerController:
-                                                      //               _videoController,
-                                                      //           arList:
-                                                      //               list.value,
-                                                      //         ),
-                                                      //         type:
-                                                      //             PageTransitionType
-                                                      //                 .fade));
-                                                    },
-                                                    child: Text(
-                                                      "Next",
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                  await _videoController.pause();
-                                  _videoController.dispose();
-                                });
+                                // Navigator.pushReplacement(
+                                //     context,
+                                //     PageTransition(
+                                //         child: VideothumbnailSelector(
+                                //           arList: list.value,
+                                //           file: file,
+                                //           bgMaterialThumnailFile:
+                                //               bgMaterialThumnailFile,
+                                //         ),
+                                //         type: PageTransitionType.fade));
 
-                                _exportText = "Video success export!";
+                                dev.log("we're here?");
                               } else {
+                                Navigator.pop(context);
+                                CoolAlert.show(
+                                  context: context,
+                                  type: CoolAlertType.error,
+                                  title: "Error Processing Video",
+                                  text:
+                                      "Device RAM issue. Please free up space on your phone to be able to process the video properly",
+                                );
                                 dev.log("hello ?? ");
                               }
 
@@ -2170,43 +2057,63 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         dev.log(' network connected');
         // PROGRESS CALLBACKS
-        await FFmpegKit.executeAsync(
-          commandToExecute,
-          (session) async {
-            final state =
-                FFmpegKitConfig.sessionStateToString(await session.getState());
-            final code = await session.getReturnCode();
-            final failStackTrace = await session.getFailStackTrace();
+        // PROGRESS CALLBACKS
 
-            debugPrint(
-                "FFmpeg process exited with state $state and return code $code.${(failStackTrace == null) ? "" : "\\n" + failStackTrace}");
+        await FFmpegKit.execute(commandToExecute).then((value) async {
+          final state =
+              FFmpegKitConfig.sessionStateToString(await value.getState());
+          final code = await value.getReturnCode();
+          final failStackTrace = await value.getFailStackTrace();
 
-            if (code != 0) {
-              Navigator.pop(context);
-              CoolAlert.show(
-                context: context,
-                type: CoolAlertType.error,
-                title: "Error Processing Video",
-                text:
-                    "Device RAM issue. Please free up space on your phone to be able to process the video properly",
-              );
-            }
+          debugPrint(
+              "FFmpeg process exited with state $state and return code $code.${(failStackTrace == null) ? "" : "\\n" + failStackTrace}");
 
-            // dev.log(File("$tempPath/output.mp4").)
+          if (code!.isValueError()) {
+            Navigator.pop(context);
+            CoolAlert.show(
+              context: context,
+              type: CoolAlertType.error,
+              title: "Error Processing Video",
+              text:
+                  "Device RAM issue. Please free up space on your phone to be able to process the video properly",
+            );
+          }
 
-            onCompleted(
-                code?.isValueSuccess() == true ? File(outputPath) : null);
-          },
-          null,
-          onProgress != null
-              ? (stats) {
-                  // Progress value of encoded video
-                  double progressValue = stats.getTime() /
-                      (Duration.zero - bgVideoDuartion).inMilliseconds;
-                  onProgress(stats, progressValue.clamp(0.0, 1.0));
-                }
-              : null,
-        );
+          onCompleted(code.isValueSuccess() == true ? File(outputPath) : null);
+        });
+        // await FFmpegKit.executeAsync(
+        //   commandToExecute,
+        //   (session) async {
+        //     final state =
+        //         FFmpegKitConfig.sessionStateToString(await session.getState());
+        //     final code = await session.getReturnCode();
+        //     final failStackTrace = await session.getFailStackTrace();
+
+        //     debugPrint(
+        //         "FFmpeg process exited with state $state and return code $code.${(failStackTrace == null) ? "" : "\\n" + failStackTrace}");
+
+        //     if (code!.isValueError()) {
+        //       Navigator.pop(context);
+        //       CoolAlert.show(
+        //         context: context,
+        //         type: CoolAlertType.error,
+        //         title: "Error Processing Video",
+        //       );
+        //     }
+
+        //     onCompleted(
+        //         code.isValueSuccess() == true ? File(outputPath) : null);
+        //   },
+        //   null,
+        //   onProgress != null
+        //       ? (stats) {
+        //           // Progress value of encoded video
+        //           double progressValue = stats.getTime() /
+        //               (Duration.zero - bgVideoDuartion).inMilliseconds;
+        //           onProgress(stats, progressValue.clamp(0.0, 1.0));
+        //         }
+        //       : null,
+        // );
       }
     } on SocketException catch (_) {
       dev.log('network not connected');

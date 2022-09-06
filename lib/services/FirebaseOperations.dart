@@ -10,6 +10,7 @@ import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
 import 'package:diamon_rose_app/providers/image_utils_provider.dart';
 import 'package:diamon_rose_app/providers/social_media_links_provider.dart';
 import 'package:diamon_rose_app/screens/OtherUserProfile/otherUserProfile.dart';
+import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
 import 'package:diamon_rose_app/services/ArViewOnlyServerResponse.dart';
 import 'package:diamon_rose_app/services/RVMServerResponse.dart';
@@ -801,7 +802,7 @@ class FirebaseOperations with ChangeNotifier {
     });
   }
 
-  Future uploadVideo({
+  Future<bool> uploadVideo({
     required File bgFile,
     required String userUid,
     required String video_title,
@@ -830,8 +831,8 @@ class FirebaseOperations with ChangeNotifier {
               .thumbnailCreator(vidFilePath: bgFile.path);
 
       String? uploadedAWS_BgThumbnailFile = await AwsAnketS3.uploadFile(
-          accessKey: "AKIATF76MVYR3K3W62OX",
-          secretKey: "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",
+          accessKey: "AKIATF76MVYR34JAVB7H",
+          secretKey: "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",
           bucket: "anketvideobucket",
           file: bgFileThumbnail,
           filename:
@@ -840,8 +841,8 @@ class FirebaseOperations with ChangeNotifier {
           destDir: "${Timestamp.now().millisecondsSinceEpoch}");
 
       String? uploadedAWS_BgFile = await AwsAnketS3.uploadFile(
-          accessKey: "AKIATF76MVYR3K3W62OX",
-          secretKey: "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",
+          accessKey: "AKIATF76MVYR34JAVB7H",
+          secretKey: "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",
           bucket: "anketvideobucket",
           file: bgFile,
           filename: "${Timestamp.now().millisecondsSinceEpoch}bgfile.mp4",
@@ -874,8 +875,8 @@ class FirebaseOperations with ChangeNotifier {
       }
 
       final String? packageThumbnailUrl = await AwsAnketS3.uploadFile(
-          accessKey: "AKIATF76MVYR3K3W62OX",
-          secretKey: "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",
+          accessKey: "AKIATF76MVYR34JAVB7H",
+          secretKey: "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",
           bucket: "anketvideobucket",
           file: thumbnailFile,
           filename: "${Timestamp.now().millisecondsSinceEpoch}thumbnailGif.gif",
@@ -883,8 +884,8 @@ class FirebaseOperations with ChangeNotifier {
           destDir: "${Timestamp.now().millisecondsSinceEpoch}");
 
       await AwsAnketS3.uploadFile(
-              accessKey: "AKIATF76MVYR3K3W62OX",
-              secretKey: "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",
+              accessKey: "AKIATF76MVYR34JAVB7H",
+              secretKey: "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",
               bucket: "anketvideobucket",
               file: videoFile,
               filename:
@@ -910,8 +911,8 @@ class FirebaseOperations with ChangeNotifier {
           // );
 
           final String? effectUrl = await AwsAnketS3.uploadFile(
-              accessKey: "AKIATF76MVYR3K3W62OX",
-              secretKey: "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",
+              accessKey: "AKIATF76MVYR34JAVB7H",
+              secretKey: "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",
               bucket: "anketvideobucket",
               file: File(arVal.gifFilePath!),
               filename: "${Timestamp.now().millisecondsSinceEpoch}Effect.gif",
@@ -1115,39 +1116,16 @@ class FirebaseOperations with ChangeNotifier {
                   });
                 }
             }
-            // arSnapshot.data()!['layerType'] == "AR"
-            //     ? await FirebaseFirestore.instance
-            //         .collection("posts")
-            //         .doc(id)
-            //         .collection("materials")
-            //         .doc(arUidVal)
-            //         .set({
-            //         "alpha": arSnapshot.data()!['alpha'],
-            //         "main": arSnapshot.data()!['main'],
-            //         "composite": arSnapshot.data()!['composite'],
-            //         "gif": arSnapshot.data()!['gif'],
-            //         "layerType": arSnapshot.data()!['layerType'],
-            //         "timestamp": arSnapshot.data()!['timestamp'],
-            //         "id": arSnapshot.data()!['id'],
-            //       })
-            //     : await FirebaseFirestore.instance
-            //         .collection("posts")
-            //         .doc(id)
-            //         .collection("materials")
-            //         .doc(arUidVal)
-            //         .set({
-            //         "gif": arSnapshot.data()!['gif'],
-            //         "layerType": arSnapshot.data()!['layerType'],
-            //         "timestamp": arSnapshot.data()!['timestamp'],
-            //         "id": arSnapshot.data()!['id'],
-            //       });
           });
         });
       }).then((value) {
         arIdsVal = [];
         notifyListeners();
       });
+
+      return true;
     } catch (e) {
+      return false;
       print("ANKET ERROR ${e.toString()}");
     }
   }
@@ -1223,8 +1201,8 @@ class FirebaseOperations with ChangeNotifier {
               .thumbnailCreator(vidFilePath: videoUrl);
 
       final String? packageThumbnailUrl = await AwsAnketS3.uploadFile(
-          accessKey: "AKIATF76MVYR3K3W62OX",
-          secretKey: "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",
+          accessKey: "AKIATF76MVYR34JAVB7H",
+          secretKey: "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",
           bucket: "anketvideobucket",
           file: videoThumbnail,
           filename: "${Timestamp.now().millisecondsSinceEpoch}  .gif",
@@ -1603,8 +1581,8 @@ class FirebaseOperations with ChangeNotifier {
     required String userUid,
   }) async {
     final String? effectUrl = await AwsAnketS3.uploadFile(
-        accessKey: "AKIATF76MVYR3K3W62OX",
-        secretKey: "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",
+        accessKey: "AKIATF76MVYR34JAVB7H",
+        secretKey: "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",
         bucket: "anketvideobucket",
         file: gifFile,
         filename: "${Timestamp.now().millisecondsSinceEpoch}Effect.gif",
@@ -2043,14 +2021,18 @@ class FirebaseOperations with ChangeNotifier {
   }) async {
     // ignore: unawaited_futures
 
+    log("filename == ${startingFileName}");
+
     final String? url = await AwsAnketS3.uploadFile(
-        accessKey: "AKIATF76MVYR3K3W62OX",
-        secretKey: "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",
+        accessKey: "AKIATF76MVYR34JAVB7H",
+        secretKey: "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",
         bucket: "anketvideobucket",
         file: file,
         filename: "${startingFileName}${endingFileName}",
         region: "us-east-1",
-        destDir: "${Timestamp.now().millisecondsSinceEpoch}");
+        destDir: startingFileName);
+
+    log("url; == $url");
 
     if (pop) {
       Navigator.pop(ctx);
@@ -2124,7 +2106,9 @@ class FirebaseOperations with ChangeNotifier {
 
     var response = await http.post(
       Uri.parse(
-          "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api_ad1/adminpost/"),
+        "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api_ad1v2/adminpost/",
+        // "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api_ad1/adminpost/",
+      ),
       headers: {"Content-Type": "application/json"},
       body: json.encode(
         {
@@ -2149,7 +2133,8 @@ class FirebaseOperations with ChangeNotifier {
           "endDiscountDate": endDiscountDate,
           "contentAvailability": "All",
           "fcmToken": fcmToken,
-          "isverified": isVerified
+          "isverified": isVerified,
+          "s3_dir_name": "${fileName}/"
         },
       ),
     );
@@ -2210,7 +2195,9 @@ class FirebaseOperations with ChangeNotifier {
 
     var response = await http.post(
       Uri.parse(
-          "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api3/background_separation2/"),
+        "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api3v2/background_separation2/",
+        // "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api3/background_separation2/",
+      ),
       headers: {"Content-Type": "application/json"},
       body: json.encode(
         {
@@ -2220,7 +2207,8 @@ class FirebaseOperations with ChangeNotifier {
           "idVal": idVal,
           "registrationId": registrationId,
           "ownerName": ownerName,
-          "endDuration": endDuration
+          "endDuration": endDuration,
+          "s3_dir_name": "${fileStarting}/"
         },
       ),
     );
@@ -2251,13 +2239,16 @@ class FirebaseOperations with ChangeNotifier {
 
     var response = await http.post(
       Uri.parse(
-          "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api2/combine_body_GDback/"),
+        "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api2v2/combine_body_GDback/",
+        // "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api2/combine_body_GDback/",
+      ),
       headers: {"Content-Type": "application/json"},
       body: json.encode(
         {
           "file_title": fileStarting,
           "audio_flag": audioFlag,
           "video_duration": videoDuration,
+          "s3_dir_name": "${fileStarting}/"
         },
       ),
     );

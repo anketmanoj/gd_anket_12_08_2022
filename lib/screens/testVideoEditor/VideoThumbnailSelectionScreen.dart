@@ -396,7 +396,7 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
                           CoolAlert.show(
                             context: context,
                             type: CoolAlertType.loading,
-                            barrierDismissible: true,
+                            barrierDismissible: false,
                           );
                           _exportCover();
                         },

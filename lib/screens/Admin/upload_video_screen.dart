@@ -480,9 +480,9 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                                 final String? mainVideoUrl =
                                                     await AwsAnketS3.uploadFile(
                                                         accessKey:
-                                                            "AKIATF76MVYR3K3W62OX",
+                                                            "AKIATF76MVYR34JAVB7H",
                                                         secretKey:
-                                                            "st6hCmrpkk1E3ST23szLx6nofF9dXaQXtGrw0WaL",
+                                                            "qNosurynLH/WHV4iYu8vYWtSxkKqBFav0qbXEvdd",
                                                         bucket:
                                                             "anketvideobucket",
                                                         file: mainVideo!,
@@ -495,9 +495,9 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                                 final String? alphaVideoUrl =
                                                     await AwsAnketS3.uploadFile(
                                                         accessKey:
-                                                            "AKIATF76MVYR3K3W62OX",
+                                                            "AKIATF76MVYR34JAVB7H",
                                                         secretKey:
-                                                            "st6hCmrpkk1E3ST23szLx6nofF9dXaQXtGrw0WaL",
+                                                            "qNosurynLH/WHV4iYu8vYWtSxkKqBFav0qbXEvdd",
                                                         bucket:
                                                             "anketvideobucket",
                                                         file: alphaVideo!,
