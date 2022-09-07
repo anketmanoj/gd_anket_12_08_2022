@@ -1233,6 +1233,7 @@ class TopProfileStack extends StatefulWidget {
 }
 
 class _TopProfileStackState extends State<TopProfileStack> {
+  final GlobalKey webViewKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
@@ -1274,11 +1275,17 @@ class _TopProfileStackState extends State<TopProfileStack> {
                   ),
                   child: IconButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          PageTransition(
-                              child: ProfileMenuScreen(),
-                              type: PageTransitionType.rightToLeft));
+                      log("opening");
+                      final Authentication auth =
+                          context.read<Authentication>();
+                      final FirebaseOperations firebaseOperations =
+                          context.read<FirebaseOperations>();
+                      final String menuUrl =
+                          // "https://www.google.com";
+                          "http://192.168.1.9:8080/#/menu/${auth.getUserId}/${auth.emailAuth.toString()}";
+                      log(menuUrl);
+                      ViewMenuWebApp(context, menuUrl, auth, firebaseOperations,
+                          webViewKey);
                     },
                     icon: Icon(
                       Icons.menu,
