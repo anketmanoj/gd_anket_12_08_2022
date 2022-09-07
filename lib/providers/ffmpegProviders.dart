@@ -31,39 +31,36 @@ class FFmpegProvider extends ChangeNotifier {
     final String rawDocumentPath = appDocumentDir.path;
     final String outputPath = "${rawDocumentPath}/thumbnail.gif";
 
-    await FFprobeKit.execute(
-            "-i ${vidFilePath} -show_entries format=duration -v quiet -of json")
-        .then((value) {
-      value.getOutput().then((mapOutput) async {
-        final Map<String, dynamic> json = jsonDecode(mapOutput!);
+    final value = await FFprobeKit.execute(
+        "-i ${vidFilePath} -show_entries format=duration -v quiet -of json");
 
-        String durationString = json['format']['duration'];
+    log("value == ${value}");
 
-        print("durationString final : $durationString");
+    final String? mapOutput = await value.getOutput();
 
-        if (double.parse(durationString) > 5) {
-          log("duration greater normal than 5s");
-          await FFmpegKit.execute(
-                  "-y -i ${vidFilePath} -to 00:00:05 -vf scale=-2:480 -r 20/1 ${outputPath}")
-              .then((value) {
-            thumbnailFile = File(outputPath);
-            notifyListeners();
-          });
-        } else {
-          log("duration less than 5s");
-          final double duration = double.parse(durationString) * 0.5;
-          log("duration i normal $duration");
-          await FFmpegKit.execute(
-                  "-y -i ${vidFilePath} -to ${formatTime(duration.toInt())} -vf scale=-2:480 -r 20/1 ${outputPath}")
-              .then((value) {
-            thumbnailFile = File(outputPath);
-            notifyListeners();
-          });
-        }
-      });
-    });
-    log("thumbnail file == ${thumbnailFile.path}");
-    return thumbnailFile;
+    log("Map output == ${mapOutput}");
+
+    final Map<String, dynamic> json = jsonDecode(mapOutput!);
+
+    String durationString = json['format']['duration'];
+
+    log("durationString final : $durationString");
+
+    if (double.parse(durationString) > 5) {
+      log("duration greater normal than 5s");
+      await FFmpegKit.execute(
+          "-y -i ${vidFilePath} -to 00:00:05 -vf scale=-2:480 -r 20/1 ${outputPath}");
+      log("thumbnail file new more == ${File(outputPath).path}");
+      return File(outputPath);
+    } else {
+      log("duration less than 5s");
+      final double duration = double.parse(durationString) * 0.5;
+      log("duration i normal $duration");
+      await FFmpegKit.execute(
+          "-y -i ${vidFilePath} -to ${formatTime(duration.toInt())} -vf scale=-2:480 -r 20/1 ${outputPath}");
+      log("thumbnail file new less == ${File(outputPath).path}");
+      return File(outputPath);
+    }
   }
 
   Future<File> bgMaterialThumbnailCreator({required String vidFilePath}) async {

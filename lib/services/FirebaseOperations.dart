@@ -1194,7 +1194,7 @@ class FirebaseOperations with ChangeNotifier {
       CoolAlert.show(
         context: ctx,
         type: CoolAlertType.loading,
-        text: "Posting GD AR as Ar View Only",
+        text: "Posting here GD AR as Ar View Only",
       );
       final File videoThumbnail =
           await Provider.of<FFmpegProvider>(ctx, listen: false)
@@ -1205,9 +1205,11 @@ class FirebaseOperations with ChangeNotifier {
           secretKey: "qNosurynLH/WHV4iYu8vYWtSxkKqBFav0qbXEvdd",
           bucket: "anketvideobucket",
           file: videoThumbnail,
-          filename: "${Timestamp.now().millisecondsSinceEpoch}  .gif",
+          filename: "${Timestamp.now().millisecondsSinceEpoch}.gif",
           region: "us-east-1",
           destDir: "${Timestamp.now().millisecondsSinceEpoch}");
+
+      log("package URl = $packageThumbnailUrl");
 
       final String id = nanoid();
 

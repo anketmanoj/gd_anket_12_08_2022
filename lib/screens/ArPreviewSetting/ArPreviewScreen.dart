@@ -818,7 +818,10 @@ class ArPreviewSetting extends StatelessWidget {
                                                   if (arViewOnlyServerResponse !=
                                                       null) {
                                                     final String _inputFileUrl =
-                                                        "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/${arViewOnlyServerResponse.ARwithGDbackcover}";
+                                                        "https://anketvideobucket.s3.amazonaws.com/${arIdVal}/${arViewOnlyServerResponse.ARwithGDbackcover}";
+
+                                                    dev.log(
+                                                        "input url = $_inputFileUrl");
 
                                                     dev.log(
                                                         "video File == ${_inputFileUrl}");
