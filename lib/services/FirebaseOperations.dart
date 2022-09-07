@@ -1214,9 +1214,10 @@ class FirebaseOperations with ChangeNotifier {
   }) async {
     try {
       CoolAlert.show(
+        barrierDismissible: false,
         context: ctx,
         type: CoolAlertType.loading,
-        text: "Posting here GD AR as Ar View Only",
+        text: "Posting GD AR as Ar View Only",
       );
       final File videoThumbnail =
           await Provider.of<FFmpegProvider>(ctx, listen: false)
