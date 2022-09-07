@@ -4,14 +4,24 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
+import 'package:diamon_rose_app/screens/ProfilePage/update_email_screen.dart';
+import 'package:diamon_rose_app/screens/ProfilePage/update_password_screen.dart';
 import 'package:diamon_rose_app/screens/PurchaseHistory/purchaseHistroy.dart';
+import 'package:diamon_rose_app/screens/closeAccount/closeAccountScreen.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
+import 'package:diamon_rose_app/screens/testVideoEditor/imgseqanimation.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/GoogleSheetsAPI/controller.dart';
 import 'package:diamon_rose_app/services/GoogleSheetsAPI/form.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/dbService.dart';
+import 'package:diamon_rose_app/services/dynamic_link_service.dart';
+import 'package:diamon_rose_app/services/myArCollectionClass.dart';
+import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/apple_pay.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -19,6 +29,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sizer/sizer.dart';
 
@@ -70,14 +81,34 @@ ViewMenuWebApp(BuildContext context, String menuUrl, Authentication auth,
                     padding: const EdgeInsets.fromLTRB(15, 20, 0, 10),
                     child: Row(
                       children: [
-                        InkWell(
-                          onTap: Get.back,
-                          child: Text(
-                            "Done",
-                            style: TextStyle(
-                              color: constantColors.bioBg,
-                              fontSize: 16,
+                        Expanded(
+                          child: InkWell(
+                            onTap: Get.back,
+                            child: Text(
+                              "Done",
+                              style: TextStyle(
+                                color: constantColors.bioBg,
+                                fontSize: 16,
+                              ),
                             ),
+                          ),
+                        ),
+                        Expanded(
+                          child: IconButton(
+                            onPressed: () {
+                              webViewController!.goBack();
+                            },
+                            icon: Icon(Icons.arrow_back_ios_new,
+                                color: constantColors.whiteColor),
+                          ),
+                        ),
+                        Expanded(
+                          child: IconButton(
+                            onPressed: () {
+                              webViewController!.goForward();
+                            },
+                            icon: Icon(Icons.arrow_forward_ios,
+                                color: constantColors.whiteColor),
                           ),
                         ),
                       ],
@@ -280,6 +311,140 @@ ViewMenuWebApp(BuildContext context, String menuUrl, Authentication auth,
                           log("logout user");
                           Get.back();
                           logOutDialog(context: context, auth: auth);
+                        } else if (uri.toString().contains('/arCollection/')) {
+                          log("Ar post id");
+                          Get.back();
+                          final String postId = uri.toString().split("/").last;
+                          log("postid = $postId");
+                          await FirebaseFirestore.instance
+                              .collection("users")
+                              .doc(auth.getUserId)
+                              .collection("MyCollection")
+                              .limit(1)
+                              .where("id", isEqualTo: postId)
+                              .get()
+                              .then(
+                                (value) => value.docs.forEach(
+                                  (element) {
+                                    MyArCollection myAr =
+                                        MyArCollection.fromJson(element.data()
+                                            as Map<String, dynamic>);
+
+                                    runARCommand(myAr: myAr);
+                                  },
+                                ),
+                              );
+                        } else if (uri.toString().contains('/deleteaccount')) {
+                          log("Delete account");
+                          Get.back();
+
+                          final String login =
+                              SharedPreferencesHelper.getString("login");
+                          switch (login) {
+                            case "email":
+                              Get.to(() => CloseAccountScreen());
+                              break;
+                            case "apple":
+                              CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.info,
+                                title: "Delete Account?",
+                                text:
+                                    "Are you sure you want to delete your account?\n\nThis action is permanent.",
+                                showCancelBtn: true,
+                                onCancelBtnTap: Get.back,
+                                onConfirmBtnTap: () async {
+                                  await DatabaseService(uid: auth.getUserId)
+                                      .deleteuser();
+
+                                  await FirebaseAuth.instance.currentUser!
+                                      .delete();
+
+                                  // ignore: unawaited_futures
+                                  Get.offAll(() => MainPage());
+                                },
+                              );
+                              break;
+                            case "gmail":
+                              CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.info,
+                                title: "Delete Account?",
+                                text:
+                                    "Are you sure you want to delete your account?\n\nThis action is permanent.",
+                                showCancelBtn: true,
+                                onCancelBtnTap: Get.back,
+                                onConfirmBtnTap: () async {
+                                  await DatabaseService(uid: auth.getUserId)
+                                      .deleteuser();
+
+                                  await FirebaseAuth.instance.currentUser!
+                                      .delete();
+
+                                  // ignore: unawaited_futures
+                                  Get.offAll(() => MainPage());
+                                },
+                              );
+                              break;
+                            case "facebook":
+                              CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.info,
+                                title: "Delete Account?",
+                                text:
+                                    "Are you sure you want to delete your account?\n\nThis action is permanent.",
+                                showCancelBtn: true,
+                                onCancelBtnTap: Get.back,
+                                onConfirmBtnTap: () async {
+                                  await DatabaseService(uid: auth.getUserId)
+                                      .deleteuser();
+
+                                  await FirebaseAuth.instance.currentUser!
+                                      .delete();
+
+                                  // ignore: unawaited_futures
+                                  Get.offAll(() => MainPage());
+                                },
+                              );
+                              break;
+                          }
+                        } else if (uri.toString().contains('/diamondhistory')) {
+                          log("Diamond History");
+                          Get.back();
+                          Get.to(() => PurchaseHistoryScreen());
+                        } else if (uri
+                            .toString()
+                            .contains('/favorites-post/')) {
+                          log("Favoirte post");
+                          Get.back();
+
+                          final String postId = uri.toString().split("/").last;
+                          log("postid = $postId");
+                          Get.to(
+                            () => PostDetailsScreen(
+                              videoId: postId,
+                            ),
+                          );
+                        } else if (uri.toString().contains('/shareprofile')) {
+                          log("Share profile");
+                          Get.back();
+
+                          final generatedLink = await DynamicLinkService
+                              .createUserProfileDynamicLink(auth.getUserId,
+                                  short: true);
+                          final String message = generatedLink.toString();
+
+                          Share.share(
+                            'check out @${firebaseOperations.initUserName}\n\n$generatedLink',
+                          );
+                        } else if (uri.toString().contains('/updateemail')) {
+                          log("Update Email");
+                          Get.back();
+                          Get.to(() => UpdateEmailScreen());
+                        } else if (uri.toString().contains('/updatepassword')) {
+                          log("Update Password");
+                          Get.back();
+                          Get.to(() => UpdatePasswordScreen());
                         }
                       },
                       initialUrlRequest: URLRequest(
@@ -343,6 +508,20 @@ ViewMenuWebApp(BuildContext context, String menuUrl, Authentication auth,
           });
     },
   );
+}
+
+void runARCommand({required MyArCollection myAr}) {
+  final String audioFile = myAr.audioFile;
+
+  // ignore: cascade_invocations
+  final String folderName = audioFile.split(myAr.id).toList()[0];
+  final String fileName = "${myAr.id}imgSeq";
+
+  Get.to(() => ImageSeqAniScreen(
+        folderName: folderName,
+        fileName: fileName,
+        MyAR: myAr,
+      ));
 }
 
 dynamic logOutDialog(

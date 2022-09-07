@@ -1282,7 +1282,8 @@ class _TopProfileStackState extends State<TopProfileStack> {
                           context.read<FirebaseOperations>();
                       final String menuUrl =
                           // "https://www.google.com";
-                          "http://192.168.1.9:8080/#/menu/${auth.getUserId}/${auth.emailAuth.toString()}";
+                          "https://gdfe-ac584.firebaseapp.com/#/menu/${auth.getUserId}/${auth.emailAuth.toString()}";
+                      // "http://192.168.1.9:8080/#/menu/${auth.getUserId}/${auth.emailAuth.toString()}";
                       log(menuUrl);
                       ViewMenuWebApp(context, menuUrl, auth, firebaseOperations,
                           webViewKey);
