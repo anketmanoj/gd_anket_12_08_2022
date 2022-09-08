@@ -1045,6 +1045,7 @@ class FirebaseOperations with ChangeNotifier {
                     "videoId": id,
                   });
                 } else {
+                  await notifyUserOfUsage(userid: userUid, type: "AR");
                   await FirebaseFirestore.instance
                       .collection("posts")
                       .doc(id)
@@ -1086,6 +1087,7 @@ class FirebaseOperations with ChangeNotifier {
                     "videoId": id,
                   });
                 } else {
+                  await notifyUserOfUsage(userid: userUid, type: "Effect");
                   await FirebaseFirestore.instance
                       .collection("posts")
                       .doc(id)
@@ -1121,6 +1123,7 @@ class FirebaseOperations with ChangeNotifier {
                     "videoId": id,
                   });
                 } else {
+                  await notifyUserOfUsage(userid: userUid, type: "Background");
                   await FirebaseFirestore.instance
                       .collection("posts")
                       .doc(id)
@@ -1150,6 +1153,26 @@ class FirebaseOperations with ChangeNotifier {
       return false;
       print("ANKET ERROR ${e.toString()}");
     }
+  }
+
+  Future notifyUserOfUsage(
+      {required String userid, required String type}) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userid)
+        .get()
+        .then((value) async {
+      UserModel userModel = UserModel.fromMap(value.data()!);
+
+      await _fcmNotificationService
+          .sendNotificationToUser(
+              to: userModel.token,
+              title: "Your created ${type} is used in a video!",
+              body: "")
+          .whenComplete(() {
+        log("notification sent");
+      });
+    });
   }
 
   Future<void> addArToPostMaterials({

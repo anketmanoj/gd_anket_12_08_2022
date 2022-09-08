@@ -1275,18 +1275,23 @@ class _TopProfileStackState extends State<TopProfileStack> {
                   ),
                   child: IconButton(
                     onPressed: () {
-                      log("opening");
-                      final Authentication auth =
-                          context.read<Authentication>();
-                      final FirebaseOperations firebaseOperations =
-                          context.read<FirebaseOperations>();
-                      final String menuUrl =
-                          // "https://www.google.com";
-                          "https://gdfe-ac584.firebaseapp.com/#/menu/${auth.getUserId}/${auth.emailAuth.toString()}";
-                      // "http://192.168.1.9:8080/#/menu/${auth.getUserId}/${auth.emailAuth.toString()}";
-                      log(menuUrl);
-                      ViewMenuWebApp(context, menuUrl, auth, firebaseOperations,
-                          webViewKey);
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              child: ProfileMenuScreen(),
+                              type: PageTransitionType.rightToLeft));
+                      // log("opening");
+                      // final Authentication auth =
+                      //     context.read<Authentication>();
+                      // final FirebaseOperations firebaseOperations =
+                      //     context.read<FirebaseOperations>();
+                      // final String menuUrl =
+                      //     // "https://www.google.com";
+                      //     "https://gdfe-ac584.firebaseapp.com/#/menu/${auth.getUserId}/${auth.emailAuth.toString()}";
+                      // // "http://192.168.1.9:8080/#/menu/${auth.getUserId}/${auth.emailAuth.toString()}";
+                      // log(menuUrl);
+                      // ViewMenuWebApp(context, menuUrl, auth, firebaseOperations,
+                      //     webViewKey);
                     },
                     icon: Icon(
                       Icons.menu,

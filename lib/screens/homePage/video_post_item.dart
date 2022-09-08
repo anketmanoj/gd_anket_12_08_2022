@@ -901,8 +901,17 @@ class _VideoPostItemState extends State<VideoPostItem> {
               ),
               SpeedDialChild(
                 // visible: widget.video.isPaid,
-                child: Icon(
-                  FontAwesomeIcons.shoppingCart,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: constantColors.whiteColor,
+                    image: DecorationImage(
+                      fit: BoxFit.fitHeight,
+                      image: AssetImage(
+                        "assets/icons/cat_icon.png",
+                      ),
+                    ),
+                  ),
                 ),
                 onTap: () {
                   showModalBottomSheet(

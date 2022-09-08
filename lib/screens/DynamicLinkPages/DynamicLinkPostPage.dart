@@ -388,8 +388,17 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                       children: [
                         SpeedDialChild(
                           visible: video!.isPaid == false,
-                          child: Icon(
-                            FontAwesomeIcons.shoppingCart,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: constantColors.whiteColor,
+                              image: DecorationImage(
+                                fit: BoxFit.fitHeight,
+                                image: AssetImage(
+                                  "assets/icons/cat_icon.png",
+                                ),
+                              ),
+                            ),
                           ),
                           onTap: () {
                             showModalBottomSheet(
