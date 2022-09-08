@@ -1,9 +1,12 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:diamon_rose_app/services/ShareButtons.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:dio/dio.dart';
+import 'package:ffmpeg_kit_flutter_https_gpl/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_https_gpl/ffmpeg_kit_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
