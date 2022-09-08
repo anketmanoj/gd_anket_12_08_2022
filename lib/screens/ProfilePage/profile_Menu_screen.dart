@@ -16,6 +16,7 @@ import 'package:diamon_rose_app/screens/HelpScreen/helpScreen.dart';
 import 'package:diamon_rose_app/screens/MonitisationPage/monitisationScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ArViewerScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/PostRecommendation.dart';
+import 'package:diamon_rose_app/screens/ProfilePage/buyCaratScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/profile_favorites_screen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/social_media_screen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/update_email_screen.dart';
@@ -113,12 +114,40 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Menu",
-                  style: TextStyle(
-                    color: constantColors.whiteColor,
-                    fontSize: 35,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Menu",
+                      style: TextStyle(
+                        color: constantColors.whiteColor,
+                        fontSize: 35,
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () => Get.to(
+                        () => BuyCaratScreen(),
+                      ),
+                      child: Row(
+                        children: [
+                          VerifiedMark(
+                            height: 25,
+                            width: 25,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            "0",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 10,

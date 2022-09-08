@@ -1043,14 +1043,19 @@ Future<void> deleteFile(List<String> fullPathsForFiles) async {
 class VerifiedMark extends StatelessWidget {
   const VerifiedMark({
     Key? key,
+    this.height,
+    this.width,
   }) : super(key: key);
+
+  final double? height;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(3),
-      height: 30,
-      width: 30,
+      height: height ?? 30,
+      width: width ?? 30,
       child: Image.asset(
         "assets/images/GD_mark.png",
       ),
