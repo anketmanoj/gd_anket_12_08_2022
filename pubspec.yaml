@@ -94,6 +94,7 @@ dependencies:
   image_frame_animation: ^0.0.1
   image_picker: ^0.8.4+11
   image_sequence_animator: ^2.0.0
+  in_app_purchase: ^1.0.9
   injectable: ^1.5.3
   intl: ^0.17.0-nullsafesty
   intl_generator: ^0.2.0+0
