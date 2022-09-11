@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/screens/Admin/set_user_data_admin.dart';
 import 'package:diamon_rose_app/screens/Admin/upload_video_screen.dart';
 import 'package:diamon_rose_app/screens/ArPreviewSetting/ArPreviewScreen.dart';
@@ -89,6 +90,8 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
         Provider.of<Authentication>(context, listen: false);
     final FirebaseOperations _firebaseOperation =
         Provider.of<FirebaseOperations>(context, listen: false);
+    final CaratProvider _caratProvider =
+        Provider.of<CaratProvider>(context, listen: false);
 
     final ApplePayButton applePayButton = ApplePayButton(
       paymentConfigurationAsset: 'default_payment_profile_apple.json',
@@ -137,13 +140,15 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                           SizedBox(
                             width: 5,
                           ),
-                          Text(
-                            SharedPreferencesHelper.getInt("carats").toString(),
-                            style: TextStyle(
-                              color: constantColors.whiteColor,
-                              fontSize: 16,
-                            ),
-                          ),
+                          Consumer<CaratProvider>(builder: (context, carat, _) {
+                            return Text(
+                              carat.getCarats.toString(),
+                              style: TextStyle(
+                                color: constantColors.whiteColor,
+                                fontSize: 16,
+                              ),
+                            );
+                          }),
                         ],
                       ),
                     ),
@@ -223,6 +228,20 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                       ),
                     ),
                   ),
+                ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          child: BuyCaratScreen(),
+                          type: PageTransitionType.rightToLeft),
+                    );
+                  },
+                  leadingIcon: FontAwesomeIcons.diamond,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Buy Carats",
                 ),
                 Visibility(
                   visible: _auth.emailAuth,
@@ -378,41 +397,48 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   text: "Post Recommendations",
                 ),
 
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () {
-                    final String cartUrl =
-                        // "http://192.168.1.8:8080/#/cart/${_auth.getUserId}";
-                        "https://gdfe-ac584.firebaseapp.com/#/cart/${_auth.getUserId}";
+                Consumer<CaratProvider>(builder: (context, carats, _) {
+                  return ListTileOption(
+                    constantColors: constantColors,
+                    onTap: () {
+                      final String cartUrl =
+                          "http://192.168.1.9:8080/#/cartcarats/${_auth.getUserId}/${carats.getCarats}";
+                      // "https://gdfe-ac584.firebaseapp.com/#/cart/${_auth.getUserId}";
 
-                    CoolAlert.show(
-                      context: context,
-                      type: CoolAlertType.info,
-                      title: "Diamond Content",
-                      text:
-                          "Some content cannot be acquired by the application. You must configure your acquisition with our web service. It has nothing to do with Apple and Apple is not responsible.",
-                      confirmBtnText: "Show Diamonds",
-                      cancelBtnText: "Nevermind",
-                      confirmBtnColor: constantColors.navButton,
-                      showCancelBtn: false,
-                      onCancelBtnTap: () {
-                        Navigator.pop(context);
-                      },
-                      onConfirmBtnTap: () => ViewPaidVideoWeb(
-                          context, cartUrl, _auth, _firebaseOperation),
-                      confirmBtnTextStyle: TextStyle(
-                        fontSize: 14,
-                        color: constantColors.whiteColor,
-                      ),
-                      cancelBtnTextStyle: TextStyle(
-                        fontSize: 14,
-                      ),
-                    );
-                  },
-                  leadingIcon: FontAwesomeIcons.diamond,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: "Diamond Content",
-                ),
+                      log(cartUrl);
+
+                      ViewPaidVideoWeb(context, cartUrl, _auth,
+                          _firebaseOperation, carats.getCarats, _caratProvider);
+
+                      // CoolAlert.show(
+                      //   context: context,
+                      //   type: CoolAlertType.info,
+                      //   title: "Use Carats ",
+                      //   text:
+                      //       "Some content cannot be acquired by the application. You must configure your acquisition with our web service. It has nothing to do with Apple and Apple is not responsible.",
+                      //   confirmBtnText: "Show Diamonds",
+                      //   cancelBtnText: "Nevermind",
+                      //   confirmBtnColor: constantColors.navButton,
+                      //   showCancelBtn: false,
+                      //   onCancelBtnTap: () {
+                      //     Navigator.pop(context);
+                      //   },
+                      //   onConfirmBtnTap: () => ViewPaidVideoWeb(
+                      //       context, cartUrl, _auth, _firebaseOperation),
+                      //   confirmBtnTextStyle: TextStyle(
+                      //     fontSize: 14,
+                      //     color: constantColors.whiteColor,
+                      //   ),
+                      //   cancelBtnTextStyle: TextStyle(
+                      //     fontSize: 14,
+                      //   ),
+                      // );
+                    },
+                    leadingIcon: Icons.shopping_cart_checkout,
+                    trailingIcon: Icons.arrow_forward_ios,
+                    text: "Shopping Cart",
+                  );
+                }),
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () {
@@ -866,8 +892,13 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
   }
 
   // ignore: type_annotate_public_apis, always_declare_return_types
-  ViewPaidVideoWeb(BuildContext context, String cartUrl, Authentication auth,
-      FirebaseOperations firebaseOperations) async {
+  ViewPaidVideoWeb(
+      BuildContext context,
+      String cartUrl,
+      Authentication auth,
+      FirebaseOperations firebaseOperations,
+      int carats,
+      CaratProvider caratProvider) async {
     // ignore: unawaited_futures
     showModalBottomSheet(
       context: context,
@@ -892,10 +923,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 child: Row(
                   children: [
                     InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      },
+                      onTap: Get.back,
                       child: Text(
                         "Done",
                         style: TextStyle(
@@ -914,7 +942,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     if (uri!.toString().contains("success")) {
                       log("success!");
                       // Payment succesful, now iterate through each video and AddtoMycollection
-
+                      double totalPrice = 0;
                       await FirebaseFirestore.instance
                           .collection("users")
                           .doc(auth.getUserId)
@@ -925,46 +953,63 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                           final Video videoModel =
                               Video.fromJson(cartVideos.data());
 
+                          totalPrice += cartVideos['price'] *
+                              (1 - cartVideos['discountamount'] / 100);
+                          log("Total price  = $totalPrice");
                           log("here ${videoModel.timestamp}");
                           log("amount transfered == ${(double.parse("${cartVideos['price'] * (1 - cartVideos['discountamount'] / 100) * 100}") / 100).toStringAsFixed(0)}");
-                          try {
-                            await firebaseOperations.addToMyCollectionFromCart(
-                              auth: auth,
-                              videoOwnerId: videoModel.useruid,
-                              amount: int.parse((double.parse(
-                                          "${videoModel.price * (1 - videoModel.discountAmount / 100) * 100}") /
-                                      100)
-                                  .toStringAsFixed(0)),
-                              videoItem: videoModel,
-                              isFree: videoModel.isFree,
-                              videoId: videoModel.id,
-                            );
+                          // try {
+                          //   await firebaseOperations.addToMyCollectionFromCart(
+                          //     auth: auth,
+                          //     videoOwnerId: videoModel.useruid,
+                          //     amount: int.parse((double.parse(
+                          //                 "${videoModel.price * (1 - videoModel.discountAmount / 100) * 100}") /
+                          //             100)
+                          //         .toStringAsFixed(0)),
+                          //     videoItem: videoModel,
+                          //     isFree: videoModel.isFree,
+                          //     videoId: videoModel.id,
+                          //   );
 
-                            log("success added to cart!");
+                          //   log("success added to cart!");
+                          // } catch (e) {
+                          //   log("error saving cart to my collection ${e.toString()}");
+                          // }
+
+                          try {
+                            final int remainingCarats =
+                                carats - totalPrice.toInt();
+
+                            log("started ${carats} | using ${totalPrice} | remaining ${remainingCarats}");
+                            caratProvider.setCarats(remainingCarats);
+                            log("cartprovider value ${caratProvider.getCarats}");
+                            await firebaseOperations.updateCaratsOfUser(
+                                userid: auth.getUserId,
+                                caratValue: remainingCarats);
                           } catch (e) {
-                            log("error saving cart to my collection ${e.toString()}");
+                            log("error updating users carat amount");
                           }
 
-                          try {
-                            await FirebaseFirestore.instance
-                                .collection("users")
-                                .doc(auth.getUserId)
-                                .collection("cart")
-                                .doc(cartVideos.id)
-                                .delete();
+                          // try {
+                          //   await FirebaseFirestore.instance
+                          //       .collection("users")
+                          //       .doc(auth.getUserId)
+                          //       .collection("cart")
+                          //       .doc(cartVideos.id)
+                          //       .delete();
 
-                            log("deleted");
-                          } catch (e) {
-                            log("error deleting cart  ${e.toString()}");
-                          }
+                          //   log("deleted");
+                          // } catch (e) {
+                          //   log("error deleting cart  ${e.toString()}");
+                          // }
                         });
                       }).whenComplete(() {
                         log("done");
-                        Get.back();
+                        // Get.back();
                         Get.back();
                       });
                       Get.snackbar(
-                        'Diamond Sucessful 🎉',
+                        'Purchase Sucessful 🎉',
                         'All video purchased have been added to your purchase history',
                         overlayColor: constantColors.navButton,
                         colorText: constantColors.whiteColor,

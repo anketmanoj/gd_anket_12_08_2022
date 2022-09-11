@@ -5,6 +5,7 @@ import 'package:diamon_rose_app/Navigation/router.dart';
 import 'package:diamon_rose_app/config.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/constants/appleSignInCheck.dart';
+import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/providers/feed_page_provider.dart';
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
 import 'package:diamon_rose_app/providers/homeScreenProvider.dart';
@@ -132,6 +133,7 @@ class MyApp extends StatelessWidget {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => Authentication()),
+          ChangeNotifierProvider(create: (_) => CaratProvider()),
           ChangeNotifierProvider(create: (_) => MainPageHelpers()),
           ChangeNotifierProvider(create: (_) => FirebaseOperations()),
           ChangeNotifierProvider(create: (_) => SignUpUser()),

@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
 import 'package:diamon_rose_app/providers/image_utils_provider.dart';
 import 'package:diamon_rose_app/providers/social_media_links_provider.dart';
@@ -334,6 +335,13 @@ class FirebaseOperations with ChangeNotifier {
       userrealname = doc['userrealname'];
       usertiktokurl = doc['usertiktokurl'];
       usersearchindex = doc['usersearchindex'];
+
+      log("checking carats");
+      if (doc.data()!.containsKey("carats")) {
+        log("contains carats");
+        context.read<CaratProvider>().setCarats(doc['carats']);
+        log("carats now == ${context.read<CaratProvider>().getCarats}");
+      }
 
       print("is verified == ${doc['isverified']}");
 
@@ -2502,5 +2510,19 @@ class FirebaseOperations with ChangeNotifier {
     });
 
     log("updated all for that user");
+  }
+
+  Future addCaratsToUser(
+      {required String userid, required int caratValue}) async {
+    await FirebaseFirestore.instance.collection("users").doc(userid).update({
+      "carats": caratValue,
+    });
+  }
+
+  Future updateCaratsOfUser(
+      {required String userid, required int caratValue}) async {
+    await FirebaseFirestore.instance.collection("users").doc(userid).update({
+      "carats": caratValue,
+    });
   }
 }

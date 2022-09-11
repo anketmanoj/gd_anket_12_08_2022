@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/consumableStore.dart';
+import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/PurchaseCaratsModel.dart';
+import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +16,7 @@ import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 const String _kConsumableId0 = 'gd_carats_1';
@@ -377,7 +381,10 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
   }
 
   Future<void> _listenToPurchaseUpdated(
-      List<PurchaseDetails> purchaseDetailsList) async {
+      List<PurchaseDetails> purchaseDetailsList,
+      CaratProvider caratProvider,
+      FirebaseOperations firebaseOperations,
+      Authentication authentication) async {
     log("we're here");
     for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
       if (purchaseDetails.status == PurchaseStatus.pending) {
@@ -415,16 +422,16 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
             return;
           }
           log("Successful! Now just add carats to users profile!");
-          final int currentValue = SharedPreferencesHelper.getInt("carats");
 
-          log("current value = ${currentValue}");
-          await SharedPreferencesHelper.setInt(
-              "carats",
-              currentValue +
-                  int.parse(purchaseDetails.productID.split("_")[2]));
-          await SharedPreferencesHelper.prefs.commit();
+          caratProvider.setCarats(caratProvider.getCarats +
+              int.parse(purchaseDetails.productID.split("_")[2]));
 
-          log("done setting");
+          await firebaseOperations.addCaratsToUser(
+            userid: authentication.getUserId,
+            caratValue: caratProvider.getCarats,
+          );
+
+          log("done setting ${caratProvider.getCarats} to user ${authentication.getUserId}");
 
           await _inAppPurchase.completePurchase(purchaseDetails);
         }
@@ -478,11 +485,16 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
 
   @override
   void initState() {
+    final CaratProvider caratProvider = context.read<CaratProvider>();
+    final FirebaseOperations firebaseOperations =
+        context.read<FirebaseOperations>();
+    final Authentication authentication = context.read<Authentication>();
     final Stream<List<PurchaseDetails>> purchaseUpdated =
         _inAppPurchase.purchaseStream;
     _subscription =
         purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
-      _listenToPurchaseUpdated(purchaseDetailsList);
+      _listenToPurchaseUpdated(purchaseDetailsList, caratProvider,
+          firebaseOperations, authentication);
     }, onDone: () {
       _subscription.cancel();
     }, onError: (Object error) {
@@ -582,6 +594,8 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final CaratProvider caratProvider =
+        Provider.of<CaratProvider>(context, listen: false);
     final List<Widget> stack = <Widget>[];
     if (_queryProductError == null) {
       stack.add(
