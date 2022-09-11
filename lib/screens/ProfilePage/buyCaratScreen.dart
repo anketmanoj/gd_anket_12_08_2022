@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:diamon_rose_app/screens/ProfilePage/consumableStore.dart';
 import 'package:diamon_rose_app/services/PurchaseCaratsModel.dart';
+import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,9 +15,27 @@ import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:sizer/sizer.dart';
 
-const String _kConsumableId = 'gd_carats_1';
+const String _kConsumableId0 = 'gd_carats_1';
+const String _kConsumableId1 = 'gd_carats_5';
+const String _kConsumableId2 = 'gd_carats_10';
+const String _kConsumableId3 = 'gd_carats_30';
+const String _kConsumableId4 = 'gd_carats_50';
+const String _kConsumableId5 = 'gd_carats_100';
+const String _kConsumableId6 = 'gd_carats_200';
+const String _kConsumableId7 = 'gd_carats_300';
+const String _kConsumableId8 = 'gd_carats_500';
 
-const List<String> _kProductIds = <String>[_kConsumableId];
+const List<String> _kProductIds = <String>[
+  _kConsumableId0,
+  _kConsumableId1,
+  _kConsumableId2,
+  _kConsumableId3,
+  _kConsumableId4,
+  _kConsumableId5,
+  _kConsumableId6,
+  _kConsumableId7,
+  _kConsumableId8,
+];
 // Auto-consume must be true on iOS.
 // To try without auto-consume on another platform, change `true` to `false` here.
 final bool _kAutoConsume = Platform.isIOS || true;
@@ -98,71 +118,143 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
       }
       return MapEntry<String, PurchaseDetails>(purchase.productID, purchase);
     }));
+    _products.sort(((a, b) => a.rawPrice.compareTo(b.rawPrice)));
+
     productList.addAll(_products.map(
       (ProductDetails productDetails) {
         final PurchaseDetails? previousPurchase = purchases[productDetails.id];
         return ListTile(
+          onTap: () {
+            Get.bottomSheet(
+              Container(
+                height: 25.h,
+                width: 100.w,
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: constantColors.navButton,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 150),
+                      child: Divider(
+                        thickness: 4,
+                        color: constantColors.whiteColor,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Container(
+                        height: 50,
+                        width: 100.w,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            foregroundColor:
+                                MaterialStateProperty.all<Color>(Colors.white),
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                constantColors.bioBg),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                          ),
+                          onPressed: () {
+                            Get.back();
+                            late PurchaseParam purchaseParam;
+
+                            if (Platform.isAndroid) {
+                              // NOTE: If you are making a subscription purchase/upgrade/downgrade, we recommend you to
+                              // verify the latest status of you your subscription by using server side receipt validation
+                              // and update the UI accordingly. The subscription purchase status shown
+                              // inside the app may not be accurate.
+                              final GooglePlayPurchaseDetails? oldSubscription =
+                                  _getOldSubscription(
+                                      productDetails, purchases);
+
+                              purchaseParam = GooglePlayPurchaseParam(
+                                  productDetails: productDetails,
+                                  changeSubscriptionParam: (oldSubscription !=
+                                          null)
+                                      ? ChangeSubscriptionParam(
+                                          oldPurchaseDetails: oldSubscription,
+                                          prorationMode: ProrationMode
+                                              .immediateWithTimeProration,
+                                        )
+                                      : null);
+                            } else {
+                              purchaseParam = PurchaseParam(
+                                productDetails: productDetails,
+                              );
+                            }
+
+                            if (productDetails.id == _kConsumableId0) {
+                              _inAppPurchase.buyConsumable(
+                                  purchaseParam: purchaseParam,
+                                  autoConsume: _kAutoConsume);
+                            } else {
+                              _inAppPurchase.buyNonConsumable(
+                                  purchaseParam: purchaseParam);
+                            }
+                          },
+                          child: Text(
+                            "Apple App Store",
+                            style: TextStyle(
+                              color: constantColors.navButton,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Container(
+                        height: 50,
+                        width: 100.w,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            foregroundColor:
+                                MaterialStateProperty.all<Color>(Colors.white),
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                constantColors.bioBg),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                          ),
+                          onPressed: () async {},
+                          child: Text(
+                            "Glamorous Diastation Direct Payment",
+                            style: TextStyle(
+                              color: constantColors.navButton,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+          leading: Image.asset(
+              "assets/carats/${productDetails.id.split("_")[2]}.png"),
           title: Text(
             productDetails.title,
           ),
-          subtitle: Text(
-            productDetails.description,
-          ),
-          trailing: previousPurchase != null
-              ? IconButton(
-                  onPressed: () => confirmPriceChange(context),
-                  icon: const Icon(Icons.upgrade))
-              : TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.green[800],
-                    // TODO(darrenaustin): Migrate to new API once it lands in stable: https://github.com/flutter/flutter/issues/105724
-                    // ignore: deprecated_member_use
-                    primary: Colors.white,
-                  ),
-                  onPressed: () {
-                    late PurchaseParam purchaseParam;
-
-                    if (Platform.isAndroid) {
-                      // NOTE: If you are making a subscription purchase/upgrade/downgrade, we recommend you to
-                      // verify the latest status of you your subscription by using server side receipt validation
-                      // and update the UI accordingly. The subscription purchase status shown
-                      // inside the app may not be accurate.
-                      final GooglePlayPurchaseDetails? oldSubscription =
-                          _getOldSubscription(productDetails, purchases);
-
-                      purchaseParam = GooglePlayPurchaseParam(
-                          productDetails: productDetails,
-                          changeSubscriptionParam: (oldSubscription != null)
-                              ? ChangeSubscriptionParam(
-                                  oldPurchaseDetails: oldSubscription,
-                                  prorationMode:
-                                      ProrationMode.immediateWithTimeProration,
-                                )
-                              : null);
-                    } else {
-                      purchaseParam = PurchaseParam(
-                        productDetails: productDetails,
-                      );
-                    }
-
-                    if (productDetails.id == _kConsumableId) {
-                      _inAppPurchase.buyConsumable(
-                          purchaseParam: purchaseParam,
-                          autoConsume: _kAutoConsume);
-                    } else {
-                      _inAppPurchase.buyNonConsumable(
-                          purchaseParam: purchaseParam);
-                    }
-                  },
-                  child: Text(productDetails.price),
-                ),
+          trailing: Text(productDetails.price),
         );
       },
     ));
 
-    return Card(
-        child: Column(
-            children: <Widget>[productHeader, const Divider()] + productList));
+    return Card(child: Column(children: productList), elevation: 0);
   }
 
   Card _buildConsumableBox() {
@@ -172,7 +264,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
               leading: CircularProgressIndicator(),
               title: Text('Fetching consumables...')));
     }
-    if (!_isAvailable || _notFoundIds.contains(_kConsumableId)) {
+    if (!_isAvailable || _notFoundIds.contains(_kConsumableId0)) {
       return const Card();
     }
     const ListTile consumableHeader =
@@ -244,7 +336,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
 
   Future<void> deliverProduct(PurchaseDetails purchaseDetails) async {
     // IMPORTANT!! Always verify purchase details before delivering the product.
-    if (purchaseDetails.productID == _kConsumableId) {
+    if (purchaseDetails.productID == _kConsumableId0) {
       await ConsumableStore.save(purchaseDetails.purchaseID!);
       final List<String> consumables = await ConsumableStore.load();
       setState(() {
@@ -268,33 +360,48 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
   Future<bool> _verifyPurchase(PurchaseDetails purchaseDetails) {
     // IMPORTANT!! Always verify a purchase before delivering the product.
     // For the purpose of an example, we directly return true.
-    return Future<bool>.value(true);
+    if (purchaseDetails.status == PurchaseStatus.purchased) {
+      log("true");
+      return Future<bool>.value(true);
+    }
+    log("false");
+    return Future<bool>.value(false);
   }
 
   void _handleInvalidPurchase(PurchaseDetails purchaseDetails) {
     // handle invalid purchase here if  _verifyPurchase` failed.
+    setState(() {
+      _purchasePending = false;
+    });
+    log("FAILURE");
   }
 
   Future<void> _listenToPurchaseUpdated(
       List<PurchaseDetails> purchaseDetailsList) async {
+    log("we're here");
     for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
       if (purchaseDetails.status == PurchaseStatus.pending) {
+        log("we're pending");
         showPendingUI();
       } else {
         if (purchaseDetails.status == PurchaseStatus.error) {
+          log("got an error");
           handleError(purchaseDetails.error!);
         } else if (purchaseDetails.status == PurchaseStatus.purchased ||
             purchaseDetails.status == PurchaseStatus.restored) {
+          log("we're verifying");
           final bool valid = await _verifyPurchase(purchaseDetails);
           if (valid) {
+            log("done verifying");
             deliverProduct(purchaseDetails);
           } else {
+            log("invalid purchase");
             _handleInvalidPurchase(purchaseDetails);
             return;
           }
         }
         if (Platform.isAndroid) {
-          if (!_kAutoConsume && purchaseDetails.productID == _kConsumableId) {
+          if (!_kAutoConsume && purchaseDetails.productID == _kConsumableId0) {
             final InAppPurchaseAndroidPlatformAddition androidAddition =
                 _inAppPurchase.getPlatformAddition<
                     InAppPurchaseAndroidPlatformAddition>();
@@ -302,6 +409,23 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
           }
         }
         if (purchaseDetails.pendingCompletePurchase) {
+          if (purchaseDetails.status != PurchaseStatus.purchased) {
+            await _inAppPurchase.completePurchase(purchaseDetails);
+            _handleInvalidPurchase(purchaseDetails);
+            return;
+          }
+          log("Successful! Now just add carats to users profile!");
+          final int currentValue = SharedPreferencesHelper.getInt("carats");
+
+          log("current value = ${currentValue}");
+          await SharedPreferencesHelper.setInt(
+              "carats",
+              currentValue +
+                  int.parse(purchaseDetails.productID.split("_")[2]));
+          await SharedPreferencesHelper.prefs.commit();
+
+          log("done setting");
+
           await _inAppPurchase.completePurchase(purchaseDetails);
         }
       }
@@ -403,6 +527,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
         _purchasePending = false;
         _loading = false;
       });
+
       return;
     }
 
@@ -457,208 +582,246 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> stack = <Widget>[];
+    if (_queryProductError == null) {
+      stack.add(
+        ListView(
+          children: <Widget>[
+            // _buildConnectionCheckTile(),
+            _buildProductList(),
+            // _buildConsumableBox(),
+            // _buildRestoreButton(),
+          ],
+        ),
+      );
+    } else {
+      stack.add(Center(
+        child: Text(_queryProductError!),
+      ));
+    }
+    if (_purchasePending) {
+      stack.add(
+        Stack(
+          children: const <Widget>[
+            Opacity(
+              opacity: 0.3,
+              child: ModalBarrier(dismissible: false, color: Colors.grey),
+            ),
+            Center(
+              child: CircularProgressIndicator(),
+            ),
+          ],
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: constantColors.whiteColor,
-      appBar: AppBarWidget(text: "Collect Carats", context: context),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: 9,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: ListTile(
-                onTap: () {
-                  Get.bottomSheet(
-                    Container(
-                      height: 25.h,
-                      width: 100.w,
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: constantColors.navButton,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 150),
-                            child: Divider(
-                              thickness: 4,
-                              color: constantColors.whiteColor,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20),
-                            child: Container(
-                              height: 50,
-                              width: 100.w,
-                              child: ElevatedButton(
-                                style: ButtonStyle(
-                                  foregroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.white),
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          constantColors.bioBg),
-                                  shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  Get.dialog(
-                                    SimpleDialog(
-                                      backgroundColor:
-                                          constantColors.whiteColor,
-                                      title: Text(
-                                        "Pending in-app purchase approval",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          color: constantColors.black,
-                                        ),
-                                      ),
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(10),
-                                          child: Text(
-                                            "We've submitted our in-app purchase approval request for all the Carat tiers shown",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: constantColors.black),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(10),
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                child: ElevatedButton(
-                                                  style: ButtonStyle(
-                                                    foregroundColor:
-                                                        MaterialStateProperty
-                                                            .all<Color>(
-                                                                Colors.white),
-                                                    backgroundColor:
-                                                        MaterialStateProperty
-                                                            .all<Color>(
-                                                                constantColors
-                                                                    .navButton),
-                                                    shape: MaterialStateProperty
-                                                        .all<
-                                                            RoundedRectangleBorder>(
-                                                      RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  onPressed: Get.back,
-                                                  child: Text(
-                                                    "Understood!",
-                                                    style:
-                                                        TextStyle(fontSize: 12),
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Expanded(
-                                                child: ElevatedButton(
-                                                  style: ButtonStyle(
-                                                    foregroundColor:
-                                                        MaterialStateProperty
-                                                            .all<Color>(
-                                                                Colors.white),
-                                                    backgroundColor:
-                                                        MaterialStateProperty
-                                                            .all<Color>(
-                                                                constantColors
-                                                                    .navButton),
-                                                    shape: MaterialStateProperty
-                                                        .all<
-                                                            RoundedRectangleBorder>(
-                                                      RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  onPressed: Get.back,
-                                                  child: Text(
-                                                    "View Items",
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    barrierDismissible: false,
-                                  );
-                                },
-                                child: Text(
-                                  "Apple App Store",
-                                  style: TextStyle(
-                                    color: constantColors.navButton,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20),
-                            child: Container(
-                              height: 50,
-                              width: 100.w,
-                              child: ElevatedButton(
-                                style: ButtonStyle(
-                                  foregroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.white),
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          constantColors.bioBg),
-                                  shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () async {},
-                                child: Text(
-                                  "Glamorous Diastation Direct Payment",
-                                  style: TextStyle(
-                                    color: constantColors.navButton,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-                leading: Image.asset("assets/carats/${index}.png"),
-                title: Text(carats[index].name),
-                trailing: Text("\$${carats[index].price}"),
-              ),
-            );
-          },
-        ),
+      appBar: AppBarWidget(
+        text: "Collect Carats",
+        context: context,
       ),
+      body: Stack(
+        children: stack,
+      ),
+      // body: Padding(
+      //   padding: const EdgeInsets.all(10),
+      //   child: ListView.builder(
+      //     shrinkWrap: true,
+      //     itemCount: 9,
+      //     itemBuilder: (context, index) {
+      //       return Padding(
+      //         padding: const EdgeInsets.only(bottom: 10),
+      //         child: ListTile(
+      //           onTap: () {
+      //             Get.bottomSheet(
+      //               Container(
+      //                 height: 25.h,
+      //                 width: 100.w,
+      //                 padding: EdgeInsets.all(10),
+      //                 decoration: BoxDecoration(
+      //                   color: constantColors.navButton,
+      //                   borderRadius: BorderRadius.only(
+      //                     topLeft: Radius.circular(20),
+      //                     topRight: Radius.circular(20),
+      //                   ),
+      //                 ),
+      //                 child: Column(
+      //                   children: [
+      //                     Padding(
+      //                       padding:
+      //                           const EdgeInsets.symmetric(horizontal: 150),
+      //                       child: Divider(
+      //                         thickness: 4,
+      //                         color: constantColors.whiteColor,
+      //                       ),
+      //                     ),
+      //                     Padding(
+      //                       padding: const EdgeInsets.only(top: 20),
+      //                       child: Container(
+      //                         height: 50,
+      //                         width: 100.w,
+      //                         child: ElevatedButton(
+      //                           style: ButtonStyle(
+      //                             foregroundColor:
+      //                                 MaterialStateProperty.all<Color>(
+      //                                     Colors.white),
+      //                             backgroundColor:
+      //                                 MaterialStateProperty.all<Color>(
+      //                                     constantColors.bioBg),
+      //                             shape: MaterialStateProperty.all<
+      //                                 RoundedRectangleBorder>(
+      //                               RoundedRectangleBorder(
+      //                                 borderRadius: BorderRadius.circular(20),
+      //                               ),
+      //                             ),
+      //                           ),
+      //                           onPressed: () {
+      //                             Get.dialog(
+      //                               SimpleDialog(
+      //                                 backgroundColor:
+      //                                     constantColors.whiteColor,
+      //                                 title: Text(
+      //                                   "Pending in-app purchase approval",
+      //                                   textAlign: TextAlign.center,
+      //                                   style: TextStyle(
+      //                                     color: constantColors.black,
+      //                                   ),
+      //                                 ),
+      //                                 children: [
+      //                                   Padding(
+      //                                     padding: const EdgeInsets.all(10),
+      //                                     child: Text(
+      //                                       "We've submitted our in-app purchase approval request for all the Carat tiers shown",
+      //                                       textAlign: TextAlign.center,
+      //                                       style: TextStyle(
+      //                                           color: constantColors.black),
+      //                                     ),
+      //                                   ),
+      //                                   Padding(
+      //                                     padding: EdgeInsets.all(10),
+      //                                     child: Row(
+      //                                       children: [
+      //                                         Expanded(
+      //                                           child: ElevatedButton(
+      //                                             style: ButtonStyle(
+      //                                               foregroundColor:
+      //                                                   MaterialStateProperty
+      //                                                       .all<Color>(
+      //                                                           Colors.white),
+      //                                               backgroundColor:
+      //                                                   MaterialStateProperty
+      //                                                       .all<Color>(
+      //                                                           constantColors
+      //                                                               .navButton),
+      //                                               shape: MaterialStateProperty
+      //                                                   .all<
+      //                                                       RoundedRectangleBorder>(
+      //                                                 RoundedRectangleBorder(
+      //                                                   borderRadius:
+      //                                                       BorderRadius
+      //                                                           .circular(20),
+      //                                                 ),
+      //                                               ),
+      //                                             ),
+      //                                             onPressed: Get.back,
+      //                                             child: Text(
+      //                                               "Understood!",
+      //                                               style:
+      //                                                   TextStyle(fontSize: 12),
+      //                                             ),
+      //                                           ),
+      //                                         ),
+      //                                         SizedBox(
+      //                                           width: 10,
+      //                                         ),
+      //                                         Expanded(
+      //                                           child: ElevatedButton(
+      //                                             style: ButtonStyle(
+      //                                               foregroundColor:
+      //                                                   MaterialStateProperty
+      //                                                       .all<Color>(
+      //                                                           Colors.white),
+      //                                               backgroundColor:
+      //                                                   MaterialStateProperty
+      //                                                       .all<Color>(
+      //                                                           constantColors
+      //                                                               .navButton),
+      //                                               shape: MaterialStateProperty
+      //                                                   .all<
+      //                                                       RoundedRectangleBorder>(
+      //                                                 RoundedRectangleBorder(
+      //                                                   borderRadius:
+      //                                                       BorderRadius
+      //                                                           .circular(20),
+      //                                                 ),
+      //                                               ),
+      //                                             ),
+      //                                             onPressed: Get.back,
+      //                                             child: Text(
+      //                                               "View Items",
+      //                                             ),
+      //                                           ),
+      //                                         ),
+      //                                       ],
+      //                                     ),
+      //                                   ),
+      //                                 ],
+      //                               ),
+      //                               barrierDismissible: false,
+      //                             );
+      //                           },
+      //                           child: Text(
+      //                             "Apple App Store",
+      //                             style: TextStyle(
+      //                               color: constantColors.navButton,
+      //                             ),
+      //                           ),
+      //                         ),
+      //                       ),
+      //                     ),
+      //                     Padding(
+      //                       padding: const EdgeInsets.only(top: 20),
+      //                       child: Container(
+      //                         height: 50,
+      //                         width: 100.w,
+      //                         child: ElevatedButton(
+      //                           style: ButtonStyle(
+      //                             foregroundColor:
+      //                                 MaterialStateProperty.all<Color>(
+      //                                     Colors.white),
+      //                             backgroundColor:
+      //                                 MaterialStateProperty.all<Color>(
+      //                                     constantColors.bioBg),
+      //                             shape: MaterialStateProperty.all<
+      //                                 RoundedRectangleBorder>(
+      //                               RoundedRectangleBorder(
+      //                                 borderRadius: BorderRadius.circular(20),
+      //                               ),
+      //                             ),
+      //                           ),
+      //                           onPressed: () async {},
+      //                           child: Text(
+      //                             "Glamorous Diastation Direct Payment",
+      //                             style: TextStyle(
+      //                               color: constantColors.navButton,
+      //                             ),
+      //                           ),
+      //                         ),
+      //                       ),
+      //                     ),
+      //                   ],
+      //                 ),
+      //               ),
+      //             );
+      //           },
+      //           leading: Image.asset("assets/carats/${index}.png"),
+      //           title: Text(carats[index].name),
+      //           trailing: Text("\$${carats[index].price}"),
+      //         ),
+      //       );
+      //     },
+      //   ),
+      // ),
     );
   }
 }

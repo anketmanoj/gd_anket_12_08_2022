@@ -138,7 +138,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                             width: 5,
                           ),
                           Text(
-                            "0",
+                            SharedPreferencesHelper.getInt("carats").toString(),
                             style: TextStyle(
                               color: constantColors.whiteColor,
                               fontSize: 16,
