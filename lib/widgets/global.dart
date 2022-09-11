@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/update_email_screen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/update_password_screen.dart';
@@ -50,8 +51,15 @@ final urlController = TextEditingController();
 ValueNotifier<String> urlValue = ValueNotifier<String>("");
 ValueNotifier<double> progressValue = ValueNotifier<double>(0);
 
-ViewMenuWebApp(BuildContext context, String menuUrl, Authentication auth,
-    FirebaseOperations firebaseOperations, Key key) async {
+ViewMenuWebApp(
+    {required BuildContext context,
+    required int caratValue,
+    required String menuUrl,
+    required Authentication auth,
+    required FirebaseOperations firebaseOperations,
+    required Key key}) async {
+  final CaratProvider caratProvider =
+      Provider.of<CaratProvider>(context, listen: false);
   // ignore: unawaited_futures
   showModalBottomSheet(
     context: context,
@@ -120,66 +128,18 @@ ViewMenuWebApp(BuildContext context, String menuUrl, Authentication auth,
                       onUpdateVisitedHistory: (controller, uri, _) async {
                         if (uri!.toString().contains("success")) {
                           log("success!");
+
                           // Payment succesful, now iterate through each video and AddtoMycollection
 
-                          await FirebaseFirestore.instance
-                              .collection("users")
-                              .doc(auth.getUserId)
-                              .collection("cart")
-                              .get()
-                              .then((cartDocs) {
-                            cartDocs.docs.forEach((cartVideos) async {
-                              final Video videoModel =
-                                  Video.fromJson(cartVideos.data());
+                          caratProvider
+                              .setCarats(caratProvider.getCarats + caratValue);
 
-                              log("here ${videoModel.timestamp}");
-                              log("amount transfered == ${(double.parse("${cartVideos['price'] * (1 - cartVideos['discountamount'] / 100) * 100}") / 100).toStringAsFixed(0)}");
-                              try {
-                                await firebaseOperations
-                                    .addToMyCollectionFromCart(
-                                  auth: auth,
-                                  videoOwnerId: videoModel.useruid,
-                                  amount: int.parse((double.parse(
-                                              "${videoModel.price * (1 - videoModel.discountAmount / 100) * 100}") /
-                                          100)
-                                      .toStringAsFixed(0)),
-                                  videoItem: videoModel,
-                                  isFree: videoModel.isFree,
-                                  videoId: videoModel.id,
-                                );
-
-                                log("success added to cart!");
-                              } catch (e) {
-                                log("error saving cart to my collection ${e.toString()}");
-                              }
-
-                              try {
-                                await FirebaseFirestore.instance
-                                    .collection("users")
-                                    .doc(auth.getUserId)
-                                    .collection("cart")
-                                    .doc(cartVideos.id)
-                                    .delete();
-
-                                log("deleted");
-                              } catch (e) {
-                                log("error deleting cart  ${e.toString()}");
-                              }
-                            });
-                          }).whenComplete(() {
-                            log("done");
-                            Get.back();
-                            Get.back();
-                          });
-                          Get.snackbar(
-                            'Diamond Sucessful 🎉',
-                            'All video purchased have been added to your purchase history',
-                            overlayColor: constantColors.navButton,
-                            colorText: constantColors.whiteColor,
-                            snackPosition: SnackPosition.TOP,
-                            forwardAnimationCurve: Curves.elasticInOut,
-                            reverseAnimationCurve: Curves.easeOut,
+                          await firebaseOperations.addCaratsToUser(
+                            userid: auth.getUserId,
+                            caratValue: caratProvider.getCarats,
                           );
+                          Get.back();
+                          Get.back();
 
                           // ignore: unawaited_futures, cascade_invocations
                           Get.dialog(
@@ -196,7 +156,7 @@ ViewMenuWebApp(BuildContext context, String menuUrl, Authentication auth,
                                 Padding(
                                   padding: const EdgeInsets.all(10),
                                   child: Text(
-                                    "You can enjoy the purchased contents from your purchase history. Please enjoy!",
+                                    "${caratValue} Carats have been added to your account to be used as you desire!",
                                     textAlign: TextAlign.center,
                                     style:
                                         TextStyle(color: constantColors.black),
@@ -231,36 +191,6 @@ ViewMenuWebApp(BuildContext context, String menuUrl, Authentication auth,
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Expanded(
-                                        child: ElevatedButton(
-                                          style: ButtonStyle(
-                                            foregroundColor:
-                                                MaterialStateProperty.all<
-                                                    Color>(Colors.white),
-                                            backgroundColor:
-                                                MaterialStateProperty.all<
-                                                        Color>(
-                                                    constantColors.navButton),
-                                            shape: MaterialStateProperty.all<
-                                                RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                              ),
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            Get.back();
-                                            Get.to(PurchaseHistoryScreen());
-                                          },
-                                          child: Text(
-                                            "View Items",
-                                          ),
-                                        ),
-                                      ),
                                     ],
                                   ),
                                 ),
@@ -269,34 +199,10 @@ ViewMenuWebApp(BuildContext context, String menuUrl, Authentication auth,
                             barrierDismissible: false,
                           );
 
-                          //  await Provider.of<FirebaseOperations>(context,
-                          //           listen: false)
-                          //       .addToMyCollection(
-                          //     videoOwnerId: video.useruid,
-                          //     amount: int.parse((double.parse(
-                          //                 "${video.price * (1 - video.discountAmount / 100) * 100}") /
-                          //             100)
-                          //         .toStringAsFixed(0)),
-                          //     videoItem: video,
-                          //     isFree: video.isFree,
-                          //     ctx: context,
-                          //     videoId: video.id,
-                          //   );
-
-                          // log("amount transfered == ${(double.parse("${video.price * (1 - video.discountAmount / 100) * 100}") / 100).toStringAsFixed(0)}");
-
+                          log("done setting ${caratProvider.getCarats} to user ${auth.getUserId}");
                         } else if (uri.toString().contains("cancel")) {
                           Get.back();
                           Get.back();
-                          Get.snackbar(
-                            'Video Cart Error',
-                            'Error adding video to cart',
-                            overlayColor: constantColors.navButton,
-                            colorText: constantColors.whiteColor,
-                            snackPosition: SnackPosition.TOP,
-                            forwardAnimationCurve: Curves.elasticInOut,
-                            reverseAnimationCurve: Curves.easeOut,
-                          );
                         } else if (uri.toString().contains("applePay")) {
                           log(uri.toString() + "this");
                           final String totalPrice =

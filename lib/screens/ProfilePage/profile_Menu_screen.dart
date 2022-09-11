@@ -958,23 +958,23 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                           log("Total price  = $totalPrice");
                           log("here ${videoModel.timestamp}");
                           log("amount transfered == ${(double.parse("${cartVideos['price'] * (1 - cartVideos['discountamount'] / 100) * 100}") / 100).toStringAsFixed(0)}");
-                          // try {
-                          //   await firebaseOperations.addToMyCollectionFromCart(
-                          //     auth: auth,
-                          //     videoOwnerId: videoModel.useruid,
-                          //     amount: int.parse((double.parse(
-                          //                 "${videoModel.price * (1 - videoModel.discountAmount / 100) * 100}") /
-                          //             100)
-                          //         .toStringAsFixed(0)),
-                          //     videoItem: videoModel,
-                          //     isFree: videoModel.isFree,
-                          //     videoId: videoModel.id,
-                          //   );
+                          try {
+                            await firebaseOperations.addToMyCollectionFromCart(
+                              auth: auth,
+                              videoOwnerId: videoModel.useruid,
+                              amount: int.parse((double.parse(
+                                          "${videoModel.price * (1 - videoModel.discountAmount / 100) * 100}") /
+                                      100)
+                                  .toStringAsFixed(0)),
+                              videoItem: videoModel,
+                              isFree: videoModel.isFree,
+                              videoId: videoModel.id,
+                            );
 
-                          //   log("success added to cart!");
-                          // } catch (e) {
-                          //   log("error saving cart to my collection ${e.toString()}");
-                          // }
+                            log("success added to cart!");
+                          } catch (e) {
+                            log("error saving cart to my collection ${e.toString()}");
+                          }
 
                           try {
                             final int remainingCarats =
@@ -990,18 +990,18 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                             log("error updating users carat amount");
                           }
 
-                          // try {
-                          //   await FirebaseFirestore.instance
-                          //       .collection("users")
-                          //       .doc(auth.getUserId)
-                          //       .collection("cart")
-                          //       .doc(cartVideos.id)
-                          //       .delete();
+                          try {
+                            await FirebaseFirestore.instance
+                                .collection("users")
+                                .doc(auth.getUserId)
+                                .collection("cart")
+                                .doc(cartVideos.id)
+                                .delete();
 
-                          //   log("deleted");
-                          // } catch (e) {
-                          //   log("error deleting cart  ${e.toString()}");
-                          // }
+                            log("deleted");
+                          } catch (e) {
+                            log("error deleting cart  ${e.toString()}");
+                          }
                         });
                       }).whenComplete(() {
                         log("done");

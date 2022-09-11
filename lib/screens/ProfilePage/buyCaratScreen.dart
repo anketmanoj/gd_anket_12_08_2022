@@ -52,6 +52,7 @@ class BuyCaratScreen extends StatefulWidget {
 }
 
 class _BuyCaratScreenState extends State<BuyCaratScreen> {
+  final GlobalKey webViewKey = GlobalKey();
   final InAppPurchase _inAppPurchase = InAppPurchase.instance;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<String> _notFoundIds = <String>[];
@@ -91,7 +92,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
     return Card(child: Column(children: children));
   }
 
-  Card _buildProductList() {
+  Card _buildProductList(BuildContext context) {
     if (_loading) {
       return const Card(
           child: ListTile(
@@ -233,7 +234,20 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
                               ),
                             ),
                           ),
-                          onPressed: () async {},
+                          onPressed: () {
+                            final String paymentUrl =
+                                "http://192.168.1.9:8080/#/payment/${productDetails.id.split("_")[2]}";
+                            log("price = ${productDetails.id.split("_")[2]}");
+                            log(paymentUrl);
+                            ViewMenuWebApp(
+                              caratValue: int.parse(productDetails.id.split("_")[2]),
+                                context: context,
+                                menuUrl: paymentUrl,
+                                auth: context.read<Authentication>(),
+                                firebaseOperations:
+                                    context.read<FirebaseOperations>(),
+                                key: webViewKey);
+                          },
                           child: Text(
                             "Glamorous Diastation Direct Payment",
                             style: TextStyle(
@@ -483,9 +497,13 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
     return oldSubscription;
   }
 
+  late CaratProvider caratProvider;
+  late FirebaseOperations firebaseOperations;
+  late Authentication authentication;
+
   @override
   void initState() {
-    final CaratProvider caratProvider = context.read<CaratProvider>();
+    caratProvider = context.read<CaratProvider>();
     final FirebaseOperations firebaseOperations =
         context.read<FirebaseOperations>();
     final Authentication authentication = context.read<Authentication>();
@@ -602,7 +620,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
         ListView(
           children: <Widget>[
             // _buildConnectionCheckTile(),
-            _buildProductList(),
+            _buildProductList(context),
             // _buildConsumableBox(),
             // _buildRestoreButton(),
           ],
