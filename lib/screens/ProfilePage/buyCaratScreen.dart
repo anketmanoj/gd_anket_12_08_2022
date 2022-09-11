@@ -236,11 +236,12 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
                           ),
                           onPressed: () {
                             final String paymentUrl =
-                                "http://192.168.1.9:8080/#/payment/${productDetails.id.split("_")[2]}";
+                                "https://gdfe-ac584.firebaseapp.com/#/payment/${productDetails.id.split("_")[2]}";
                             log("price = ${productDetails.id.split("_")[2]}");
                             log(paymentUrl);
                             ViewMenuWebApp(
-                              caratValue: int.parse(productDetails.id.split("_")[2]),
+                                caratValue:
+                                    int.parse(productDetails.id.split("_")[2]),
                                 context: context,
                                 menuUrl: paymentUrl,
                                 auth: context.read<Authentication>(),

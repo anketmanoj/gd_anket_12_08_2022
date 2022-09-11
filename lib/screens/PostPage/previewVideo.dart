@@ -697,6 +697,17 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                 top: 10,
                               ),
                               child: Text(
+                                "\$1 = 1 Carat on Glamorous Diastation. Although you're setting the value of your content in Dollars, user will be using Carats to purchase items you've created!",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: 10,
+                              ),
+                              child: Text(
                                 "*Due to the regulations of the App Stores, purchases made with in-app payment by the user will result in price differences to accommodate the split between the Creator, Glamorous Diastation and the App Stores.",
                                 style: TextStyle(
                                   fontSize: 12,

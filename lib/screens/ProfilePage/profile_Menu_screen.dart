@@ -402,7 +402,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     constantColors: constantColors,
                     onTap: () {
                       final String cartUrl =
-                          "http://192.168.1.9:8080/#/cartcarats/${_auth.getUserId}/${carats.getCarats}";
+                          "https://gdfe-ac584.firebaseapp.com/#/cartcarats/${_auth.getUserId}/${carats.getCarats}";
                       // "https://gdfe-ac584.firebaseapp.com/#/cart/${_auth.getUserId}";
 
                       log(cartUrl);
