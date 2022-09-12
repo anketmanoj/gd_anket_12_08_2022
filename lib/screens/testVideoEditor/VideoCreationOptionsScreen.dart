@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/MyCollectionHome.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/InitVideoEditorScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/initArVideoEditorScreen.dart';
@@ -51,6 +52,9 @@ class VideoCreationOptionsScreen extends StatelessWidget {
 
       switch (audioFlag) {
         case 1:
+          context
+              .read<VideoEditorProvider>()
+              .setBackgroundVideoFile(File(file.path));
           Navigator.push(
               context,
               MaterialPageRoute<void>(

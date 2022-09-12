@@ -14,6 +14,7 @@ import 'package:diamon_rose_app/screens/OtherUserProfile/otherUserProfile.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
 import 'package:diamon_rose_app/services/ArViewOnlyServerResponse.dart';
+import 'package:diamon_rose_app/services/NotifyUserModels.dart';
 import 'package:diamon_rose_app/services/RVMServerResponse.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
@@ -833,7 +834,7 @@ class FirebaseOperations with ChangeNotifier {
   }
 
   Future<bool> uploadVideo({
-    required File bgFile,
+    required File backgroundVideoFile,
     required String userUid,
     required String video_title,
     required String caption,
@@ -858,7 +859,7 @@ class FirebaseOperations with ChangeNotifier {
 
       final File bgFileThumbnail =
           await Provider.of<FFmpegProvider>(ctx, listen: false)
-              .thumbnailCreator(vidFilePath: bgFile.path);
+              .thumbnailCreator(vidFilePath: backgroundVideoFile.path);
 
       String? uploadedAWS_BgThumbnailFile = await AwsAnketS3.uploadFile(
           accessKey: "AKIATF76MVYR34JAVB7H",
@@ -874,7 +875,7 @@ class FirebaseOperations with ChangeNotifier {
           accessKey: "AKIATF76MVYR34JAVB7H",
           secretKey: "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",
           bucket: "anketvideobucket",
-          file: bgFile,
+          file: backgroundVideoFile,
           filename: "${Timestamp.now().millisecondsSinceEpoch}bgfile.mp4",
           region: "us-east-1",
           destDir: "${Timestamp.now().millisecondsSinceEpoch}");
@@ -1155,6 +1156,10 @@ class FirebaseOperations with ChangeNotifier {
         arIdsVal = [];
         notifyListeners();
       });
+
+      await notifyAllFromNotifierList(
+        accountOwnerId: userUid,
+      );
 
       return true;
     } catch (e) {
@@ -2524,5 +2529,51 @@ class FirebaseOperations with ChangeNotifier {
     await FirebaseFirestore.instance.collection("users").doc(userid).update({
       "carats": caratValue,
     });
+  }
+
+  Future addUserToNotifierList({
+    required String accountOwnerId,
+    required NotifyUsers notifyUsers,
+  }) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(accountOwnerId)
+        .collection("notifyUsers")
+        .doc(notifyUsers.personalUserId)
+        .set({
+      "personalUserId": notifyUsers.personalUserId,
+      "token": notifyUsers.token
+    });
+
+    log("done notifyi");
+  }
+
+  Future removeUserFromNotifierList(
+      {required String accountOwnerId, required personlUserid}) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(accountOwnerId)
+        .collection("notifyUsers")
+        .doc(personlUserid)
+        .delete();
+  }
+
+  Future notifyAllFromNotifierList({
+    required String accountOwnerId,
+  }) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(accountOwnerId)
+        .collection("notifyUsers")
+        .get()
+        .then((value) => value.docs.forEach((element) async {
+              final NotifyUsers notifyUser =
+                  NotifyUsers.fromMap(element.data());
+
+              await _fcmNotificationService.sendNotificationToUser(
+                  to: notifyUser.token, //To change once set up
+                  title: "$initUserName has a new post!",
+                  body: "");
+            }));
   }
 }

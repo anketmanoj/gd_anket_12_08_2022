@@ -10,6 +10,7 @@ import 'package:diamon_rose_app/providers/social_media_links_provider.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
+import 'package:diamon_rose_app/services/NotifyUserModels.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/dynamic_link_service.dart';
 import 'package:diamon_rose_app/services/user.dart';
@@ -47,6 +48,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
   Future showLinksBottomSheet(BuildContext context) {
     final socialMedias =
         Provider.of<SocialMediaLinksProvider>(context, listen: false);
+
     return showModalBottomSheet(
         backgroundColor: Colors.white,
         context: context,
@@ -1107,6 +1109,7 @@ class TopProfileStack extends StatefulWidget {
 class _TopProfileStackState extends State<TopProfileStack> {
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<Authentication>(context, listen: false);
     return Stack(
       children: [
         Container(
@@ -1119,20 +1122,122 @@ class _TopProfileStackState extends State<TopProfileStack> {
         Positioned(
           top: 5.h,
           right: 5.w,
-          child: Container(
-            decoration: BoxDecoration(
-              color: constantColors.black.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: IconButton(
-              onPressed: () {
-                otherUserOptionsMenu(context);
-              },
-              icon: Icon(
-                Icons.menu,
-                color: Colors.white,
+          child: Row(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: constantColors.black.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    otherUserOptionsMenu(context);
+                  },
+                  icon: Icon(
+                    Icons.menu,
+                    color: Colors.white,
+                  ),
+                ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("users")
+                        .doc(widget.userModel.useruid)
+                        .collection("notifyUsers")
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+
+                      if (snapshot.data!.docs.isEmpty) {
+                        return InkWell(
+                          onTap: () async {
+                            NotifyUsers notifyUser = NotifyUsers(
+                                personalUserId: auth.getUserId,
+                                token: context
+                                    .read<FirebaseOperations>()
+                                    .fcmToken);
+                            await context
+                                .read<FirebaseOperations>()
+                                .addUserToNotifierList(
+                                    accountOwnerId: widget.userModel.useruid,
+                                    notifyUsers: notifyUser);
+                          },
+                          child: Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              color: constantColors.black.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Icon(
+                              Icons.notifications_on_outlined,
+                              color: Colors.white,
+                            ),
+                          ),
+                        );
+                      } else if (snapshot.data!.docs
+                          .any((element) => element.id == auth.getUserId)) {
+                        return InkWell(
+                          onTap: () async {
+                            await context
+                                .read<FirebaseOperations>()
+                                .removeUserFromNotifierList(
+                                    accountOwnerId: widget.userModel.useruid,
+                                    personlUserid: context
+                                        .read<Authentication>()
+                                        .getUserId);
+                          },
+                          child: Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              color: constantColors.black.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Icon(
+                              Icons.notifications_off_rounded,
+                              color: Colors.white,
+                            ),
+                          ),
+                        );
+                      }
+
+                      return InkWell(
+                        onTap: () async {
+                          // log("what");
+                          final NotifyUsers notifyUser = NotifyUsers(
+                              personalUserId: auth.getUserId,
+                              token:
+                                  context.read<FirebaseOperations>().fcmToken);
+                          await context
+                              .read<FirebaseOperations>()
+                              .addUserToNotifierList(
+                                  accountOwnerId: widget.userModel.useruid,
+                                  notifyUsers: notifyUser);
+                        },
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            color: constantColors.black.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Icon(
+                            Icons.notifications_on_outlined,
+                            color: Colors.white,
+                            size: 25,
+                          ),
+                        ),
+                      );
+                    }),
+              ),
+            ],
           ),
         ),
         Positioned(

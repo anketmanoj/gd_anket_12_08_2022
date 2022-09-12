@@ -9,6 +9,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
 import 'package:diamon_rose_app/providers/homeScreenProvider.dart';
+import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
@@ -717,87 +718,93 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 30, bottom: 30),
-                        child: SubmitButton(function: () async {
-                          if (_formKey.currentState!.validate() &&
-                              _selectedRecommendedOptions.length > 0) {
-                            // ignore: unawaited_futures
-                            CoolAlert.show(
-                                barrierDismissible: false,
-                                context: context,
-                                type: CoolAlertType.loading,
-                                text: "Uploading Video");
+                      Consumer<VideoEditorProvider>(
+                          builder: (context, videoEditor, _) {
+                        log("video here = ${videoEditor.getBackgroundVideoFile.path}");
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 30, bottom: 30),
+                          child: SubmitButton(function: () async {
+                            if (_formKey.currentState!.validate() &&
+                                _selectedRecommendedOptions.length > 0) {
+                              // ignore: unawaited_futures
+                              CoolAlert.show(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  type: CoolAlertType.loading,
+                                  text: "Uploading Video");
 
-                            log("now");
+                              log("now");
 
-                            final bool result =
-                                await firebaseOperations.uploadVideo(
-                              addBgToMaterials: bgSelected.value,
-                              ctx: context,
-                              bgFile: widget.bgFile,
-                              arListVal: selectMaterials
-                                  .where((element) =>
-                                      element.selectedMaterial!.value == true)
-                                  .toList(),
-                              thumbnailFile: widget.thumbnailFile,
-                              videoFile: widget.videoFile,
-                              userUid: auth.getUserId,
-                              caption: _videoCaptionController.text,
-                              isPaid: _isPaid,
-                              price: _contentPrice.text.isEmpty
-                                  ? 0
-                                  : double.parse(_contentPrice.text),
-                              discountAmount: _contentDiscount.text.isEmpty
-                                  ? 0
-                                  : double.parse(_contentDiscount.text),
-                              startDiscountDate:
-                                  Timestamp.fromDate(_startDiscountDate),
-                              endDiscountDate:
-                                  Timestamp.fromDate(_endDiscountDate),
-                              isSubscription: _isSubscription,
-                              contentAvailability: _contentAvailableToValue,
-                              isFree: _isFree,
-                              video_title: _videotitleController.text,
-                              genre: _selectedRecommendedOptions,
-                            );
-
-                            log("done uploading");
-
-                            if (result == true) {
-                              log("works!!@!!");
-                              widget.videoPlayerController.dispose();
-                              widget.arList.forEach((arVal) {
-                                deleteFile(arVal.pathsForVideoFrames!);
-                              });
-                              Navigator.pushReplacement(
-                                context,
-                                PageTransition(
-                                    child: FeedPage(),
-                                    type: PageTransitionType.leftToRight),
+                              final bool result =
+                                  await firebaseOperations.uploadVideo(
+                                addBgToMaterials: bgSelected.value,
+                                ctx: context,
+                                backgroundVideoFile:
+                                    videoEditor.getBackgroundVideoFile,
+                                arListVal: selectMaterials
+                                    .where((element) =>
+                                        element.selectedMaterial!.value == true)
+                                    .toList(),
+                                thumbnailFile: widget.thumbnailFile,
+                                videoFile: widget.videoFile,
+                                userUid: auth.getUserId,
+                                caption: _videoCaptionController.text,
+                                isPaid: _isPaid,
+                                price: _contentPrice.text.isEmpty
+                                    ? 0
+                                    : double.parse(_contentPrice.text),
+                                discountAmount: _contentDiscount.text.isEmpty
+                                    ? 0
+                                    : double.parse(_contentDiscount.text),
+                                startDiscountDate:
+                                    Timestamp.fromDate(_startDiscountDate),
+                                endDiscountDate:
+                                    Timestamp.fromDate(_endDiscountDate),
+                                isSubscription: _isSubscription,
+                                contentAvailability: _contentAvailableToValue,
+                                isFree: _isFree,
+                                video_title: _videotitleController.text,
+                                genre: _selectedRecommendedOptions,
                               );
-                            } else if (result == false) {
-                              log("SHIT!");
+
+                              log("done uploading");
+
+                              if (result == true) {
+                                log("works!!@!!");
+                                widget.videoPlayerController.dispose();
+                                widget.arList.forEach((arVal) {
+                                  deleteFile(arVal.pathsForVideoFrames!);
+                                });
+                                Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                      child: FeedPage(),
+                                      type: PageTransitionType.leftToRight),
+                                );
+                              } else if (result == false) {
+                                log("SHIT!");
+                                CoolAlert.show(
+                                  context: context,
+                                  type: CoolAlertType.error,
+                                  title: "Error Uploading Video",
+                                  text: "AWS error",
+                                );
+                              }
+
+                              //ignore: avoid_catches_without_on_clauses
+
+                            } else if (_selectedRecommendedOptions.length ==
+                                0) {
                               CoolAlert.show(
                                 context: context,
                                 type: CoolAlertType.error,
-                                title: "Error Uploading Video",
-                                text: "AWS error",
+                                title: "No Selected Genre",
+                                text: "Please Select a Genre for your video",
                               );
                             }
-
-                            //ignore: avoid_catches_without_on_clauses
-
-                          } else if (_selectedRecommendedOptions.length == 0) {
-                            CoolAlert.show(
-                              context: context,
-                              type: CoolAlertType.error,
-                              title: "No Selected Genre",
-                              text: "Please Select a Genre for your video",
-                            );
-                          }
-                        }),
-                      ),
+                          }),
+                        );
+                      }),
                     ],
                   ),
                 ],
