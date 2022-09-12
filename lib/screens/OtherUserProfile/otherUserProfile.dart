@@ -850,29 +850,31 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                     "https://gdfe-ac584.web.app/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
                                 // "http://192.168.1.8:8080/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
                                 // "https://gdfe-ac584.web.app/#/video/0ReK4oZIhGdbuYxBiUG5J/sjhbjhs";
-                                CoolAlert.show(
-                                  context: context,
-                                  type: CoolAlertType.info,
-                                  title: "Premium Content",
-                                  text:
-                                      "You cannot unlock this content within the app; please unlock the content on the Glamorous Diastation website and you'll be able to view it on the Glamorous Diastation app or in the web browser",
-                                  confirmBtnText: "Unlock Video",
-                                  cancelBtnText: "Nevermind",
-                                  confirmBtnColor: constantColors.navButton,
-                                  showCancelBtn: true,
-                                  onCancelBtnTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  onConfirmBtnTap: () => ViewPaidVideoWeb(
-                                      context, video, videoUrl),
-                                  confirmBtnTextStyle: TextStyle(
-                                    fontSize: 14,
-                                    color: constantColors.whiteColor,
-                                  ),
-                                  cancelBtnTextStyle: TextStyle(
-                                    fontSize: 14,
-                                  ),
-                                );
+
+                                ViewPaidVideoWeb(context, video, videoUrl);
+                                // CoolAlert.show(
+                                //   context: context,
+                                //   type: CoolAlertType.info,
+                                //   title: "Premium Content",
+                                //   text:
+                                //       "You cannot unlock this content within the app; please unlock the content on the Glamorous Diastation website and you'll be able to view it on the Glamorous Diastation app or in the web browser",
+                                //   confirmBtnText: "Unlock Video",
+                                //   cancelBtnText: "Nevermind",
+                                //   confirmBtnColor: constantColors.navButton,
+                                //   showCancelBtn: true,
+                                //   onCancelBtnTap: () {
+                                //     Navigator.pop(context);
+                                //   },
+                                //   onConfirmBtnTap: () => ViewPaidVideoWeb(
+                                //       context, video, videoUrl),
+                                //   confirmBtnTextStyle: TextStyle(
+                                //     fontSize: 14,
+                                //     color: constantColors.whiteColor,
+                                //   ),
+                                //   cancelBtnTextStyle: TextStyle(
+                                //     fontSize: 14,
+                                //   ),
+                                // );
                               }
                             },
                             child: ClipRRect(
@@ -932,10 +934,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                 child: Row(
                   children: [
                     InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      },
+                      onTap: Get.back,
                       child: Text(
                         "Done",
                         style: TextStyle(

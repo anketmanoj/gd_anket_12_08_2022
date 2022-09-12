@@ -23,11 +23,11 @@ const String _kConsumableId0 = 'gd_carats_1';
 const String _kConsumableId1 = 'gd_carats_5';
 const String _kConsumableId2 = 'gd_carats_10';
 const String _kConsumableId3 = 'gd_carats_30';
-const String _kConsumableId4 = 'gd_carats_50';
-const String _kConsumableId5 = 'gd_carats_100';
-const String _kConsumableId6 = 'gd_carats_200';
-const String _kConsumableId7 = 'gd_carats_300';
-const String _kConsumableId8 = 'gd_carats_500';
+const String _kConsumableId4 = 'gd_carats_55';
+const String _kConsumableId5 = 'gd_carats_110';
+const String _kConsumableId6 = 'gd_carats_222';
+const String _kConsumableId7 = 'gd_carats_312';
+const String _kConsumableId8 = 'gd_carats_555';
 
 const List<String> _kProductIds = <String>[
   _kConsumableId0,
@@ -129,10 +129,11 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
       (ProductDetails productDetails) {
         final PurchaseDetails? previousPurchase = purchases[productDetails.id];
         return ListTile(
+          minVerticalPadding: 25,
           onTap: () {
             Get.bottomSheet(
               Container(
-                height: 25.h,
+                height: 30.h,
                 width: 100.w,
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -149,6 +150,16 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
                       child: Divider(
                         thickness: 4,
                         color: constantColors.whiteColor,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Text(
+                        "Purchase ${productDetails.id.split("_")[2]} Carats",
+                        style: TextStyle(
+                          color: constantColors.bioBg,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                     Padding(

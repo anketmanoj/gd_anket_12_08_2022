@@ -953,6 +953,12 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                           final Video videoModel =
                               Video.fromJson(cartVideos.data());
 
+                          log("old timestamp == ${videoModel.timestamp.toDate()}");
+
+                          videoModel.timestamp = Timestamp.now();
+
+                          log("new timestamp == ${videoModel.timestamp.toDate()}");
+
                           totalPrice += cartVideos['price'] *
                               (1 - cartVideos['discountamount'] / 100);
                           log("Total price  = $totalPrice");
