@@ -1202,12 +1202,15 @@ class FirebaseOperations with ChangeNotifier {
     required List<String> imgSeqList,
     required int audioFlag,
     required String usage,
+    bool asMaterialAlso = false,
   }) async {
     return FirebaseFirestore.instance
         .collection("posts")
         .doc(videoId)
         .collection("materials")
-        .doc("${idVal}${videoId}")
+        .doc(asMaterialAlso == false
+            ? "${idVal}${videoId}"
+            : "${idVal}${videoId}asMaterialAlso")
         .set({
       "videoId": videoId,
       "alpha": alphaUrl,
@@ -1232,6 +1235,7 @@ class FirebaseOperations with ChangeNotifier {
     required String caption,
     required String contentAvailability,
     required bool isFree,
+    bool isMaterialAlso = false,
     required bool isPaid,
     required bool isSubscription,
     double? price,
@@ -1339,6 +1343,38 @@ class FirebaseOperations with ChangeNotifier {
           useruid: userUid,
           usage: "Ar View Only",
         );
+
+        if (isMaterialAlso) {
+          log("is material also");
+          await addArToCollection(
+            ownerName: initUserName,
+            audioFlag: audioFlag,
+            alphaUrl: alphaUrl,
+            audioUrl: audioUrl,
+            imgSeqList: imgSeqList,
+            gifUrl: gifUrl,
+            idVal: arIdVal,
+            mainUrl: inputUrl,
+            useruid: userUid,
+            asMaterialAlso: true,
+            usage: "Material",
+          );
+
+          await addArToPostMaterials(
+            videoId: id,
+            ownerName: initUserName,
+            audioFlag: audioFlag,
+            alphaUrl: alphaUrl,
+            audioUrl: audioUrl,
+            imgSeqList: imgSeqList,
+            gifUrl: gifUrl,
+            idVal: arIdVal,
+            mainUrl: inputUrl,
+            useruid: userUid,
+            asMaterialAlso: true,
+            usage: "Material",
+          );
+        }
 
         Get.snackbar(
           'GD AR posted as View Only',
@@ -2344,12 +2380,13 @@ class FirebaseOperations with ChangeNotifier {
     required List<String> imgSeqList,
     required int audioFlag,
     required String usage,
+    bool asMaterialAlso = false,
   }) async {
     return FirebaseFirestore.instance
         .collection("users")
         .doc(useruid)
         .collection("MyCollection")
-        .doc(idVal)
+        .doc(asMaterialAlso == false ? idVal : "${idVal}asMaterialAlso")
         .set({
       "alpha": alphaUrl,
       "main": mainUrl,
@@ -2358,7 +2395,7 @@ class FirebaseOperations with ChangeNotifier {
       "layerType": "AR",
       "valueType": "myItems",
       "timestamp": Timestamp.now(),
-      "id": idVal,
+      "id": asMaterialAlso == false ? idVal : "${idVal}asMaterialAlso",
       "imgSeq": imgSeqList,
       "audioFlag": audioFlag == 1 ? true : false,
       "ownerId": useruid,

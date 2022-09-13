@@ -496,7 +496,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                           height: 10,
                                         ),
                                         Text(
-                                          "Materials",
+                                          "Items",
                                           style: TextStyle(
                                             fontSize: 16,
                                             color: Colors.white,
@@ -533,6 +533,15 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                                           .docs[index]["gif"])),
                                                               title: Text(
                                                                 "${snapshot.data!.docs[index]["layerType"]} by ${video!.username}",
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: 16,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                              ),
+                                                              trailing: Text(
+                                                                "${snapshot.data!.docs[index]["usage"]}",
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize: 16,
@@ -796,7 +805,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                       // paymentController.makePayment(
                                                       //     amount: "10", currency: "USD"),
                                                       child: Text(
-                                                        "Add To My Materials",
+                                                        "Add To My Inventory",
                                                         style: TextStyle(
                                                           color: constantColors
                                                               .navButton,

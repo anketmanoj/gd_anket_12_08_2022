@@ -65,6 +65,7 @@ class ArPreviewSetting extends StatelessWidget {
       ValueNotifier<DateTime>(DateTime.now());
   ValueNotifier<bool> _isFree = ValueNotifier<bool>(true);
   ValueNotifier<bool> _isPaid = ValueNotifier<bool>(false);
+  ValueNotifier<bool> _asMaterialAlso = ValueNotifier<bool>(false);
   ValueNotifier<List<String>> bgImage = ValueNotifier<List<String>>([
     "https://firebasestorage.googleapis.com/v0/b/gdfe-ac584.appspot.com/o/bgImagesAR%2Fpexels-aleksandar-pasaric-2385210.jpg?alt=media&token=cefa1d4f-6b9d-494a-8be6-ed6679bd7f33",
     "https://firebasestorage.googleapis.com/v0/b/gdfe-ac584.appspot.com/o/bgImagesAR%2Fpexels-l-a-10799832.jpg?alt=media&token=790a7a0b-7f3e-4e5a-a0db-690c06204642",
@@ -460,6 +461,7 @@ class ArPreviewSetting extends StatelessWidget {
                                     _startDiscountDate,
                                     _endDiscountDate,
                                     _isFree,
+                                    _asMaterialAlso,
                                     _isPaid,
                                     _arPrice,
                                     _contentDiscount
@@ -505,6 +507,20 @@ class ArPreviewSetting extends StatelessWidget {
                                                     "length == ${_selectedRecommendedOptions.length}");
                                               },
                                             ),
+                                          ),
+                                        ),
+                                        ListTile(
+                                          leading: Icon(FontAwesomeIcons.video),
+                                          minLeadingWidth: 10,
+                                          trailing: Switch(
+                                              activeColor:
+                                                  constantColors.navButton,
+                                              value: _asMaterialAlso.value,
+                                              onChanged: (value) {
+                                                _asMaterialAlso.value = value;
+                                              }),
+                                          title: Text(
+                                            "Allow usage as Material",
                                           ),
                                         ),
                                         ListTile(
@@ -846,6 +862,8 @@ class ArPreviewSetting extends StatelessWidget {
                                                       imgSeqList: imgSeqList,
                                                       inputUrl: inputUrl,
                                                       isFree: _isFree.value,
+                                                      isMaterialAlso:
+                                                          _asMaterialAlso.value,
                                                       isPaid: _isPaid.value,
                                                       isSubscription: false,
                                                       ownerName: ownerName,
