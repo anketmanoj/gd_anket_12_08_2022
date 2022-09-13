@@ -1161,6 +1161,8 @@ class FirebaseOperations with ChangeNotifier {
         accountOwnerId: userUid,
       );
 
+      log("notified");
+
       return true;
     } catch (e) {
       return false;

@@ -517,6 +517,13 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "Monitisation",
                 ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {},
+                  leadingIcon: FontAwesomeIcons.untappd,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Revert Total Billed Prices",
+                ),
                 // ListTileOption(
                 //   constantColors: constantColors,
                 //   onTap: () {

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chewie/chewie.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,7 @@ class _BackgroundVideoViewerState extends State<BackgroundVideoViewer> {
 
   @override
   void initState() {
+    log("found it");
     _videoPlayerController = VideoPlayerController.network(widget.videoUrl);
 
     _chewieController = ChewieController(
@@ -38,6 +41,13 @@ class _BackgroundVideoViewerState extends State<BackgroundVideoViewer> {
       },
     );
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _chewieController.dispose();
+    _videoPlayerController.dispose();
+    super.dispose();
   }
 
   @override

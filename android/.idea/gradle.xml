@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="testRunner" value="GRADLE" />
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="/Applications/development/flutter/.pub-cache/git/flutter_share_me-162443d4ebefa8ca038a3e6e6b96759d3ad39983/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/audio_session-0.1.10/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/cached_video_player-2.0.3/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/camera_android-0.10.0+1/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/cloud_firestore-3.4.4/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/connectivity-3.0.6/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/ffmpeg_kit_flutter_https_gpl-4.5.1/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/file_picker-4.6.1/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth-3.4.2/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-1.20.1/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_dynamic_links-4.3.4/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_messaging-12.0.2/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_storage-10.3.5/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_facebook_auth-4.1.1/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_inappwebview-5.4.3+7/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications-9.7.0/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_native_splash-2.1.6/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_plugin_android_lifecycle-2.0.7/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in_android-6.0.1/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/image_cropper-2.0.3/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/image_editor-1.1.0/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/image_picker_android-0.8.5+2/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/in_app_purchase_android-0.2.3+3/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/just_audio-0.9.28/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus-1.4.2/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_android-2.0.19/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/pay_android-1.0.7/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler_android-9.0.2+1/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/share_plus-4.0.10+1/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences_android-2.0.12/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/simple_s3-0.3.2/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/smart_auth-1.0.5/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-2.0.2+1/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/system_info_plus-0.0.5/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_android-6.0.17/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/video_player_android-2.3.8/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/video_thumbnail-0.5.2/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/wakelock-0.6.2/android" />
+            <option value="/Applications/development/flutter/.pub-cache/hosted/pub.dartlang.org/webview_flutter_android-2.8.14/android" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/app" />
+          </set>
+        </option>
+        <option name="resolveModulePerSourceSet" value="false" />
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

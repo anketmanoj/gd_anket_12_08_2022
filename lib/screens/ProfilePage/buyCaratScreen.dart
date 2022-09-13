@@ -59,7 +59,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
   List<ProductDetails> _products = <ProductDetails>[];
   List<PurchaseDetails> _purchases = <PurchaseDetails>[];
   List<String> _consumables = <String>[];
-  bool _isAvailable = false;
+  bool _isAvailable = true;
   bool _purchasePending = false;
   bool _loading = true;
   String? _queryProductError;
