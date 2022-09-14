@@ -540,15 +540,27 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                                       .white,
                                                                 ),
                                                               ),
-                                                              trailing: Text(
-                                                                "${snapshot.data!.docs[index]["usage"]}",
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 16,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
+                                                              trailing: (snapshot
+                                                                              .data!
+                                                                              .docs[
+                                                                                  index]
+                                                                              .data()
+                                                                          as Map<
+                                                                              String,
+                                                                              dynamic>)
+                                                                      .containsKey(
+                                                                          "usage")
+                                                                  ? Text(
+                                                                      "${snapshot.data!.docs[index]["usage"]}",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            16,
+                                                                        color: Colors
+                                                                            .white,
+                                                                      ),
+                                                                    )
+                                                                  : null,
                                                             )
                                                           : ListTile(
                                                               tileColor:

@@ -517,96 +517,42 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "Monitisation",
                 ),
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () {},
-                  leadingIcon: FontAwesomeIcons.untappd,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: "Revert Total Billed Prices",
-                ),
-                // ListTileOption(
-                //   constantColors: constantColors,
-                //   onTap: () {
-                //     List<String> imgSequence = [];
-
-                //     for (int i = 1; i <= 94; i++) {
-                //       imgSequence.add(
-                //           "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/1659177382200_ImgSeq$i.png");
-                //     }
-
-                //     Get.to(() => ArPreviewSetting(
-                //           gifUrl:
-                //               "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/1659177382200output.gif",
-                //           ownerName: Provider.of<FirebaseOperations>(context,
-                //                   listen: false)
-                //               .initUserName,
-                //           audioFlag: 0,
-                //           alphaUrl:
-                //               "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/1659177382200_alpha.mp4",
-                //           audioUrl: "No Audio",
-                //           imgSeqList: imgSequence,
-                //           arIdVal: "1659177382200",
-                //           inputUrl:
-                //               "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/1659177382200videoFile.mp4",
-                //           userUid: Provider.of<Authentication>(context,
-                //                   listen: false)
-                //               .getUserId,
-                //           endDuration: Duration(seconds: 15),
-                //         ));
-                //   },
-                //   leadingIcon: Icons.temple_buddhist,
-                //   trailingIcon: Icons.arrow_forward_ios,
-                //   text: "Test No Audio",
-                // ),
-                // ListTileOption(
-                //   constantColors: constantColors,
-                //   onTap: () {
-                //     List<String> imgSequence = [];
-
-                //     for (int i = 1; i <= 94; i++) {
-                //       imgSequence.add(
-                //           "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/1659257713778_ImgSeq$i.png");
-                //     }
-
-                //     Get.to(() => ArPreviewSetting(
-                //           gifUrl:
-                //               "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/1659257713778output.gif",
-                //           ownerName: Provider.of<FirebaseOperations>(context,
-                //                   listen: false)
-                //               .initUserName,
-                //           audioFlag: 0,
-                //           alphaUrl:
-                //               "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/1659257713778_alpha.mp4",
-                //           audioUrl: "No Audio",
-                //           imgSeqList: imgSequence,
-                //           arIdVal: "1659257713778",
-                //           inputUrl:
-                //               "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/1659257713778videoFile.mp4",
-                //           userUid: Provider.of<Authentication>(context,
-                //                   listen: false)
-                //               .getUserId,
-                //           endDuration: Duration(seconds: 15),
-                //         ));
-                //   },
-                //   leadingIcon: Icons.temple_buddhist,
-                //   trailingIcon: Icons.arrow_forward_ios,
-                //   text: "Test With Audio",
-                // ),
+                // ! fix all usage error
                 // ListTileOption(
                 //   constantColors: constantColors,
                 //   onTap: () async {
                 //     await FirebaseFirestore.instance
                 //         .collection("posts")
-                //         .doc("BG9ciuEuxNSC5NeAfSUxP")
-                //         .update({
-                //       "discountamount": 0.0,
-                //       "price": 1.0,
-                //     });
+                //         .get()
+                //         .then((value) => value.docs.forEach((element) async {
+                //               await FirebaseFirestore.instance
+                //                   .collection("posts")
+                //                   .doc(element.id)
+                //                   .collection("materials")
+                //                   .get()
+                //                   .then((materials) =>
+                //                       materials.docs.forEach((layer) async {
+                //                         if (!layer
+                //                             .data()
+                //                             .containsKey("usage")) {
+                //                           log(layer.data()['usage']);
+                //                           // await FirebaseFirestore.instance
+                //                           //     .collection("posts")
+                //                           //     .doc(element.id)
+                //                           //     .collection("materials")
+                //                           //     .doc(layer.id)
+                //                           //     .update({
+                //                           //   "usage": "",
+                //                           // });
+                //                         }
+                //                       }));
+                //             }));
                 //   },
-                //   leadingIcon: FontAwesomeIcons.history,
+                //   leadingIcon: FontAwesomeIcons.untappd,
                 //   trailingIcon: Icons.arrow_forward_ios,
-                //   text: "test all Materials",
+                //   text: "Fix usage value",
                 // ),
+
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () {
