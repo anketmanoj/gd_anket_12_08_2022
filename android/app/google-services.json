@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "312025633407-ceo9bm1ct5mhvkogmdbcb7tgr2qobh0e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.diamant.jp.gd_anket",
+            "certificate_hash": "75cab99d652bbcbd1eaf6f2a4ddb26298a893615"
+          }
+        },
+        {
           "client_id": "312025633407-vpu5tichsgl64ac08oeodqqdf61eod7t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

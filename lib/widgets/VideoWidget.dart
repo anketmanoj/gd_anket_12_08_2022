@@ -264,7 +264,7 @@ class VideoWidget extends StatelessWidget {
                                     ),
                                     Text(
                                       video.videoType == "video"
-                                          ? "Materials"
+                                          ? "Items"
                                           : "AR View Only Items",
                                       style: TextStyle(
                                         fontSize: 16,
@@ -452,7 +452,7 @@ class VideoWidget extends StatelessWidget {
                                             //     amount: "10", currency: "USD"),
                                             child: Text(
                                               video.videoType == "video"
-                                                  ? "Add to My Materials"
+                                                  ? "Add to My Inventory"
                                                   : "Add to AR View Collection",
                                               style: TextStyle(
                                                 color: constantColors.navButton,

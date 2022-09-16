@@ -431,7 +431,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                         height: 10,
                                       ),
                                       Text(
-                                        "Materials",
+                                        "Items",
                                         style: TextStyle(
                                           fontSize: 16,
                                           color: Colors.white,
@@ -725,7 +725,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                     // paymentController.makePayment(
                                                     //     amount: "10", currency: "USD"),
                                                     child: Text(
-                                                      "Add To My Materials",
+                                                      "Add To My Inventory",
                                                       style: TextStyle(
                                                         color: constantColors
                                                             .navButton,

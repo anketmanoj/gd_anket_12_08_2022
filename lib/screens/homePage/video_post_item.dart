@@ -393,7 +393,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                       ),
                                       Text(
                                         widget.video.videoType == "video"
-                                            ? "Materials"
+                                            ? "Items"
                                             : "AR View Only Items",
                                         style: TextStyle(
                                           fontSize: 16,
@@ -693,7 +693,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                                     // paymentController.makePayment(
                                                     //     amount: "10", currency: "USD"),
                                                     child: Text(
-                                                      "Add To My Materials",
+                                                      "Add To My Inventory",
                                                       style: TextStyle(
                                                         color: constantColors
                                                             .navButton,
@@ -945,7 +945,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                             ),
                             Text(
                               widget.video.videoType == "video"
-                                  ? "Materials"
+                                  ? "Items"
                                   : "AR View Only Items",
                               style: TextStyle(
                                 fontSize: 16,
@@ -1209,7 +1209,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                           //     amount: "10", currency: "USD"),
                                           child: Text(
                                             widget.video.videoType == "video"
-                                                ? "Add to My Materials"
+                                                ? "Add to My Inventory"
                                                 : "Add to AR View Collection",
                                             style: TextStyle(
                                               color: constantColors.navButton,

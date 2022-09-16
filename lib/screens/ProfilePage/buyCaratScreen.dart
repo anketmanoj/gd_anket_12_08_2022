@@ -29,7 +29,7 @@ const String _kConsumableId6 = 'gd_carats_222';
 const String _kConsumableId7 = 'gd_carats_312';
 const String _kConsumableId8 = 'gd_carats_555';
 
-const List<String> _kProductIds = <String>[
+const List<String> _kProductIdiOS = <String>[
   _kConsumableId0,
   _kConsumableId1,
   _kConsumableId2,
@@ -39,6 +39,15 @@ const List<String> _kProductIds = <String>[
   _kConsumableId6,
   _kConsumableId7,
   _kConsumableId8,
+];
+
+const List<String> _kProductIdAndroid = <String>[
+  _kConsumableId0,
+  _kConsumableId1,
+  _kConsumableId2,
+  _kConsumableId3,
+  _kConsumableId4,
+  _kConsumableId5,
 ];
 // Auto-consume must be true on iOS.
 // To try without auto-consume on another platform, change `true` to `false` here.
@@ -131,153 +140,185 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
         return ListTile(
           minVerticalPadding: 25,
           onTap: () {
-            Get.bottomSheet(
-              Container(
-                height: 30.h,
-                width: 100.w,
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: constantColors.navButton,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 150),
-                      child: Divider(
-                        thickness: 4,
-                        color: constantColors.whiteColor,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Text(
-                        "Purchase ${productDetails.id.split("_")[2]} Carats",
-                        style: TextStyle(
-                          color: constantColors.bioBg,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Container(
-                        height: 50,
-                        width: 100.w,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            foregroundColor:
-                                MaterialStateProperty.all<Color>(Colors.white),
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                constantColors.bioBg),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                          ),
-                          onPressed: () {
-                            Get.back();
-                            late PurchaseParam purchaseParam;
+            // Get.back();
+            late PurchaseParam purchaseParam;
 
-                            if (Platform.isAndroid) {
-                              // NOTE: If you are making a subscription purchase/upgrade/downgrade, we recommend you to
-                              // verify the latest status of you your subscription by using server side receipt validation
-                              // and update the UI accordingly. The subscription purchase status shown
-                              // inside the app may not be accurate.
-                              final GooglePlayPurchaseDetails? oldSubscription =
-                                  _getOldSubscription(
-                                      productDetails, purchases);
+            if (Platform.isAndroid) {
+              // NOTE: If you are making a subscription purchase/upgrade/downgrade, we recommend you to
+              // verify the latest status of you your subscription by using server side receipt validation
+              // and update the UI accordingly. The subscription purchase status shown
+              // inside the app may not be accurate.
+              final GooglePlayPurchaseDetails? oldSubscription =
+                  _getOldSubscription(productDetails, purchases);
 
-                              purchaseParam = GooglePlayPurchaseParam(
-                                  productDetails: productDetails,
-                                  changeSubscriptionParam: (oldSubscription !=
-                                          null)
-                                      ? ChangeSubscriptionParam(
-                                          oldPurchaseDetails: oldSubscription,
-                                          prorationMode: ProrationMode
-                                              .immediateWithTimeProration,
-                                        )
-                                      : null);
-                            } else {
-                              purchaseParam = PurchaseParam(
-                                productDetails: productDetails,
-                              );
-                            }
+              purchaseParam = GooglePlayPurchaseParam(
+                  productDetails: productDetails,
+                  changeSubscriptionParam: (oldSubscription != null)
+                      ? ChangeSubscriptionParam(
+                          oldPurchaseDetails: oldSubscription,
+                          prorationMode:
+                              ProrationMode.immediateWithTimeProration,
+                        )
+                      : null);
+            } else {
+              purchaseParam = PurchaseParam(
+                productDetails: productDetails,
+              );
+            }
 
-                            if (productDetails.id == _kConsumableId0) {
-                              _inAppPurchase.buyConsumable(
-                                  purchaseParam: purchaseParam,
-                                  autoConsume: _kAutoConsume);
-                            } else {
-                              _inAppPurchase.buyNonConsumable(
-                                  purchaseParam: purchaseParam);
-                            }
-                          },
-                          child: Text(
-                            "Apple App Store",
-                            style: TextStyle(
-                              color: constantColors.navButton,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Container(
-                        height: 50,
-                        width: 100.w,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            foregroundColor:
-                                MaterialStateProperty.all<Color>(Colors.white),
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                constantColors.bioBg),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                          ),
-                          onPressed: () {
-                            final String paymentUrl =
-                                "https://gdfe-ac584.firebaseapp.com/#/payment/${productDetails.id.split("_")[2]}";
-                            log("price = ${productDetails.id.split("_")[2]}");
-                            log(paymentUrl);
-                            ViewMenuWebApp(
-                                caratValue:
-                                    int.parse(productDetails.id.split("_")[2]),
-                                context: context,
-                                menuUrl: paymentUrl,
-                                auth: context.read<Authentication>(),
-                                firebaseOperations:
-                                    context.read<FirebaseOperations>(),
-                                key: webViewKey);
-                          },
-                          child: Text(
-                            "Glamorous Diastation Direct Payment",
-                            style: TextStyle(
-                              color: constantColors.navButton,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
+            if (productDetails.id == _kConsumableId0) {
+              _inAppPurchase.buyConsumable(
+                  purchaseParam: purchaseParam, autoConsume: _kAutoConsume);
+            } else {
+              _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+            }
+            // Get.bottomSheet(
+            //   Container(
+            //     height: 30.h,
+            //     width: 100.w,
+            //     padding: EdgeInsets.all(10),
+            //     decoration: BoxDecoration(
+            //       color: constantColors.navButton,
+            //       borderRadius: BorderRadius.only(
+            //         topLeft: Radius.circular(20),
+            //         topRight: Radius.circular(20),
+            //       ),
+            //     ),
+            //     child: Column(
+            //       children: [
+            //         Padding(
+            //           padding: const EdgeInsets.symmetric(horizontal: 150),
+            //           child: Divider(
+            //             thickness: 4,
+            //             color: constantColors.whiteColor,
+            //           ),
+            //         ),
+            //         Padding(
+            //           padding: const EdgeInsets.only(top: 10),
+            //           child: Text(
+            //             "Purchase ${productDetails.id.split("_")[2]} Carats",
+            //             style: TextStyle(
+            //               color: constantColors.bioBg,
+            //               fontSize: 16,
+            //             ),
+            //           ),
+            //         ),
+            //         Padding(
+            //           padding: const EdgeInsets.only(top: 20),
+            //           child: Container(
+            //             height: 50,
+            //             width: 100.w,
+            //             child: ElevatedButton(
+            //               style: ButtonStyle(
+            //                 foregroundColor:
+            //                     MaterialStateProperty.all<Color>(Colors.white),
+            //                 backgroundColor: MaterialStateProperty.all<Color>(
+            //                     constantColors.bioBg),
+            //                 shape: MaterialStateProperty.all<
+            //                     RoundedRectangleBorder>(
+            //                   RoundedRectangleBorder(
+            //                     borderRadius: BorderRadius.circular(20),
+            //                   ),
+            //                 ),
+            //               ),
+            //               onPressed: () {
+            //                 Get.back();
+            //                 late PurchaseParam purchaseParam;
+
+            //                 if (Platform.isAndroid) {
+            //                   // NOTE: If you are making a subscription purchase/upgrade/downgrade, we recommend you to
+            //                   // verify the latest status of you your subscription by using server side receipt validation
+            //                   // and update the UI accordingly. The subscription purchase status shown
+            //                   // inside the app may not be accurate.
+            //                   final GooglePlayPurchaseDetails? oldSubscription =
+            //                       _getOldSubscription(
+            //                           productDetails, purchases);
+
+            //                   purchaseParam = GooglePlayPurchaseParam(
+            //                       productDetails: productDetails,
+            //                       changeSubscriptionParam: (oldSubscription !=
+            //                               null)
+            //                           ? ChangeSubscriptionParam(
+            //                               oldPurchaseDetails: oldSubscription,
+            //                               prorationMode: ProrationMode
+            //                                   .immediateWithTimeProration,
+            //                             )
+            //                           : null);
+            //                 } else {
+            //                   purchaseParam = PurchaseParam(
+            //                     productDetails: productDetails,
+            //                   );
+            //                 }
+
+            //                 if (productDetails.id == _kConsumableId0) {
+            //                   _inAppPurchase.buyConsumable(
+            //                       purchaseParam: purchaseParam,
+            //                       autoConsume: _kAutoConsume);
+            //                 } else {
+            //                   _inAppPurchase.buyNonConsumable(
+            //                       purchaseParam: purchaseParam);
+            //                 }
+            //               },
+            //               child: Text(
+            //                 "Apple App Store",
+            //                 style: TextStyle(
+            //                   color: constantColors.navButton,
+            //                 ),
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //         Padding(
+            //           padding: const EdgeInsets.only(top: 20),
+            //           child: Container(
+            //             height: 50,
+            //             width: 100.w,
+            //             child: ElevatedButton(
+            //               style: ButtonStyle(
+            //                 foregroundColor:
+            //                     MaterialStateProperty.all<Color>(Colors.white),
+            //                 backgroundColor: MaterialStateProperty.all<Color>(
+            //                     constantColors.bioBg),
+            //                 shape: MaterialStateProperty.all<
+            //                     RoundedRectangleBorder>(
+            //                   RoundedRectangleBorder(
+            //                     borderRadius: BorderRadius.circular(20),
+            //                   ),
+            //                 ),
+            //               ),
+            //               onPressed: () {
+            //                 final String paymentUrl =
+            //                     "https://gdfe-ac584.firebaseapp.com/#/payment/${productDetails.id.split("_")[2]}";
+            //                 log("price = ${productDetails.id.split("_")[2]}");
+            //                 log(paymentUrl);
+            //                 ViewMenuWebApp(
+            //                     caratValue:
+            //                         int.parse(productDetails.id.split("_")[2]),
+            //                     context: context,
+            //                     menuUrl: paymentUrl,
+            //                     auth: context.read<Authentication>(),
+            //                     firebaseOperations:
+            //                         context.read<FirebaseOperations>(),
+            //                     key: webViewKey);
+            //               },
+            //               child: Text(
+            //                 "Glamorous Diastation Direct Payment",
+            //                 style: TextStyle(
+            //                   color: constantColors.navButton,
+            //                 ),
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // );
           },
           leading: Image.asset(
               "assets/carats/${productDetails.id.split("_")[2]}.png"),
           title: Text(
-            productDetails.title,
+            "${productDetails.id.split("_")[2]} Carats",
           ),
           trailing: Text(productDetails.price),
         );
@@ -557,7 +598,9 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
     }
 
     final ProductDetailsResponse productDetailResponse =
-        await _inAppPurchase.queryProductDetails(_kProductIds.toSet());
+        await _inAppPurchase.queryProductDetails(Platform.isIOS
+            ? _kProductIdiOS.toSet()
+            : _kProductIdAndroid.toSet());
     if (productDetailResponse.error != null) {
       setState(() {
         _queryProductError = productDetailResponse.error!.message;
