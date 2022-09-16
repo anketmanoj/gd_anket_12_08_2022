@@ -839,7 +839,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                   1;
             });
 
-            if (effectIndexVal.value <= 2) {
+            if (effectIndexVal.value <= 10) {
               if (list.value.isNotEmpty) {
                 list.value.last.layerType == LayerType.AR
                     ? indexCounter.value = indexCounter.value + 2
@@ -862,7 +862,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 context: context,
                 type: CoolAlertType.info,
                 title: "Max Effects's Reached",
-                text: "You can only have 2 effects's",
+                text: "You can only have 10 effects's",
               );
             }
 
