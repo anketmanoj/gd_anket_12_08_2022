@@ -74,7 +74,7 @@ class _ProfileImageSelectorState extends State<ProfileImageSelector> {
             padding:
                 const EdgeInsets.symmetric(horizontal: kIsWeb ? 24.0 : 16.0),
             child: Card(
-              color: Colors.yellow,
+              color: constantColors.navButton,
               elevation: 4.0,
               child: Padding(
                 padding: const EdgeInsets.all(kIsWeb ? 24.0 : 16.0),

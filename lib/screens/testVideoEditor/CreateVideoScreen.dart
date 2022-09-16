@@ -831,6 +831,11 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
         builder: (stream, giphyGetWrapper) {
           stream.listen((gif) async {
             // ! USe this link format https://i.giphy.com/media/${URL_PART}/giphy.gif
+            CoolAlert.show(
+                context: context,
+                type: CoolAlertType.loading,
+                barrierDismissible: false,
+                text: "Connecting Giphy ");
             dev.log("here");
             setState(() {
               effectIndexVal.value = list.value
@@ -848,6 +853,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
               final File gifFile = await getImage(
                   url: "https://i.giphy.com/media/${gif.id}/giphy.gif");
+              Get.back();
 
               dev.log("File path == ${gifFile.path}");
               await runGifFFmpegCommand(

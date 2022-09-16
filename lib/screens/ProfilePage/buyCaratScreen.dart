@@ -24,10 +24,10 @@ const String _kConsumableId1 = 'gd_carats_5';
 const String _kConsumableId2 = 'gd_carats_10';
 const String _kConsumableId3 = 'gd_carats_30';
 const String _kConsumableId4 = 'gd_carats_55';
-const String _kConsumableId5 = 'gd_carats_110';
-const String _kConsumableId6 = 'gd_carats_222';
-const String _kConsumableId7 = 'gd_carats_312';
-const String _kConsumableId8 = 'gd_carats_555';
+const String _kConsumableId5 = 'gd_carats_80';
+// const String _kConsumableId6 = 'gd_carats_222';
+// const String _kConsumableId7 = 'gd_carats_312';
+// const String _kConsumableId8 = 'gd_carats_555';
 
 const List<String> _kProductIdiOS = <String>[
   _kConsumableId0,
@@ -36,9 +36,6 @@ const List<String> _kProductIdiOS = <String>[
   _kConsumableId3,
   _kConsumableId4,
   _kConsumableId5,
-  _kConsumableId6,
-  _kConsumableId7,
-  _kConsumableId8,
 ];
 
 const List<String> _kProductIdAndroid = <String>[
