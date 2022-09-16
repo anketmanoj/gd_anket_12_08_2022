@@ -152,6 +152,7 @@ class MyApp extends StatelessWidget {
         child: Sizer(
           builder: (context, orientation, deviceType) {
             return GetMaterialApp(
+              themeMode: ThemeMode.light,
               navigatorKey: _navigationService.navigationKey,
               defaultTransition: getTransition.Transition.fadeIn,
               home: WillPopScope(

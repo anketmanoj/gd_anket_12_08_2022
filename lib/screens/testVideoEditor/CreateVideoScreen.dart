@@ -12,6 +12,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
 import 'package:diamon_rose_app/providers/video_editor_provider.dart';
+import 'package:diamon_rose_app/screens/GiphyTest/get_giphy_gifs.dart';
 import 'package:diamon_rose_app/screens/PostPage/previewVideo.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/ui/frame/frame_slider_painter.dart';
@@ -28,6 +29,7 @@ import 'package:diamon_rose_app/widgets/extensions.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:diamon_rose_app/widgets/measure_widget_size.dart';
 import 'package:diamon_rose_app/widgets/utils.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:ffmpeg_kit_flutter_https_gpl/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_https_gpl/ffmpeg_kit_config.dart';
@@ -39,6 +41,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:giphy_get/giphy_get.dart';
 import 'package:helpers/helpers/transition.dart';
 import 'package:image_sequence_animator/image_sequence_animator.dart';
 import 'package:just_audio/just_audio.dart';
@@ -76,7 +79,13 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
   String _exportText = "";
   final _bgProgress = ValueNotifier<double>(0);
   final _scrollController = ScrollController();
-
+  //Gif
+  GiphyGif? currentGif;
+  // Giphy Client
+  GiphyClient? client;
+  // Random ID
+  String randomId = "";
+  String giphyApiKey = "0X2ffUW2nnfVcPUc2C7alPhfdrj2tA6M";
   VideoPlayerController? _finalVideoController;
 
   Rect _rect = Rect.zero;
@@ -189,6 +198,15 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
     _videoPath = widget.file.path;
 
+    client = GiphyClient(apiKey: giphyApiKey, randomId: '');
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      client!.getRandomId().then((value) {
+        setState(() {
+          randomId = value;
+        });
+      });
+    });
+
     _controller = VideoEditorController.file(
       widget.file,
       maxDuration: const Duration(seconds: 60),
@@ -279,6 +297,11 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       });
     });
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
   }
 
   @override
@@ -429,6 +452,28 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     }
   }
 
+  Future<File> getImage({required String url}) async {
+    /// Get Image from server
+    final dio.Response res = await dio.Dio().get<List<int>>(
+      url,
+      options: dio.Options(
+        responseType: dio.ResponseType.bytes,
+      ),
+    );
+
+    /// Get App local storage
+    final Directory appDir = await getApplicationDocumentsDirectory();
+
+    /// Generate Image Name
+    final String imageName = url.split('/').last;
+
+    /// Create Empty File in app dir & fill with new image
+    final File file = File(path.join(appDir.path, imageName));
+    file.writeAsBytesSync(res.data as List<int>);
+
+    return file;
+  }
+
   // * running ffmpeg for Gif to add as Effect
   Future<void> runGifFFmpegCommand({
     required File gifFile,
@@ -554,7 +599,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               });
               _controllerSeekTo(0);
               Navigator.pop(context);
-              Navigator.pop(context);
+              // Navigator.pop(context);
 
               setState(() {
                 loading = false;
@@ -781,488 +826,514 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     final maxWidth = MediaQuery.of(context).size.width * 0.9;
     final ArVideoCreation arVideoCreation =
         Provider.of<ArVideoCreation>(context, listen: false);
-    return Scaffold(
-      backgroundColor: Colors.grey,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Stack(
-                alignment: Alignment.center,
+    return AnketGiphyGetWrapper(
+        giphy_api_key: giphyApiKey,
+        builder: (stream, giphyGetWrapper) {
+          stream.listen((gif) async {
+            // ! USe this link format https://i.giphy.com/media/${URL_PART}/giphy.gif
+            dev.log("here");
+            setState(() {
+              effectIndexVal.value = list.value
+                      .where((element) => element.layerType == LayerType.Effect)
+                      .length +
+                  1;
+            });
+
+            if (effectIndexVal.value <= 2) {
+              if (list.value.isNotEmpty) {
+                list.value.last.layerType == LayerType.AR
+                    ? indexCounter.value = indexCounter.value + 2
+                    : indexCounter.value = indexCounter.value + 1;
+              }
+
+              final File gifFile = await getImage(
+                  url: "https://i.giphy.com/media/${gif.id}/giphy.gif");
+
+              dev.log("File path == ${gifFile.path}");
+              await runGifFFmpegCommand(
+                arVal: indexCounter.value,
+                gifFile: File(gifFile.path),
+                fromFirebase: false,
+              ).then((value) {
+                setState(() {});
+              });
+            } else {
+              CoolAlert.show(
+                context: context,
+                type: CoolAlertType.info,
+                title: "Max Effects's Reached",
+                text: "You can only have 2 effects's",
+              );
+            }
+
+            // setState(() {
+            //   currentGif = gif;
+            // });
+          });
+          return Scaffold(
+            backgroundColor: Colors.grey,
+            body: SafeArea(
+              child: Column(
                 children: [
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      widget.isHorizontal
-                          ? Container(
-                              key: videoContainerKey,
-                              height: 500,
-                              width: 150,
-                              color: Colors.black,
-                              child: AspectRatio(
-                                aspectRatio: _videoController.value.aspectRatio,
-                                child: VideoViewer(
-                                  controller: _controller,
-                                ),
-                              ),
-                            )
-                          : Container(
-                              key: videoContainerKey,
-                              child: AspectRatio(
-                                aspectRatio: _videoController.value.aspectRatio,
-                                child: VideoViewer(
-                                  controller: _controller,
-                                ),
-                              ),
+                  Expanded(
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            widget.isHorizontal
+                                ? Container(
+                                    key: videoContainerKey,
+                                    height: 500,
+                                    width: 150,
+                                    color: Colors.black,
+                                    child: AspectRatio(
+                                      aspectRatio:
+                                          _videoController.value.aspectRatio,
+                                      child: VideoViewer(
+                                        controller: _controller,
+                                      ),
+                                    ),
+                                  )
+                                : Container(
+                                    key: videoContainerKey,
+                                    child: AspectRatio(
+                                      aspectRatio:
+                                          _videoController.value.aspectRatio,
+                                      child: VideoViewer(
+                                        controller: _controller,
+                                      ),
+                                    ),
+                                  ),
+                            Positioned(
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: LayoutBuilder(
+                                  builder: (context, videoConstaints) {
+                                return Stack(
+                                  children: list.value.map((value) {
+                                    return ValueListenableBuilder<Object>(
+                                        valueListenable: value.showAr!,
+                                        builder: (context, boolVal, _) {
+                                          return Opacity(
+                                            opacity: boolVal == true ? 1 : 0,
+                                            child: GestureDetector(
+                                              onScaleStart: (details) {
+                                                if (value == null) return;
+                                                _initPos = details.focalPoint;
+                                                _currentPos = Offset(
+                                                    value.xPosition!,
+                                                    value.yPosition!);
+                                                _currentScale = value.scale;
+                                                _currentRotation =
+                                                    value.rotation;
+                                              },
+                                              onScaleUpdate: (details) {
+                                                if (value == null) return;
+                                                final delta =
+                                                    details.focalPoint -
+                                                        _initPos!;
+                                                final left =
+                                                    (delta.dx / screen!.width) +
+                                                        _currentPos!.dx;
+                                                final top = (delta.dy /
+                                                        screen!.height) +
+                                                    _currentPos!.dy;
+
+                                                setState(() {
+                                                  value.xPosition =
+                                                      Offset(left, top).dx;
+                                                  value.yPosition =
+                                                      Offset(left, top).dy;
+                                                  value.rotation =
+                                                      details.rotation +
+                                                          _currentRotation!;
+                                                  value.scale = details.scale *
+                                                      _currentScale!;
+                                                });
+                                              },
+                                              child: Stack(
+                                                children: [
+                                                  Positioned(
+                                                    right: -value.xPosition! *
+                                                        screen!.width,
+                                                    bottom: -value.yPosition! *
+                                                        screen!.height,
+                                                    child: Transform.scale(
+                                                      scale: value.scale,
+                                                      child: Transform.rotate(
+                                                        angle: value.rotation!,
+                                                        child: Container(
+                                                          key: value.arKey,
+                                                          height: value.height,
+                                                          width: value.width,
+                                                          child: FittedBox(
+                                                            fit: BoxFit.cover,
+                                                            child: Listener(
+                                                              onPointerDown:
+                                                                  (details) {
+                                                                // _initPos = details.position;
+                                                                // _currentPos = Offset(
+                                                                //     value.xPosition!, value.yPosition!);
+                                                                // _currentScale = value.scale;
+                                                                // _currentRotation = value.rotation;
+                                                                // print(" _initPos = ${_initPos!.dx}");
+                                                                setState(() {
+                                                                  _controller
+                                                                      .video
+                                                                      .pause();
+
+                                                                  selected =
+                                                                      value;
+
+                                                                  list.value
+                                                                      .forEach(
+                                                                          (arPlaying) {
+                                                                    if (arPlaying
+                                                                            .showAr!
+                                                                            .value ==
+                                                                        true) {
+                                                                      arPlaying
+                                                                          .arState!
+                                                                          .pause();
+                                                                      if (arPlaying
+                                                                              .audioFlag ==
+                                                                          true) {
+                                                                        arPlaying
+                                                                            .audioPlayer!
+                                                                            .pause();
+                                                                      }
+                                                                    }
+                                                                  });
+                                                                });
+                                                              },
+                                                              onPointerUp:
+                                                                  (details) {
+                                                                _initPos = details
+                                                                    .position;
+                                                                _currentPos = Offset(
+                                                                    value
+                                                                        .xPosition!,
+                                                                    value
+                                                                        .yPosition!);
+                                                                _currentScale =
+                                                                    value.scale;
+                                                                _currentRotation =
+                                                                    value
+                                                                        .rotation;
+                                                              },
+                                                              child: InkWell(
+                                                                onTap: () {},
+                                                                child:
+                                                                    Container(
+                                                                  height: value
+                                                                      .height,
+                                                                  width: value
+                                                                      .width,
+                                                                  child:
+                                                                      ImageSequenceAnimator(
+                                                                    "",
+                                                                    "imgSeq",
+                                                                    1,
+                                                                    0,
+                                                                    "png",
+                                                                    30,
+                                                                    isOnline: value.layerType ==
+                                                                            LayerType.AR
+                                                                        ? true
+                                                                        : false,
+                                                                    key: value.layerType ==
+                                                                            LayerType
+                                                                                .AR
+                                                                        ? Key(
+                                                                            "online")
+                                                                        : Key(
+                                                                            "offline"),
+                                                                    fullPaths: value
+                                                                        .pathsForVideoFrames,
+                                                                    onReadyToPlay:
+                                                                        (ImageSequenceAnimatorState
+                                                                            _imageSequenceAnimator) {
+                                                                      value.arState =
+                                                                          _imageSequenceAnimator;
+                                                                      if (value
+                                                                              .layerType ==
+                                                                          LayerType
+                                                                              .AR)
+                                                                        value.finishedCaching =
+                                                                            ValueNotifier(true);
+                                                                    },
+                                                                    waitUntilCacheIsComplete:
+                                                                        true,
+                                                                    fps: 30,
+                                                                    isAutoPlay:
+                                                                        false,
+                                                                    onPlaying: value.layerType ==
+                                                                            LayerType.AR
+                                                                        ? onOnlinePlaying
+                                                                        : null,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              // child: Image.network(value.name),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        });
+                                  }).toList(),
+                                );
+                              }),
                             ),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child:
-                            LayoutBuilder(builder: (context, videoConstaints) {
-                          return Stack(
-                            children: list.value.map((value) {
-                              return ValueListenableBuilder<Object>(
-                                  valueListenable: value.showAr!,
-                                  builder: (context, boolVal, _) {
-                                    return Opacity(
-                                      opacity: boolVal == true ? 1 : 0,
-                                      child: GestureDetector(
-                                        onScaleStart: (details) {
-                                          if (value == null) return;
-                                          _initPos = details.focalPoint;
-                                          _currentPos = Offset(value.xPosition!,
-                                              value.yPosition!);
-                                          _currentScale = value.scale;
-                                          _currentRotation = value.rotation;
-                                        },
-                                        onScaleUpdate: (details) {
-                                          if (value == null) return;
-                                          final delta =
-                                              details.focalPoint - _initPos!;
-                                          final left =
-                                              (delta.dx / screen!.width) +
-                                                  _currentPos!.dx;
-                                          final top =
-                                              (delta.dy / screen!.height) +
-                                                  _currentPos!.dy;
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Container(
+                      width: size.width,
+                      height: 2,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _controller.isPlaying
+                                  ? _controller.video.pause()
+                                  : _controller.video.play();
 
-                                          setState(() {
-                                            value.xPosition =
-                                                Offset(left, top).dx;
-                                            value.yPosition =
-                                                Offset(left, top).dy;
-                                            value.rotation = details.rotation +
-                                                _currentRotation!;
-                                            value.scale =
-                                                details.scale * _currentScale!;
-                                          });
-                                        },
-                                        child: Stack(
-                                          children: [
-                                            Positioned(
-                                              right: -value.xPosition! *
-                                                  screen!.width,
-                                              bottom: -value.yPosition! *
-                                                  screen!.height,
-                                              child: Transform.scale(
-                                                scale: value.scale,
-                                                child: Transform.rotate(
-                                                  angle: value.rotation!,
-                                                  child: Container(
-                                                    key: value.arKey,
-                                                    height: value.height,
-                                                    width: value.width,
-                                                    child: FittedBox(
-                                                      fit: BoxFit.cover,
-                                                      child: Listener(
-                                                        onPointerDown:
-                                                            (details) {
-                                                          // _initPos = details.position;
-                                                          // _currentPos = Offset(
-                                                          //     value.xPosition!, value.yPosition!);
-                                                          // _currentScale = value.scale;
-                                                          // _currentRotation = value.rotation;
-                                                          // print(" _initPos = ${_initPos!.dx}");
-                                                          setState(() {
-                                                            _controller.video
-                                                                .pause();
+                              list.value.forEach((arPlaying) {
+                                if (arPlaying.showAr!.value == true) {
+                                  arPlaying.arState!.isPlaying &&
+                                          arPlaying.finishedCaching!.value ==
+                                              true
+                                      ? arPlaying.arState!.pause()
+                                      : arPlaying.arState!.play();
 
-                                                            selected = value;
+                                  arPlaying.audioPlayer!.playing &&
+                                          arPlaying.audioFlag == true
+                                      ? arPlaying.audioPlayer!.pause()
+                                      : arPlaying.audioPlayer!.play();
+                                }
+                              });
+                            });
+                          },
+                          icon: Icon(
+                            !_controller.isPlaying
+                                ? Icons.play_arrow
+                                : Icons.pause,
+                            color: constantColors.whiteColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          // For Foreground videos
+                          Row(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 20, left: 10),
+                                child: Icon(
+                                  Icons.collections,
+                                  color: Colors.white,
+                                  size: 25,
+                                ),
+                              ),
+                              Expanded(
+                                child: ValueListenableBuilder<List<ARList>>(
+                                  valueListenable: list,
+                                  builder: (context, arListValFull, child) {
+                                    return LayoutBuilder(
+                                        builder: (context, constaints) {
+                                      final Size trimLayout = Size(
+                                          constaints.maxWidth - 0.0 * 2,
+                                          constaints.maxHeight);
+                                      final Size fullLayout = Size(
+                                          trimLayout.width *
+                                              (_ratio! > 1 ? _ratio! : 1),
+                                          constaints.maxHeight);
 
-                                                            list.value.forEach(
-                                                                (arPlaying) {
-                                                              if (arPlaying
-                                                                      .showAr!
+                                      return Column(
+                                        children: [
+                                          Column(
+                                            children:
+                                                arListValFull.map((arVal) {
+                                              return InkWell(
+                                                onTap: () {
+                                                  if (arVal.audioFlag == true)
+                                                    showAlertDialog(
+                                                        context: context,
+                                                        ar: arVal);
+                                                },
+                                                child: Container(
+                                                  width: fullLayout.width,
+                                                  height: 50,
+                                                  color:
+                                                      constantColors.greyColor,
+                                                  child: Stack(
+                                                    alignment: Alignment.center,
+                                                    children: [
+                                                      AnimatedPositioned(
+                                                        duration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    100),
+                                                        left: arVal
+                                                            .startingPositon,
+                                                        key: const ValueKey(
+                                                            "item 1"),
+                                                        child: Container(
+                                                          height: 50,
+                                                          width: arVal.finishedCaching!
                                                                       .value ==
-                                                                  true) {
-                                                                arPlaying
+                                                                  true
+                                                              ? arVal
+                                                                  .endingPosition
+                                                              : size.width *
+                                                                  0.3,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: arVal.layerType ==
+                                                                    LayerType.AR
+                                                                ? constantColors
+                                                                    .mainColor
+                                                                : constantColors
+                                                                    .darkColor,
+                                                            border: Border.all(
+                                                              color:
+                                                                  Colors.white,
+                                                              width: selected ==
+                                                                      arVal
+                                                                  ? 3
+                                                                  : 1,
+                                                            ),
+                                                          ),
+                                                          alignment:
+                                                              Alignment.center,
+                                                          child: Container(
+                                                            child: arVal.finishedCaching!
+                                                                            .value ==
+                                                                        true &&
+                                                                    arVal.layerType ==
+                                                                        LayerType
+                                                                            .AR
+                                                                ? Image.network(
+                                                                    arVal.pathsForVideoFrames![
+                                                                        0],
+                                                                  )
+                                                                : arVal.layerType ==
+                                                                        LayerType
+                                                                            .Effect
+                                                                    ? Image
+                                                                        .file(
+                                                                        File(arVal
+                                                                            .pathsForVideoFrames![0]),
+                                                                      )
+                                                                    : Center(
+                                                                        child:
+                                                                            CircularProgressIndicator(),
+                                                                      ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      GestureDetector(
+                                                        onPanStart: (details) {
+                                                          _controller.video
+                                                              .pause();
+                                                        },
+                                                        onPanUpdate: (details) {
+                                                          if (details.localPosition
+                                                                      .dx >=
+                                                                  0 &&
+                                                              details.localPosition
+                                                                      .dx <=
+                                                                  fullLayout
+                                                                          .width -
+                                                                      arVal
+                                                                          .endingPosition!) {
+                                                            setState(() {
+                                                              arVal.startingPositon =
+                                                                  details
+                                                                      .localPosition
+                                                                      .dx;
+                                                            });
+                                                          }
+
+                                                          // ! to get the starting point in seconds
+
+                                                          // print((arVal.startingPositon! /
+                                                          //         _fullLayout.width) *
+                                                          //     _videoController.value
+                                                          //         .duration.inSeconds);
+                                                          // ^ this gives the starting point of the AR video in seconds
+                                                          // next we need to convert it from seconds to HH:mm:ss
+
+                                                          // _controller.video.pause();
+
+                                                          // print(
+                                                          //     "ending time ${arVal.pathsForVideoFrames!.length / 30}");
+
+                                                          list.value.forEach(
+                                                            (arElement) {
+                                                              if (arElement
+                                                                      .arState!
+                                                                      .isPlaying ||
+                                                                  arElement
+                                                                      .audioPlayer!
+                                                                      .playing) {
+                                                                arElement
                                                                     .arState!
                                                                     .pause();
-                                                                if (arPlaying
+                                                                if (arElement
                                                                         .audioFlag ==
                                                                     true) {
-                                                                  arPlaying
+                                                                  arElement
                                                                       .audioPlayer!
                                                                       .pause();
                                                                 }
                                                               }
-                                                            });
-                                                          });
+                                                            },
+                                                          );
                                                         },
-                                                        onPointerUp: (details) {
-                                                          _initPos =
-                                                              details.position;
-                                                          _currentPos = Offset(
-                                                              value.xPosition!,
-                                                              value.yPosition!);
-                                                          _currentScale =
-                                                              value.scale;
-                                                          _currentRotation =
-                                                              value.rotation;
-                                                        },
-                                                        child: InkWell(
-                                                          onTap: () {},
-                                                          child: Container(
-                                                            height:
-                                                                value.height,
-                                                            width: value.width,
-                                                            child:
-                                                                ImageSequenceAnimator(
-                                                              "",
-                                                              "imgSeq",
-                                                              1,
-                                                              0,
-                                                              "png",
-                                                              30,
-                                                              isOnline: value
-                                                                          .layerType ==
-                                                                      LayerType
-                                                                          .AR
-                                                                  ? true
-                                                                  : false,
-                                                              key: value.layerType ==
-                                                                      LayerType
-                                                                          .AR
-                                                                  ? Key(
-                                                                      "online")
-                                                                  : Key(
-                                                                      "offline"),
-                                                              fullPaths: value
-                                                                  .pathsForVideoFrames,
-                                                              onReadyToPlay:
-                                                                  (ImageSequenceAnimatorState
-                                                                      _imageSequenceAnimator) {
-                                                                value.arState =
-                                                                    _imageSequenceAnimator;
-                                                                if (value
-                                                                        .layerType ==
-                                                                    LayerType
-                                                                        .AR)
-                                                                  value.finishedCaching =
-                                                                      ValueNotifier(
-                                                                          true);
-                                                              },
-                                                              waitUntilCacheIsComplete:
-                                                                  true,
-                                                              fps: 30,
-                                                              isAutoPlay: false,
-                                                              onPlaying: value
-                                                                          .layerType ==
-                                                                      LayerType
-                                                                          .AR
-                                                                  ? onOnlinePlaying
-                                                                  : null,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        // child: Image.network(value.name),
-                                                      ),
-                                                    ),
+                                                      )
+                                                    ],
                                                   ),
                                                 ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
-                            }).toList(),
-                          );
-                        }),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2),
-              child: Container(
-                width: size.width,
-                height: 2,
-                color: Colors.white,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _controller.isPlaying
-                            ? _controller.video.pause()
-                            : _controller.video.play();
-
-                        list.value.forEach((arPlaying) {
-                          if (arPlaying.showAr!.value == true) {
-                            arPlaying.arState!.isPlaying &&
-                                    arPlaying.finishedCaching!.value == true
-                                ? arPlaying.arState!.pause()
-                                : arPlaying.arState!.play();
-
-                            arPlaying.audioPlayer!.playing &&
-                                    arPlaying.audioFlag == true
-                                ? arPlaying.audioPlayer!.pause()
-                                : arPlaying.audioPlayer!.play();
-                          }
-                        });
-                      });
-                    },
-                    icon: Icon(
-                      !_controller.isPlaying ? Icons.play_arrow : Icons.pause,
-                      color: constantColors.whiteColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    // For Foreground videos
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 20, left: 10),
-                          child: Icon(
-                            Icons.collections,
-                            color: Colors.white,
-                            size: 25,
-                          ),
-                        ),
-                        Expanded(
-                          child: ValueListenableBuilder<List<ARList>>(
-                            valueListenable: list,
-                            builder: (context, arListValFull, child) {
-                              return LayoutBuilder(
-                                  builder: (context, constaints) {
-                                final Size trimLayout = Size(
-                                    constaints.maxWidth - 0.0 * 2,
-                                    constaints.maxHeight);
-                                final Size fullLayout = Size(
-                                    trimLayout.width *
-                                        (_ratio! > 1 ? _ratio! : 1),
-                                    constaints.maxHeight);
-
-                                return Column(
-                                  children: [
-                                    Column(
-                                      children: arListValFull.map((arVal) {
-                                        return InkWell(
-                                          onTap: () {
-                                            if (arVal.audioFlag == true)
-                                              showAlertDialog(
-                                                  context: context, ar: arVal);
-                                          },
-                                          child: Container(
-                                            width: fullLayout.width,
-                                            height: 50,
-                                            color: constantColors.greyColor,
-                                            child: Stack(
-                                              alignment: Alignment.center,
-                                              children: [
-                                                AnimatedPositioned(
-                                                  duration: const Duration(
-                                                      milliseconds: 100),
-                                                  left: arVal.startingPositon,
-                                                  key: const ValueKey("item 1"),
-                                                  child: Container(
-                                                    height: 50,
-                                                    width:
-                                                        arVal.finishedCaching!
-                                                                    .value ==
-                                                                true
-                                                            ? arVal
-                                                                .endingPosition
-                                                            : size.width * 0.3,
-                                                    decoration: BoxDecoration(
-                                                      color: arVal.layerType ==
-                                                              LayerType.AR
-                                                          ? constantColors
-                                                              .mainColor
-                                                          : constantColors
-                                                              .darkColor,
-                                                      border: Border.all(
-                                                        color: Colors.white,
-                                                        width: selected == arVal
-                                                            ? 3
-                                                            : 1,
-                                                      ),
-                                                    ),
-                                                    alignment: Alignment.center,
-                                                    child: Container(
-                                                      child: arVal.finishedCaching!
-                                                                      .value ==
-                                                                  true &&
-                                                              arVal.layerType ==
-                                                                  LayerType.AR
-                                                          ? Image.network(
-                                                              arVal.pathsForVideoFrames![
-                                                                  0],
-                                                            )
-                                                          : arVal.layerType ==
-                                                                  LayerType
-                                                                      .Effect
-                                                              ? Image.file(
-                                                                  File(arVal
-                                                                      .pathsForVideoFrames![0]),
-                                                                )
-                                                              : Center(
-                                                                  child:
-                                                                      CircularProgressIndicator(),
-                                                                ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                GestureDetector(
-                                                  onPanStart: (details) {
-                                                    _controller.video.pause();
-                                                  },
-                                                  onPanUpdate: (details) {
-                                                    if (details.localPosition
-                                                                .dx >=
-                                                            0 &&
-                                                        details.localPosition
-                                                                .dx <=
-                                                            fullLayout.width -
-                                                                arVal
-                                                                    .endingPosition!) {
-                                                      setState(() {
-                                                        arVal.startingPositon =
-                                                            details
-                                                                .localPosition
-                                                                .dx;
-                                                      });
-                                                    }
-
-                                                    // ! to get the starting point in seconds
-
-                                                    // print((arVal.startingPositon! /
-                                                    //         _fullLayout.width) *
-                                                    //     _videoController.value
-                                                    //         .duration.inSeconds);
-                                                    // ^ this gives the starting point of the AR video in seconds
-                                                    // next we need to convert it from seconds to HH:mm:ss
-
-                                                    // _controller.video.pause();
-
-                                                    // print(
-                                                    //     "ending time ${arVal.pathsForVideoFrames!.length / 30}");
-
-                                                    list.value.forEach(
-                                                      (arElement) {
-                                                        if (arElement.arState!
-                                                                .isPlaying ||
-                                                            arElement
-                                                                .audioPlayer!
-                                                                .playing) {
-                                                          arElement.arState!
-                                                              .pause();
-                                                          if (arElement
-                                                                  .audioFlag ==
-                                                              true) {
-                                                            arElement
-                                                                .audioPlayer!
-                                                                .pause();
-                                                          }
-                                                        }
-                                                      },
-                                                    );
-                                                  },
-                                                )
-                                              ],
-                                            ),
+                                              );
+                                            }).toList(),
                                           ),
-                                        );
-                                      }).toList(),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10),
-                                      child: Container(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              child: ElevatedButton(
-                                                style: ButtonStyle(
-                                                  foregroundColor:
-                                                      MaterialStateProperty.all<
-                                                          Color>(Colors.white),
-                                                  backgroundColor:
-                                                      MaterialStateProperty.all<
-                                                              Color>(
-                                                          constantColors
-                                                              .navButton),
-                                                  shape:
-                                                      MaterialStateProperty.all<
-                                                          RoundedRectangleBorder>(
-                                                    RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20),
-                                                    ),
-                                                  ),
-                                                ),
-                                                onPressed: () async {
-                                                  setState(() {
-                                                    _controller.video.pause();
-                                                  });
-                                                  selectArBottomSheet(
-                                                      context, size);
-                                                },
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.add,
-                                                      color: Colors.white,
-                                                    ),
-                                                    Text("Add AR"),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            Expanded(
-                                              child: AnimatedBuilder(
-                                                  animation: Listenable.merge([
-                                                    effectIndexVal,
-                                                    arIndexVal,
-                                                  ]),
-                                                  builder: (context, _) {
-                                                    return ElevatedButton(
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            child: Container(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Expanded(
+                                                    child: ElevatedButton(
                                                       style: ButtonStyle(
                                                         foregroundColor:
                                                             MaterialStateProperty
@@ -1290,16 +1361,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                           _controller.video
                                                               .pause();
                                                         });
-                                                        // _openFileManager();
-                                                        selectEffectBottomSheet(
-                                                          context: context,
-                                                          size: size,
-                                                          effectValIndex:
-                                                              effectIndexVal
-                                                                  .value,
-                                                          arValIndex:
-                                                              arIndexVal.value,
-                                                        );
+                                                        selectArBottomSheet(
+                                                            context, size);
                                                       },
                                                       child: Row(
                                                         mainAxisAlignment:
@@ -1310,719 +1373,825 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                             Icons.add,
                                                             color: Colors.white,
                                                           ),
-                                                          Text("Add Effect"),
+                                                          Text("Add AR"),
                                                         ],
                                                       ),
-                                                    );
-                                                  }),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                );
-
-                                // return Container(
-                                //   color: constantColors.greyColor,
-                                //   child: Row(
-                                //     mainAxisAlignment: MainAxisAlignment.center,
-                                //     children: [
-                                //       ElevatedButton(
-                                //         onPressed: () async {
-                                //           await runFFmpegCommand();
-                                //           setState(() {
-                                //             _showAr.value = false;
-                                //           });
-                                //         },
-                                //         child: Text("Select AR"),
-                                //       ),
-                                //     ],
-                                //   ),
-                                // );
-
-                                // return arContainerWidth != 0
-                                //     ? Container(
-                                //         width: fullLayout.width,
-                                //         height: 50,
-                                //         color: constantColors.greyColor,
-                                //         child: Stack(
-                                //           alignment: Alignment.center,
-                                //           children: [
-                                //             AnimatedPositioned(
-                                //               duration:
-                                //                   const Duration(milliseconds: 100),
-                                //               left: posX,
-                                //               key: const ValueKey("item 1"),
-                                //               child: Container(
-                                //                 height: 50,
-                                //                 width: arContainerWidth,
-                                //                 decoration: BoxDecoration(
-                                //                   color: constantColors.mainColor,
-                                //                   border: Border.all(
-                                //                     color: Colors.white,
-                                //                     width: 1,
-                                //                   ),
-                                //                 ),
-                                //                 alignment: Alignment.center,
-                                //                 child: Container(
-                                //                   child: Image.file(
-                                //                       File(_fullPathsOffline[0])),
-                                //                 ),
-                                //               ),
-                                //             ),
-                                //             GestureDetector(
-                                //               onPanStart: (details) {
-                                //                 _controller.video.pause();
-                                //               },
-                                //               onPanUpdate: (details) {
-                                //                 if (details.localPosition.dx > 0 &&
-                                //                     details.localPosition.dx <=
-                                //                         fullLayout.width -
-                                //                             arContainerWidth) {
-                                //                   setState(() {
-                                //                     posX = details.localPosition.dx;
-                                //                   });
-                                //                 }
-
-                                //                 _imgSeqProgress.value = posX;
-
-                                //                 print(
-                                //                     "posX == ${_imgSeqProgress.value}");
-                                //               },
-                                //             )
-                                //           ],
-                                //         ),
-                                //       )
-                                //     : Container(
-                                //         color: constantColors.greyColor,
-                                //         child: Row(
-                                //           mainAxisAlignment:
-                                //               MainAxisAlignment.center,
-                                //           children: [
-                                //             ElevatedButton(
-                                //               onPressed: () async {
-                                //                 await runFFmpegCommand();
-                                //                 setState(() {
-                                //                   _showAr.value = false;
-                                //                 });
-                                //               },
-                                //               child: Text("Select AR"),
-                                //             ),
-                                //           ],
-                                //         ),
-                                //       );
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // For background videos
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 20, left: 10),
-                            child: Icon(
-                              EvaIcons.videoOutline,
-                              color: Colors.white,
-                              size: 25,
-                            ),
-                          ),
-                          Expanded(
-                            child: _controller.video.value.isInitialized
-                                ? Container(
-                                    margin: EdgeInsets.symmetric(
-                                        vertical: height / 4),
-                                    child:
-                                        LayoutBuilder(builder: (_, contrainst) {
-                                      final Size trimLayout = Size(
-                                          contrainst.maxWidth - 0.0 * 2,
-                                          contrainst.maxHeight);
-                                      final Size fullLayout = Size(
-                                          trimLayout.width *
-                                              (_ratio! > 1 ? _ratio! : 1),
-                                          contrainst.maxHeight);
-                                      _fullLayout = fullLayout;
-
-                                      if (_trimLayout != trimLayout) {
-                                        _trimLayout = trimLayout;
-                                        _createTrimRect();
-                                      }
-
-                                      return InkWell(
-                                        onLongPress: () {
-                                          showBgAlertDialog(
-                                              context: context,
-                                              controller: _controller);
-                                        },
-                                        child: SizedBox(
-                                            width: _fullLayout.width,
-                                            child: Stack(children: [
-                                              NotificationListener<
-                                                  ScrollNotification>(
-                                                child: SingleChildScrollView(
-                                                  controller: _scrollController,
-                                                  scrollDirection:
-                                                      Axis.horizontal,
-                                                  child: Container(
-                                                    margin:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 0.0),
-                                                    child: Column(
-                                                      children: [
-                                                        SizedBox(
-                                                          height: height,
-                                                          width:
-                                                              _fullLayout.width,
-                                                          child:
-                                                              FrameThumbnailSlider(
-                                                                  controller:
-                                                                      _controller,
-                                                                  height:
-                                                                      height,
-                                                                  quality: 1),
-                                                        ),
-                                                        SizedBox(
-                                                          width:
-                                                              _fullLayout.width,
-                                                          child: FrameTimeline(
-                                                            controller:
-                                                                _controller,
-                                                          ),
-                                                        ),
-                                                      ],
                                                     ),
                                                   ),
-                                                ),
-                                                onNotification: (notification) {
-                                                  _boundary.value =
-                                                      _FrameBoundaries.inside;
-                                                  _updateControllerIsTrimming(
-                                                      true);
-                                                  if (notification
-                                                      is ScrollEndNotification) {
-                                                    _thumbnailPosition =
-                                                        notification
-                                                            .metrics.pixels;
-                                                    _controllerSeekTo(
-                                                        _rect.left);
-                                                    list.value.forEach(
-                                                      (element) {
-                                                        element.arState!
-                                                            .skip(_rect.left);
-                                                        if (element.audioFlag ==
-                                                            true) {
-                                                          element.audioPlayer!
-                                                              .seek(Duration(
-                                                                  seconds: _rect
-                                                                      .left
-                                                                      .toInt()));
-                                                        }
-                                                      },
-                                                    );
-                                                    _updateControllerIsTrimming(
-                                                        false);
-                                                    _updateControllerTrim();
-                                                  }
-                                                  return true;
-                                                },
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Expanded(
+                                                    child: AnimatedBuilder(
+                                                        animation:
+                                                            Listenable.merge([
+                                                          effectIndexVal,
+                                                          arIndexVal,
+                                                        ]),
+                                                        builder: (context, _) {
+                                                          return ElevatedButton(
+                                                            style: ButtonStyle(
+                                                              foregroundColor:
+                                                                  MaterialStateProperty.all<
+                                                                          Color>(
+                                                                      Colors
+                                                                          .white),
+                                                              backgroundColor:
+                                                                  MaterialStateProperty.all<
+                                                                          Color>(
+                                                                      constantColors
+                                                                          .navButton),
+                                                              shape: MaterialStateProperty
+                                                                  .all<
+                                                                      RoundedRectangleBorder>(
+                                                                RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              20),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            onPressed:
+                                                                () async {
+                                                              setState(() {
+                                                                _controller
+                                                                    .video
+                                                                    .pause();
+                                                              });
+                                                              // _openFileManager();
+                                                              // ! get giphy here
+                                                              giphyGetWrapper
+                                                                  .getGif(
+                                                                '',
+                                                                context,
+                                                              );
+                                                              // selectEffectBottomSheet(
+                                                              //   context: context,
+                                                              //   size: size,
+                                                              //   effectValIndex:
+                                                              //       effectIndexVal
+                                                              //           .value,
+                                                              //   arValIndex:
+                                                              //       arIndexVal.value,
+                                                              // );
+                                                            },
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Icon(
+                                                                  Icons.add,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                                Text(
+                                                                    "Add Effect"),
+                                                              ],
+                                                            ),
+                                                          );
+                                                        }),
+                                                  ),
+                                                ],
                                               ),
-                                              GestureDetector(
-                                                onHorizontalDragUpdate:
-                                                    _onHorizontalDragUpdate,
-                                                onHorizontalDragStart:
-                                                    _onHorizontalDragStart,
-                                                onHorizontalDragEnd:
-                                                    _onHorizontalDragEnd,
-                                                behavior:
-                                                    HitTestBehavior.opaque,
-                                                child: AnimatedBuilder(
-                                                  animation: Listenable.merge([
-                                                    _controller,
-                                                    _videoController,
-                                                  ]),
-                                                  builder: (_, __) {
-                                                    return CustomPaint(
-                                                      size: Size.fromHeight(
-                                                          height),
-                                                      painter:
-                                                          FrameSliderPainter(
-                                                        _rect,
-                                                        _getTrimPosition(),
-                                                        _controller.trimStyle,
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              )
-                                            ])),
+                                            ),
+                                          )
+                                        ],
                                       );
-                                    }),
-                                  )
-                                : Container(
-                                    height: 90,
-                                    color: Colors.amber,
+
+                                      // return Container(
+                                      //   color: constantColors.greyColor,
+                                      //   child: Row(
+                                      //     mainAxisAlignment: MainAxisAlignment.center,
+                                      //     children: [
+                                      //       ElevatedButton(
+                                      //         onPressed: () async {
+                                      //           await runFFmpegCommand();
+                                      //           setState(() {
+                                      //             _showAr.value = false;
+                                      //           });
+                                      //         },
+                                      //         child: Text("Select AR"),
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // );
+
+                                      // return arContainerWidth != 0
+                                      //     ? Container(
+                                      //         width: fullLayout.width,
+                                      //         height: 50,
+                                      //         color: constantColors.greyColor,
+                                      //         child: Stack(
+                                      //           alignment: Alignment.center,
+                                      //           children: [
+                                      //             AnimatedPositioned(
+                                      //               duration:
+                                      //                   const Duration(milliseconds: 100),
+                                      //               left: posX,
+                                      //               key: const ValueKey("item 1"),
+                                      //               child: Container(
+                                      //                 height: 50,
+                                      //                 width: arContainerWidth,
+                                      //                 decoration: BoxDecoration(
+                                      //                   color: constantColors.mainColor,
+                                      //                   border: Border.all(
+                                      //                     color: Colors.white,
+                                      //                     width: 1,
+                                      //                   ),
+                                      //                 ),
+                                      //                 alignment: Alignment.center,
+                                      //                 child: Container(
+                                      //                   child: Image.file(
+                                      //                       File(_fullPathsOffline[0])),
+                                      //                 ),
+                                      //               ),
+                                      //             ),
+                                      //             GestureDetector(
+                                      //               onPanStart: (details) {
+                                      //                 _controller.video.pause();
+                                      //               },
+                                      //               onPanUpdate: (details) {
+                                      //                 if (details.localPosition.dx > 0 &&
+                                      //                     details.localPosition.dx <=
+                                      //                         fullLayout.width -
+                                      //                             arContainerWidth) {
+                                      //                   setState(() {
+                                      //                     posX = details.localPosition.dx;
+                                      //                   });
+                                      //                 }
+
+                                      //                 _imgSeqProgress.value = posX;
+
+                                      //                 print(
+                                      //                     "posX == ${_imgSeqProgress.value}");
+                                      //               },
+                                      //             )
+                                      //           ],
+                                      //         ),
+                                      //       )
+                                      //     : Container(
+                                      //         color: constantColors.greyColor,
+                                      //         child: Row(
+                                      //           mainAxisAlignment:
+                                      //               MainAxisAlignment.center,
+                                      //           children: [
+                                      //             ElevatedButton(
+                                      //               onPressed: () async {
+                                      //                 await runFFmpegCommand();
+                                      //                 setState(() {
+                                      //                   _showAr.value = false;
+                                      //                 });
+                                      //               },
+                                      //               child: Text("Select AR"),
+                                      //             ),
+                                      //           ],
+                                      //         ),
+                                      //       );
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          // For background videos
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 20, left: 10),
+                                  child: Icon(
+                                    EvaIcons.videoOutline,
+                                    color: Colors.white,
+                                    size: 25,
                                   ),
+                                ),
+                                Expanded(
+                                  child: _controller.video.value.isInitialized
+                                      ? Container(
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: height / 4),
+                                          child: LayoutBuilder(
+                                              builder: (_, contrainst) {
+                                            final Size trimLayout = Size(
+                                                contrainst.maxWidth - 0.0 * 2,
+                                                contrainst.maxHeight);
+                                            final Size fullLayout = Size(
+                                                trimLayout.width *
+                                                    (_ratio! > 1 ? _ratio! : 1),
+                                                contrainst.maxHeight);
+                                            _fullLayout = fullLayout;
+
+                                            if (_trimLayout != trimLayout) {
+                                              _trimLayout = trimLayout;
+                                              _createTrimRect();
+                                            }
+
+                                            return InkWell(
+                                              onLongPress: () {
+                                                showBgAlertDialog(
+                                                    context: context,
+                                                    controller: _controller);
+                                              },
+                                              child: SizedBox(
+                                                  width: _fullLayout.width,
+                                                  child: Stack(children: [
+                                                    NotificationListener<
+                                                        ScrollNotification>(
+                                                      child:
+                                                          SingleChildScrollView(
+                                                        controller:
+                                                            _scrollController,
+                                                        scrollDirection:
+                                                            Axis.horizontal,
+                                                        child: Container(
+                                                          margin: EdgeInsets
+                                                              .symmetric(
+                                                                  horizontal:
+                                                                      0.0),
+                                                          child: Column(
+                                                            children: [
+                                                              SizedBox(
+                                                                height: height,
+                                                                width:
+                                                                    _fullLayout
+                                                                        .width,
+                                                                child: FrameThumbnailSlider(
+                                                                    controller:
+                                                                        _controller,
+                                                                    height:
+                                                                        height,
+                                                                    quality: 1),
+                                                              ),
+                                                              SizedBox(
+                                                                width:
+                                                                    _fullLayout
+                                                                        .width,
+                                                                child:
+                                                                    FrameTimeline(
+                                                                  controller:
+                                                                      _controller,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      onNotification:
+                                                          (notification) {
+                                                        _boundary.value =
+                                                            _FrameBoundaries
+                                                                .inside;
+                                                        _updateControllerIsTrimming(
+                                                            true);
+                                                        if (notification
+                                                            is ScrollEndNotification) {
+                                                          _thumbnailPosition =
+                                                              notification
+                                                                  .metrics
+                                                                  .pixels;
+                                                          _controllerSeekTo(
+                                                              _rect.left);
+                                                          list.value.forEach(
+                                                            (element) {
+                                                              element.arState!
+                                                                  .skip(_rect
+                                                                      .left);
+                                                              if (element
+                                                                      .audioFlag ==
+                                                                  true) {
+                                                                element
+                                                                    .audioPlayer!
+                                                                    .seek(Duration(
+                                                                        seconds: _rect
+                                                                            .left
+                                                                            .toInt()));
+                                                              }
+                                                            },
+                                                          );
+                                                          _updateControllerIsTrimming(
+                                                              false);
+                                                          _updateControllerTrim();
+                                                        }
+                                                        return true;
+                                                      },
+                                                    ),
+                                                    GestureDetector(
+                                                      onHorizontalDragUpdate:
+                                                          _onHorizontalDragUpdate,
+                                                      onHorizontalDragStart:
+                                                          _onHorizontalDragStart,
+                                                      onHorizontalDragEnd:
+                                                          _onHorizontalDragEnd,
+                                                      behavior: HitTestBehavior
+                                                          .opaque,
+                                                      child: AnimatedBuilder(
+                                                        animation:
+                                                            Listenable.merge([
+                                                          _controller,
+                                                          _videoController,
+                                                        ]),
+                                                        builder: (_, __) {
+                                                          return CustomPaint(
+                                                            size:
+                                                                Size.fromHeight(
+                                                                    height),
+                                                            painter:
+                                                                FrameSliderPainter(
+                                                              _rect,
+                                                              _getTrimPosition(),
+                                                              _controller
+                                                                  .trimStyle,
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    )
+                                                  ])),
+                                            );
+                                          }),
+                                        )
+                                      : Container(
+                                          height: 90,
+                                          color: Colors.amber,
+                                        ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            bottomNavigationBar: BottomAppBar(
+              color: constantColors.navButton,
+              child: Container(
+                height: 60,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 25,
+                      ),
+                      onPressed: () async {
+                        if (list.value.isNotEmpty) {
+                          list.value.forEach((arVal) async {
+                            await deleteFile(arVal.pathsForVideoFrames!);
+                          });
+                        }
+                        Navigator.pop(context);
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        FontAwesomeIcons.trashAlt,
+                        color: Colors.white,
+                        size: 25,
+                      ),
+                      onPressed: () {
+                        if (selected != null) {
+                          CoolAlert.show(
+                            context: context,
+                            type: CoolAlertType.warning,
+                            title:
+                                "Delete ${selected!.layerType == LayerType.Effect ? 'Effect' : 'AR'}?",
+                            showCancelBtn: true,
+                            onConfirmBtnTap: () async {
+                              if (selected!.layerType == LayerType.AR) {
+                                final indexVal = list.value.indexWhere(
+                                    (element) =>
+                                        element.arIndex! == selected!.arIndex!);
+
+                                for (int i = indexVal + 1;
+                                    i < list.value.length;
+                                    i++) {
+                                  // "list index $i goes from arIndex of ${list.value[i].arIndex} to ${list.value[i].arIndex! - 2}"
+                                  list.value[i].arIndex =
+                                      list.value[i].arIndex! - 2;
+                                }
+                              } else {
+                                final indexVal = list.value.indexWhere(
+                                    (element) =>
+                                        element.arIndex! == selected!.arIndex!);
+
+                                for (int i = indexVal + 1;
+                                    i < list.value.length;
+                                    i++) {
+                                  // "list index $i goes from arIndex of ${list.value[i].arIndex} to ${list.value[i].arIndex! - 1}"
+                                  list.value[i].arIndex =
+                                      list.value[i].arIndex! - 1;
+                                }
+                              }
+
+                              await deleteFile(selected!.pathsForVideoFrames!);
+
+                              setState(() {
+                                list.value.remove(selected);
+                                _controllerSeekTo(0);
+                              });
+
+                              Navigator.pop(context);
+                            },
+                            onCancelBtnTap: () {
+                              Navigator.pop(context);
+                            },
+                          );
+                        } else {
+                          CoolAlert.show(
+                            context: context,
+                            type: CoolAlertType.info,
+                            title: "No AR Selected",
+                            onConfirmBtnTap: () {
+                              Navigator.pop(context);
+                            },
+                          );
+                        }
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.done,
+                        color: Colors.white,
+                        size: 25,
+                      ),
+                      onPressed: list.value.isNotEmpty
+                          ? () async {
+                              // ! for x = W - w (and the final bit for Ar position on screen)
+                              double finalVideoContainerPointX =
+                                  videoContainerKey
+                                      .globalPaintBounds!.bottomRight.dx;
+                              double finalVideoContainerPointY =
+                                  videoContainerKey
+                                      .globalPaintBounds!.bottomRight.dy;
+
+                              // * to calculate videoContainer Height
+                              double videoContainerHeight =
+                                  videoContainerKey.globalPaintBounds!.height;
+
+                              // * to calculate videoContainer Width
+                              double videoContainerWidth =
+                                  videoContainerKey.globalPaintBounds!.width;
+
+                              // *ffmpeg list string
+                              List<String> ffmpegInputList = [];
+                              List<String> alphaTransparencyLayer = [];
+                              List<String> ffmpegStartPointList = [];
+                              List<String> ffmpegArFiltercomplex = [];
+                              List<String> ffmpegOverlay = [];
+                              List<String> ffmpegVolumeList = [];
+                              List<String> ffmpegSoundInputs = [];
+                              ValueNotifier<int> lastVal =
+                                  ValueNotifier<int>(0);
+
+                              list.value.forEach((arElement) {
+                                double finalArContainerPointX = arElement
+                                    .arKey!.globalPaintBounds!.bottomRight.dx;
+                                double finalArContainerPointY = arElement
+                                    .arKey!.globalPaintBounds!.bottomRight.dy;
+                                // print(
+                                //     "arIndexhere = ${arElement.arIndex} |finalVideoContainerPointX $finalVideoContainerPointX | finalVideoContainerPointY $finalVideoContainerPointY");
+                                // print(
+                                //     "arIndex = ${arElement.arIndex} |finalArContainerPointX $finalArContainerPointX | finalArContainerPointY $finalArContainerPointY");
+                                // * move x pixels to the right (minus) / left (plus) from left border of video
+                                double x = ((finalVideoContainerPointX -
+                                        finalArContainerPointX) *
+                                    (1080 / videoContainerWidth) *
+                                    -1);
+                                // print("ar ${arElement.arIndex} x = $x");
+                                // * move y pixels to the top (minus) / bottom (plus) from bottom border of video
+                                double y = ((finalVideoContainerPointY -
+                                        finalArContainerPointY) *
+                                    (1920 / videoContainerHeight) *
+                                    -1);
+
+                                //  videoContainerHeight (322.5) = 1920
+                                // videoContainerWidth (177.375) = 1080
+                                // (finalVideoContainerPointX - finalArContainerPointX) is x =
+
+                                // ar start time
+                                double arStartTime = (arElement
+                                            .startingPositon! /
+                                        _fullLayout.width) *
+                                    _videoController.value.duration.inSeconds;
+
+                                // ar end time
+                                double arEndTime =
+                                    (arElement.totalDuration!) + arStartTime;
+
+                                // * to calculate arContainer Height & Width
+
+                                double arScaleWidth =
+                                    (arElement.width! * arElement.scale!)
+                                        .floorToDouble();
+                                double arScaleHeigth =
+                                    (arElement.height! * arElement.scale!)
+                                        .floorToDouble();
+
+                                double arContainerHeight =
+                                    arElement.arKey!.globalPaintBounds!.height;
+
+                                double arScaleHeightVal = arContainerHeight *
+                                    1920 /
+                                    videoContainerHeight;
+
+                                double arContainerWidth =
+                                    arElement.arKey!.globalPaintBounds!.width;
+
+                                double arScaleWidthVal = arContainerWidth *
+                                    1080 /
+                                    videoContainerWidth;
+                                print("x = $x | y = $y");
+                                print(
+                                    "ar point x $finalArContainerPointX | screen height $videoContainerHeight");
+
+                                if (arElement.layerType == LayerType.AR) {
+                                  ffmpegInputList.add(
+                                      " -i ${arElement.mainFile} -i ${arElement.alphaFile}");
+                                } else {
+                                  ffmpegInputList
+                                      .add(" -i ${arElement.gifFilePath!}");
+                                }
+
+                                if (arElement.layerType == LayerType.AR) {
+                                  alphaTransparencyLayer.add(
+                                      "[${arElement.arIndex! + 1}][${arElement.arIndex}]scale2ref[mask][main];[main][mask]alphamerge[vid${arElement.arIndex}];");
+                                }
+
+                                if (arElement.layerType == LayerType.AR) {
+                                  ffmpegStartPointList.add(
+                                      "[vid${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
+                                } else {
+                                  ffmpegStartPointList.add(
+                                      "[${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
+                                }
+
+                                ffmpegArFiltercomplex.add(
+                                    "[top${arElement.arIndex}]scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
+
+                                if (arElement.arIndex == 1) {
+                                  ffmpegOverlay.add(
+                                      "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(0)}\"\\,\"${arEndTime.toStringAsFixed(0)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                  lastVal.value = arElement.arIndex!;
+                                } else {
+                                  ffmpegOverlay.add(
+                                      "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(0)}\"\\,\"${arEndTime.toStringAsFixed(0)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                  lastVal.value = arElement.arIndex!;
+                                }
+                                if (arElement.layerType == LayerType.AR &&
+                                    arElement.audioFlag == true) {
+                                  ffmpegVolumeList.add(
+                                      "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(0)}s:all=1[a${arElement.arIndex}];");
+                                  ffmpegSoundInputs
+                                      .add("[a${arElement.arIndex}]");
+                                }
+
+                                // print("arIndex = ${arElement.arIndex} | x = $x | y = $y");
+                              });
+
+                              String commandNoBgAudio =
+                                  "${ffmpegInputList.join()} -t ${_videoController.value.duration} -filter_complex \"${alphaTransparencyLayer.join()}${ffmpegStartPointList.join()}[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];${ffmpegArFiltercomplex.join()}${ffmpegOverlay.join()}${ffmpegVolumeList.join()}${ffmpegSoundInputs.join()}${ffmpegSoundInputs.isEmpty ? '' : 'amix=inputs=${ffmpegSoundInputs.length + 1}[a]'}\" -map ''[${lastVal.value}out]'' ${ffmpegSoundInputs.isEmpty ? '' : '-map ' '[a]' ''} -y ";
+
+                              String command =
+                                  "${ffmpegInputList.join()} -t ${_videoController.value.duration} -filter_complex \"${alphaTransparencyLayer.join()}${ffmpegStartPointList.join()}[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];${ffmpegArFiltercomplex.join()}${ffmpegOverlay.join()}${ffmpegVolumeList.join()}[0:a]volume=${_controller.video.value.volume}[a0];[a0]${ffmpegSoundInputs.join()}amix=inputs=${ffmpegSoundInputs.length + 1}[a]\" -map ''[${lastVal.value}out]'' -map ''[a]'' -y ";
+
+                              dev.log(arVideoCreation.getArAudioFlagGeneral == 1
+                                  ? command
+                                  : commandNoBgAudio);
+                              // * for combining Ar with BG
+                              // ignore: unawaited_futures
+                              CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.loading,
+                                text: "Processing Video",
+                                barrierDismissible: false,
+                              );
+                              try {
+                                await combineBgAr(
+                                  bgVideoFile: widget.file,
+                                  ffmpegArCommand:
+                                      arVideoCreation.getArAudioFlagGeneral == 1
+                                          ? command
+                                          : commandNoBgAudio,
+                                  bgVideoDuartion:
+                                      _videoController.value.duration,
+                                  onProgress: (stats, value) =>
+                                      _exportingProgress.value = value,
+                                  onCompleted: (file) async {
+                                    if (file != null) {
+                                      dev.log("we're here now");
+
+                                      final bgMaterialThumnailFile =
+                                          await Provider.of<FFmpegProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .bgMaterialThumbnailCreator(
+                                                  vidFilePath:
+                                                      widget.file.path);
+
+                                      dev.log("Send!");
+                                      Get.to(() => VideothumbnailSelector(
+                                            arList: list.value,
+                                            file: file,
+                                            bgMaterialThumnailFile:
+                                                bgMaterialThumnailFile,
+                                          ));
+
+                                      // Navigator.pushReplacement(
+                                      //     context,
+                                      //     PageTransition(
+                                      //         child: VideothumbnailSelector(
+                                      //           arList: list.value,
+                                      //           file: file,
+                                      //           bgMaterialThumnailFile:
+                                      //               bgMaterialThumnailFile,
+                                      //         ),
+                                      //         type: PageTransitionType.fade));
+
+                                      dev.log("we're here?");
+                                    } else {
+                                      Navigator.pop(context);
+                                      CoolAlert.show(
+                                        context: context,
+                                        type: CoolAlertType.error,
+                                        title: "Error Processing Video",
+                                        text:
+                                            "Device RAM issue. Please free up space on your phone to be able to process the video properly",
+                                      );
+                                      dev.log("hello ?? ");
+                                    }
+
+                                    setState(() => _exported = true);
+                                    Future.delayed(
+                                        const Duration(seconds: 2),
+                                        () =>
+                                            setState(() => _exported = false));
+                                  },
+                                );
+                              } catch (e) {
+                                Navigator.pop(context);
+                                CoolAlert.show(
+                                  context: context,
+                                  type: CoolAlertType.error,
+                                  title: "Error processing video",
+                                  text: e.toString(),
+                                );
+                              }
+
+                              // * for combining effect with BG
+                              // await combineBgEffect(
+                              //   bgVideoFile: widget.file,
+                              //   effectFile: File(selectedFile!.path!),
+                              //   arScaleWidth: "${arScaleWidthVal.floor()}",
+                              //   arScaleHeight: "${arScaleHeightVal.floor()}",
+                              //   arXCoordinate: x < 0 ? "-$x" : "+$x",
+                              //   arYCoordinate: y < 0 ? "-$y" : "+$y",
+                              //   arStartTime: arStartTime.toString(),
+                              //   arEndTime: "${arEndTime + arStartTime}",
+                              //   bgVideoDuartion: _videoController.value.duration,
+                              //   onProgress: (stats, value) =>
+                              //       _exportingProgress.value = value,
+                              //   onCompleted: (file) async {
+                              //     _isExporting.value = false;
+                              //     if (!mounted) return;
+                              //     if (file != null) {
+                              //       final VideoPlayerController _videoController =
+                              //           VideoPlayerController.file(file);
+
+                              //       // ignore: unawaited_futures
+                              //       _videoController.initialize().then((value) async {
+                              //         setState(() {});
+
+                              //         _videoController.setLooping(true);
+                              //         await showDialog(
+                              //           context: context,
+                              //           builder: (_) => Padding(
+                              //             padding: const EdgeInsets.all(30),
+                              //             child: Container(
+                              //               color: Colors.black,
+                              //               child: Column(
+                              //                 children: [
+                              //                   Container(
+                              //                     height: 50,
+                              //                     color: Colors.white,
+                              //                     child: Row(
+                              //                       mainAxisAlignment:
+                              //                           MainAxisAlignment.center,
+                              //                       children: [
+                              //                         Text(
+                              //                           "Preview",
+                              //                           style: TextStyle(
+                              //                             color: Colors.black,
+                              //                             fontSize: 20,
+                              //                           ),
+                              //                         ),
+                              //                       ],
+                              //                     ),
+                              //                   ),
+                              //                   Container(
+                              //                     height:
+                              //                         MediaQuery.of(context).size.height *
+                              //                             0.6,
+                              //                     child: Center(
+                              //                       child: GestureDetector(
+                              //                         onTap: () {
+                              //                           _videoController.value.isPlaying
+                              //                               ? _videoController.pause()
+                              //                               : _videoController.play();
+                              //                         },
+                              //                         child: AspectRatio(
+                              //                           aspectRatio: _videoController
+                              //                               .value.aspectRatio,
+                              //                           child:
+                              //                               VideoPlayer(_videoController),
+                              //                         ),
+                              //                       ),
+                              //                     ),
+                              //                   ),
+                              //                   Container(
+                              //                     color: Colors.white,
+                              //                     child: Row(
+                              //                       mainAxisAlignment:
+                              //                           MainAxisAlignment.spaceEvenly,
+                              //                       children: [
+                              //                         ElevatedButton(
+                              //                           onPressed: () {
+                              //                             Navigator.pop(context);
+                              //                           },
+                              //                           child: Text(
+                              //                             "Cancel",
+                              //                           ),
+                              //                         ),
+                              //                         ElevatedButton(
+                              //                           onPressed: () {
+                              //                             Navigator.push(
+                              //                                 context,
+                              //                                 PageTransition(
+                              //                                     child: PreviewVideoScreen(
+                              //                                         thumbnailFile:
+                              //                                             thumbnailfile,
+                              //                                         videoFile:
+                              //                                             File(file.path),
+                              //                                         videoPlayerController:
+                              //                                             _videoController),
+                              //                                     type: PageTransitionType
+                              //                                         .fade));
+                              //                           },
+                              //                           child: Text(
+                              //                             "Next",
+                              //                           ),
+                              //                         ),
+                              //                       ],
+                              //                     ),
+                              //                   ),
+                              //                 ],
+                              //               ),
+                              //             ),
+                              //           ),
+                              //         );
+                              //         await _videoController.pause();
+                              //         _videoController.dispose();
+                              //       });
+
+                              //       _exportText = "Video success export!";
+                              //     } else {
+                              //       _exportText = "Error on export video :(";
+                              //     }
+
+                              //     setState(() => _exported = true);
+                              //     Future.delayed(const Duration(seconds: 2),
+                              //         () => setState(() => _exported = false));
+                              //   },
+                              // );
+                            }
+                          : () {
+                              Get.snackbar(
+                                'No AR or Effect Added',
+                                "Please add at least 1 AR or 1 Effect to make a customized video on Glamorous Diastation and move forward!",
+                                overlayColor: constantColors.navButton,
+                                colorText: constantColors.whiteColor,
+                                duration: Duration(seconds: 10),
+                                snackPosition: SnackPosition.TOP,
+                                forwardAnimationCurve: Curves.elasticInOut,
+                                reverseAnimationCurve: Curves.easeOut,
+                              );
+                            },
                     ),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        color: constantColors.navButton,
-        child: Container(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.close,
-                  color: Colors.white,
-                  size: 25,
-                ),
-                onPressed: () async {
-                  if (list.value.isNotEmpty) {
-                    list.value.forEach((arVal) async {
-                      await deleteFile(arVal.pathsForVideoFrames!);
-                    });
-                  }
-                  Navigator.pop(context);
-                },
-              ),
-              IconButton(
-                icon: Icon(
-                  FontAwesomeIcons.trashAlt,
-                  color: Colors.white,
-                  size: 25,
-                ),
-                onPressed: () {
-                  if (selected != null) {
-                    CoolAlert.show(
-                      context: context,
-                      type: CoolAlertType.warning,
-                      title:
-                          "Delete ${selected!.layerType == LayerType.Effect ? 'Effect' : 'AR'}?",
-                      showCancelBtn: true,
-                      onConfirmBtnTap: () async {
-                        if (selected!.layerType == LayerType.AR) {
-                          final indexVal = list.value.indexWhere((element) =>
-                              element.arIndex! == selected!.arIndex!);
-
-                          for (int i = indexVal + 1;
-                              i < list.value.length;
-                              i++) {
-                            // "list index $i goes from arIndex of ${list.value[i].arIndex} to ${list.value[i].arIndex! - 2}"
-                            list.value[i].arIndex = list.value[i].arIndex! - 2;
-                          }
-                        } else {
-                          final indexVal = list.value.indexWhere((element) =>
-                              element.arIndex! == selected!.arIndex!);
-
-                          for (int i = indexVal + 1;
-                              i < list.value.length;
-                              i++) {
-                            // "list index $i goes from arIndex of ${list.value[i].arIndex} to ${list.value[i].arIndex! - 1}"
-                            list.value[i].arIndex = list.value[i].arIndex! - 1;
-                          }
-                        }
-
-                        await deleteFile(selected!.pathsForVideoFrames!);
-
-                        setState(() {
-                          list.value.remove(selected);
-                          _controllerSeekTo(0);
-                        });
-
-                        Navigator.pop(context);
-                      },
-                      onCancelBtnTap: () {
-                        Navigator.pop(context);
-                      },
-                    );
-                  } else {
-                    CoolAlert.show(
-                      context: context,
-                      type: CoolAlertType.info,
-                      title: "No AR Selected",
-                      onConfirmBtnTap: () {
-                        Navigator.pop(context);
-                      },
-                    );
-                  }
-                },
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.done,
-                  color: Colors.white,
-                  size: 25,
-                ),
-                onPressed: list.value.isNotEmpty
-                    ? () async {
-                        // ! for x = W - w (and the final bit for Ar position on screen)
-                        double finalVideoContainerPointX =
-                            videoContainerKey.globalPaintBounds!.bottomRight.dx;
-                        double finalVideoContainerPointY =
-                            videoContainerKey.globalPaintBounds!.bottomRight.dy;
-
-                        // * to calculate videoContainer Height
-                        double videoContainerHeight =
-                            videoContainerKey.globalPaintBounds!.height;
-
-                        // * to calculate videoContainer Width
-                        double videoContainerWidth =
-                            videoContainerKey.globalPaintBounds!.width;
-
-                        // *ffmpeg list string
-                        List<String> ffmpegInputList = [];
-                        List<String> alphaTransparencyLayer = [];
-                        List<String> ffmpegStartPointList = [];
-                        List<String> ffmpegArFiltercomplex = [];
-                        List<String> ffmpegOverlay = [];
-                        List<String> ffmpegVolumeList = [];
-                        List<String> ffmpegSoundInputs = [];
-                        ValueNotifier<int> lastVal = ValueNotifier<int>(0);
-
-                        list.value.forEach((arElement) {
-                          double finalArContainerPointX = arElement
-                              .arKey!.globalPaintBounds!.bottomRight.dx;
-                          double finalArContainerPointY = arElement
-                              .arKey!.globalPaintBounds!.bottomRight.dy;
-                          // print(
-                          //     "arIndexhere = ${arElement.arIndex} |finalVideoContainerPointX $finalVideoContainerPointX | finalVideoContainerPointY $finalVideoContainerPointY");
-                          // print(
-                          //     "arIndex = ${arElement.arIndex} |finalArContainerPointX $finalArContainerPointX | finalArContainerPointY $finalArContainerPointY");
-                          // * move x pixels to the right (minus) / left (plus) from left border of video
-                          double x = ((finalVideoContainerPointX -
-                                  finalArContainerPointX) *
-                              (1080 / videoContainerWidth) *
-                              -1);
-                          // print("ar ${arElement.arIndex} x = $x");
-                          // * move y pixels to the top (minus) / bottom (plus) from bottom border of video
-                          double y = ((finalVideoContainerPointY -
-                                  finalArContainerPointY) *
-                              (1920 / videoContainerHeight) *
-                              -1);
-
-                          //  videoContainerHeight (322.5) = 1920
-                          // videoContainerWidth (177.375) = 1080
-                          // (finalVideoContainerPointX - finalArContainerPointX) is x =
-
-                          // ar start time
-                          double arStartTime =
-                              (arElement.startingPositon! / _fullLayout.width) *
-                                  _videoController.value.duration.inSeconds;
-
-                          // ar end time
-                          double arEndTime =
-                              (arElement.totalDuration!) + arStartTime;
-
-                          // * to calculate arContainer Height & Width
-
-                          double arScaleWidth =
-                              (arElement.width! * arElement.scale!)
-                                  .floorToDouble();
-                          double arScaleHeigth =
-                              (arElement.height! * arElement.scale!)
-                                  .floorToDouble();
-
-                          double arContainerHeight =
-                              arElement.arKey!.globalPaintBounds!.height;
-
-                          double arScaleHeightVal =
-                              arContainerHeight * 1920 / videoContainerHeight;
-
-                          double arContainerWidth =
-                              arElement.arKey!.globalPaintBounds!.width;
-
-                          double arScaleWidthVal =
-                              arContainerWidth * 1080 / videoContainerWidth;
-                          print("x = $x | y = $y");
-                          print(
-                              "ar point x $finalArContainerPointX | screen height $videoContainerHeight");
-
-                          if (arElement.layerType == LayerType.AR) {
-                            ffmpegInputList.add(
-                                " -i ${arElement.mainFile} -i ${arElement.alphaFile}");
-                          } else {
-                            ffmpegInputList
-                                .add(" -i ${arElement.gifFilePath!}");
-                          }
-
-                          if (arElement.layerType == LayerType.AR) {
-                            alphaTransparencyLayer.add(
-                                "[${arElement.arIndex! + 1}][${arElement.arIndex}]scale2ref[mask][main];[main][mask]alphamerge[vid${arElement.arIndex}];");
-                          }
-
-                          if (arElement.layerType == LayerType.AR) {
-                            ffmpegStartPointList.add(
-                                "[vid${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
-                          } else {
-                            ffmpegStartPointList.add(
-                                "[${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
-                          }
-
-                          ffmpegArFiltercomplex.add(
-                              "[top${arElement.arIndex}]scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
-
-                          if (arElement.arIndex == 1) {
-                            ffmpegOverlay.add(
-                                "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(0)}\"\\,\"${arEndTime.toStringAsFixed(0)}\")':eof_action=pass[${arElement.arIndex}out];");
-                            lastVal.value = arElement.arIndex!;
-                          } else {
-                            ffmpegOverlay.add(
-                                "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(0)}\"\\,\"${arEndTime.toStringAsFixed(0)}\")':eof_action=pass[${arElement.arIndex}out];");
-                            lastVal.value = arElement.arIndex!;
-                          }
-                          if (arElement.layerType == LayerType.AR &&
-                              arElement.audioFlag == true) {
-                            ffmpegVolumeList.add(
-                                "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(0)}s:all=1[a${arElement.arIndex}];");
-                            ffmpegSoundInputs.add("[a${arElement.arIndex}]");
-                          }
-
-                          // print("arIndex = ${arElement.arIndex} | x = $x | y = $y");
-                        });
-
-                        String commandNoBgAudio =
-                            "${ffmpegInputList.join()} -t ${_videoController.value.duration} -filter_complex \"${alphaTransparencyLayer.join()}${ffmpegStartPointList.join()}[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];${ffmpegArFiltercomplex.join()}${ffmpegOverlay.join()}${ffmpegVolumeList.join()}${ffmpegSoundInputs.join()}${ffmpegSoundInputs.isEmpty ? '' : 'amix=inputs=${ffmpegSoundInputs.length + 1}[a]'}\" -map ''[${lastVal.value}out]'' ${ffmpegSoundInputs.isEmpty ? '' : '-map ' '[a]' ''} -y ";
-
-                        String command =
-                            "${ffmpegInputList.join()} -t ${_videoController.value.duration} -filter_complex \"${alphaTransparencyLayer.join()}${ffmpegStartPointList.join()}[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];${ffmpegArFiltercomplex.join()}${ffmpegOverlay.join()}${ffmpegVolumeList.join()}[0:a]volume=${_controller.video.value.volume}[a0];[a0]${ffmpegSoundInputs.join()}amix=inputs=${ffmpegSoundInputs.length + 1}[a]\" -map ''[${lastVal.value}out]'' -map ''[a]'' -y ";
-
-                        dev.log(arVideoCreation.getArAudioFlagGeneral == 1
-                            ? command
-                            : commandNoBgAudio);
-                        // * for combining Ar with BG
-                        // ignore: unawaited_futures
-                        CoolAlert.show(
-                          context: context,
-                          type: CoolAlertType.loading,
-                          text: "Processing Video",
-                          barrierDismissible: false,
-                        );
-                        try {
-                          await combineBgAr(
-                            bgVideoFile: widget.file,
-                            ffmpegArCommand:
-                                arVideoCreation.getArAudioFlagGeneral == 1
-                                    ? command
-                                    : commandNoBgAudio,
-                            bgVideoDuartion: _videoController.value.duration,
-                            onProgress: (stats, value) =>
-                                _exportingProgress.value = value,
-                            onCompleted: (file) async {
-                              if (file != null) {
-                                dev.log("we're here now");
-
-                                final bgMaterialThumnailFile =
-                                    await Provider.of<FFmpegProvider>(context,
-                                            listen: false)
-                                        .bgMaterialThumbnailCreator(
-                                            vidFilePath: widget.file.path);
-
-                                dev.log("Send!");
-                                Get.to(() => VideothumbnailSelector(
-                                      arList: list.value,
-                                      file: file,
-                                      bgMaterialThumnailFile:
-                                          bgMaterialThumnailFile,
-                                    ));
-
-                                // Navigator.pushReplacement(
-                                //     context,
-                                //     PageTransition(
-                                //         child: VideothumbnailSelector(
-                                //           arList: list.value,
-                                //           file: file,
-                                //           bgMaterialThumnailFile:
-                                //               bgMaterialThumnailFile,
-                                //         ),
-                                //         type: PageTransitionType.fade));
-
-                                dev.log("we're here?");
-                              } else {
-                                Navigator.pop(context);
-                                CoolAlert.show(
-                                  context: context,
-                                  type: CoolAlertType.error,
-                                  title: "Error Processing Video",
-                                  text:
-                                      "Device RAM issue. Please free up space on your phone to be able to process the video properly",
-                                );
-                                dev.log("hello ?? ");
-                              }
-
-                              setState(() => _exported = true);
-                              Future.delayed(const Duration(seconds: 2),
-                                  () => setState(() => _exported = false));
-                            },
-                          );
-                        } catch (e) {
-                          Navigator.pop(context);
-                          CoolAlert.show(
-                            context: context,
-                            type: CoolAlertType.error,
-                            title: "Error processing video",
-                            text: e.toString(),
-                          );
-                        }
-
-                        // * for combining effect with BG
-                        // await combineBgEffect(
-                        //   bgVideoFile: widget.file,
-                        //   effectFile: File(selectedFile!.path!),
-                        //   arScaleWidth: "${arScaleWidthVal.floor()}",
-                        //   arScaleHeight: "${arScaleHeightVal.floor()}",
-                        //   arXCoordinate: x < 0 ? "-$x" : "+$x",
-                        //   arYCoordinate: y < 0 ? "-$y" : "+$y",
-                        //   arStartTime: arStartTime.toString(),
-                        //   arEndTime: "${arEndTime + arStartTime}",
-                        //   bgVideoDuartion: _videoController.value.duration,
-                        //   onProgress: (stats, value) =>
-                        //       _exportingProgress.value = value,
-                        //   onCompleted: (file) async {
-                        //     _isExporting.value = false;
-                        //     if (!mounted) return;
-                        //     if (file != null) {
-                        //       final VideoPlayerController _videoController =
-                        //           VideoPlayerController.file(file);
-
-                        //       // ignore: unawaited_futures
-                        //       _videoController.initialize().then((value) async {
-                        //         setState(() {});
-
-                        //         _videoController.setLooping(true);
-                        //         await showDialog(
-                        //           context: context,
-                        //           builder: (_) => Padding(
-                        //             padding: const EdgeInsets.all(30),
-                        //             child: Container(
-                        //               color: Colors.black,
-                        //               child: Column(
-                        //                 children: [
-                        //                   Container(
-                        //                     height: 50,
-                        //                     color: Colors.white,
-                        //                     child: Row(
-                        //                       mainAxisAlignment:
-                        //                           MainAxisAlignment.center,
-                        //                       children: [
-                        //                         Text(
-                        //                           "Preview",
-                        //                           style: TextStyle(
-                        //                             color: Colors.black,
-                        //                             fontSize: 20,
-                        //                           ),
-                        //                         ),
-                        //                       ],
-                        //                     ),
-                        //                   ),
-                        //                   Container(
-                        //                     height:
-                        //                         MediaQuery.of(context).size.height *
-                        //                             0.6,
-                        //                     child: Center(
-                        //                       child: GestureDetector(
-                        //                         onTap: () {
-                        //                           _videoController.value.isPlaying
-                        //                               ? _videoController.pause()
-                        //                               : _videoController.play();
-                        //                         },
-                        //                         child: AspectRatio(
-                        //                           aspectRatio: _videoController
-                        //                               .value.aspectRatio,
-                        //                           child:
-                        //                               VideoPlayer(_videoController),
-                        //                         ),
-                        //                       ),
-                        //                     ),
-                        //                   ),
-                        //                   Container(
-                        //                     color: Colors.white,
-                        //                     child: Row(
-                        //                       mainAxisAlignment:
-                        //                           MainAxisAlignment.spaceEvenly,
-                        //                       children: [
-                        //                         ElevatedButton(
-                        //                           onPressed: () {
-                        //                             Navigator.pop(context);
-                        //                           },
-                        //                           child: Text(
-                        //                             "Cancel",
-                        //                           ),
-                        //                         ),
-                        //                         ElevatedButton(
-                        //                           onPressed: () {
-                        //                             Navigator.push(
-                        //                                 context,
-                        //                                 PageTransition(
-                        //                                     child: PreviewVideoScreen(
-                        //                                         thumbnailFile:
-                        //                                             thumbnailfile,
-                        //                                         videoFile:
-                        //                                             File(file.path),
-                        //                                         videoPlayerController:
-                        //                                             _videoController),
-                        //                                     type: PageTransitionType
-                        //                                         .fade));
-                        //                           },
-                        //                           child: Text(
-                        //                             "Next",
-                        //                           ),
-                        //                         ),
-                        //                       ],
-                        //                     ),
-                        //                   ),
-                        //                 ],
-                        //               ),
-                        //             ),
-                        //           ),
-                        //         );
-                        //         await _videoController.pause();
-                        //         _videoController.dispose();
-                        //       });
-
-                        //       _exportText = "Video success export!";
-                        //     } else {
-                        //       _exportText = "Error on export video :(";
-                        //     }
-
-                        //     setState(() => _exported = true);
-                        //     Future.delayed(const Duration(seconds: 2),
-                        //         () => setState(() => _exported = false));
-                        //   },
-                        // );
-                      }
-                    : () {
-                        Get.snackbar(
-                          'No AR or Effect Added',
-                          "Please add at least 1 AR or 1 Effect to make a customized video on Glamorous Diastation and move forward!",
-                          overlayColor: constantColors.navButton,
-                          colorText: constantColors.whiteColor,
-                          duration: Duration(seconds: 10),
-                          snackPosition: SnackPosition.TOP,
-                          forwardAnimationCurve: Curves.elasticInOut,
-                          reverseAnimationCurve: Curves.easeOut,
-                        );
-                      },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+          );
+        });
   }
 
   Future<void> combineBgAr({

@@ -13,6 +13,7 @@ import 'package:diamon_rose_app/screens/Admin/upload_video_screen.dart';
 import 'package:diamon_rose_app/screens/ArPreviewSetting/ArPreviewScreen.dart';
 import 'package:diamon_rose_app/screens/ArViewCollection/arViewCollectionScreen.dart';
 import 'package:diamon_rose_app/screens/CartScreen/cartScreen.dart';
+import 'package:diamon_rose_app/screens/GiphyTest/giphyTest.dart';
 import 'package:diamon_rose_app/screens/HelpScreen/helpScreen.dart';
 import 'package:diamon_rose_app/screens/MonitisationPage/monitisationScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ArViewerScreen.dart';
@@ -516,6 +517,22 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   leadingIcon: FontAwesomeIcons.dollarSign,
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "Monitisation",
+                ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          child: GiphyTest(
+                            title: "Giphy",
+                          ),
+                          type: PageTransitionType.rightToLeft),
+                    );
+                  },
+                  leadingIcon: FontAwesomeIcons.dollarSign,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "giphy",
                 ),
                 // ! fix all usage error
                 // ListTileOption(
