@@ -28,6 +28,7 @@ class ProfileImageSelector extends StatefulWidget {
 class _ProfileImageSelectorState extends State<ProfileImageSelector> {
   XFile? _pickedFile;
   CroppedFile? _croppedFile;
+  final picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +74,7 @@ class _ProfileImageSelectorState extends State<ProfileImageSelector> {
             padding:
                 const EdgeInsets.symmetric(horizontal: kIsWeb ? 24.0 : 16.0),
             child: Card(
-              color: Colors.grey,
+              color: Colors.yellow,
               elevation: 4.0,
               child: Padding(
                 padding: const EdgeInsets.all(kIsWeb ? 24.0 : 16.0),
@@ -267,8 +268,7 @@ class _ProfileImageSelectorState extends State<ProfileImageSelector> {
   }
 
   Future<void> _uploadImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _pickedFile = pickedFile;

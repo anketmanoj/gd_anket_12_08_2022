@@ -850,7 +850,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                               } else {
                                 final String videoUrl =
                                     "https://gdfe-ac584.web.app/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
-                                // "http://192.168.1.8:8080/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
+                                // "http://192.168.1.6:8080/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
                                 // "https://gdfe-ac584.web.app/#/video/0ReK4oZIhGdbuYxBiUG5J/sjhbjhs";
 
                                 ViewPaidVideoWeb(context, video, videoUrl);
@@ -919,126 +919,129 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
       isScrollControlled: true,
       enableDrag: false,
       builder: (context) {
-        return Container(
-          height: 95.h,
-          width: 100.w,
-          decoration: BoxDecoration(
-            color: constantColors.black,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+        return SafeArea(
+          bottom: true,
+          child: Container(
+            height: 95.h,
+            width: 100.w,
+            decoration: BoxDecoration(
+              color: constantColors.black,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
             ),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(15, 20, 0, 10),
-                child: Row(
-                  children: [
-                    InkWell(
-                      onTap: Get.back,
-                      child: Text(
-                        "Done",
-                        style: TextStyle(
-                          color: constantColors.bioBg,
-                          fontSize: 16,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 20, 0, 10),
+                  child: Row(
+                    children: [
+                      InkWell(
+                        onTap: Get.back,
+                        child: Text(
+                          "Done",
+                          style: TextStyle(
+                            color: constantColors.bioBg,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: InAppWebView(
-                  key: webViewKey,
-                  onUpdateVisitedHistory: (controller, uri, _) async {
-                    if (uri!.toString().contains("success")) {
-                      await Provider.of<FirebaseOperations>(context,
-                              listen: false)
-                          .addToCart(
-                        useruid: context.read<Authentication>().getUserId,
-                        videoItem: video,
-                        isFree: video.isFree,
-                        ctx: context,
-                        videoId: video.id,
-                      );
-
-                      // log("amount transfered == ${(double.parse("${video.price * (1 - video.discountAmount / 100) * 100}") / 100).toStringAsFixed(0)}");
-
-                    } else if (uri.toString().contains("cancel")) {
-                      Navigator.pop(context);
-                      Get.snackbar(
-                        'Video Cart Error',
-                        'Error adding video to cart',
-                        overlayColor: constantColors.navButton,
-                        colorText: constantColors.whiteColor,
-                        snackPosition: SnackPosition.TOP,
-                        forwardAnimationCurve: Curves.elasticInOut,
-                        reverseAnimationCurve: Curves.easeOut,
-                      );
-                    }
-                  },
-                  initialUrlRequest: URLRequest(
-                    url: Uri.parse(videoUrl),
+                    ],
                   ),
-                  initialUserScripts: UnmodifiableListView<UserScript>([]),
-                  initialOptions: options,
-                  onWebViewCreated: (controller) {
-                    webViewController = controller;
-                  },
-                  onLoadStart: (controller, url) {
-                    setState(() {
-                      urlController.text = this.url;
-                    });
-                  },
-                  androidOnPermissionRequest:
-                      (controller, origin, resources) async {
-                    return PermissionRequestResponse(
-                        resources: resources,
-                        action: PermissionRequestResponseAction.GRANT);
-                  },
-                  shouldOverrideUrlLoading:
-                      (controller, navigationAction) async {
-                    var uri = navigationAction.request.url!;
-
-                    if (![
-                      "http",
-                      "https",
-                      "file",
-                      "chrome",
-                      "data",
-                      "javascript",
-                      "about"
-                    ].contains(uri.scheme)) {
-                      if (await canLaunch(videoUrl)) {
-                        // Launch the App
-                        await launch(
-                          videoUrl,
-                        );
-                        // and cancel the request
-                        return NavigationActionPolicy.CANCEL;
-                      }
-                    }
-
-                    return NavigationActionPolicy.ALLOW;
-                  },
-                  onLoadStop: (controller, url) async {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onLoadError: (controller, url, code, message) {},
-                  onProgressChanged: (controller, progress) {
-                    if (progress == 100) {}
-                    setState(() {
-                      this.progress = progress / 100;
-                      urlController.text = this.url;
-                    });
-                  },
                 ),
-              ),
-            ],
+                Expanded(
+                  child: InAppWebView(
+                    key: webViewKey,
+                    onUpdateVisitedHistory: (controller, uri, _) async {
+                      if (uri!.toString().contains("success")) {
+                        await Provider.of<FirebaseOperations>(context,
+                                listen: false)
+                            .addToCart(
+                          useruid: context.read<Authentication>().getUserId,
+                          videoItem: video,
+                          isFree: video.isFree,
+                          ctx: context,
+                          videoId: video.id,
+                        );
+
+                        // log("amount transfered == ${(double.parse("${video.price * (1 - video.discountAmount / 100) * 100}") / 100).toStringAsFixed(0)}");
+
+                      } else if (uri.toString().contains("cancel")) {
+                        Navigator.pop(context);
+                        Get.snackbar(
+                          'Video Cart Error',
+                          'Error adding video to cart',
+                          overlayColor: constantColors.navButton,
+                          colorText: constantColors.whiteColor,
+                          snackPosition: SnackPosition.TOP,
+                          forwardAnimationCurve: Curves.elasticInOut,
+                          reverseAnimationCurve: Curves.easeOut,
+                        );
+                      }
+                    },
+                    initialUrlRequest: URLRequest(
+                      url: Uri.parse(videoUrl),
+                    ),
+                    initialUserScripts: UnmodifiableListView<UserScript>([]),
+                    initialOptions: options,
+                    onWebViewCreated: (controller) {
+                      webViewController = controller;
+                    },
+                    onLoadStart: (controller, url) {
+                      setState(() {
+                        urlController.text = this.url;
+                      });
+                    },
+                    androidOnPermissionRequest:
+                        (controller, origin, resources) async {
+                      return PermissionRequestResponse(
+                          resources: resources,
+                          action: PermissionRequestResponseAction.GRANT);
+                    },
+                    shouldOverrideUrlLoading:
+                        (controller, navigationAction) async {
+                      var uri = navigationAction.request.url!;
+
+                      if (![
+                        "http",
+                        "https",
+                        "file",
+                        "chrome",
+                        "data",
+                        "javascript",
+                        "about"
+                      ].contains(uri.scheme)) {
+                        if (await canLaunch(videoUrl)) {
+                          // Launch the App
+                          await launch(
+                            videoUrl,
+                          );
+                          // and cancel the request
+                          return NavigationActionPolicy.CANCEL;
+                        }
+                      }
+
+                      return NavigationActionPolicy.ALLOW;
+                    },
+                    onLoadStop: (controller, url) async {
+                      setState(() {
+                        this.url = url.toString();
+                        urlController.text = this.url;
+                      });
+                    },
+                    onLoadError: (controller, url, code, message) {},
+                    onProgressChanged: (controller, progress) {
+                      if (progress == 100) {}
+                      setState(() {
+                        this.progress = progress / 100;
+                        urlController.text = this.url;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
