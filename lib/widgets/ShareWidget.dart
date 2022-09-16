@@ -8,6 +8,7 @@ import 'package:dio/dio.dart';
 import 'package:ffmpeg_kit_flutter_https_gpl/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_https_gpl/ffmpeg_kit_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -68,8 +69,17 @@ class _ShareWidgetState extends State<ShareWidget> {
     final File file = File(join(appDir.path, imageName));
     file.writeAsBytesSync(res.data as List<int>);
 
+    final response = await rootBundle.load('assets/images/GDlogo.png');
+    final gdLogoFile = File(join(appDir.path, "GDlogo.png"));
+    gdLogoFile.writeAsBytesSync(response.buffer.asUint8List());
+
+    final String command =
+        "-i ${file.path} -i ${gdLogoFile.path} -filter_complex \"[1]colorchannelmixer=aa=1,scale=iw*0.1:-1[a];[0][a]overlay=x=(main_w-overlay_w)/(main_w-overlay_w):y=(main_h-overlay_h);[0:a]volume=1.0[a1]\" -map ''[a1]'' -crf 28 -y -c:v libx264 -an ${appDir.path}/shareVideo.mp4";
+
+    await FFmpegKit.execute(command);
+
     setState(() {
-      videoFile = file;
+      videoFile = File("${appDir.path}/shareVideo.mp4");
     });
 
     log("video Url = ${videoFile!.path}");
