@@ -29,14 +29,14 @@ const String _kConsumableId5 = 'gd_carats_80';
 // const String _kConsumableId7 = 'gd_carats_312';
 // const String _kConsumableId8 = 'gd_carats_555';
 
-const List<String> _kProductIdiOS = <String>[
-  _kConsumableId0,
-  _kConsumableId1,
-  _kConsumableId2,
-  _kConsumableId3,
-  _kConsumableId4,
-  _kConsumableId5,
-];
+const Set<String> _kProductIdiOS = {
+  'gd_caratval_1',
+  'gd_carat_5',
+  'gd_carat_10',
+  'gd_carat_30',
+  'gd_carat_55',
+  'gd_carat_80',
+};
 
 const List<String> _kProductIdAndroid = <String>[
   _kConsumableId0,
@@ -595,10 +595,10 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
     }
 
     final ProductDetailsResponse productDetailResponse =
-        await _inAppPurchase.queryProductDetails(Platform.isIOS
-            ? _kProductIdiOS.toSet()
-            : _kProductIdAndroid.toSet());
+        await _inAppPurchase.queryProductDetails(
+            Platform.isIOS ? _kProductIdiOS : _kProductIdAndroid.toSet());
     if (productDetailResponse.error != null) {
+      log("anket eeror here == ${productDetailResponse.error!.message}");
       setState(() {
         _queryProductError = productDetailResponse.error!.message;
         _isAvailable = isAvailable;
@@ -655,11 +655,8 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
     PurchaseCarats(price: 7.99, name: "5 Carats"),
     PurchaseCarats(price: 13.99, name: "10 Carats"),
     PurchaseCarats(price: 39.99, name: "30 Carats"),
-    PurchaseCarats(price: 74.99, name: "50 Carats"),
-    PurchaseCarats(price: 149.99, name: "100 Carats"),
-    PurchaseCarats(price: 299.99, name: "200 Carats"),
-    PurchaseCarats(price: 399.99, name: "300 Carats"),
-    PurchaseCarats(price: 699.99, name: "500 Carats"),
+    PurchaseCarats(price: 74.99, name: "55 Carats"),
+    PurchaseCarats(price: 99.99, name: "80 Carats"),
   ];
 
   @override
