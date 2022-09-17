@@ -369,7 +369,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             if (myAr.audioFlag == true) {
               try {
                 await FFmpegKit.execute(
-                        '-vn -sn -dn -y -i ${Uri.parse(myAr.audioFile)} -t ${double.parse(setDuration)} -vn -acodec copy ${imgSeqFolder}${arVal}audio.aac')
+                        '-vn -sn -dn -y -i ${Uri.parse(myAr.audioFile)} -t ${double.parse(setDuration)} -vn -acodec copy -crf 30 -preset ultrafast ${imgSeqFolder}${arVal}audio.aac')
                     .then((rc) {
                   print("FFmpeg audio extraction success");
                   audioFile = File("${imgSeqFolder}${arVal}audio.aac");
@@ -544,7 +544,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               final containerKey = GlobalKey();
 
               await FFmpegKit.execute(
-                      "-i ${gifFile.path} -filter_complex \"[0:v] split [a][b]; [a] palettegen=reserve_transparent=on [p]; [b][p] paletteuse\" -y ${gifSeqFolder}gifFile${arVal}.gif")
+                      "-i ${gifFile.path} -crf 30 -preset ultrafast -filter_complex \"[0:v] split [a][b]; [a] palettegen=reserve_transparent=on [p]; [b][p] paletteuse\" -y ${gifSeqFolder}gifFile${arVal}.gif")
                   .then((vv) async {
                 print("gif is here ${gifSeqFolder}gifFile${arVal}.gif");
                 try {

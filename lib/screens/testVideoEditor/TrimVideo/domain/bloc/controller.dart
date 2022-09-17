@@ -483,7 +483,7 @@ class VideoEditorController extends ChangeNotifier {
         : "";
     final String execute =
         // ignore: unnecessary_string_escapes
-        " -i \'$videoPath\' ${customInstruction ?? ""} $filter -crf 30 $trim -y $outputPath";
+        " -i \'$videoPath\' ${customInstruction ?? ""} $filter -crf 30 -preset ultrafast $trim -y $outputPath";
 
     print("trim command == $execute");
 

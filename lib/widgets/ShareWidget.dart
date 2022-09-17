@@ -74,7 +74,7 @@ class _ShareWidgetState extends State<ShareWidget> {
     gdLogoFile.writeAsBytesSync(response.buffer.asUint8List());
 
     final String command =
-        "-i ${file.path} -i ${gdLogoFile.path} -filter_complex \"[1]colorchannelmixer=aa=1,scale=iw*0.1:-1[a];[0][a]overlay=x=(main_w-overlay_w)/(main_w-overlay_w):y=(main_h-overlay_h);[0:a]volume=1.0[a1]\" -map ''[a1]'' -crf 28 -y -c:v libx264 -an ${appDir.path}/shareVideo.mp4";
+        "-i ${file.path} -i ${gdLogoFile.path} -filter_complex \"[1]colorchannelmixer=aa=1,scale=iw*0.1:-1[a];[0][a]overlay=x=(main_w-overlay_w)/(main_w-overlay_w):y=(main_h-overlay_h);[0:a]volume=1.0[a1]\" -map ''[a1]'' -crf 30 -preset ultrafast -y -c:v libx264 -an ${appDir.path}/shareVideo.mp4";
 
     await FFmpegKit.execute(command);
 

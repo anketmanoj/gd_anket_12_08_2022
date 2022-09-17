@@ -49,7 +49,7 @@ class FFmpegProvider extends ChangeNotifier {
     if (double.parse(durationString) > 5) {
       log("duration greater normal than 5s");
       await FFmpegKit.execute(
-          "-y -i ${vidFilePath} -to 00:00:05 -vf scale=-2:480 -r 20/1 ${outputPath}");
+          "-y -i ${vidFilePath} -to 00:00:05 -vf scale=-2:480 -preset ultrafast -r 20/1 ${outputPath}");
       log("thumbnail file new more == ${File(outputPath).path}");
       return File(outputPath);
     } else {
@@ -57,7 +57,7 @@ class FFmpegProvider extends ChangeNotifier {
       final double duration = double.parse(durationString) * 0.5;
       log("duration i normal $duration");
       await FFmpegKit.execute(
-          "-y -i ${vidFilePath} -to ${formatTime(duration.toInt())} -vf scale=-2:480 -r 20/1 ${outputPath}");
+          "-y -i ${vidFilePath} -to ${formatTime(duration.toInt())} -vf scale=-2:480 -preset ultrafast -r 20/1 ${outputPath}");
       log("thumbnail file new less == ${File(outputPath).path}");
       return File(outputPath);
     }
@@ -69,7 +69,7 @@ class FFmpegProvider extends ChangeNotifier {
     final String outputPath = "${rawDocumentPath}/bgThumbnail.gif";
 
     await FFmpegKit.execute(
-            "-y -i ${vidFilePath} -to 00:00:02 -vf scale=-2:480 -r 20/1 ${outputPath}")
+            "-y -i ${vidFilePath} -to 00:00:02 -vf scale=-2:480 -preset ultrafast -r 20/1 ${outputPath}")
         .then((value) {
       bgThumbnailFile = File(outputPath);
       notifyListeners();
@@ -110,10 +110,10 @@ class FFmpegProvider extends ChangeNotifier {
       log("Running command");
 
       final String commandToRunNoAudio =
-          "-v error -y -loop 1 -i ${bgFile.path} -i ${videoFileUrl} -i ${alphaFileUrl} -t ${duration.toString()} -filter_complex \"[2][1]scale2ref[mask][main];[main][mask]alphamerge[vid1];[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];[vid1]scale=1080.0:1920.0:force_original_aspect_ratio=decrease[1ol_vid];[bg_vid][1ol_vid]overlay=x=(W-w)-0.0:y=(H-h)-0.0[1out]\" -map ''[1out]'' $outputPath";
+          "-v error -y -loop 1 -i ${bgFile.path} -i ${videoFileUrl} -i ${alphaFileUrl} -t ${duration.toString()} -filter_complex \"[2][1]scale2ref[mask][main];[main][mask]alphamerge[vid1];[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];[vid1]scale=1080.0:1920.0:force_original_aspect_ratio=decrease[1ol_vid];[bg_vid][1ol_vid]overlay=x=(W-w)-0.0:y=(H-h)-0.0[1out]\" -map ''[1out]'' -crf 30 -preset ultrafast $outputPath";
 
       final String commandToRun =
-          "-v error -y -loop 1 -i ${bgFile.path} -i ${videoFileUrl} -i ${alphaFileUrl} -t ${duration.toString()} -filter_complex \"[2][1]scale2ref[mask][main];[main][mask]alphamerge[vid1];[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];[vid1]scale=1080.0:1920.0:force_original_aspect_ratio=decrease[1ol_vid];[bg_vid][1ol_vid]overlay=x=(W-w)-0.0:y=(H-h)-0.0[1out];[1:a]volume=1.0[a1]\" -map ''[1out]'' -map ''[a1]'' $outputPath";
+          "-v error -y -loop 1 -i ${bgFile.path} -i ${videoFileUrl} -i ${alphaFileUrl} -t ${duration.toString()} -filter_complex \"[2][1]scale2ref[mask][main];[main][mask]alphamerge[vid1];[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];[vid1]scale=1080.0:1920.0:force_original_aspect_ratio=decrease[1ol_vid];[bg_vid][1ol_vid]overlay=x=(W-w)-0.0:y=(H-h)-0.0[1out];[1:a]volume=1.0[a1]\" -map ''[1out]'' -map ''[a1]'' -crf 30 -preset ultrafast $outputPath";
 
       log("command == $commandToRun");
 
