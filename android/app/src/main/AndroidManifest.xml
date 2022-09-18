@@ -10,7 +10,7 @@
 
    
     <application
-        android:label="gd_anket"
+        android:label="Glamorous Diastation"
         android:name="${applicationName}"
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/launcher_icon">

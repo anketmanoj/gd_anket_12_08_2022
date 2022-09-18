@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: com.amazonaws:aws-android-sdk-kms:2.16.6">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-android-sdk-kms/2.16.6/721561ad71579f8a788d6c1e3e118888874534fc/aws-android-sdk-kms-2.16.6.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-android-sdk-kms/2.16.6/b0f10dcfc7d69ca38dd2929a63d13dd78cb89f70/aws-android-sdk-kms-2.16.6-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-android-sdk-kms/2.16.6/8097f1de38a74053789d64d1f3ea118c1142b1d2/aws-android-sdk-kms-2.16.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
