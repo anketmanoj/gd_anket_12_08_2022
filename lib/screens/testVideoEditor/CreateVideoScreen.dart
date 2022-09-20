@@ -369,7 +369,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             if (myAr.audioFlag == true) {
               try {
                 await FFmpegKit.execute(
-                        '-vn -sn -dn -y -i ${Uri.parse(myAr.audioFile)} -t ${double.parse(setDuration)} -vn -acodec copy -crf 30 -preset ultrafast ${imgSeqFolder}${arVal}audio.aac')
+                        '-vn -sn -dn -y -i ${Uri.parse(myAr.audioFile)} -t ${double.parse(setDuration)} -vn -acodec copy ${imgSeqFolder}${arVal}audio.aac')
                     .then((rc) {
                   print("FFmpeg audio extraction success");
                   audioFile = File("${imgSeqFolder}${arVal}audio.aac");
@@ -2494,16 +2494,17 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
-                    child: StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
+                    child: FutureBuilder<QuerySnapshot>(
+                        future: FirebaseFirestore.instance
                             .collection("users")
+                            // .doc("ijdI08UkGadVifmUcvS2KPjmuAE2")
                             .doc(Provider.of<Authentication>(context,
                                     listen: false)
                                 .getUserId)
                             .collection("MyCollection")
                             .where("layerType", isEqualTo: "AR")
                             .where("usage", isEqualTo: "Material")
-                            .snapshots(),
+                            .get(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
