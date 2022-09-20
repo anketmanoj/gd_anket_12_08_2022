@@ -209,27 +209,30 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
         isScrollControlled: true,
         context: context,
         builder: (context) {
-          return Container(
-            padding: EdgeInsets.all(15),
-            height: 25.h,
-            width: 100.w,
-            decoration: BoxDecoration(
-              color: constantColors.whiteColor,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
+          return SafeArea(
+            bottom: Platform.isAndroid ? true : false,
             child: Container(
-              child: ListView.builder(
-                itemCount: optionsList.length,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return Options(
-                    tapped: functionsList[index],
-                    text: optionsList[index],
-                  );
-                },
+              padding: EdgeInsets.all(15),
+              height: 25.h,
+              width: 100.w,
+              decoration: BoxDecoration(
+                color: constantColors.whiteColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: Container(
+                child: ListView.builder(
+                  itemCount: optionsList.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return Options(
+                      tapped: functionsList[index],
+                      text: optionsList[index],
+                    );
+                  },
+                ),
               ),
             ),
           );
@@ -470,220 +473,164 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                 isDismissible: false,
                                 isScrollControlled: true,
                                 builder: (context) {
-                                  return Container(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 15),
-                                    height: size.height * 0.5,
-                                    width: size.width,
-                                    decoration: BoxDecoration(
-                                      color: constantColors.navButton,
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(20),
-                                        topRight: Radius.circular(20),
+                                  return SafeArea(
+                                    bottom: Platform.isAndroid ? true : false,
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 15),
+                                      height: size.height * 0.5,
+                                      width: size.width,
+                                      decoration: BoxDecoration(
+                                        color: constantColors.navButton,
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(20),
+                                          topRight: Radius.circular(20),
+                                        ),
                                       ),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 150),
-                                          child: Divider(
-                                            thickness: 4,
-                                            color: constantColors.whiteColor,
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 150),
+                                            child: Divider(
+                                              thickness: 4,
+                                              color: constantColors.whiteColor,
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        Text(
-                                          "Items",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.white,
+                                          SizedBox(
+                                            height: 10,
                                           ),
-                                        ),
-                                        Container(
-                                          height: size.height * 0.3,
-                                          width: size.width,
-                                          child: StreamBuilder<QuerySnapshot>(
-                                              stream: FirebaseFirestore.instance
-                                                  .collection("posts")
-                                                  .doc(video!.id)
-                                                  .collection("materials")
-                                                  .snapshots(),
-                                              builder: (context, snapshot) {
-                                                if (snapshot.hasData) {
-                                                  return ListView.builder(
-                                                    itemCount: snapshot
-                                                        .data!.docs.length,
-                                                    itemBuilder:
-                                                        (context, index) {
-                                                      return snapshot.data!
-                                                                          .docs[
-                                                                      index]
-                                                                  ["ownerId"] ==
-                                                              video!.useruid
-                                                          ? ListTile(
-                                                              leading: Container(
+                                          Text(
+                                            "Items",
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          Container(
+                                            height: size.height * 0.3,
+                                            width: size.width,
+                                            child: StreamBuilder<QuerySnapshot>(
+                                                stream: FirebaseFirestore
+                                                    .instance
+                                                    .collection("posts")
+                                                    .doc(video!.id)
+                                                    .collection("materials")
+                                                    .snapshots(),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot.hasData) {
+                                                    return ListView.builder(
+                                                      itemCount: snapshot
+                                                          .data!.docs.length,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        return snapshot.data!
+                                                                            .docs[
+                                                                        index][
+                                                                    "ownerId"] ==
+                                                                video!.useruid
+                                                            ? ListTile(
+                                                                leading: Container(
+                                                                    height: 40,
+                                                                    width: 40,
+                                                                    child: ImageNetworkLoader(
+                                                                        imageUrl: snapshot
+                                                                            .data!
+                                                                            .docs[index]["gif"])),
+                                                                title: Text(
+                                                                  "${snapshot.data!.docs[index]["layerType"]} by ${video!.username}",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        16,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                                ),
+                                                                trailing: (snapshot.data!.docs[index].data() as Map<
+                                                                            String,
+                                                                            dynamic>)
+                                                                        .containsKey(
+                                                                            "usage")
+                                                                    ? Text(
+                                                                        "${snapshot.data!.docs[index]["usage"]}",
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              16,
+                                                                          color:
+                                                                              Colors.white,
+                                                                        ),
+                                                                      )
+                                                                    : null,
+                                                              )
+                                                            : ListTile(
+                                                                tileColor:
+                                                                    constantColors
+                                                                        .bioBg,
+                                                                trailing:
+                                                                    Container(
+                                                                  height: 50,
+                                                                  width: 80,
+                                                                  child:
+                                                                      InkWell(
+                                                                    onTap: () {
+                                                                      Navigator.push(
+                                                                          context,
+                                                                          PageTransition(
+                                                                              child: PostDetailsScreen(
+                                                                                videoId: snapshot.data!.docs[index]["videoId"],
+                                                                              ),
+                                                                              type: PageTransitionType.fade));
+                                                                    },
+                                                                    child:
+                                                                        Container(
+                                                                      height:
+                                                                          50,
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color: Colors
+                                                                            .black,
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(20),
+                                                                      ),
+                                                                      child:
+                                                                          Row(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.center,
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.center,
+                                                                        children: [
+                                                                          Container(
+                                                                            child:
+                                                                                Text(
+                                                                              "Visit Owner",
+                                                                              style: TextStyle(
+                                                                                fontSize: 12,
+                                                                                fontWeight: FontWeight.bold,
+                                                                                color: Colors.white,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                subtitle: Text(
+                                                                  "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
+                                                                ),
+                                                                leading:
+                                                                    Container(
                                                                   height: 40,
                                                                   width: 40,
                                                                   child: ImageNetworkLoader(
                                                                       imageUrl: snapshot
                                                                           .data!
-                                                                          .docs[index]["gif"])),
-                                                              title: Text(
-                                                                "${snapshot.data!.docs[index]["layerType"]} by ${video!.username}",
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 16,
-                                                                  color: Colors
-                                                                      .white,
+                                                                          .docs[index]["gif"]),
                                                                 ),
-                                                              ),
-                                                              trailing: (snapshot
-                                                                              .data!
-                                                                              .docs[
-                                                                                  index]
-                                                                              .data()
-                                                                          as Map<
-                                                                              String,
-                                                                              dynamic>)
-                                                                      .containsKey(
-                                                                          "usage")
-                                                                  ? Text(
-                                                                      "${snapshot.data!.docs[index]["usage"]}",
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontSize:
-                                                                            16,
-                                                                        color: Colors
-                                                                            .white,
-                                                                      ),
-                                                                    )
-                                                                  : null,
-                                                            )
-                                                          : ListTile(
-                                                              tileColor:
-                                                                  constantColors
-                                                                      .bioBg,
-                                                              trailing:
-                                                                  Container(
-                                                                height: 50,
-                                                                width: 80,
-                                                                child: InkWell(
-                                                                  onTap: () {
-                                                                    Navigator.push(
-                                                                        context,
-                                                                        PageTransition(
-                                                                            child: PostDetailsScreen(
-                                                                              videoId: snapshot.data!.docs[index]["videoId"],
-                                                                            ),
-                                                                            type: PageTransitionType.fade));
-                                                                  },
-                                                                  child:
-                                                                      Container(
-                                                                    height: 50,
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      color: Colors
-                                                                          .black,
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              20),
-                                                                    ),
-                                                                    child: Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .center,
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .center,
-                                                                      children: [
-                                                                        Container(
-                                                                          child:
-                                                                              Text(
-                                                                            "Visit Owner",
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: 12,
-                                                                              fontWeight: FontWeight.bold,
-                                                                              color: Colors.white,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              subtitle: Text(
-                                                                "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
-                                                              ),
-                                                              leading:
-                                                                  Container(
-                                                                height: 40,
-                                                                width: 40,
-                                                                child: ImageNetworkLoader(
-                                                                    imageUrl: snapshot
-                                                                            .data!
-                                                                            .docs[index]
-                                                                        [
-                                                                        "gif"]),
-                                                              ),
-                                                              title: Text(
-                                                                "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 16,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
-                                                            );
-                                                    },
-                                                  );
-                                                } else {
-                                                  return Center(
-                                                    child:
-                                                        CircularProgressIndicator(),
-                                                  );
-                                                }
-                                              }),
-                                        ),
-                                        Divider(
-                                          color: constantColors.whiteColor,
-                                        ),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 10),
-                                          child: Row(
-                                            mainAxisAlignment: video!.isPaid
-                                                ? MainAxisAlignment.spaceBetween
-                                                : MainAxisAlignment.center,
-                                            children: [
-                                              video!.isPaid
-                                                  ? video!.discountAmount == 0
-                                                      ? Text(
-                                                          "Total: \$${video!.price}",
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            color: Colors.white,
-                                                          ),
-                                                        )
-                                                      : video!.discountAmount >=
-                                                                  0 &&
-                                                              DateTime.now()
-                                                                  .isAfter((video!
-                                                                          .startDiscountDate)
-                                                                      .toDate()) &&
-                                                              DateTime.now()
-                                                                  .isBefore((video!
-                                                                          .endDiscountDate)
-                                                                      .toDate())
-                                                          ? Row(
-                                                              children: [
-                                                                Text(
-                                                                  "Total: ",
+                                                                title: Text(
+                                                                  "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",
                                                                   style:
                                                                       TextStyle(
                                                                     fontSize:
@@ -692,142 +639,202 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                                         .white,
                                                                   ),
                                                                 ),
-                                                                Text(
-                                                                  " \$${video!.price}",
-                                                                  style:
-                                                                      TextStyle(
-                                                                    decoration:
-                                                                        TextDecoration
-                                                                            .lineThrough,
-                                                                    fontSize:
-                                                                        16,
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                                ),
-                                                                Text(
-                                                                  " \$${video!.price * (1 - video!.discountAmount / 100)}",
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        16,
-                                                                    color: Colors
-                                                                        .red,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            )
-                                                          : Text(
-                                                              "Total: \$${video!.price}",
-                                                              style: TextStyle(
-                                                                fontSize: 16,
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                            )
-                                                  : Container(),
-                                              video!.isPaid
-                                                  ? ElevatedButton(
-                                                      style: ButtonStyle(
-                                                        foregroundColor:
-                                                            MaterialStateProperty
-                                                                .all<Color>(
-                                                                    Colors
-                                                                        .white),
-                                                        backgroundColor:
-                                                            MaterialStateProperty
-                                                                .all<Color>(
-                                                                    constantColors
-                                                                        .bioBg),
-                                                        shape: MaterialStateProperty
-                                                            .all<
-                                                                RoundedRectangleBorder>(
-                                                          RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        20),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      onPressed: () async {
-                                                        // await initPayment(
-                                                        //   ctx: context,
-                                                        //   amount:
-                                                        //       "${video!.price * (1 - video!.discountAmount / 100) * 100}",
-                                                        //   email:
-                                                        //       firebaseOperations
-                                                        //           .initUserEmail,
-                                                        // );
+                                                              );
                                                       },
-                                                      // paymentController.makePayment(
-                                                      //     amount: "10", currency: "USD"),
-                                                      child: Text(
-                                                        "Purchase",
-                                                        style: TextStyle(
-                                                          color: constantColors
-                                                              .navButton,
-                                                        ),
-                                                      ),
-                                                    )
-                                                  : ElevatedButton(
-                                                      style: ButtonStyle(
-                                                        foregroundColor:
-                                                            MaterialStateProperty
-                                                                .all<Color>(
-                                                                    Colors
-                                                                        .white),
-                                                        backgroundColor:
-                                                            MaterialStateProperty
-                                                                .all<Color>(
-                                                                    constantColors
-                                                                        .bioBg),
-                                                        shape: MaterialStateProperty
-                                                            .all<
-                                                                RoundedRectangleBorder>(
-                                                          RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        20),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      onPressed: () async {
-                                                        // ignore: unawaited_futures
-                                                        CoolAlert.show(
-                                                          context: context,
-                                                          type: CoolAlertType
-                                                              .loading,
-                                                          text:
-                                                              "Saving to your collection",
-                                                          barrierDismissible:
-                                                              false,
-                                                        );
-                                                        await firebaseOperations
-                                                            .addToMyCollection(
-                                                          videoOwnerId:
-                                                              video!.useruid,
-                                                          videoItem: video!,
-                                                          isFree: video!.isFree,
-                                                          ctx: context,
-                                                          videoId: video!.id,
-                                                        );
-                                                      },
-                                                      // paymentController.makePayment(
-                                                      //     amount: "10", currency: "USD"),
-                                                      child: Text(
-                                                        "Add To My Inventory",
-                                                        style: TextStyle(
-                                                          color: constantColors
-                                                              .navButton,
-                                                        ),
-                                                      ),
-                                                    ),
-                                            ],
+                                                    );
+                                                  } else {
+                                                    return Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    );
+                                                  }
+                                                }),
                                           ),
-                                        ),
-                                      ],
+                                          Divider(
+                                            color: constantColors.whiteColor,
+                                          ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 10),
+                                            child: Row(
+                                              mainAxisAlignment: video!.isPaid
+                                                  ? MainAxisAlignment
+                                                      .spaceBetween
+                                                  : MainAxisAlignment.center,
+                                              children: [
+                                                video!.isPaid
+                                                    ? video!.discountAmount == 0
+                                                        ? Text(
+                                                            "Total: \$${video!.price}",
+                                                            style: TextStyle(
+                                                              fontSize: 16,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          )
+                                                        : video!.discountAmount >=
+                                                                    0 &&
+                                                                DateTime.now()
+                                                                    .isAfter((video!
+                                                                            .startDiscountDate)
+                                                                        .toDate()) &&
+                                                                DateTime.now()
+                                                                    .isBefore((video!
+                                                                            .endDiscountDate)
+                                                                        .toDate())
+                                                            ? Row(
+                                                                children: [
+                                                                  Text(
+                                                                    "Total: ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                  Text(
+                                                                    " \$${video!.price}",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .lineThrough,
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                  Text(
+                                                                    " \$${video!.price * (1 - video!.discountAmount / 100)}",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Colors
+                                                                          .red,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              )
+                                                            : Text(
+                                                                "Total: \$${video!.price}",
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: 16,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                              )
+                                                    : Container(),
+                                                video!.isPaid
+                                                    ? ElevatedButton(
+                                                        style: ButtonStyle(
+                                                          foregroundColor:
+                                                              MaterialStateProperty
+                                                                  .all<Color>(
+                                                                      Colors
+                                                                          .white),
+                                                          backgroundColor:
+                                                              MaterialStateProperty.all<
+                                                                      Color>(
+                                                                  constantColors
+                                                                      .bioBg),
+                                                          shape: MaterialStateProperty
+                                                              .all<
+                                                                  RoundedRectangleBorder>(
+                                                            RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        onPressed: () async {
+                                                          // await initPayment(
+                                                          //   ctx: context,
+                                                          //   amount:
+                                                          //       "${video!.price * (1 - video!.discountAmount / 100) * 100}",
+                                                          //   email:
+                                                          //       firebaseOperations
+                                                          //           .initUserEmail,
+                                                          // );
+                                                        },
+                                                        // paymentController.makePayment(
+                                                        //     amount: "10", currency: "USD"),
+                                                        child: Text(
+                                                          "Purchase",
+                                                          style: TextStyle(
+                                                            color:
+                                                                constantColors
+                                                                    .navButton,
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : ElevatedButton(
+                                                        style: ButtonStyle(
+                                                          foregroundColor:
+                                                              MaterialStateProperty
+                                                                  .all<Color>(
+                                                                      Colors
+                                                                          .white),
+                                                          backgroundColor:
+                                                              MaterialStateProperty.all<
+                                                                      Color>(
+                                                                  constantColors
+                                                                      .bioBg),
+                                                          shape: MaterialStateProperty
+                                                              .all<
+                                                                  RoundedRectangleBorder>(
+                                                            RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        onPressed: () async {
+                                                          // ignore: unawaited_futures
+                                                          CoolAlert.show(
+                                                            context: context,
+                                                            type: CoolAlertType
+                                                                .loading,
+                                                            text:
+                                                                "Saving to your collection",
+                                                            barrierDismissible:
+                                                                false,
+                                                          );
+                                                          await firebaseOperations
+                                                              .addToMyCollection(
+                                                            videoOwnerId:
+                                                                video!.useruid,
+                                                            videoItem: video!,
+                                                            isFree:
+                                                                video!.isFree,
+                                                            ctx: context,
+                                                            videoId: video!.id,
+                                                          );
+                                                        },
+                                                        // paymentController.makePayment(
+                                                        //     amount: "10", currency: "USD"),
+                                                        child: Text(
+                                                          "Add To My Inventory",
+                                                          style: TextStyle(
+                                                            color:
+                                                                constantColors
+                                                                    .navButton,
+                                                          ),
+                                                        ),
+                                                      ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   );
                                 },

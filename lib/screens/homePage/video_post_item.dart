@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -367,343 +368,359 @@ class _VideoPostItemState extends State<VideoPostItem> {
                               isDismissible: false,
                               isScrollControlled: true,
                               builder: (context) {
-                                return Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 15),
-                                  height: size.height * 0.5,
-                                  width: size.width,
-                                  decoration: BoxDecoration(
-                                    color: constantColors.navButton,
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(20),
-                                      topRight: Radius.circular(20),
+                                return SafeArea(
+                                  bottom: Platform.isAndroid ? true : false,
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 15),
+                                    height: size.height * 0.5,
+                                    width: size.width,
+                                    decoration: BoxDecoration(
+                                      color: constantColors.navButton,
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(20),
+                                        topRight: Radius.circular(20),
+                                      ),
                                     ),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 150),
-                                        child: Divider(
-                                          thickness: 4,
-                                          color: constantColors.whiteColor,
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 150),
+                                          child: Divider(
+                                            thickness: 4,
+                                            color: constantColors.whiteColor,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Text(
-                                        widget.video.videoType == "video"
-                                            ? "Items"
-                                            : "AR View Only Items",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white,
+                                        SizedBox(
+                                          height: 10,
                                         ),
-                                      ),
-                                      Container(
-                                        height: size.height * 0.3,
-                                        width: size.width,
-                                        child: StreamBuilder<QuerySnapshot>(
-                                            stream: FirebaseFirestore.instance
-                                                .collection("posts")
-                                                .doc(widget.video.id)
-                                                .collection("materials")
-                                                .snapshots(),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.hasData) {
-                                                return ListView.builder(
-                                                  itemCount: snapshot
-                                                      .data!.docs.length,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    return snapshot.data!
-                                                                    .docs[index]
-                                                                ["ownerId"] ==
-                                                            widget.video.useruid
-                                                        ? ListTile(
-                                                            leading: Container(
-                                                              height: 40,
-                                                              width: 40,
-                                                              child:
-                                                                  ImageNetworkLoader(
-                                                                imageUrl: snapshot
-                                                                        .data!
-                                                                        .docs[
-                                                                    index]["gif"],
-                                                              ),
-                                                            ),
-                                                            title: Text(
-                                                              "${snapshot.data!.docs[index]["layerType"]} by ${widget.video.username}",
-                                                              style: TextStyle(
-                                                                fontSize: 16,
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                            ),
-                                                          )
-                                                        : ListTile(
-                                                            tileColor:
-                                                                constantColors
-                                                                    .bioBg,
-                                                            trailing: Container(
-                                                              height: 50,
-                                                              width: 80,
-                                                              child: InkWell(
-                                                                onTap: () {
-                                                                  Navigator.push(
-                                                                      context,
-                                                                      PageTransition(
-                                                                          child: PostDetailsScreen(
-                                                                            videoId:
-                                                                                snapshot.data!.docs[index]["videoId"],
-                                                                          ),
-                                                                          type: PageTransitionType.fade));
-                                                                },
+                                        Text(
+                                          widget.video.videoType == "video"
+                                              ? "Items"
+                                              : "AR View Only Items",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        Container(
+                                          height: size.height * 0.3,
+                                          width: size.width,
+                                          child: StreamBuilder<QuerySnapshot>(
+                                              stream: FirebaseFirestore.instance
+                                                  .collection("posts")
+                                                  .doc(widget.video.id)
+                                                  .collection("materials")
+                                                  .snapshots(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.hasData) {
+                                                  return ListView.builder(
+                                                    itemCount: snapshot
+                                                        .data!.docs.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return snapshot.data!
+                                                                          .docs[
+                                                                      index]
+                                                                  ["ownerId"] ==
+                                                              widget
+                                                                  .video.useruid
+                                                          ? ListTile(
+                                                              leading:
+                                                                  Container(
+                                                                height: 40,
+                                                                width: 40,
                                                                 child:
-                                                                    Container(
-                                                                  height: 50,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    color: Colors
-                                                                        .black,
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            20),
-                                                                  ),
-                                                                  child: Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .center,
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .center,
-                                                                    children: [
+                                                                    ImageNetworkLoader(
+                                                                  imageUrl: snapshot
+                                                                          .data!
+                                                                          .docs[
+                                                                      index]["gif"],
+                                                                ),
+                                                              ),
+                                                              title: Text(
+                                                                "${snapshot.data!.docs[index]["layerType"]} by ${widget.video.username}",
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: 16,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                              ),
+                                                            )
+                                                          : ListTile(
+                                                              tileColor:
+                                                                  constantColors
+                                                                      .bioBg,
+                                                              trailing:
+                                                                  Container(
+                                                                height: 50,
+                                                                width: 80,
+                                                                child: InkWell(
+                                                                  onTap: () {
+                                                                    Navigator.push(
+                                                                        context,
+                                                                        PageTransition(
+                                                                            child: PostDetailsScreen(
+                                                                              videoId: snapshot.data!.docs[index]["videoId"],
+                                                                            ),
+                                                                            type: PageTransitionType.fade));
+                                                                  },
+                                                                  child:
                                                                       Container(
-                                                                        child:
-                                                                            Text(
-                                                                          "Visit Owner",
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontSize:
-                                                                                12,
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                            color:
-                                                                                Colors.white,
+                                                                    height: 50,
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20),
+                                                                    ),
+                                                                    child: Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .center,
+                                                                      children: [
+                                                                        Container(
+                                                                          child:
+                                                                              Text(
+                                                                            "Visit Owner",
+                                                                            style:
+                                                                                TextStyle(
+                                                                              fontSize: 12,
+                                                                              fontWeight: FontWeight.bold,
+                                                                              color: Colors.white,
+                                                                            ),
                                                                           ),
                                                                         ),
-                                                                      ),
-                                                                    ],
+                                                                      ],
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                            subtitle: Text(
-                                                              "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
-                                                            ),
-                                                            leading: Container(
-                                                              height: 40,
-                                                              width: 40,
-                                                              child:
-                                                                  ImageNetworkLoader(
-                                                                imageUrl: snapshot
-                                                                        .data!
-                                                                        .docs[
-                                                                    index]["gif"],
+                                                              subtitle: Text(
+                                                                "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
                                                               ),
-                                                            ),
-                                                            title: Text(
-                                                              "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",
+                                                              leading:
+                                                                  Container(
+                                                                height: 40,
+                                                                width: 40,
+                                                                child:
+                                                                    ImageNetworkLoader(
+                                                                  imageUrl: snapshot
+                                                                          .data!
+                                                                          .docs[
+                                                                      index]["gif"],
+                                                                ),
+                                                              ),
+                                                              title: Text(
+                                                                "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: 16,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                              ),
+                                                            );
+                                                    },
+                                                  );
+                                                } else {
+                                                  return Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  );
+                                                }
+                                              }),
+                                        ),
+                                        Divider(
+                                          color: constantColors.whiteColor,
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 10),
+                                          child: Row(
+                                            mainAxisAlignment: widget
+                                                    .video.isPaid
+                                                ? MainAxisAlignment.spaceBetween
+                                                : MainAxisAlignment.center,
+                                            children: [
+                                              widget.video.isPaid
+                                                  ? widget.video
+                                                              .discountAmount ==
+                                                          0
+                                                      ? Text(
+                                                          "Total: \$${widget.video.price}",
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            color: Colors.white,
+                                                          ),
+                                                        )
+                                                      : widget.video.discountAmount >=
+                                                                  0 &&
+                                                              DateTime.now()
+                                                                  .isAfter((widget
+                                                                          .video
+                                                                          .startDiscountDate)
+                                                                      .toDate()) &&
+                                                              DateTime.now()
+                                                                  .isBefore((widget
+                                                                          .video
+                                                                          .endDiscountDate)
+                                                                      .toDate())
+                                                          ? Row(
+                                                              children: [
+                                                                Text(
+                                                                  "Total: ",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        16,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  " \$${widget.video.price}",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    decoration:
+                                                                        TextDecoration
+                                                                            .lineThrough,
+                                                                    fontSize:
+                                                                        16,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  " \$${widget.video.price * (1 - widget.video.discountAmount / 100)}",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        16,
+                                                                    color: Colors
+                                                                        .red,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            )
+                                                          : Text(
+                                                              "Total: \$${widget.video.price}",
                                                               style: TextStyle(
                                                                 fontSize: 16,
                                                                 color: Colors
                                                                     .white,
                                                               ),
-                                                            ),
-                                                          );
-                                                  },
-                                                );
-                                              } else {
-                                                return Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                );
-                                              }
-                                            }),
-                                      ),
-                                      Divider(
-                                        color: constantColors.whiteColor,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 10),
-                                        child: Row(
-                                          mainAxisAlignment: widget.video.isPaid
-                                              ? MainAxisAlignment.spaceBetween
-                                              : MainAxisAlignment.center,
-                                          children: [
-                                            widget.video.isPaid
-                                                ? widget.video.discountAmount ==
-                                                        0
-                                                    ? Text(
-                                                        "Total: \$${widget.video.price}",
+                                                            )
+                                                  : Container(),
+                                              widget.video.isPaid
+                                                  ? ElevatedButton(
+                                                      style: ButtonStyle(
+                                                        foregroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    Colors
+                                                                        .white),
+                                                        backgroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    constantColors
+                                                                        .bioBg),
+                                                        shape: MaterialStateProperty
+                                                            .all<
+                                                                RoundedRectangleBorder>(
+                                                          RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      onPressed: () async {
+                                                        await selectPaymentOptionsSheet(
+                                                            ctx: context,
+                                                            firebaseOperations:
+                                                                firebaseOperations);
+                                                      },
+                                                      // paymentController.makePayment(
+                                                      //     amount: "10", currency: "USD"),
+                                                      child: Text(
+                                                        "Purchase",
                                                         style: TextStyle(
-                                                          fontSize: 16,
-                                                          color: Colors.white,
-                                                        ),
-                                                      )
-                                                    : widget.video.discountAmount >=
-                                                                0 &&
-                                                            DateTime.now()
-                                                                .isAfter((widget
-                                                                        .video
-                                                                        .startDiscountDate)
-                                                                    .toDate()) &&
-                                                            DateTime.now()
-                                                                .isBefore((widget
-                                                                        .video
-                                                                        .endDiscountDate)
-                                                                    .toDate())
-                                                        ? Row(
-                                                            children: [
-                                                              Text(
-                                                                "Total: ",
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 16,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
-                                                              Text(
-                                                                " \$${widget.video.price}",
-                                                                style:
-                                                                    TextStyle(
-                                                                  decoration:
-                                                                      TextDecoration
-                                                                          .lineThrough,
-                                                                  fontSize: 16,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
-                                                              Text(
-                                                                " \$${widget.video.price * (1 - widget.video.discountAmount / 100)}",
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 16,
-                                                                  color: Colors
-                                                                      .red,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          )
-                                                        : Text(
-                                                            "Total: \$${widget.video.price}",
-                                                            style: TextStyle(
-                                                              fontSize: 16,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          )
-                                                : Container(),
-                                            widget.video.isPaid
-                                                ? ElevatedButton(
-                                                    style: ButtonStyle(
-                                                      foregroundColor:
-                                                          MaterialStateProperty
-                                                              .all<Color>(
-                                                                  Colors.white),
-                                                      backgroundColor:
-                                                          MaterialStateProperty
-                                                              .all<
-                                                                      Color>(
-                                                                  constantColors
-                                                                      .bioBg),
-                                                      shape: MaterialStateProperty
-                                                          .all<
-                                                              RoundedRectangleBorder>(
-                                                        RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(20),
+                                                          color: constantColors
+                                                              .navButton,
                                                         ),
                                                       ),
-                                                    ),
-                                                    onPressed: () async {
-                                                      await selectPaymentOptionsSheet(
+                                                    )
+                                                  : ElevatedButton(
+                                                      style: ButtonStyle(
+                                                        foregroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    Colors
+                                                                        .white),
+                                                        backgroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    constantColors
+                                                                        .bioBg),
+                                                        shape: MaterialStateProperty
+                                                            .all<
+                                                                RoundedRectangleBorder>(
+                                                          RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      onPressed: () async {
+                                                        // ignore: unawaited_futures
+                                                        CoolAlert.show(
+                                                          context: context,
+                                                          type: CoolAlertType
+                                                              .loading,
+                                                          text:
+                                                              "Saving to your collection",
+                                                          barrierDismissible:
+                                                              false,
+                                                        );
+                                                        await firebaseOperations
+                                                            .addToMyCollection(
+                                                          videoOwnerId: widget
+                                                              .video.useruid,
+                                                          videoItem:
+                                                              widget.video,
+                                                          isFree: widget
+                                                              .video.isFree,
                                                           ctx: context,
-                                                          firebaseOperations:
-                                                              firebaseOperations);
-                                                    },
-                                                    // paymentController.makePayment(
-                                                    //     amount: "10", currency: "USD"),
-                                                    child: Text(
-                                                      "Purchase",
-                                                      style: TextStyle(
-                                                        color: constantColors
-                                                            .navButton,
-                                                      ),
-                                                    ),
-                                                  )
-                                                : ElevatedButton(
-                                                    style: ButtonStyle(
-                                                      foregroundColor:
-                                                          MaterialStateProperty
-                                                              .all<Color>(
-                                                                  Colors.white),
-                                                      backgroundColor:
-                                                          MaterialStateProperty
-                                                              .all<
-                                                                      Color>(
-                                                                  constantColors
-                                                                      .bioBg),
-                                                      shape: MaterialStateProperty
-                                                          .all<
-                                                              RoundedRectangleBorder>(
-                                                        RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(20),
+                                                          videoId:
+                                                              widget.video.id,
+                                                        );
+                                                      },
+                                                      // paymentController.makePayment(
+                                                      //     amount: "10", currency: "USD"),
+                                                      child: Text(
+                                                        "Add To My Inventory",
+                                                        style: TextStyle(
+                                                          color: constantColors
+                                                              .navButton,
                                                         ),
                                                       ),
                                                     ),
-                                                    onPressed: () async {
-                                                      // ignore: unawaited_futures
-                                                      CoolAlert.show(
-                                                        context: context,
-                                                        type: CoolAlertType
-                                                            .loading,
-                                                        text:
-                                                            "Saving to your collection",
-                                                        barrierDismissible:
-                                                            false,
-                                                      );
-                                                      await firebaseOperations
-                                                          .addToMyCollection(
-                                                        videoOwnerId: widget
-                                                            .video.useruid,
-                                                        videoItem: widget.video,
-                                                        isFree:
-                                                            widget.video.isFree,
-                                                        ctx: context,
-                                                        videoId:
-                                                            widget.video.id,
-                                                      );
-                                                    },
-                                                    // paymentController.makePayment(
-                                                    //     amount: "10", currency: "USD"),
-                                                    child: Text(
-                                                      "Add To My Inventory",
-                                                      style: TextStyle(
-                                                        color: constantColors
-                                                            .navButton,
-                                                      ),
-                                                    ),
-                                                  ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 );
                               },
@@ -919,307 +936,313 @@ class _VideoPostItemState extends State<VideoPostItem> {
                     isDismissible: false,
                     isScrollControlled: true,
                     builder: (context) {
-                      return Container(
-                        padding: EdgeInsets.symmetric(horizontal: 15),
-                        height: size.height * 0.5,
-                        width: size.width,
-                        decoration: BoxDecoration(
-                          color: constantColors.navButton,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
+                      return SafeArea(
+                        bottom: Platform.isAndroid ? true : false,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 15),
+                          height: size.height * 0.5,
+                          width: size.width,
+                          decoration: BoxDecoration(
+                            color: constantColors.navButton,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
                           ),
-                        ),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 150),
-                              child: Divider(
-                                thickness: 4,
-                                color: constantColors.whiteColor,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 150),
+                                child: Divider(
+                                  thickness: 4,
+                                  color: constantColors.whiteColor,
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              widget.video.videoType == "video"
-                                  ? "Items"
-                                  : "AR View Only Items",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
+                              SizedBox(
+                                height: 10,
                               ),
-                            ),
-                            Container(
-                              height: size.height * 0.3,
-                              width: size.width,
-                              child: StreamBuilder<QuerySnapshot>(
-                                  stream: FirebaseFirestore.instance
-                                      .collection("posts")
-                                      .doc(widget.video.id)
-                                      .collection("materials")
-                                      .snapshots(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      return ListView.builder(
-                                        itemCount: snapshot.data!.docs.length,
-                                        itemBuilder: (context, index) {
-                                          return snapshot.data!.docs[index]
-                                                      ["ownerId"] ==
-                                                  widget.video.useruid
-                                              ? ListTile(
-                                                  leading: Container(
-                                                    height: 40,
-                                                    width: 40,
-                                                    child: ImageNetworkLoader(
-                                                      imageUrl: snapshot.data!
-                                                          .docs[index]["gif"],
+                              Text(
+                                widget.video.videoType == "video"
+                                    ? "Items"
+                                    : "AR View Only Items",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Container(
+                                height: size.height * 0.3,
+                                width: size.width,
+                                child: StreamBuilder<QuerySnapshot>(
+                                    stream: FirebaseFirestore.instance
+                                        .collection("posts")
+                                        .doc(widget.video.id)
+                                        .collection("materials")
+                                        .snapshots(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        return ListView.builder(
+                                          itemCount: snapshot.data!.docs.length,
+                                          itemBuilder: (context, index) {
+                                            return snapshot.data!.docs[index]
+                                                        ["ownerId"] ==
+                                                    widget.video.useruid
+                                                ? ListTile(
+                                                    leading: Container(
+                                                      height: 40,
+                                                      width: 40,
+                                                      child: ImageNetworkLoader(
+                                                        imageUrl: snapshot.data!
+                                                            .docs[index]["gif"],
+                                                      ),
                                                     ),
-                                                  ),
-                                                  title: Text(
-                                                    "${snapshot.data!.docs[index]["layerType"]} by ${widget.video.username}",
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: Colors.white,
+                                                    title: Text(
+                                                      "${snapshot.data!.docs[index]["layerType"]} by ${widget.video.username}",
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.white,
+                                                      ),
                                                     ),
-                                                  ),
-                                                )
-                                              : ListTile(
-                                                  tileColor:
-                                                      constantColors.bioBg,
-                                                  trailing: Container(
-                                                    height: 50,
-                                                    width: 80,
-                                                    child: InkWell(
-                                                      onTap: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            PageTransition(
-                                                                child:
-                                                                    PostDetailsScreen(
-                                                                  videoId: snapshot
-                                                                          .data!
-                                                                          .docs[index]
-                                                                      [
-                                                                      "videoId"],
-                                                                ),
-                                                                type:
-                                                                    PageTransitionType
-                                                                        .fade));
-                                                      },
-                                                      child: Container(
-                                                        height: 50,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: Colors.black,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(20),
-                                                        ),
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            Container(
-                                                              child: Text(
-                                                                "Visit Owner",
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 12,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Colors
-                                                                      .white,
+                                                  )
+                                                : ListTile(
+                                                    tileColor:
+                                                        constantColors.bioBg,
+                                                    trailing: Container(
+                                                      height: 50,
+                                                      width: 80,
+                                                      child: InkWell(
+                                                        onTap: () {
+                                                          Navigator.push(
+                                                              context,
+                                                              PageTransition(
+                                                                  child:
+                                                                      PostDetailsScreen(
+                                                                    videoId: snapshot
+                                                                            .data!
+                                                                            .docs[index]
+                                                                        [
+                                                                        "videoId"],
+                                                                  ),
+                                                                  type: PageTransitionType
+                                                                      .fade));
+                                                        },
+                                                        child: Container(
+                                                          height: 50,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.black,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                          ),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Container(
+                                                                child: Text(
+                                                                  "Visit Owner",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                          ],
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  subtitle: Text(
-                                                    "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
-                                                  ),
-                                                  leading: Container(
-                                                    height: 40,
-                                                    width: 40,
-                                                    child: ImageNetworkLoader(
-                                                      imageUrl: snapshot.data!
-                                                          .docs[index]["gif"],
+                                                    subtitle: Text(
+                                                      "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
                                                     ),
-                                                  ),
-                                                  title: Text(
-                                                    "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",
+                                                    leading: Container(
+                                                      height: 40,
+                                                      width: 40,
+                                                      child: ImageNetworkLoader(
+                                                        imageUrl: snapshot.data!
+                                                            .docs[index]["gif"],
+                                                      ),
+                                                    ),
+                                                    title: Text(
+                                                      "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  );
+                                          },
+                                        );
+                                      } else {
+                                        return Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      }
+                                    }),
+                              ),
+                              Divider(
+                                color: constantColors.whiteColor,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: Row(
+                                  mainAxisAlignment: widget.video.isPaid
+                                      ? MainAxisAlignment.spaceBetween
+                                      : MainAxisAlignment.center,
+                                  children: [
+                                    widget.video.isPaid
+                                        ? widget.video.discountAmount == 0
+                                            ? Text(
+                                                "Total: \$${widget.video.price}",
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.white,
+                                                ),
+                                              )
+                                            : widget.video.discountAmount >=
+                                                        0 &&
+                                                    DateTime.now().isAfter((widget
+                                                            .video
+                                                            .startDiscountDate)
+                                                        .toDate()) &&
+                                                    DateTime.now().isBefore(
+                                                        (widget.video
+                                                                .endDiscountDate)
+                                                            .toDate())
+                                                ? Row(
+                                                    children: [
+                                                      Text(
+                                                        "Total: ",
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        " \$${widget.video.price}",
+                                                        style: TextStyle(
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .lineThrough,
+                                                          fontSize: 16,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        " \$${widget.video.price * (1 - widget.video.discountAmount / 100)}",
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          color: Colors.red,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
+                                                : Text(
+                                                    "Total: \$${widget.video.price}",
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                       color: Colors.white,
                                                     ),
-                                                  ),
-                                                );
-                                        },
-                                      );
-                                    } else {
-                                      return Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    }
-                                  }),
-                            ),
-                            Divider(
-                              color: constantColors.whiteColor,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: Row(
-                                mainAxisAlignment: widget.video.isPaid
-                                    ? MainAxisAlignment.spaceBetween
-                                    : MainAxisAlignment.center,
-                                children: [
-                                  widget.video.isPaid
-                                      ? widget.video.discountAmount == 0
-                                          ? Text(
-                                              "Total: \$${widget.video.price}",
+                                                  )
+                                        : Container(),
+                                    widget.video.isPaid
+                                        ? ElevatedButton(
+                                            style: ButtonStyle(
+                                              foregroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(Colors.white),
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                          Color>(
+                                                      constantColors.bioBg),
+                                              shape: MaterialStateProperty.all<
+                                                  RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                              ),
+                                            ),
+                                            onPressed: () async {
+                                              await selectPaymentOptionsSheet(
+                                                  ctx: context,
+                                                  firebaseOperations:
+                                                      firebaseOperations);
+                                            },
+                                            // paymentController.makePayment(
+                                            //     amount: "10", currency: "USD"),
+                                            child: Text(
+                                              "Purchase",
                                               style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.white,
-                                              ),
-                                            )
-                                          : widget.video.discountAmount >= 0 &&
-                                                  DateTime.now().isAfter((widget
-                                                          .video
-                                                          .startDiscountDate)
-                                                      .toDate()) &&
-                                                  DateTime.now().isBefore(
-                                                      (widget.video
-                                                              .endDiscountDate)
-                                                          .toDate())
-                                              ? Row(
-                                                  children: [
-                                                    Text(
-                                                      "Total: ",
-                                                      style: TextStyle(
-                                                        fontSize: 16,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      " \$${widget.video.price}",
-                                                      style: TextStyle(
-                                                        decoration:
-                                                            TextDecoration
-                                                                .lineThrough,
-                                                        fontSize: 16,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      " \$${widget.video.price * (1 - widget.video.discountAmount / 100)}",
-                                                      style: TextStyle(
-                                                        fontSize: 16,
-                                                        color: Colors.red,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                )
-                                              : Text(
-                                                  "Total: \$${widget.video.price}",
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                    color: Colors.white,
-                                                  ),
-                                                )
-                                      : Container(),
-                                  widget.video.isPaid
-                                      ? ElevatedButton(
-                                          style: ButtonStyle(
-                                            foregroundColor:
-                                                MaterialStateProperty.all<
-                                                    Color>(Colors.white),
-                                            backgroundColor:
-                                                MaterialStateProperty.all<
-                                                        Color>(
-                                                    constantColors.bioBg),
-                                            shape: MaterialStateProperty.all<
-                                                RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
+                                                color: constantColors.navButton,
                                               ),
                                             ),
-                                          ),
-                                          onPressed: () async {
-                                            await selectPaymentOptionsSheet(
+                                          )
+                                        : ElevatedButton(
+                                            style: ButtonStyle(
+                                              foregroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(Colors.white),
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                          Color>(
+                                                      constantColors.bioBg),
+                                              shape: MaterialStateProperty.all<
+                                                  RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                              ),
+                                            ),
+                                            onPressed: () async {
+                                              // ignore: unawaited_futures
+                                              CoolAlert.show(
+                                                context: context,
+                                                type: CoolAlertType.loading,
+                                                text:
+                                                    "Saving to your collection",
+                                                barrierDismissible: false,
+                                              );
+                                              await firebaseOperations
+                                                  .addToMyCollection(
+                                                videoOwnerId:
+                                                    widget.video.useruid,
+                                                videoItem: widget.video,
+                                                isFree: widget.video.isFree,
                                                 ctx: context,
-                                                firebaseOperations:
-                                                    firebaseOperations);
-                                          },
-                                          // paymentController.makePayment(
-                                          //     amount: "10", currency: "USD"),
-                                          child: Text(
-                                            "Purchase",
-                                            style: TextStyle(
-                                              color: constantColors.navButton,
-                                            ),
-                                          ),
-                                        )
-                                      : ElevatedButton(
-                                          style: ButtonStyle(
-                                            foregroundColor:
-                                                MaterialStateProperty.all<
-                                                    Color>(Colors.white),
-                                            backgroundColor:
-                                                MaterialStateProperty.all<
-                                                        Color>(
-                                                    constantColors.bioBg),
-                                            shape: MaterialStateProperty.all<
-                                                RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
+                                                videoId: widget.video.id,
+                                              );
+                                            },
+                                            // paymentController.makePayment(
+                                            //     amount: "10", currency: "USD"),
+                                            child: Text(
+                                              widget.video.videoType == "video"
+                                                  ? "Add to My Inventory"
+                                                  : "Add to AR View Collection",
+                                              style: TextStyle(
+                                                color: constantColors.navButton,
                                               ),
                                             ),
                                           ),
-                                          onPressed: () async {
-                                            // ignore: unawaited_futures
-                                            CoolAlert.show(
-                                              context: context,
-                                              type: CoolAlertType.loading,
-                                              text: "Saving to your collection",
-                                              barrierDismissible: false,
-                                            );
-                                            await firebaseOperations
-                                                .addToMyCollection(
-                                              videoOwnerId:
-                                                  widget.video.useruid,
-                                              videoItem: widget.video,
-                                              isFree: widget.video.isFree,
-                                              ctx: context,
-                                              videoId: widget.video.id,
-                                            );
-                                          },
-                                          // paymentController.makePayment(
-                                          //     amount: "10", currency: "USD"),
-                                          child: Text(
-                                            widget.video.videoType == "video"
-                                                ? "Add to My Inventory"
-                                                : "Add to AR View Collection",
-                                            style: TextStyle(
-                                              color: constantColors.navButton,
-                                            ),
-                                          ),
-                                        ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -1468,118 +1491,121 @@ class _VideoPostItemState extends State<VideoPostItem> {
       isScrollControlled: true,
       context: context,
       builder: (context) {
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 15),
-          height: size.height * 0.85,
-          width: size.width,
-          decoration: BoxDecoration(
-            color: constantColors.navButton,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+        return SafeArea(
+          bottom: Platform.isAndroid ? true : false,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            height: size.height * 0.85,
+            width: size.width,
+            decoration: BoxDecoration(
+              color: constantColors.navButton,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 150),
-                child: Divider(
-                  thickness: 4,
-                  color: constantColors.whiteColor,
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Report Video",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: constantColors.whiteColor,
                   ),
-                ],
-              ),
-              Divider(),
-              Text(
-                "Why are you reporting this post?",
-                style: TextStyle(
-                  color: constantColors.bioBg,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
                 ),
-              ),
-              Text(
-                "Your report is anonymous, except if you're reporting an intellectual property infringement. If someone is in immediate danger, call the local emergency services - dont wait.",
-                style: TextStyle(
-                  color: constantColors.bioBg,
-                  fontSize: 12,
+                SizedBox(
+                  height: 10,
                 ),
-                textAlign: TextAlign.justify,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Container(
-                  height: 60.h,
-                  width: 100.w,
-                  child: ListView.builder(
-                    itemCount: reportingReasons.length,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () async {
-                          await FirebaseOperations().reportVideo(
-                            video: widget.video,
-                            ctx: context,
-                            reason: reportingReasons[index],
-                          );
-                          Navigator.pop(context);
-                          Get.snackbar(
-                            'Video Reported',
-                            'Thank you for letting us know!',
-                            overlayColor: constantColors.navButton,
-                            colorText: constantColors.whiteColor,
-                            snackPosition: SnackPosition.TOP,
-                            forwardAnimationCurve: Curves.elasticInOut,
-                            reverseAnimationCurve: Curves.easeOut,
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            Divider(
-                              color: constantColors.bioBg,
-                              height: 0,
-                              thickness: 1,
-                            ),
-                            ListTile(
-                              trailing: Icon(
-                                Icons.arrow_forward_ios_rounded,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Report Video",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(),
+                Text(
+                  "Why are you reporting this post?",
+                  style: TextStyle(
+                    color: constantColors.bioBg,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                Text(
+                  "Your report is anonymous, except if you're reporting an intellectual property infringement. If someone is in immediate danger, call the local emergency services - dont wait.",
+                  style: TextStyle(
+                    color: constantColors.bioBg,
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.justify,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Container(
+                    height: 60.h,
+                    width: 100.w,
+                    child: ListView.builder(
+                      itemCount: reportingReasons.length,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () async {
+                            await FirebaseOperations().reportVideo(
+                              video: widget.video,
+                              ctx: context,
+                              reason: reportingReasons[index],
+                            );
+                            Navigator.pop(context);
+                            Get.snackbar(
+                              'Video Reported',
+                              'Thank you for letting us know!',
+                              overlayColor: constantColors.navButton,
+                              colorText: constantColors.whiteColor,
+                              snackPosition: SnackPosition.TOP,
+                              forwardAnimationCurve: Curves.elasticInOut,
+                              reverseAnimationCurve: Curves.easeOut,
+                            );
+                          },
+                          child: Column(
+                            children: [
+                              Divider(
+                                color: constantColors.bioBg,
+                                height: 0,
+                                thickness: 1,
                               ),
-                              title: Text(
-                                reportingReasons[index],
-                                style: TextStyle(
-                                  color: constantColors.bioBg,
-                                  fontSize: 14,
+                              ListTile(
+                                trailing: Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                ),
+                                title: Text(
+                                  reportingReasons[index],
+                                  style: TextStyle(
+                                    color: constantColors.bioBg,
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Divider(
-                              color: constantColors.bioBg,
-                              height: 0,
-                              thickness: 1,
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                              Divider(
+                                color: constantColors.bioBg,
+                                height: 0,
+                                thickness: 1,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

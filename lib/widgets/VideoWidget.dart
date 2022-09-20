@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
@@ -238,231 +239,235 @@ class VideoWidget extends StatelessWidget {
                             isDismissible: false,
                             isScrollControlled: true,
                             builder: (context) {
-                              return Container(
-                                padding: EdgeInsets.symmetric(horizontal: 15),
-                                height: size.height * 0.5,
-                                width: size.width,
-                                decoration: BoxDecoration(
-                                  color: constantColors.navButton,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    topRight: Radius.circular(20),
+                              return SafeArea(
+                                bottom: Platform.isAndroid ? true : false,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 15),
+                                  height: size.height * 0.5,
+                                  width: size.width,
+                                  decoration: BoxDecoration(
+                                    color: constantColors.navButton,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20),
+                                    ),
                                   ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 150),
-                                      child: Divider(
-                                        thickness: 4,
-                                        color: constantColors.whiteColor,
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 150),
+                                        child: Divider(
+                                          thickness: 4,
+                                          color: constantColors.whiteColor,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      video.videoType == "video"
-                                          ? "Items"
-                                          : "AR View Only Items",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
+                                      SizedBox(
+                                        height: 10,
                                       ),
-                                    ),
-                                    Container(
-                                      height: size.height * 0.3,
-                                      width: size.width,
-                                      child: StreamBuilder<QuerySnapshot>(
-                                          stream: FirebaseFirestore.instance
-                                              .collection("posts")
-                                              .doc(video.id)
-                                              .collection("materials")
-                                              .snapshots(),
-                                          builder: (context, snapshot) {
-                                            if (snapshot.hasData) {
-                                              return ListView.builder(
-                                                itemCount:
-                                                    snapshot.data!.docs.length,
-                                                itemBuilder: (context, index) {
-                                                  return snapshot.data!
-                                                                  .docs[index]
-                                                              ["ownerId"] ==
-                                                          video.useruid
-                                                      ? ListTile(
-                                                          leading: Container(
-                                                            height: 40,
-                                                            width: 40,
-                                                            child:
-                                                                ImageNetworkLoader(
-                                                              imageUrl: snapshot
-                                                                      .data!
-                                                                      .docs[
-                                                                  index]["gif"],
+                                      Text(
+                                        video.videoType == "video"
+                                            ? "Items"
+                                            : "AR View Only Items",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Container(
+                                        height: size.height * 0.3,
+                                        width: size.width,
+                                        child: StreamBuilder<QuerySnapshot>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection("posts")
+                                                .doc(video.id)
+                                                .collection("materials")
+                                                .snapshots(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return ListView.builder(
+                                                  itemCount: snapshot
+                                                      .data!.docs.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return snapshot.data!
+                                                                    .docs[index]
+                                                                ["ownerId"] ==
+                                                            video.useruid
+                                                        ? ListTile(
+                                                            leading: Container(
+                                                              height: 40,
+                                                              width: 40,
+                                                              child:
+                                                                  ImageNetworkLoader(
+                                                                imageUrl: snapshot
+                                                                        .data!
+                                                                        .docs[
+                                                                    index]["gif"],
+                                                              ),
                                                             ),
-                                                          ),
-                                                          title: Text(
-                                                            "${snapshot.data!.docs[index]["layerType"]} by ${video.username}",
-                                                            style: TextStyle(
-                                                              fontSize: 16,
-                                                              color:
-                                                                  Colors.white,
+                                                            title: Text(
+                                                              "${snapshot.data!.docs[index]["layerType"]} by ${video.username}",
+                                                              style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
                                                             ),
-                                                          ),
-                                                        )
-                                                      : ListTile(
-                                                          tileColor:
-                                                              constantColors
-                                                                  .bioBg,
-                                                          trailing: Container(
-                                                            height: 50,
-                                                            width: 80,
-                                                            child: InkWell(
-                                                              onTap: () {
-                                                                Navigator.push(
-                                                                    context,
-                                                                    PageTransition(
-                                                                        child:
-                                                                            PostDetailsScreen(
-                                                                          videoId: snapshot
-                                                                              .data!
-                                                                              .docs[index]["videoId"],
-                                                                        ),
-                                                                        type: PageTransitionType
-                                                                            .fade));
-                                                              },
-                                                              child: Container(
-                                                                height: 50,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              20),
-                                                                ),
-                                                                child: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .center,
-                                                                  children: [
+                                                          )
+                                                        : ListTile(
+                                                            tileColor:
+                                                                constantColors
+                                                                    .bioBg,
+                                                            trailing: Container(
+                                                              height: 50,
+                                                              width: 80,
+                                                              child: InkWell(
+                                                                onTap: () {
+                                                                  Navigator.push(
+                                                                      context,
+                                                                      PageTransition(
+                                                                          child: PostDetailsScreen(
+                                                                            videoId:
+                                                                                snapshot.data!.docs[index]["videoId"],
+                                                                          ),
+                                                                          type: PageTransitionType.fade));
+                                                                },
+                                                                child:
                                                                     Container(
-                                                                      child:
-                                                                          Text(
-                                                                        "Visit Owner",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          color:
-                                                                              Colors.white,
+                                                                  height: 50,
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            20),
+                                                                  ),
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      Container(
+                                                                        child:
+                                                                            Text(
+                                                                          "Visit Owner",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            color:
+                                                                                Colors.white,
+                                                                          ),
                                                                         ),
                                                                       ),
-                                                                    ),
-                                                                  ],
+                                                                    ],
+                                                                  ),
                                                                 ),
                                                               ),
                                                             ),
-                                                          ),
-                                                          subtitle: Text(
-                                                            "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
-                                                          ),
-                                                          leading: Container(
-                                                            height: 40,
-                                                            width: 40,
-                                                            child:
-                                                                ImageNetworkLoader(
-                                                              imageUrl: snapshot
-                                                                      .data!
-                                                                      .docs[
-                                                                  index]["gif"],
+                                                            subtitle: Text(
+                                                              "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
                                                             ),
-                                                          ),
-                                                          title: Text(
-                                                            "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",
-                                                            style: TextStyle(
-                                                              fontSize: 16,
-                                                              color:
-                                                                  Colors.white,
+                                                            leading: Container(
+                                                              height: 40,
+                                                              width: 40,
+                                                              child:
+                                                                  ImageNetworkLoader(
+                                                                imageUrl: snapshot
+                                                                        .data!
+                                                                        .docs[
+                                                                    index]["gif"],
+                                                              ),
                                                             ),
-                                                          ),
-                                                        );
-                                                },
-                                              );
-                                            } else {
-                                              return Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              );
-                                            }
-                                          }),
-                                    ),
-                                    Divider(
-                                      color: constantColors.whiteColor,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 10),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          ElevatedButton(
-                                            style: ButtonStyle(
-                                              foregroundColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(Colors.white),
-                                              backgroundColor:
-                                                  MaterialStateProperty.all<
-                                                          Color>(
-                                                      constantColors.bioBg),
-                                              shape: MaterialStateProperty.all<
-                                                  RoundedRectangleBorder>(
-                                                RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
+                                                            title: Text(
+                                                              "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",
+                                                              style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          );
+                                                  },
+                                                );
+                                              } else {
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                );
+                                              }
+                                            }),
+                                      ),
+                                      Divider(
+                                        color: constantColors.whiteColor,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 10),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            ElevatedButton(
+                                              style: ButtonStyle(
+                                                foregroundColor:
+                                                    MaterialStateProperty.all<
+                                                        Color>(Colors.white),
+                                                backgroundColor:
+                                                    MaterialStateProperty.all<
+                                                            Color>(
+                                                        constantColors.bioBg),
+                                                shape:
+                                                    MaterialStateProperty.all<
+                                                        RoundedRectangleBorder>(
+                                                  RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                  ),
+                                                ),
+                                              ),
+                                              onPressed: () async {
+                                                // ignore: unawaited_futures
+                                                CoolAlert.show(
+                                                  context: context,
+                                                  type: CoolAlertType.loading,
+                                                  text:
+                                                      "Saving to your collection",
+                                                  barrierDismissible: false,
+                                                );
+                                                await firebaseOperations
+                                                    .addToMyCollection(
+                                                  videoOwnerId: video.useruid,
+                                                  videoItem: video,
+                                                  isFree: video.isFree,
+                                                  ctx: context,
+                                                  videoId: video.id,
+                                                );
+                                              },
+                                              // paymentController.makePayment(
+                                              //     amount: "10", currency: "USD"),
+                                              child: Text(
+                                                video.videoType == "video"
+                                                    ? "Add to My Inventory"
+                                                    : "Add to AR View Collection",
+                                                style: TextStyle(
+                                                  color:
+                                                      constantColors.navButton,
                                                 ),
                                               ),
                                             ),
-                                            onPressed: () async {
-                                              // ignore: unawaited_futures
-                                              CoolAlert.show(
-                                                context: context,
-                                                type: CoolAlertType.loading,
-                                                text:
-                                                    "Saving to your collection",
-                                                barrierDismissible: false,
-                                              );
-                                              await firebaseOperations
-                                                  .addToMyCollection(
-                                                videoOwnerId: video.useruid,
-                                                videoItem: video,
-                                                isFree: video.isFree,
-                                                ctx: context,
-                                                videoId: video.id,
-                                              );
-                                            },
-                                            // paymentController.makePayment(
-                                            //     amount: "10", currency: "USD"),
-                                            child: Text(
-                                              video.videoType == "video"
-                                                  ? "Add to My Inventory"
-                                                  : "Add to AR View Collection",
-                                              style: TextStyle(
-                                                color: constantColors.navButton,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               );
                             },
