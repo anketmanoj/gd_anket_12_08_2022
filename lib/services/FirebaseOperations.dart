@@ -848,7 +848,7 @@ class FirebaseOperations with ChangeNotifier {
     Timestamp? startDiscountDate,
     Timestamp? endDiscountDate,
     required List<String?> genre,
-    required File thumbnailFile,
+    required String coverThumbnailUrl,
     List<ARList>? arListVal,
     required BuildContext ctx,
     required bool addBgToMaterials,
@@ -904,15 +904,6 @@ class FirebaseOperations with ChangeNotifier {
           notifyListeners();
         });
       }
-
-      final String? packageThumbnailUrl = await AwsAnketS3.uploadFile(
-          accessKey: "AKIATF76MVYR34JAVB7H",
-          secretKey: "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",
-          bucket: "anketvideobucket",
-          file: thumbnailFile,
-          filename: "${Timestamp.now().millisecondsSinceEpoch}thumbnailGif.gif",
-          region: "us-east-1",
-          destDir: "${Timestamp.now().millisecondsSinceEpoch}");
 
       await AwsAnketS3.uploadFile(
               accessKey: "AKIATF76MVYR34JAVB7H",
@@ -1003,7 +994,7 @@ class FirebaseOperations with ChangeNotifier {
         "timestamp": Timestamp.now(),
         "username": initUserName,
         "userimage": initUserImage,
-        "thumbnailurl": packageThumbnailUrl,
+        "thumbnailurl": coverThumbnailUrl,
         "isfree": isFree,
         "ispaid": isPaid,
         "issubscription": isSubscription,

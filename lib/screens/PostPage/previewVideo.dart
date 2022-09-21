@@ -735,8 +735,23 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
 
                               log("now");
 
+                              String? coverThumbnail = await AwsAnketS3.uploadFile(
+                                  accessKey: "AKIATF76MVYR34JAVB7H",
+                                  secretKey:
+                                      "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",
+                                  bucket: "anketvideobucket",
+                                  file: widget.thumbnailFile,
+                                  filename:
+                                      "${Timestamp.now().millisecondsSinceEpoch}_bgThumbnailGif.gif",
+                                  region: "us-east-1",
+                                  destDir:
+                                      "${Timestamp.now().millisecondsSinceEpoch}");
+
+                              log("thumbnail == $coverThumbnail");
+
                               final bool result =
                                   await firebaseOperations.uploadVideo(
+                                coverThumbnailUrl: coverThumbnail!,
                                 addBgToMaterials: bgSelected.value,
                                 ctx: context,
                                 backgroundVideoFile:
@@ -745,7 +760,6 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                     .where((element) =>
                                         element.selectedMaterial!.value == true)
                                     .toList(),
-                                thumbnailFile: widget.thumbnailFile,
                                 videoFile: widget.videoFile,
                                 userUid: auth.getUserId,
                                 caption: _videoCaptionController.text,

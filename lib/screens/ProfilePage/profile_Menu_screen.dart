@@ -398,6 +398,71 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   text: "Post Recommendations",
                 ),
 
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () async {
+                //     // ! For materails inside post
+                //     // await FirebaseFirestore.instance
+                //     //     .collection("posts")
+                //     //     .get()
+                //     //     .then((value) => value.docs.forEach((element) async {
+                //     //           await FirebaseFirestore.instance
+                //     //               .collection("posts")
+                //     //               .doc(element.id)
+                //     //               .collection("materials")
+                //     //               .get()
+                //     //               .then((matvalue) => matvalue.docs
+                //     //                       .forEach((materialElement) async {
+                //     //                     await FirebaseFirestore.instance
+                //     //                         .collection("posts")
+                //     //                         .doc(element.id)
+                //     //                         .collection("materials")
+                //     //                         .doc(materialElement.id)
+                //     //                         .update({"hideItem": false});
+                //     //                   }));
+                //     //         }));
+
+                //     // ! For materails inside mycollection of user
+                //     // await FirebaseFirestore.instance
+                //     //     .collection("users")
+                //     //     .get()
+                //     //     .then((value) => value.docs.forEach((element) async {
+                //     //           await FirebaseFirestore.instance
+                //     //               .collection("users")
+                //     //               .doc(element.id)
+                //     //               .collection("MyCollection")
+                //     //               .get()
+                //     //               .then((collectionVal) => collectionVal.docs
+                //     //                       .forEach((colElement) async {
+                //     //                     await FirebaseFirestore.instance
+                //     //                         .collection("users")
+                //     //                         .doc(element.id)
+                //     //                         .collection("MyCollection")
+                //     //                         .doc(colElement.id)
+                //     //                         .get()
+                //     //                         .then((materialItem) async {
+                //     //                       if (materialItem
+                //     //                           .data()!
+                //     //                           .containsKey("layerType")) {
+                //     //                         log("here");
+                //     //                         await FirebaseFirestore.instance
+                //     //                             .collection("users")
+                //     //                             .doc(element.id)
+                //     //                             .collection("MyCollection")
+                //     //                             .doc(colElement.id)
+                //     //                             .update({"hideItem": false});
+                //     //                       }
+                //     //                     });
+                //     //                   }));
+                //     //         }));
+
+                //     log("Done updating users collection as well now");
+                //   },
+                //   leadingIcon: Icons.recommend_outlined,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "Post This",
+                // ),
+
                 Consumer<CaratProvider>(builder: (context, carats, _) {
                   return ListTileOption(
                     constantColors: constantColors,
@@ -518,22 +583,22 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "Monitisation",
                 ),
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                          child: GiphyTest(
-                            title: "Giphy",
-                          ),
-                          type: PageTransitionType.rightToLeft),
-                    );
-                  },
-                  leadingIcon: FontAwesomeIcons.dollarSign,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: "giphy",
-                ),
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () {
+                //     Navigator.push(
+                //       context,
+                //       PageTransition(
+                //           child: GiphyTest(
+                //             title: "Giphy",
+                //           ),
+                //           type: PageTransitionType.rightToLeft),
+                //     );
+                //   },
+                //   leadingIcon: FontAwesomeIcons.dollarSign,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "giphy",
+                // ),
                 // ! fix all usage error
                 // ListTileOption(
                 //   constantColors: constantColors,

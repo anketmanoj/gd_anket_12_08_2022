@@ -77,27 +77,13 @@ class VideoCreationOptionsScreen extends StatelessWidget {
 
   Future<File?> _pickArVideo(
       {required BuildContext context, required ImageSource source}) async {
-    if (source == ImageSource.gallery) {
-      FilePickerResult? file = await FilePicker.platform.pickFiles(
-        type: FileType.video,
-        withData: true,
-      );
-
-      if (file != null) {
-        log("filename == ${file.files.single.path!}");
-        return File(file.files.single.path!);
-      } else {
-        return null;
-      }
+    final XFile? file = await _picker.pickVideo(
+      source: source,
+    );
+    if (file != null) {
+      return File(file.path);
     } else {
-      final XFile? file = await _picker.pickVideo(
-        source: source,
-      );
-      if (file != null) {
-        return File(file.path);
-      } else {
-        return null;
-      }
+      return null;
     }
   }
 
