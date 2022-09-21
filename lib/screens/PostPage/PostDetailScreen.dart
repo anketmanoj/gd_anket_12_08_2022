@@ -516,6 +516,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                     .collection("posts")
                                                     .doc(video!.id)
                                                     .collection("materials")
+                                                    .where("hideItem",
+                                                        isEqualTo: false)
                                                     .snapshots(),
                                                 builder: (context, snapshot) {
                                                   if (snapshot.hasData) {

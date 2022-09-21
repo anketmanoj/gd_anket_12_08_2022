@@ -412,6 +412,8 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                                   .collection("posts")
                                                   .doc(widget.video.id)
                                                   .collection("materials")
+                                                  .where("hideItem",
+                                                      isEqualTo: false)
                                                   .snapshots(),
                                               builder: (context, snapshot) {
                                                 if (snapshot.hasData) {
@@ -979,6 +981,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                         .collection("posts")
                                         .doc(widget.video.id)
                                         .collection("materials")
+                                        .where("hideItem", isEqualTo: false)
                                         .snapshots(),
                                     builder: (context, snapshot) {
                                       if (snapshot.hasData) {

@@ -2472,145 +2472,157 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     return showBottomSheet(
         context: context,
         builder: (context) {
-          return Container(
-            height: size.height * 0.5,
-            width: size.width,
-            decoration: BoxDecoration(
-              color: constantColors.navButton,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 150),
-                  child: Divider(
-                    thickness: 4,
-                    color: constantColors.whiteColor,
+          return ValueListenableBuilder(
+              valueListenable: arIndexVal,
+              builder: (context, arIndex, _) {
+                return Container(
+                  height: size.height * 0.5,
+                  width: size.width,
+                  decoration: BoxDecoration(
+                    color: constantColors.navButton,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: FutureBuilder<QuerySnapshot>(
-                        future: FirebaseFirestore.instance
-                            .collection("users")
-                            // .doc("ijdI08UkGadVifmUcvS2KPjmuAE2")
-                            .doc(Provider.of<Authentication>(context,
-                                    listen: false)
-                                .getUserId)
-                            .collection("MyCollection")
-                            .where("layerType", isEqualTo: "AR")
-                            .where("usage", isEqualTo: "Material")
-                            .get(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 150),
+                        child: Divider(
+                          thickness: 4,
+                          color: constantColors.whiteColor,
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: FutureBuilder<QuerySnapshot>(
+                              future: FirebaseFirestore.instance
+                                  .collection("users")
+                                  // .doc("ijdI08UkGadVifmUcvS2KPjmuAE2")
+                                  .doc(Provider.of<Authentication>(context,
+                                          listen: false)
+                                      .getUserId)
+                                  .collection("MyCollection")
+                                  .where("layerType", isEqualTo: "AR")
+                                  .where("usage", isEqualTo: "Material")
+                                  .get(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
 
-                          if (snapshot.data!.docs.isEmpty) {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "No AR Materials have been created yet",
-                                  softWrap: true,
-                                  style: TextStyle(
-                                    color: constantColors.whiteColor,
+                                if (snapshot.data!.docs.isEmpty) {
+                                  return Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "No AR Materials have been created yet",
+                                        softWrap: true,
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        "To create your first Material AR:",
+                                        softWrap: true,
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        "AR Options > Select Video > Submit as Material",
+                                        softWrap: true,
+                                        style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }
+
+                                return GridView.builder(
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 5,
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  "To create your first Material AR:",
-                                  softWrap: true,
-                                  style: TextStyle(
-                                    color: constantColors.whiteColor,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  "AR Options > Select Video > Submit as Material",
-                                  softWrap: true,
-                                  style: TextStyle(
-                                    color: constantColors.whiteColor,
-                                  ),
-                                ),
-                              ],
-                            );
-                          }
+                                  itemCount: snapshot.data!.docs.length,
+                                  itemBuilder: (context, index) {
+                                    var myArCollectionSnap =
+                                        snapshot.data!.docs[index];
+                                    MyArCollection myArCollection =
+                                        MyArCollection.fromJson(
+                                            snapshot.data!.docs[index].data()
+                                                as Map<String, dynamic>);
 
-                          return GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 5,
-                            ),
-                            itemCount: snapshot.data!.docs.length,
-                            itemBuilder: (context, index) {
-                              var myArCollectionSnap =
-                                  snapshot.data!.docs[index];
-                              MyArCollection myArCollection =
-                                  MyArCollection.fromJson(
-                                      snapshot.data!.docs[index].data()
-                                          as Map<String, dynamic>);
+                                    return InkWell(
+                                      onTap: () async {
+                                        dev.log("arIndexVal = ${arIndex}");
 
-                              return InkWell(
-                                onTap: () async {
-                                  setState(() {
-                                    arIndexVal.value = list.value
-                                        .where((element) =>
-                                            element.layerType == LayerType.AR)
-                                        .length;
-                                  });
+                                        if (arIndexVal.value <= 1) {
+                                          if (list.value.isNotEmpty) {
+                                            list.value.last.layerType ==
+                                                    LayerType.AR
+                                                ? indexCounter.value =
+                                                    indexCounter.value + 2
+                                                : indexCounter.value =
+                                                    indexCounter.value + 1;
+                                          }
 
-                                  if (arIndexVal.value <= 2) {
-                                    if (list.value.isNotEmpty) {
-                                      list.value.last.layerType == LayerType.AR
-                                          ? indexCounter.value =
-                                              indexCounter.value + 2
-                                          : indexCounter.value =
-                                              indexCounter.value + 1;
-                                    }
+                                          await runFFmpegCommand(
+                                            arVal: indexCounter.value,
+                                            myAr: myArCollection,
+                                          );
 
-                                    await runFFmpegCommand(
-                                      arVal: indexCounter.value,
-                                      myAr: myArCollection,
+                                          setState(() {
+                                            arIndexVal.value = list.value
+                                                .where((element) =>
+                                                    element.layerType ==
+                                                    LayerType.AR)
+                                                .length;
+                                          });
+
+                                          dev.log(
+                                              "list AR ${arIndexVal.value}");
+                                        } else {
+                                          CoolAlert.show(
+                                            context: context,
+                                            type: CoolAlertType.info,
+                                            title: "Max AR's Reached",
+                                            text: "You can only have 2 AR's",
+                                          );
+                                        }
+                                      },
+                                      child: Container(
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          child: ImageNetworkLoader(
+                                              imageUrl: myArCollection.gif),
+                                        ),
+                                      ),
                                     );
-                                  } else {
-                                    CoolAlert.show(
-                                      context: context,
-                                      type: CoolAlertType.info,
-                                      title: "Max AR's Reached",
-                                      text: "You can only have 2 AR's",
-                                    );
-                                  }
-                                },
-                                child: Container(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: ImageNetworkLoader(
-                                        imageUrl: myArCollection.gif),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        }),
+                                  },
+                                );
+                              }),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          );
+                );
+              });
         });
   }
 

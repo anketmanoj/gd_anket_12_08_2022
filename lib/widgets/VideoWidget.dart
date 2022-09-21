@@ -282,6 +282,8 @@ class VideoWidget extends StatelessWidget {
                                                 .collection("posts")
                                                 .doc(video.id)
                                                 .collection("materials")
+                                                .where("hideItem",
+                                                    isEqualTo: false)
                                                 .snapshots(),
                                             builder: (context, snapshot) {
                                               if (snapshot.hasData) {

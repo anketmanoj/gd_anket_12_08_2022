@@ -1,6 +1,7 @@
 // ignore_for_file: unawaited_futures, avoid_catches_without_on_clauses
 
 import 'dart:developer';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
@@ -40,7 +41,7 @@ class _EditPreviewVideoScreenState extends State<EditPreviewVideoScreen> {
   bool _isFree = true;
   bool _isSubscription = false;
   bool _isPaid = false;
-  late List<ARList> selectMaterials;
+
   ValueNotifier<bool> bgSelected = ValueNotifier<bool>(true);
 
   List<String?> _selectedRecommendedOptions = [];
@@ -292,160 +293,405 @@ class _EditPreviewVideoScreenState extends State<EditPreviewVideoScreen> {
                         ),
                       ),
                     ),
-                    // NewDivider(constantColors: constantColors),
-                    // Container(
-                    //   color: constantColors.navButton,
-                    //   height: 35,
-                    //   child: Row(
-                    //     children: [
-                    //       Padding(
-                    //         padding:
-                    //             const EdgeInsets.symmetric(horizontal: 8.0),
-                    //         child: Text(
-                    //           "Add / Remove Materials",
-                    //           style: TextStyle(
-                    //             color: constantColors.whiteColor,
-                    //             fontSize: 15,
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    // ValueListenableBuilder<bool>(
-                    //     valueListenable: bgSelected,
-                    //     builder: (context, bgVal, _) {
-                    //       return ListView.builder(
-                    //         physics: NeverScrollableScrollPhysics(),
-                    //         shrinkWrap: true,
-                    //         itemCount: selectMaterials.length,
-                    //         itemBuilder: (context, index) {
-                    //           return ValueListenableBuilder<bool>(
-                    //               valueListenable:
-                    //                   selectMaterials[index].selectedMaterial!,
-                    //               builder: (context, selected, _) {
-                    //                 switch (index) {
-                    //                   case 0:
-                    //                     return Column(
-                    //                       children: [
-                    //                         ListTile(
-                    //                           trailing: Switch(
-                    //                             activeColor:
-                    //                                 constantColors.navButton,
-                    //                             value: bgVal,
-                    //                             onChanged: (val) {
-                    //                               bgSelected.value = val;
-                    //                             },
-                    //                           ),
-                    //                           // leading: Container(
-                    //                           //   height: 50,
-                    //                           //   width: 50,
-                    //                           //   child: Image.file(
-                    //                           //       bgMaterialThumnailFile!),
-                    //                           // ),
-                    //                           title: Text(
-                    //                             "Background",
-                    //                           ),
-                    //                         ),
-                    //                         ListTile(
-                    //                           trailing: Switch(
-                    //                             activeColor:
-                    //                                 constantColors.navButton,
-                    //                             value: selected,
-                    //                             onChanged: (val) {
-                    //                               selectMaterials[index]
-                    //                                   .selectedMaterial!
-                    //                                   .value = val;
+                    NewDivider(constantColors: constantColors),
+                    Container(
+                      color: constantColors.navButton,
+                      height: 35,
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              "Show / Hide Materials",
+                              style: TextStyle(
+                                color: constantColors.whiteColor,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    FutureBuilder<QuerySnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection("posts")
+                          .doc(widget.videoFile.id)
+                          .collection("materials")
+                          .where("videoId", isEqualTo: widget.videoFile.id)
+                          .get(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
 
-                    //                               log(selectMaterials
-                    //                                   .where((element) =>
-                    //                                       element
-                    //                                           .selectedMaterial!
-                    //                                           .value ==
-                    //                                       true)
-                    //                                   .toList()
-                    //                                   .length
-                    //                                   .toString());
-                    //                             },
-                    //                           ),
-                    //                           leading: selectMaterials[index]
-                    //                                       .layerType ==
-                    //                                   LayerType.AR
-                    //                               ? Container(
-                    //                                   height: 50,
-                    //                                   width: 50,
-                    //                                   child: Image.network(
-                    //                                       selectMaterials[index]
-                    //                                           .pathsForVideoFrames![0]),
-                    //                                 )
-                    //                               : Container(
-                    //                                   height: 50,
-                    //                                   width: 50,
-                    //                                   child: Image.file(File(
-                    //                                       selectMaterials[index]
-                    //                                           .gifFilePath!)),
-                    //                                 ),
-                    //                           title: Text(
-                    //                             selectMaterials[index]
-                    //                                         .layerType ==
-                    //                                     LayerType.AR
-                    //                                 ? "AR Cut out"
-                    //                                 : "Effect Added",
-                    //                           ),
-                    //                         ),
-                    //                       ],
-                    //                     );
+                        if (!snapshot.hasData) {
+                          return Center(
+                            child: Text("No Materails To Add / Remove"),
+                          );
+                        }
+                        return ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            final ValueNotifier<bool> hideItem =
+                                ValueNotifier<bool>(false);
 
-                    //                   default:
-                    //                     return ListTile(
-                    //                       trailing: Switch(
-                    //                         activeColor:
-                    //                             constantColors.navButton,
-                    //                         value: selected,
-                    //                         onChanged: (val) {
-                    //                           selectMaterials[index]
-                    //                               .selectedMaterial!
-                    //                               .value = val;
+                            if ((snapshot.data!.docs[index].data()
+                                    as Map<String, dynamic>)
+                                .containsKey("hideItem")) {
+                              hideItem.value =
+                                  snapshot.data!.docs[index]['hideItem'];
+                            }
 
-                    //                           log(selectMaterials
-                    //                               .where((element) =>
-                    //                                   element.selectedMaterial!
-                    //                                       .value ==
-                    //                                   true)
-                    //                               .toList()
-                    //                               .length
-                    //                               .toString());
-                    //                         },
-                    //                       ),
-                    //                       leading: selectMaterials[index]
-                    //                                   .layerType ==
-                    //                               LayerType.AR
-                    //                           ? Container(
-                    //                               height: 50,
-                    //                               width: 50,
-                    //                               child: Image.network(
-                    //                                   selectMaterials[index]
-                    //                                       .pathsForVideoFrames![0]),
-                    //                             )
-                    //                           : Container(
-                    //                               height: 50,
-                    //                               width: 50,
-                    //                               child: Image.file(File(
-                    //                                   selectMaterials[index]
-                    //                                       .gifFilePath!)),
-                    //                             ),
-                    //                       title: Text(
-                    //                         selectMaterials[index].layerType ==
-                    //                                 LayerType.AR
-                    //                             ? "AR Cut out"
-                    //                             : "Effect Added",
-                    //                       ),
-                    //                     );
-                    //                 }
-                    //               });
-                    //         },
-                    //       );
-                    //     }),
+                            log("usage types = ${snapshot.data!.docs[index]['layerType']}");
+
+                            switch (snapshot.data!.docs[index]['layerType']) {
+                              case "Background":
+                                return ValueListenableBuilder(
+                                    valueListenable: hideItem,
+                                    builder: (context, val, _) {
+                                      return ListTile(
+                                        trailing: Switch(
+                                          activeColor: constantColors.navButton,
+                                          value: hideItem.value,
+                                          onChanged: (val) async {
+                                            hideItem.value = val;
+                                            Get.dialog(
+                                              SimpleDialog(
+                                                backgroundColor:
+                                                    constantColors.whiteColor,
+                                                title: Text(
+                                                  "Updating Hide to ${val.toString().capitalizeFirst}",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    color: constantColors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                              barrierDismissible: false,
+                                            );
+                                            await firebaseOperations
+                                                .hideUnhideItem(
+                                                    videoId:
+                                                        widget.videoFile.id,
+                                                    itemId: snapshot
+                                                        .data!.docs[index].id,
+                                                    hideVal: val);
+                                            Get.back();
+                                            Get.dialog(
+                                              SimpleDialog(
+                                                backgroundColor:
+                                                    constantColors.whiteColor,
+                                                title: Text(
+                                                  "Item hide value updated to ${val}",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    color: constantColors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        leading: Container(
+                                          height: 50,
+                                          width: 50,
+                                          child: Image.network(snapshot
+                                              .data!.docs[index]['gif']),
+                                        ),
+                                        title: Text(
+                                          "Background",
+                                        ),
+                                      );
+                                    });
+                              case "Effect":
+                                return ValueListenableBuilder(
+                                    valueListenable: hideItem,
+                                    builder: (context, val, _) {
+                                      return ListTile(
+                                        trailing: Switch(
+                                          activeColor: constantColors.navButton,
+                                          value: hideItem.value,
+                                          onChanged: (val) async {
+                                            hideItem.value = val;
+                                            Get.dialog(
+                                              SimpleDialog(
+                                                backgroundColor:
+                                                    constantColors.whiteColor,
+                                                title: Text(
+                                                  "Updating Hide to ${val.toString().capitalizeFirst}",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    color: constantColors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                              barrierDismissible: false,
+                                            );
+                                            await firebaseOperations
+                                                .hideUnhideItem(
+                                                    videoId:
+                                                        widget.videoFile.id,
+                                                    itemId: snapshot
+                                                        .data!.docs[index].id,
+                                                    hideVal: val);
+                                            Get.back();
+                                            Get.dialog(
+                                              SimpleDialog(
+                                                backgroundColor:
+                                                    constantColors.whiteColor,
+                                                title: Text(
+                                                  "Item hide value updated to ${val}",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    color: constantColors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        leading: Container(
+                                          height: 50,
+                                          width: 50,
+                                          child: Image.network(snapshot
+                                              .data!.docs[index]['gif']),
+                                        ),
+                                        title: Text(
+                                          "Effect",
+                                        ),
+                                      );
+                                    });
+                              case "AR":
+                                switch (snapshot.data!.docs[index]['usage']) {
+                                  case "Material":
+                                    return ValueListenableBuilder(
+                                        valueListenable: hideItem,
+                                        builder: (context, val, _) {
+                                          return ListTile(
+                                            trailing: Switch(
+                                              activeColor:
+                                                  constantColors.navButton,
+                                              value: hideItem.value,
+                                              onChanged: (val) async {
+                                                hideItem.value = val;
+                                                Get.dialog(
+                                                  SimpleDialog(
+                                                    backgroundColor:
+                                                        constantColors
+                                                            .whiteColor,
+                                                    title: Text(
+                                                      "Updating Hide to ${val.toString().capitalizeFirst}",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .black,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  barrierDismissible: false,
+                                                );
+                                                await firebaseOperations
+                                                    .hideUnhideItem(
+                                                        videoId:
+                                                            widget.videoFile.id,
+                                                        itemId: snapshot.data!
+                                                            .docs[index].id,
+                                                        hideVal: val);
+                                                Get.back();
+                                                Get.dialog(
+                                                  SimpleDialog(
+                                                    backgroundColor:
+                                                        constantColors
+                                                            .whiteColor,
+                                                    title: Text(
+                                                      "Item hide value updated to ${val}",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .black,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                            leading: Container(
+                                              height: 50,
+                                              width: 50,
+                                              child: Image.network(snapshot
+                                                  .data!.docs[index]['gif']),
+                                            ),
+                                            title: Text(
+                                              "AR (Material)",
+                                            ),
+                                          );
+                                        });
+
+                                  case "Ar View Only":
+                                    return ValueListenableBuilder(
+                                        valueListenable: hideItem,
+                                        builder: (context, val, _) {
+                                          return ListTile(
+                                            trailing: Switch(
+                                              activeColor:
+                                                  constantColors.navButton,
+                                              value: hideItem.value,
+                                              onChanged: (val) async {
+                                                hideItem.value = val;
+                                                Get.dialog(
+                                                  SimpleDialog(
+                                                    backgroundColor:
+                                                        constantColors
+                                                            .whiteColor,
+                                                    title: Text(
+                                                      "Updating Hide to ${val.toString().capitalizeFirst}",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .black,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  barrierDismissible: false,
+                                                );
+                                                await firebaseOperations
+                                                    .hideUnhideItem(
+                                                        videoId:
+                                                            widget.videoFile.id,
+                                                        itemId: snapshot.data!
+                                                            .docs[index].id,
+                                                        hideVal: val);
+                                                Get.back();
+                                                Get.dialog(
+                                                  SimpleDialog(
+                                                    backgroundColor:
+                                                        constantColors
+                                                            .whiteColor,
+                                                    title: Text(
+                                                      "Item hide value updated to ${val}",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .black,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                            leading: Container(
+                                              height: 50,
+                                              width: 50,
+                                              child: Image.network(snapshot
+                                                  .data!.docs[index]['gif']),
+                                            ),
+                                            title: Text(
+                                              "AR (Ar View Only)",
+                                            ),
+                                          );
+                                        });
+
+                                  default:
+                                    return ValueListenableBuilder(
+                                        valueListenable: hideItem,
+                                        builder: (context, val, _) {
+                                          return ListTile(
+                                            trailing: Switch(
+                                              activeColor:
+                                                  constantColors.navButton,
+                                              value: hideItem.value,
+                                              onChanged: (val) async {
+                                                hideItem.value = val;
+                                                Get.dialog(
+                                                  SimpleDialog(
+                                                    backgroundColor:
+                                                        constantColors
+                                                            .whiteColor,
+                                                    title: Text(
+                                                      "Updating Hide to ${val.toString().capitalizeFirst}",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .black,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  barrierDismissible: false,
+                                                );
+                                                await firebaseOperations
+                                                    .hideUnhideItem(
+                                                        videoId:
+                                                            widget.videoFile.id,
+                                                        itemId: snapshot.data!
+                                                            .docs[index].id,
+                                                        hideVal: val);
+                                                Get.back();
+                                                Get.dialog(
+                                                  SimpleDialog(
+                                                    backgroundColor:
+                                                        constantColors
+                                                            .whiteColor,
+                                                    title: Text(
+                                                      "Item hide value updated to ${val}",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .black,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                            leading: Container(
+                                              height: 50,
+                                              width: 50,
+                                              child: Image.network(snapshot
+                                                  .data!.docs[index]['gif']),
+                                            ),
+                                            title: Text(
+                                              "AR",
+                                            ),
+                                          );
+                                        });
+                                }
+
+                              default:
+                                return ListTile(
+                                  trailing: Switch(
+                                    activeColor: constantColors.navButton,
+                                    value: hideItem.value,
+                                    onChanged: (val) {
+                                      hideItem.value = val;
+                                    },
+                                  ),
+                                  leading: Container(
+                                    height: 50,
+                                    width: 50,
+                                    child: Image.network(
+                                        snapshot.data!.docs[index]['gif']),
+                                  ),
+                                  title: Text(
+                                    "Background",
+                                  ),
+                                );
+                            }
+                          },
+                        );
+                      },
+                    ),
                     NewDivider(constantColors: constantColors),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
