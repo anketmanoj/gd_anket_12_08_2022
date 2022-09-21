@@ -818,6 +818,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                               snapshot.data!.docs[index].data()
                                   as Map<String, dynamic>);
 
+                          log(video.thumbnailurl);
                           return InkWell(
                             onTap: () {
                               if (video.isFree == true) {
@@ -884,8 +885,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                               child: Container(
                                 color: Colors.grey,
                                 child: ImageNetworkLoader(
-                                    imageUrl: snapshot.data!.docs[index]
-                                        ["thumbnailurl"],
+                                    imageUrl: video.thumbnailurl,
                                     hide: video.isFree ||
                                             video.boughtBy.contains(context
                                                 .read<Authentication>()

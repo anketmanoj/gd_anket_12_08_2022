@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/caratsProvider.dart';
+import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
 import 'package:diamon_rose_app/screens/Admin/set_user_data_admin.dart';
 import 'package:diamon_rose_app/screens/Admin/upload_video_screen.dart';
 import 'package:diamon_rose_app/screens/ArPreviewSetting/ArPreviewScreen.dart';
@@ -31,6 +32,7 @@ import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/adminUserModels.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
 import 'package:diamon_rose_app/services/dbService.dart';
 import 'package:diamon_rose_app/services/dynamic_link_service.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
@@ -38,6 +40,7 @@ import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/apple_pay.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:ffmpeg_kit_flutter_https_gpl/ffmpeg_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +48,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pay/pay.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -519,6 +523,82 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "Diamond Histroy",
                 ),
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () async {
+                //     List<Video> videoList = [];
+                //     await FirebaseFirestore.instance
+                //         .collection("posts")
+                //         .where("useruid",
+                //             isEqualTo: "ydSAU5MWxOazcOEhAqeUUwbirtU2")
+                //         .where("thumbnailurl", isEqualTo: null)
+                //         .limit(1)
+                //         .get()
+                //         .then((value) => value.docs.forEach((element) {
+                //               final Video videoEl =
+                //                   Video.fromJson(element.data());
+                //               videoList.add(videoEl);
+                //             }));
+
+                //     log("length = ${videoList.length}");
+
+                //     for (Video element in videoList) {
+                //       if (element.thumbnailurl != "") {
+                //         log("starting");
+                //         // log(element.data()['videourl']);
+                //         late File coverthumbnail;
+                //         //     .read<FFmpegProvider>()
+                //         //     .bgMaterialThumbnailCreator(
+                //         //         vidFilePath:
+                //         //             element.data()['videourl']);
+                //         final Directory appDocumentDir =
+                //             await getApplicationDocumentsDirectory();
+                //         final String rawDocumentPath = appDocumentDir.path;
+                //         final String outputPath =
+                //             "${rawDocumentPath}/bgThumbnail.gif";
+
+                //         await Future.delayed(Duration(minutes: 1), () async {
+                //           log("starting ffmpeg");
+                //           await FFmpegKit.execute(
+                //                   "-y -i ${element.videourl} -to 00:00:02 -vf scale=-2:480 -preset ultrafast -r 20/1 ${outputPath}")
+                //               .then((value) async {
+                //             coverthumbnail = File(outputPath);
+
+                //             log("Here == ${coverthumbnail.path}");
+
+                //             log("done bg gif");
+
+                //             String? coverthumbnailURl = await AwsAnketS3.uploadFile(
+                //                 accessKey: "AKIATF76MVYR34JAVB7H",
+                //                 secretKey:
+                //                     "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",
+                //                 bucket: "anketvideobucket",
+                //                 file: coverthumbnail,
+                //                 filename:
+                //                     "${Timestamp.now().millisecondsSinceEpoch}_bgThumbnailGif.gif",
+                //                 region: "us-east-1",
+                //                 destDir:
+                //                     "${Timestamp.now().millisecondsSinceEpoch}");
+
+                //             log("coverthumbnailURl = ${coverthumbnailURl}");
+
+                //             await FirebaseFirestore.instance
+                //                 .collection("posts")
+                //                 .doc(element.id)
+                //                 .update({
+                //               "thumbnailurl": coverthumbnailURl,
+                //             });
+
+                //             log("updated || post == ${element.id}");
+                //           });
+                //         });
+                //       }
+                //     }
+                //   },
+                //   leadingIcon: Icons.history,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "Fix past thumbnails",
+                // ),
 
                 // ! fix all enddiscountDate error
                 // ListTileOption(

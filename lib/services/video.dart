@@ -75,7 +75,7 @@ class Video {
       videotitle: json['videotitle'] as String,
       videoType: json['videoType'] as String,
       timestamp: json['timestamp'] as Timestamp,
-      thumbnailurl: json['thumbnailurl'] as String,
+      thumbnailurl: json['thumbnailurl'].toString(),
       ownerFcmToken: json['ownerFcmToken'] as String?,
       genre: json['genre'] as List<dynamic>,
       boughtBy: json['boughtBy'] as List<dynamic>,
