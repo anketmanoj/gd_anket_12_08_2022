@@ -2571,7 +2571,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                       onTap: () async {
                                         dev.log("arIndexVal = ${arIndex}");
 
-                                        if (arIndexVal.value <= 1) {
+                                        if (arIndexVal.value <= 2) {
                                           if (list.value.isNotEmpty) {
                                             list.value.last.layerType ==
                                                     LayerType.AR
