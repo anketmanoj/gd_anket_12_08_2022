@@ -1055,6 +1055,7 @@ class FirebaseOperations with ChangeNotifier {
                       .set({
                     "alpha": arSnapshot.data()!['alpha'],
                     "audioFile": arSnapshot.data()!['audioFile'],
+                    "hideItem": arSnapshot.data()!['hideItem'],
                     "audioFlag": arSnapshot.data()!['audioFlag'],
                     "gif": arSnapshot.data()!['gif'],
                     "id": "${arSnapshot.data()!['id']}${id}",
@@ -1098,6 +1099,7 @@ class FirebaseOperations with ChangeNotifier {
                       .set({
                     "gif": arSnapshot.data()!['gif'],
                     "layerType": arSnapshot.data()!['layerType'],
+                    "hideItem": arSnapshot.data()!['hideItem'],
                     "timestamp": arSnapshot.data()!['timestamp'],
                     "id": "${arSnapshot.data()!['id']}${id}",
                     "ownerId": arSnapshot.data()!['ownerId'],
@@ -1134,6 +1136,7 @@ class FirebaseOperations with ChangeNotifier {
                       .doc("${arUidVal}${id}")
                       .set({
                     "id": "${arSnapshot.data()!['id']}${id}",
+                    "hideItem": arSnapshot.data()!['hideItem'],
                     "gif": arSnapshot.data()!['gif'],
                     "main": arSnapshot.data()!['main'],
                     'layerType': 'Background',
