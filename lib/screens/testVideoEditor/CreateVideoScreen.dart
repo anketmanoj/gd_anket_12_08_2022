@@ -2005,12 +2005,14 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                       widget.file.path);
 
                                       dev.log("Send!");
-                                      Get.to(() => VideothumbnailSelector(
-                                            arList: list.value,
-                                            file: file,
-                                            bgMaterialThumnailFile:
-                                                bgMaterialThumnailFile,
-                                          ));
+                                      Get.to(
+                                        () => VideothumbnailSelector(
+                                          arList: list.value,
+                                          file: file,
+                                          bgMaterialThumnailFile:
+                                              bgMaterialThumnailFile,
+                                        ),
+                                      );
 
                                       // Navigator.pushReplacement(
                                       //     context,

@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
+import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -37,6 +38,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
   File? mainVideo;
   File? alphaVideo;
   final ImagePicker _picker = ImagePicker();
+  ValueNotifier<bool> _asMaterialAlso = ValueNotifier<bool>(false);
 
   TextEditingController _arTitleController = TextEditingController();
   TextEditingController _arCaptionController = TextEditingController();
@@ -140,7 +142,8 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                 _isFree,
                 _isPaid,
                 _arPrice,
-                _contentDiscount
+                _contentDiscount,
+                _asMaterialAlso,
               ]),
               builder: (context, _) {
                 return Padding(
@@ -348,6 +351,20 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                                   "length == ${_selectedRecommendedOptions.length}");
                                             },
                                           ),
+                                        ),
+                                      ),
+                                      ListTile(
+                                        leading: Icon(FontAwesomeIcons.video),
+                                        minLeadingWidth: 10,
+                                        trailing: Switch(
+                                            activeColor:
+                                                constantColors.navButton,
+                                            value: _asMaterialAlso.value,
+                                            onChanged: (value) {
+                                              _asMaterialAlso.value = value;
+                                            }),
+                                        title: Text(
+                                          "Allow usage as Material",
                                         ),
                                       ),
                                       ListTile(
@@ -566,9 +583,64 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                                 );
 
                                                 if (response == 200) {
-                                                  Navigator.pop(context);
+                                                  // Navigator.pop(context);
+                                                  if (_asMaterialAlso.value ==
+                                                      true) {
+                                                    await FirebaseFirestore
+                                                        .instance
+                                                        .collection("users")
+                                                        .doc(selectedUser
+                                                            .value!.useruid)
+                                                        .collection(
+                                                            "MyCollection")
+                                                        .doc(fileName)
+                                                        .get()
+                                                        .then(
+                                                            (arSnapshot) async {
+                                                      Map<String, dynamic>
+                                                          submitAsMaterial = {
+                                                        "alpha":
+                                                            arSnapshot['alpha'],
+                                                        "main":
+                                                            arSnapshot['main'],
+                                                        "audioFile": arSnapshot[
+                                                            'audioFile'],
+                                                        "gif":
+                                                            arSnapshot['gif'],
+                                                        "layerType": "AR",
+                                                        "valueType": "myItems",
+                                                        "timestamp":
+                                                            Timestamp.now(),
+                                                        "id":
+                                                            "${fileName}asMaterialAlso",
+                                                        "imgSeq": arSnapshot[
+                                                            'imgSeq'],
+                                                        "audioFlag": arSnapshot[
+                                                            'audioFlag'],
+                                                        "ownerId": arSnapshot[
+                                                            'ownerId'],
+                                                        "ownerName": arSnapshot[
+                                                            'ownerName'],
+                                                        "usage": "Material",
+                                                      };
+
+                                                      await FirebaseFirestore
+                                                          .instance
+                                                          .collection("users")
+                                                          .doc(selectedUser
+                                                              .value!.useruid)
+                                                          .collection(
+                                                              "MyCollection")
+                                                          .doc(
+                                                              "${fileName}asMaterialAlso")
+                                                          .set(
+                                                              submitAsMaterial);
+                                                    });
+                                                  }
                                                   log("done uploading to videoid = $videoId and AR fileName = $fileName ");
                                                 }
+
+                                                Navigator.pop(context);
 
                                                 log("Results\nmainUrl: $mainVideoUrl\nalphaUrl: $alphaVideoUrl\nfileName: $fileName\nUseruid: ${selectedUser.value!.useruid}\ntitle: ${_arTitleController.text}\ncaption: ${_arCaptionController.text}\ngenre: $_selectedRecommendedOptions\nisFree: ${_isFree.value}\nisPaid: ${_isPaid.value}\nPrice: ${_arPrice.value.text}");
                                               } catch (e) {
