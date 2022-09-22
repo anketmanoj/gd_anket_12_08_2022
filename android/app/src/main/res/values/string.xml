@@ -2,4 +2,5 @@
 <resources>
 <!-- Replace "343254889799245" with your Facebook App ID here. -->
     <string name="facebook_app_id">264465402552974</string>
+    <string name="facebook_client_token">78bcdc391bbbf9eb8fb93ea6ffc71c9c</string>
 </resources>

@@ -13,3 +13,4 @@
 /web_admin
 ./build
 build
+android/app/src/main/res/values/string.xml

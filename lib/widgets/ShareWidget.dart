@@ -224,9 +224,8 @@ class _ShareWidgetState extends State<ShareWidget> {
     final FlutterShareMe flutterShareMe = FlutterShareMe();
     switch (share) {
       case Share.facebook:
-        response = await flutterShareMe.shareToFacebook(
-            url: widget.msg,
-            msg: "Check out this video on Glamorous Diastation!");
+        response =
+            await flutterShareMe.shareToFacebook(url: widget.msg, msg: "");
         break;
 
       case Share.twitter:
