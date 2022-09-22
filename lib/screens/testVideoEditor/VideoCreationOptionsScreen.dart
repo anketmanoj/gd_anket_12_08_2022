@@ -14,7 +14,7 @@ import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/debugClass.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 
-import 'package:ffmpeg_kit_flutter_https_gpl/ffprobe_kit.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';

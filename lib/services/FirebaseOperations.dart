@@ -956,6 +956,7 @@ class FirebaseOperations with ChangeNotifier {
             'valueType': "myItems",
             "ownerId": userUid,
             "ownerName": initUserName,
+            "hideItem": false,
           });
 
           log("id for effect == $idVal");
@@ -1223,6 +1224,7 @@ class FirebaseOperations with ChangeNotifier {
       "ownerId": useruid,
       "ownerName": ownerName,
       "usage": usage,
+      "hideItem": false,
     });
   }
 
@@ -2511,6 +2513,7 @@ class FirebaseOperations with ChangeNotifier {
       "audioFile": audioUrl,
       "gif": gifUrl,
       "layerType": "AR",
+      "hideItem": false,
       "valueType": "myItems",
       "timestamp": Timestamp.now(),
       "id": asMaterialAlso == false ? idVal : "${idVal}asMaterialAlso",

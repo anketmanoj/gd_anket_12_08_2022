@@ -798,7 +798,10 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
 
                             Get.bottomSheet(
                               ShareWidget(
-                                  msg: message, urlPath: video!.videourl),
+                                msg: message,
+                                urlPath: video!.videourl,
+                                videoOwnerName: video!.username,
+                              ),
                             );
                           },
                         ),

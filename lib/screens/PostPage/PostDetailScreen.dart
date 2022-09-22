@@ -884,7 +884,10 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
 
                               Get.bottomSheet(
                                 ShareWidget(
-                                    msg: message, urlPath: video!.videourl),
+                                  msg: message,
+                                  urlPath: video!.videourl,
+                                  videoOwnerName: video!.username,
+                                ),
                               );
                             },
                           ),

@@ -622,6 +622,7 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                                         "ownerName": arSnapshot[
                                                             'ownerName'],
                                                         "usage": "Material",
+                                                        "hideItem": false,
                                                       };
 
                                                       await FirebaseFirestore

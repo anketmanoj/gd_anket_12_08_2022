@@ -671,12 +671,12 @@ PODS:
     - FBSDKCoreKit (= 12.3.2)
   - FBSDKShareKit (12.3.2):
     - FBSDKCoreKit (= 12.3.2)
-  - ffmpeg-kit-ios-https-gpl (4.5.1)
-  - ffmpeg_kit_flutter_https_gpl (4.5.1):
-    - ffmpeg_kit_flutter_https_gpl/https-gpl (= 4.5.1)
+  - ffmpeg-kit-ios-full-gpl (4.5.1)
+  - ffmpeg_kit_flutter_full_gpl (4.5.1):
+    - ffmpeg_kit_flutter_full_gpl/full-gpl (= 4.5.1)
     - Flutter
-  - ffmpeg_kit_flutter_https_gpl/https-gpl (4.5.1):
-    - ffmpeg-kit-ios-https-gpl (= 4.5.1)
+  - ffmpeg_kit_flutter_full_gpl/full-gpl (4.5.1):
+    - ffmpeg-kit-ios-full-gpl (= 4.5.1)
     - Flutter
   - file_picker (0.0.1):
     - DKImagePickerController/PhotoGallery
@@ -972,7 +972,7 @@ DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - DKImagePickerController/PhotoGallery (from `https://github.com/miguelpruivo/DKImagePickerController.git`)
-  - ffmpeg_kit_flutter_https_gpl (from `.symlinks/plugins/ffmpeg_kit_flutter_https_gpl/ios`)
+  - ffmpeg_kit_flutter_full_gpl (from `.symlinks/plugins/ffmpeg_kit_flutter_full_gpl/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Firebase/Messaging
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -1024,7 +1024,7 @@ SPEC REPOS:
     - FBSDKCoreKit_Basics
     - FBSDKLoginKit
     - FBSDKShareKit
-    - ffmpeg-kit-ios-https-gpl
+    - ffmpeg-kit-ios-full-gpl
     - Firebase
     - FirebaseAppCheckInterop
     - FirebaseAuth
@@ -1075,8 +1075,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/connectivity/ios"
   DKImagePickerController:
     :git: https://github.com/miguelpruivo/DKImagePickerController.git
-  ffmpeg_kit_flutter_https_gpl:
-    :path: ".symlinks/plugins/ffmpeg_kit_flutter_https_gpl/ios"
+  ffmpeg_kit_flutter_full_gpl:
+    :path: ".symlinks/plugins/ffmpeg_kit_flutter_full_gpl/ios"
   file_picker:
     :path: ".symlinks/plugins/file_picker/ios"
   firebase_auth:
@@ -1172,8 +1172,8 @@ SPEC CHECKSUMS:
   FBSDKCoreKit_Basics: 6bee7c1f0932432901781203fa5e587ec5099148
   FBSDKLoginKit: 56d55e23fe66a6db045826190b0b4dbc0e1ca0a0
   FBSDKShareKit: 4ef957addab76816116ea92bd872e792f7137669
-  ffmpeg-kit-ios-https-gpl: 35ebfb4070b7236b2130689745636aad92764530
-  ffmpeg_kit_flutter_https_gpl: f14fd7b47d495b929bebe5901c76abbe04343779
+  ffmpeg-kit-ios-full-gpl: 9eb5c2e17ba5dea1b1b83cff35b54918b683b67f
+  ffmpeg_kit_flutter_full_gpl: a1dce80f36bb0972ddeb0db314aef924f4a57988
   file_picker: 817ab1d8cd2da9d2da412a417162deee3500fc95
   Firebase: ef75abb1cdbc746d5a38f4e26c422c807b189b8c
   firebase_auth: abe46b4b5465b491c48ea4c9d4c031c40f0fd4af

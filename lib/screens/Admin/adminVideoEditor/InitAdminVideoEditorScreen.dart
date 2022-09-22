@@ -14,7 +14,7 @@ import 'package:diamon_rose_app/screens/testVideoEditor/CropVideo/InitCropVideoS
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/video_editor.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
-import 'package:ffmpeg_kit_flutter_https_gpl/ffprobe_kit.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';

@@ -517,7 +517,11 @@ class VideoWidget extends StatelessWidget {
                           final String message = generatedLink.toString();
 
                           Get.bottomSheet(
-                            ShareWidget(msg: message, urlPath: video.videourl),
+                            ShareWidget(
+                              msg: message,
+                              urlPath: video.videourl,
+                              videoOwnerName: video.username,
+                            ),
                           );
                         },
                       ),

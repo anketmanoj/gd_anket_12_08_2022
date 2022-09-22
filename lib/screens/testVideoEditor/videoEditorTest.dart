@@ -4,8 +4,8 @@
 // import 'dart:io';
 
 // import 'package:diamon_rose_app/screens/testVideoEditor/imgseqanimation.dart';
-// import 'package:ffmpeg_kit_flutter_https_gpl/ffmpeg_kit.dart';
-// import 'package:ffmpeg_kit_flutter_https_gpl/ffprobe_kit.dart';
+// import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
+// import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 // import 'package:flutter_gif/flutter_gif.dart';

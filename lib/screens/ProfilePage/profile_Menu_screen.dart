@@ -41,7 +41,7 @@ import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/apple_pay.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:ffmpeg_kit_flutter_https_gpl/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

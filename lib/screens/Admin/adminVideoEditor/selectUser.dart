@@ -13,7 +13,7 @@ import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:ffmpeg_kit_flutter_https_gpl/ffprobe_kit.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';

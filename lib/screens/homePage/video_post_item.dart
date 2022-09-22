@@ -1293,7 +1293,11 @@ class _VideoPostItemState extends State<VideoPostItem> {
                   final String message = generatedLink.toString();
 
                   Get.bottomSheet(
-                    ShareWidget(msg: message, urlPath: widget.video.videourl),
+                    ShareWidget(
+                      msg: message,
+                      urlPath: widget.video.videourl,
+                      videoOwnerName: widget.video.username,
+                    ),
                   );
                 },
               ),
