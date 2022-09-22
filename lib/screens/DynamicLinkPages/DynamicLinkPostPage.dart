@@ -162,6 +162,8 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
         );
         loading = false;
       });
+
+      context.read<FirebaseOperations>().updatePostView(videoId: value.id);
     });
     super.initState();
   }
@@ -173,6 +175,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
         Provider.of<FirebaseOperations>(context, listen: false);
     final Authentication authentication =
         Provider.of<Authentication>(context, listen: false);
+
     return SafeArea(
       top: false,
       bottom: Platform.isAndroid ? true : false,

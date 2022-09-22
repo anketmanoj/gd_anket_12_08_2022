@@ -165,6 +165,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
         );
         loading = false;
       });
+      context.read<FirebaseOperations>().updatePostView(videoId: value.id);
     });
     super.initState();
   }

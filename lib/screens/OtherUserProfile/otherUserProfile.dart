@@ -882,20 +882,63 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                             },
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(30),
-                              child: Container(
-                                color: Colors.grey,
-                                child: ImageNetworkLoader(
-                                    imageUrl: video.thumbnailurl,
-                                    hide: video.isFree ||
-                                            video.boughtBy.contains(context
-                                                .read<Authentication>()
-                                                .getUserId) ||
-                                            context
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    color: Colors.grey,
+                                    child: ImageNetworkLoader(
+                                        imageUrl: video.thumbnailurl,
+                                        hide: video.isFree ||
+                                                video.boughtBy.contains(context
                                                     .read<Authentication>()
-                                                    .getUserId ==
-                                                "dRnvDRXqrPgZmDfYMSGUJlx0Gbo2"
-                                        ? false
-                                        : true),
+                                                    .getUserId) ||
+                                                context
+                                                        .read<Authentication>()
+                                                        .getUserId ==
+                                                    "dRnvDRXqrPgZmDfYMSGUJlx0Gbo2"
+                                            ? false
+                                            : true),
+                                  ),
+                                  Positioned(
+                                    bottom: 5,
+                                    left: 10,
+                                    child: Container(
+                                      width: size.width,
+                                      height: 40,
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.play_arrow_outlined,
+                                            size: 16,
+                                            color: Colors.white,
+                                          ),
+                                          Stack(
+                                            children: [
+                                              Text(
+                                                video.views.toString(),
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  foreground: Paint()
+                                                    ..style =
+                                                        PaintingStyle.stroke
+                                                    ..strokeWidth = 2
+                                                    ..color = Colors.black,
+                                                ),
+                                              ),
+                                              Text(
+                                                video.views.toString(),
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           );

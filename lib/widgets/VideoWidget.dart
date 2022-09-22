@@ -46,6 +46,8 @@ class VideoWidget extends StatelessWidget {
         Provider.of<FirebaseOperations>(context, listen: false);
     final Authentication authentication =
         Provider.of<Authentication>(context, listen: false);
+
+    context.read<FirebaseOperations>().updatePostView(videoId: video.id);
     return VisibilityDetector(
       key: Key('${video.videotitle} + ${video.caption}'),
       onVisibilityChanged: (visibilityInfo) {

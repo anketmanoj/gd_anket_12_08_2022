@@ -2747,4 +2747,10 @@ class FirebaseOperations with ChangeNotifier {
       "hideItem": hideVal,
     });
   }
+
+  Future updatePostView({required String videoId}) async {
+    await FirebaseFirestore.instance.collection("posts").doc(videoId).update({
+      "views": FieldValue.increment(1),
+    });
+  }
 }

@@ -25,6 +25,7 @@ class Video {
   int? totalBilled;
   bool? verifiedUser;
   String? videoType;
+  int? views;
 
   CachedVideoPlayerController? controller;
 
@@ -53,6 +54,7 @@ class Video {
     this.totalBilled,
     this.verifiedUser,
     this.videoType = "video",
+    this.views = 0,
   });
 
   // create video from json
@@ -81,6 +83,7 @@ class Video {
       boughtBy: json['boughtBy'] as List<dynamic>,
       totalBilled: json['totalBilled'] as int?,
       verifiedUser: json['verifiedUser'] as bool?,
+      views: json['views'] ?? 0,
     );
   }
 
@@ -110,6 +113,7 @@ class Video {
       'totalBilled': totalBilled,
       'verifiedUser': verifiedUser,
       'videoType': videoType,
+      'views': views,
     };
   }
 
