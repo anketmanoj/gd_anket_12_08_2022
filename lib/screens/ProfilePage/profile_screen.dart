@@ -14,6 +14,7 @@ import 'package:diamon_rose_app/screens/ProfilePage/ProfileImageSelector.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/profile_Menu_screen.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -477,6 +478,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         delegate: SliverChildBuilderDelegate(
                           (BuildContext context, int index) {
+                            Video video = Video.fromJson(
+                                snapshot.data!.docs[index].data()
+                                    as Map<String, dynamic>);
                             if (index.toInt() < snapshot.data!.docs.length) {
                               return InkWell(
                                 onTap: () {
@@ -485,18 +489,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     PageTransition(
                                       type: PageTransitionType.rightToLeft,
                                       child: PostDetailsScreen(
-                                        videoId: snapshot.data!.docs[index].id,
+                                        videoId: video.id,
                                       ),
                                     ),
                                   );
                                 },
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(20),
-                                  child: Container(
-                                    color: Colors.grey,
-                                    child: ImageNetworkLoader(
-                                        imageUrl: snapshot.data!.docs[index]
-                                            ["thumbnailurl"]),
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        color: Colors.grey,
+                                        child: ImageNetworkLoader(
+                                            imageUrl: video.thumbnailurl),
+                                      ),
+                                      Positioned(
+                                        bottom: 5,
+                                        left: 10,
+                                        child: Container(
+                                          width: size.width,
+                                          height: 40,
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.play_arrow_outlined,
+                                                size: 16,
+                                                color: Colors.white,
+                                              ),
+                                              Stack(
+                                                children: [
+                                                  Text(
+                                                    video.views.toString(),
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      foreground: Paint()
+                                                        ..style =
+                                                            PaintingStyle.stroke
+                                                        ..strokeWidth = 2
+                                                        ..color = Colors.black,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    video.views.toString(),
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               );
