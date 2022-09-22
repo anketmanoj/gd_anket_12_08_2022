@@ -31,7 +31,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:video_player/video_player.dart';
-import 'package:http/http.dart' as http;
+import 'package:timeago/timeago.dart' as timeago;
 
 class DynamicLinkPostPage extends StatefulWidget {
   final String videoId;
@@ -286,7 +286,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                             Text(
                                               video!.username,
                                               style: TextStyle(
-                                                fontSize: 16,
+                                                fontSize: 14,
                                                 foreground: Paint()
                                                   ..style = PaintingStyle.stroke
                                                   ..strokeWidth = 3
@@ -297,7 +297,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                             Text(
                                               video!.username,
                                               style: TextStyle(
-                                                fontSize: 16,
+                                                fontSize: 14,
                                                 color: Colors.white,
                                               ),
                                             ),
@@ -324,7 +324,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                 Text(
                                   video!.videotitle,
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     foreground: Paint()
                                       ..style = PaintingStyle.stroke
                                       ..strokeWidth = 3
@@ -335,7 +335,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                 Text(
                                   video!.videotitle,
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -350,7 +350,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                 Text(
                                   video!.caption,
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     foreground: Paint()
                                       ..style = PaintingStyle.stroke
                                       ..strokeWidth = 3
@@ -361,7 +361,33 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                 Text(
                                   video!.caption,
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 10, top: 5),
+                            child: Stack(
+                              children: <Widget>[
+                                // Stroked text as border.
+                                Text(
+                                  timeago.format((video!.timestamp).toDate()),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    foreground: Paint()
+                                      ..style = PaintingStyle.stroke
+                                      ..strokeWidth = 3
+                                      ..color = Colors.black,
+                                  ),
+                                ),
+                                // Solid text as fill.
+                                Text(
+                                  timeago.format((video!.timestamp).toDate()),
+                                  style: TextStyle(
+                                    fontSize: 10,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -409,7 +435,8 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                 return SafeArea(
                                   bottom: Platform.isAndroid ? true : false,
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 15),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 15),
                                     height: size.height * 0.5,
                                     width: size.width,
                                     decoration: BoxDecoration(
@@ -456,22 +483,26 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                     itemBuilder:
                                                         (context, index) {
                                                       return snapshot.data!
-                                                                      .docs[index]
+                                                                          .docs[
+                                                                      index]
                                                                   ["ownerId"] ==
                                                               video!.useruid
                                                           ? ListTile(
-                                                              leading: Container(
+                                                              leading:
+                                                                  Container(
                                                                 height: 40,
                                                                 width: 40,
                                                                 child: ImageNetworkLoader(
                                                                     imageUrl: snapshot
                                                                             .data!
-                                                                            .docs[
-                                                                        index]["gif"]),
+                                                                            .docs[index]
+                                                                        [
+                                                                        "gif"]),
                                                               ),
                                                               title: Text(
                                                                 "${snapshot.data!.docs[index]["layerType"]} by ${video!.username}",
-                                                                style: TextStyle(
+                                                                style:
+                                                                    TextStyle(
                                                                   fontSize: 16,
                                                                   color: Colors
                                                                       .white,
@@ -482,7 +513,8 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                               tileColor:
                                                                   constantColors
                                                                       .bioBg,
-                                                              trailing: Container(
+                                                              trailing:
+                                                                  Container(
                                                                 height: 50,
                                                                 width: 80,
                                                                 child: InkWell(
@@ -491,8 +523,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                                         context,
                                                                         PageTransition(
                                                                             child: PostDetailsScreen(
-                                                                              videoId:
-                                                                                  snapshot.data!.docs[index]["videoId"],
+                                                                              videoId: snapshot.data!.docs[index]["videoId"],
                                                                             ),
                                                                             type: PageTransitionType.fade));
                                                                   },
@@ -521,12 +552,9 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                                             "Visit Owner",
                                                                             style:
                                                                                 TextStyle(
-                                                                              fontSize:
-                                                                                  12,
-                                                                              fontWeight:
-                                                                                  FontWeight.bold,
-                                                                              color:
-                                                                                  Colors.white,
+                                                                              fontSize: 12,
+                                                                              fontWeight: FontWeight.bold,
+                                                                              color: Colors.white,
                                                                             ),
                                                                           ),
                                                                         ),
@@ -538,18 +566,21 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                               subtitle: Text(
                                                                 "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
                                                               ),
-                                                              leading: Container(
+                                                              leading:
+                                                                  Container(
                                                                 height: 40,
                                                                 width: 40,
                                                                 child: ImageNetworkLoader(
                                                                     imageUrl: snapshot
                                                                             .data!
-                                                                            .docs[
-                                                                        index]["gif"]),
+                                                                            .docs[index]
+                                                                        [
+                                                                        "gif"]),
                                                               ),
                                                               title: Text(
                                                                 "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",
-                                                                style: TextStyle(
+                                                                style:
+                                                                    TextStyle(
                                                                   fontSize: 16,
                                                                   color: Colors
                                                                       .white,
@@ -570,7 +601,8 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                           color: constantColors.whiteColor,
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.only(top: 10),
+                                          padding:
+                                              const EdgeInsets.only(top: 10),
                                           child: Row(
                                             mainAxisAlignment: video!.isPaid
                                                 ? MainAxisAlignment.spaceBetween
@@ -601,7 +633,8 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                                   "Total: ",
                                                                   style:
                                                                       TextStyle(
-                                                                    fontSize: 16,
+                                                                    fontSize:
+                                                                        16,
                                                                     color: Colors
                                                                         .white,
                                                                   ),
@@ -613,7 +646,8 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                                     decoration:
                                                                         TextDecoration
                                                                             .lineThrough,
-                                                                    fontSize: 16,
+                                                                    fontSize:
+                                                                        16,
                                                                     color: Colors
                                                                         .white,
                                                                   ),
@@ -622,7 +656,8 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                                   " \$${video!.price * (1 - video!.discountAmount / 100)}",
                                                                   style:
                                                                       TextStyle(
-                                                                    fontSize: 16,
+                                                                    fontSize:
+                                                                        16,
                                                                     color: Colors
                                                                         .red,
                                                                   ),
@@ -633,8 +668,8 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                               "Total: \$${video!.price}",
                                                               style: TextStyle(
                                                                 fontSize: 16,
-                                                                color:
-                                                                    Colors.white,
+                                                                color: Colors
+                                                                    .white,
                                                               ),
                                                             )
                                                   : Container(),
@@ -644,11 +679,11 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                         foregroundColor:
                                                             MaterialStateProperty
                                                                 .all<Color>(
-                                                                    Colors.white),
+                                                                    Colors
+                                                                        .white),
                                                         backgroundColor:
                                                             MaterialStateProperty
-                                                                .all<
-                                                                        Color>(
+                                                                .all<Color>(
                                                                     constantColors
                                                                         .bioBg),
                                                         shape: MaterialStateProperty
@@ -657,7 +692,8 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                           RoundedRectangleBorder(
                                                             borderRadius:
                                                                 BorderRadius
-                                                                    .circular(20),
+                                                                    .circular(
+                                                                        20),
                                                           ),
                                                         ),
                                                       ),
@@ -686,11 +722,11 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                         foregroundColor:
                                                             MaterialStateProperty
                                                                 .all<Color>(
-                                                                    Colors.white),
+                                                                    Colors
+                                                                        .white),
                                                         backgroundColor:
                                                             MaterialStateProperty
-                                                                .all<
-                                                                        Color>(
+                                                                .all<Color>(
                                                                     constantColors
                                                                         .bioBg),
                                                         shape: MaterialStateProperty
@@ -699,7 +735,8 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                           RoundedRectangleBorder(
                                                             borderRadius:
                                                                 BorderRadius
-                                                                    .circular(20),
+                                                                    .circular(
+                                                                        20),
                                                           ),
                                                         ),
                                                       ),

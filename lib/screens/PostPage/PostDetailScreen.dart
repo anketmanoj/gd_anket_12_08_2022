@@ -33,6 +33,7 @@ import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class PostDetailsScreen extends StatefulWidget {
   final String videoId;
@@ -351,7 +352,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                               Text(
                                                 video!.username,
                                                 style: TextStyle(
-                                                  fontSize: 16,
+                                                  fontSize: 14,
                                                   foreground: Paint()
                                                     ..style =
                                                         PaintingStyle.stroke
@@ -363,7 +364,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                               Text(
                                                 video!.username,
                                                 style: TextStyle(
-                                                  fontSize: 16,
+                                                  fontSize: 14,
                                                   color: Colors.white,
                                                 ),
                                               ),
@@ -391,7 +392,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                   Text(
                                     video!.videotitle,
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       foreground: Paint()
                                         ..style = PaintingStyle.stroke
                                         ..strokeWidth = 3
@@ -402,7 +403,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                   Text(
                                     video!.videotitle,
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -417,7 +418,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                   Text(
                                     video!.caption,
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       foreground: Paint()
                                         ..style = PaintingStyle.stroke
                                         ..strokeWidth = 3
@@ -428,7 +429,33 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                   Text(
                                     video!.caption,
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 10, top: 5),
+                              child: Stack(
+                                children: <Widget>[
+                                  // Stroked text as border.
+                                  Text(
+                                    timeago.format((video!.timestamp).toDate()),
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      foreground: Paint()
+                                        ..style = PaintingStyle.stroke
+                                        ..strokeWidth = 3
+                                        ..color = Colors.black,
+                                    ),
+                                  ),
+                                  // Solid text as fill.
+                                  Text(
+                                    timeago.format((video!.timestamp).toDate()),
+                                    style: TextStyle(
+                                      fontSize: 10,
                                       color: Colors.white,
                                     ),
                                   ),

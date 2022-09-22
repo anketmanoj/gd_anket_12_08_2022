@@ -38,6 +38,7 @@ import 'package:video_player/video_player.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 import 'package:http/http.dart' as http;
+import 'package:timeago/timeago.dart' as timeago;
 
 class VideoPostItem extends StatefulWidget {
   final Video video;
@@ -812,7 +813,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                   Text(
                                     widget.video.username,
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       foreground: Paint()
                                         ..style = PaintingStyle.stroke
                                         ..strokeWidth = 3
@@ -823,7 +824,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                   Text(
                                     widget.video.username,
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -849,7 +850,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                       Text(
                         widget.video.videotitle,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           foreground: Paint()
                             ..style = PaintingStyle.stroke
                             ..strokeWidth = 3
@@ -860,7 +861,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                       Text(
                         widget.video.videotitle,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           color: Colors.white,
                         ),
                       ),
@@ -875,7 +876,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                       Text(
                         widget.video.caption,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           foreground: Paint()
                             ..style = PaintingStyle.stroke
                             ..strokeWidth = 3
@@ -886,7 +887,33 @@ class _VideoPostItemState extends State<VideoPostItem> {
                       Text(
                         widget.video.caption,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 10, top: 5),
+                  child: Stack(
+                    children: <Widget>[
+                      // Stroked text as border.
+                      Text(
+                        timeago.format((widget.video.timestamp).toDate()),
+                        style: TextStyle(
+                          fontSize: 10,
+                          foreground: Paint()
+                            ..style = PaintingStyle.stroke
+                            ..strokeWidth = 3
+                            ..color = Colors.black,
+                        ),
+                      ),
+                      // Solid text as fill.
+                      Text(
+                        timeago.format((widget.video.timestamp).toDate()),
+                        style: TextStyle(
+                          fontSize: 10,
                           color: Colors.white,
                         ),
                       ),
