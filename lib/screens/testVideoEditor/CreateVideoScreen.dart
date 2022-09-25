@@ -56,11 +56,8 @@ import 'package:http/http.dart' as http;
 enum _FrameBoundaries { left, right, inside, progress, none }
 
 class CreateVideoScreen extends StatefulWidget {
-  const CreateVideoScreen(
-      {Key? key, required this.file, required this.isHorizontal})
-      : super(key: key);
+  const CreateVideoScreen({Key? key, required this.file}) : super(key: key);
   final File file;
-  final bool isHorizontal;
 
   @override
   State<CreateVideoScreen> createState() => _CreateVideoScreenState();
@@ -888,30 +885,15 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                         Stack(
                           alignment: Alignment.center,
                           children: [
-                            widget.isHorizontal
-                                ? Container(
-                                    key: videoContainerKey,
-                                    height: 500,
-                                    width: 150,
-                                    color: Colors.black,
-                                    child: AspectRatio(
-                                      aspectRatio:
-                                          _videoController.value.aspectRatio,
-                                      child: VideoViewer(
-                                        controller: _controller,
-                                      ),
-                                    ),
-                                  )
-                                : Container(
-                                    key: videoContainerKey,
-                                    child: AspectRatio(
-                                      aspectRatio:
-                                          _videoController.value.aspectRatio,
-                                      child: VideoViewer(
-                                        controller: _controller,
-                                      ),
-                                    ),
-                                  ),
+                            Container(
+                              key: videoContainerKey,
+                              child: AspectRatio(
+                                aspectRatio: _videoController.value.aspectRatio,
+                                child: VideoViewer(
+                                  controller: _controller,
+                                ),
+                              ),
+                            ),
                             Positioned(
                               top: 0,
                               left: 0,
