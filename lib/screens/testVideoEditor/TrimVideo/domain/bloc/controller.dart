@@ -465,7 +465,8 @@ class VideoEditorController extends ChangeNotifier {
     final String trim = minTrim >= _min.dx && maxTrim <= _max.dx
         ? "-ss $_trimStart -to $_trimEnd"
         : "";
-    final String crop = "pad=iw:2*trunc(iw*16/18):(ow-iw)/2:(oh-ih)/2,setsar=1";
+    final String crop =
+        "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1";
     // minCrop >= _min && maxCrop <= _max ? await _getCrop() : "";
     final String rotation =
         _rotation >= 360 || _rotation <= 0 ? "" : _getRotation();

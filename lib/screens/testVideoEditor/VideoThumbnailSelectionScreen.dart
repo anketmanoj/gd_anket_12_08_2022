@@ -108,12 +108,9 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
   }
 
   void _exportCover() async {
-    setState(() => _exported = false);
     await _controller.extractCover(
       onCompleted: (cover) async {
         if (!mounted) return;
-
-        _exportText = "Cover exported! ${cover!.path}";
         await _controller.exportVideo(
           // preset: VideoExportPreset.medium,
           onProgress: (stats, value) => _exportingProgress.value = value,
@@ -123,106 +120,21 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
             if (videoFileNew != null) {
               final VideoPlayerController _videoController =
                   VideoPlayerController.file(videoFileNew);
-              _videoController.initialize().then((value) async {
-                setState(() {});
-
-                _videoController.setLooping(true);
-                await showDialog(
-                  context: context,
-                  builder: (_) => Padding(
-                    padding: const EdgeInsets.all(30),
-                    child: Container(
-                      color: Colors.black,
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 50,
-                            color: Colors.white,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Preview",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.height * 0.6,
-                            child: Center(
-                              child: GestureDetector(
-                                onTap: () {
-                                  _videoController.value.isPlaying
-                                      ? _videoController.pause()
-                                      : _videoController.play();
-                                },
-                                child: AspectRatio(
-                                  aspectRatio:
-                                      _videoController.value.aspectRatio,
-                                  child: VideoPlayer(_videoController),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            color: Colors.white,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text(
-                                    "Cancel",
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        PageTransition(
-                                            child: PreviewVideoScreen(
-                                              bgMaterialThumnailFile:
-                                                  widget.bgMaterialThumnailFile,
-                                              bgFile: widget.file,
-                                              thumbnailFile: cover,
-                                              videoFile:
-                                                  File(videoFileNew.path),
-                                              videoPlayerController:
-                                                  _videoController,
-                                              arList: widget.arList,
-                                            ),
-                                            type: PageTransitionType.fade));
-                                  },
-                                  child: Text(
-                                    "Next",
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-                await _videoController.pause();
-                _videoController.dispose();
+              await _videoController.initialize().then((value) {
+                Navigator.pushReplacement(
+                    context,
+                    PageTransition(
+                        child: PreviewVideoScreen(
+                          bgMaterialThumnailFile: widget.bgMaterialThumnailFile,
+                          bgFile: widget.file,
+                          thumbnailFile: cover!,
+                          videoFile: File(videoFileNew.path),
+                          videoPlayerController: _videoController,
+                          arList: widget.arList,
+                        ),
+                        type: PageTransitionType.fade));
               });
-
-              _exportText = "Video success export!";
-            } else {
-              _exportText = "Error on export video :(";
             }
-
-            setState(() => _exported = true);
-            Future.delayed(const Duration(seconds: 2),
-                () => setState(() => _exported = false));
           },
         );
 
@@ -398,7 +310,15 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
                             type: CoolAlertType.loading,
                             barrierDismissible: false,
                           );
-                          _exportCover();
+                          try {
+                            _exportCover();
+                          } catch (e) {
+                            CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.info,
+                                title: "Issue Detected",
+                                text: "Error: ${e.toString()}");
+                          }
                         },
                         icon: const Icon(
                           Icons.arrow_forward_outlined,

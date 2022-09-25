@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/CreateVideoScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/CropVideo/InitCropVideoScreen.dart';
@@ -258,7 +259,17 @@ class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
                     return AbsorbPointer(
                       absorbing: exporting,
                       child: IconButton(
-                        onPressed: _exportVideo,
+                        onPressed: () {
+                          try {
+                            _exportVideo();
+                          } catch (e) {
+                            CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.info,
+                                title: "Issue Detected",
+                                text: "Error: ${e.toString()}");
+                          }
+                        },
                         icon: const Icon(
                           Icons.arrow_forward_outlined,
                           color: Colors.white,

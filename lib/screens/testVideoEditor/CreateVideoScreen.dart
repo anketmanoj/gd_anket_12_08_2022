@@ -885,15 +885,18 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                         Stack(
                           alignment: Alignment.center,
                           children: [
-                            Container(
-                              key: videoContainerKey,
-                              child: AspectRatio(
-                                aspectRatio: _videoController.value.aspectRatio,
-                                child: VideoViewer(
-                                  controller: _controller,
-                                ),
-                              ),
-                            ),
+                            _videoController.value.isInitialized
+                                ? Container(
+                                    key: videoContainerKey,
+                                    child: AspectRatio(
+                                      aspectRatio:
+                                          _videoController.value.aspectRatio,
+                                      child: VideoViewer(
+                                        controller: _controller,
+                                      ),
+                                    ),
+                                  )
+                                : Center(child: CircularProgressIndicator()),
                             Positioned(
                               top: 0,
                               left: 0,
