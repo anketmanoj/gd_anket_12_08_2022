@@ -494,6 +494,8 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                                     Timestamp.now()
                                                         .millisecondsSinceEpoch
                                                         .toString();
+
+                                                log("fileName == $fileName");
                                                 final String? mainVideoUrl =
                                                     await AwsAnketS3.uploadFile(
                                                         accessKey:
@@ -521,6 +523,8 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                                             "${fileName}_alpha.mp4",
                                                         region: "us-east-1",
                                                         destDir: "$fileName");
+
+                                                log("mainurl == $mainVideoUrl || alpha url = $alphaVideoUrl");
 
                                                 String name =
                                                     "${_arCaptionController.text} ${_arTitleController.text}";

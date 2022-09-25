@@ -899,42 +899,45 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                             ? false
                                             : true),
                                   ),
-                                  Positioned(
-                                    bottom: 5,
-                                    left: 10,
-                                    child: Container(
-                                      width: size.width,
-                                      height: 40,
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.play_arrow_outlined,
-                                            size: 16,
-                                            color: Colors.white,
-                                          ),
-                                          Stack(
-                                            children: [
-                                              Text(
-                                                video.views.toString(),
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  foreground: Paint()
-                                                    ..style =
-                                                        PaintingStyle.stroke
-                                                    ..strokeWidth = 2
-                                                    ..color = Colors.black,
+                                  Visibility(
+                                    visible: video.isFree,
+                                    child: Positioned(
+                                      bottom: 5,
+                                      left: 10,
+                                      child: Container(
+                                        width: size.width,
+                                        height: 40,
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.play_arrow_outlined,
+                                              size: 16,
+                                              color: Colors.white,
+                                            ),
+                                            Stack(
+                                              children: [
+                                                Text(
+                                                  video.views.toString(),
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    foreground: Paint()
+                                                      ..style =
+                                                          PaintingStyle.stroke
+                                                      ..strokeWidth = 2
+                                                      ..color = Colors.black,
+                                                  ),
                                                 ),
-                                              ),
-                                              Text(
-                                                video.views.toString(),
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.white,
+                                                Text(
+                                                  video.views.toString(),
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.white,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
