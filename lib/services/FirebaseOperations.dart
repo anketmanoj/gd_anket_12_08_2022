@@ -1732,6 +1732,7 @@ class FirebaseOperations with ChangeNotifier {
     required Video videoItem,
     required String useruid,
     required bool isFree,
+    bool canPop = true,
   }) async {
     await FirebaseFirestore.instance
         .collection("users")
@@ -1826,8 +1827,10 @@ class FirebaseOperations with ChangeNotifier {
         }
       });
 
-      Navigator.pop(ctx);
-      Navigator.pop(ctx);
+      if (canPop) {
+        Navigator.pop(ctx);
+        Navigator.pop(ctx);
+      }
 
       showTopSnackBar(
         ctx,

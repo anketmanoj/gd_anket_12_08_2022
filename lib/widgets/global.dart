@@ -463,7 +463,8 @@ dynamic logOutDialog(
   );
 }
 
-Widget ImageNetworkLoader({required String imageUrl, bool hide = false}) {
+Widget ImageNetworkLoader(
+    {required String imageUrl, bool hide = false, BoxFit fit = BoxFit.cover}) {
   return Stack(
     children: [
       Container(
@@ -471,7 +472,7 @@ Widget ImageNetworkLoader({required String imageUrl, bool hide = false}) {
         width: 100.w,
         child: Image.network(
           imageUrl,
-          fit: BoxFit.cover,
+          fit: fit,
           loadingBuilder: (BuildContext context, Widget child,
               ImageChunkEvent? loadingProgress) {
             if (loadingProgress == null) return child;

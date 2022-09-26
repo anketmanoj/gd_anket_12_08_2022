@@ -522,6 +522,33 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: Icons.history,
                   trailingIcon: Icons.arrow_forward_ios,
+                  text: "Diamond History",
+                ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () async {
+                    await FirebaseFirestore.instance
+                        .collection("posts")
+                        .get()
+                        .then((value) => value.docs.forEach((element) async {
+                              if (!element.data().containsKey("views")) {
+                                await FirebaseFirestore.instance
+                                    .collection("posts")
+                                    .doc(element.id)
+                                    .update({
+                                  "views": 0,
+                                });
+                              }
+                            }));
+                    // Navigator.push(
+                    //   context,
+                    //   PageTransition(
+                    //       child: PurchaseHistoryScreen(),
+                    //       type: PageTransitionType.rightToLeft),
+                    // );
+                  },
+                  leadingIcon: Icons.history,
+                  trailingIcon: Icons.arrow_forward_ios,
                   text: "Diamond Histroy",
                 ),
                 // ListTileOption(

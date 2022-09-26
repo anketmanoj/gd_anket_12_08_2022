@@ -8,6 +8,7 @@ import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
@@ -61,71 +62,105 @@ class GDARNotificationScreen extends StatelessWidget {
                 final ArPendingModel arPendingModel = ArPendingModel.fromMap(
                     snaps.data!.docs[index].data() as Map<String, dynamic>);
 
-                return ListTile(
-                  onTap: () async {
-                    if (snaps.data!.docs[index]['main'] == null) {
-                      // ignore: unawaited_futures
-                      CoolAlert.show(
-                        context: context,
-                        type: CoolAlertType.info,
-                        title: "GD AR Processing",
-                        text:
-                            "Your GD AR is being processed, you will be notified once its done",
-                      );
-                    } else {
-                      await FirebaseFirestore.instance
-                          .collection("users")
-                          .doc(Provider.of<Authentication>(context,
-                                  listen: false)
-                              .getUserId)
-                          .collection("MyCollection")
-                          .doc(arPendingModel.id)
-                          .get()
-                          .then((arVal) {
-                        MyArCollection arDoc =
-                            MyArCollection.fromJson(arVal.data()!);
+                return Slidable(
+                  enabled:
+                      snaps.data!.docs[index]['main'] != null ? true : false,
+                  endActionPane: ActionPane(
+                    motion: ScrollMotion(),
+                    children: [
+                      SlidableAction(
+                        onPressed: (_) {
+                          CoolAlert.show(
+                              context: context,
+                              type: CoolAlertType.info,
+                              title: "Delete this AR?",
+                              text: "Are you sure you want to delete this AR?",
+                              onConfirmBtnTap: () async {
+                                await FirebaseFirestore.instance
+                                    .collection("users")
+                                    .doc(Provider.of<Authentication>(context,
+                                            listen: false)
+                                        .getUserId)
+                                    .collection("MyCollection")
+                                    .doc(arPendingModel.id)
+                                    .delete();
 
-                        Navigator.push(
-                            context,
-                            PageTransition(
-                                child: ArPreviewSetting(
-                                  gifUrl: arDoc.gif,
-                                  ownerName: arDoc.ownerName,
-                                  audioFlag: arDoc.audioFlag == true ? 1 : 0,
-                                  alphaUrl: arDoc.alpha,
-                                  audioUrl: arDoc.audioFile,
-                                  imgSeqList: arDoc.imgSeq,
-                                  arIdVal: arDoc.id,
-                                  inputUrl: arDoc.main,
-                                  userUid: arDoc.ownerId,
-                                  endDuration:
-                                      parseDuration(arDoc.endDuration!),
-                                ),
-                                type: PageTransitionType.fade));
-                      });
-                    }
-                  },
-                  title: Text("${arPendingModel.ownerName}"),
-                  leading: Container(
-                    height: 50,
-                    width: 50,
-                    child: ImageNetworkLoader(imageUrl: arPendingModel.gif),
+                                Navigator.pop(context);
+                              });
+                        },
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        icon: Icons.delete_forever,
+                        label: 'Delete',
+                      ),
+                    ],
                   ),
-                  trailing: Container(
-                    decoration: BoxDecoration(
-                      color: snaps.data!.docs[index]['main'] == null
-                          ? constantColors.navButton
-                          : Colors.green,
-                      borderRadius: BorderRadius.circular(5),
+                  child: ListTile(
+                    onTap: () async {
+                      if (snaps.data!.docs[index]['main'] == null) {
+                        // ignore: unawaited_futures
+                        CoolAlert.show(
+                          context: context,
+                          type: CoolAlertType.info,
+                          title: "GD AR Processing",
+                          text:
+                              "Your GD AR is being processed, you will be notified once its done",
+                        );
+                      } else {
+                        await FirebaseFirestore.instance
+                            .collection("users")
+                            .doc(Provider.of<Authentication>(context,
+                                    listen: false)
+                                .getUserId)
+                            .collection("MyCollection")
+                            .doc(arPendingModel.id)
+                            .get()
+                            .then((arVal) {
+                          MyArCollection arDoc =
+                              MyArCollection.fromJson(arVal.data()!);
+
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  child: ArPreviewSetting(
+                                    gifUrl: arDoc.gif,
+                                    ownerName: arDoc.ownerName,
+                                    audioFlag: arDoc.audioFlag == true ? 1 : 0,
+                                    alphaUrl: arDoc.alpha,
+                                    audioUrl: arDoc.audioFile,
+                                    imgSeqList: arDoc.imgSeq,
+                                    arIdVal: arDoc.id,
+                                    inputUrl: arDoc.main,
+                                    userUid: arDoc.ownerId,
+                                    endDuration:
+                                        parseDuration(arDoc.endDuration!),
+                                  ),
+                                  type: PageTransitionType.fade));
+                        });
+                      }
+                    },
+                    title: Text("${arPendingModel.ownerName}"),
+                    leading: Container(
+                      height: 50,
+                      width: 50,
+                      child: ImageNetworkLoader(imageUrl: arPendingModel.gif),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(3.0),
-                      child: Text(
-                        snaps.data!.docs[index]['main'] == null
-                            ? "Pending"
-                            : "Ready",
-                        style: TextStyle(
-                          color: constantColors.whiteColor,
+                    trailing: Container(
+                      decoration: BoxDecoration(
+                        color: snaps.data!.docs[index]['main'] == null
+                            ? constantColors.navButton
+                            : Colors.green,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: Text(
+                          snaps.data!.docs[index]['main'] == null
+                              ? "Pending"
+                              : "Ready",
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                          ),
                         ),
                       ),
                     ),
