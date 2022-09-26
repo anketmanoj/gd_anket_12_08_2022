@@ -13,6 +13,7 @@ class ApiService extends ChangeNotifier {
   static final List<Video> _following_videos = [];
 
   static load() async {
+    _videos.clear();
     await FirebaseFirestore.instance
         .collection("posts")
         .orderBy("timestamp", descending: true)

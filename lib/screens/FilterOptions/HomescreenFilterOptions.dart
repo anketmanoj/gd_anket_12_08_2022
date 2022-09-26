@@ -53,6 +53,24 @@ class HomescreenFilterOptions extends StatelessWidget {
                       }
                     }),
               ),
+              ListTile(
+                leading: Icon(Icons.people_alt),
+                title: Text("Show both (Paid & Free) content"),
+                trailing: Switch(
+                    activeColor: constantColors.navButton,
+                    value: state.filterOption == HomeScreenOptions.Both,
+                    onChanged: (value) {
+                      if (value) {
+                        BlocProvider.of<PreloadBloc>(context, listen: false)
+                            .add(PreloadEvent.filterBetweenFreePaid(
+                                HomeScreenOptions.Both));
+                      } else {
+                        BlocProvider.of<PreloadBloc>(context, listen: false)
+                            .add(PreloadEvent.filterBetweenFreePaid(
+                                HomeScreenOptions.Free));
+                      }
+                    }),
+              ),
             ],
           );
         },
