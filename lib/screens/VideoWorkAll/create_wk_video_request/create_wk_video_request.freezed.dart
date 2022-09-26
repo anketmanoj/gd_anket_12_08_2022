@@ -1,5 +1,6 @@
+// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'create_wk_video_request.dart';
 
@@ -38,7 +39,7 @@ class _$RequestCreateWkVideoModelTearOff {
     );
   }
 
-  RequestCreateWkVideoModel fromJson(Map<String, Object> json) {
+  RequestCreateWkVideoModel fromJson(Map<String, Object?> json) {
     return RequestCreateWkVideoModel.fromJson(json);
   }
 }
@@ -201,7 +202,7 @@ class _$_RequestCreateWkVideoModel implements _RequestCreateWkVideoModel {
       this.status});
 
   factory _$_RequestCreateWkVideoModel.fromJson(Map<String, dynamic> json) =>
-      _$_$_RequestCreateWkVideoModelFromJson(json);
+      _$$_RequestCreateWkVideoModelFromJson(json);
 
   @override
   final int? duration;
@@ -224,35 +225,30 @@ class _$_RequestCreateWkVideoModel implements _RequestCreateWkVideoModel {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _RequestCreateWkVideoModel &&
+        (other.runtimeType == runtimeType &&
+            other is _RequestCreateWkVideoModel &&
             (identical(other.duration, duration) ||
-                const DeepCollectionEquality()
-                    .equals(other.duration, duration)) &&
+                other.duration == duration) &&
             (identical(other.canvasWidth, canvasWidth) ||
-                const DeepCollectionEquality()
-                    .equals(other.canvasWidth, canvasWidth)) &&
+                other.canvasWidth == canvasWidth) &&
             (identical(other.canvasHeight, canvasHeight) ||
-                const DeepCollectionEquality()
-                    .equals(other.canvasHeight, canvasHeight)) &&
-            (identical(other.layerItems, layerItems) ||
-                const DeepCollectionEquality()
-                    .equals(other.layerItems, layerItems)) &&
+                other.canvasHeight == canvasHeight) &&
+            const DeepCollectionEquality()
+                .equals(other.layerItems, layerItems) &&
             (identical(other.titleVideo, titleVideo) ||
-                const DeepCollectionEquality()
-                    .equals(other.titleVideo, titleVideo)) &&
-            (identical(other.status, status) ||
-                const DeepCollectionEquality().equals(other.status, status)));
+                other.titleVideo == titleVideo) &&
+            (identical(other.status, status) || other.status == status));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(duration) ^
-      const DeepCollectionEquality().hash(canvasWidth) ^
-      const DeepCollectionEquality().hash(canvasHeight) ^
-      const DeepCollectionEquality().hash(layerItems) ^
-      const DeepCollectionEquality().hash(titleVideo) ^
-      const DeepCollectionEquality().hash(status);
+  int get hashCode => Object.hash(
+      runtimeType,
+      duration,
+      canvasWidth,
+      canvasHeight,
+      const DeepCollectionEquality().hash(layerItems),
+      titleVideo,
+      status);
 
   @JsonKey(ignore: true)
   @override
@@ -263,7 +259,7 @@ class _$_RequestCreateWkVideoModel implements _RequestCreateWkVideoModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$_$_RequestCreateWkVideoModelToJson(this);
+    return _$$_RequestCreateWkVideoModelToJson(this);
   }
 }
 
@@ -280,18 +276,17 @@ abstract class _RequestCreateWkVideoModel implements RequestCreateWkVideoModel {
       _$_RequestCreateWkVideoModel.fromJson;
 
   @override
-  int? get duration => throw _privateConstructorUsedError;
+  int? get duration;
   @override
-  double? get canvasWidth => throw _privateConstructorUsedError;
+  double? get canvasWidth;
   @override
-  double? get canvasHeight => throw _privateConstructorUsedError;
+  double? get canvasHeight;
   @override
-  List<RequestLayerItemModel>? get layerItems =>
-      throw _privateConstructorUsedError;
+  List<RequestLayerItemModel>? get layerItems;
   @override
-  String? get titleVideo => throw _privateConstructorUsedError;
+  String? get titleVideo;
   @override
-  StatusVideoType? get status => throw _privateConstructorUsedError;
+  StatusVideoType? get status;
   @override
   @JsonKey(ignore: true)
   _$RequestCreateWkVideoModelCopyWith<_RequestCreateWkVideoModel>

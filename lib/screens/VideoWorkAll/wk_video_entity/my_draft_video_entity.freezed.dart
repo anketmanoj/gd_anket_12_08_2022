@@ -1,5 +1,6 @@
+// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'my_draft_video_entity.dart';
 
@@ -39,7 +40,7 @@ class _$MyDraftVideoEntityTearOff {
     );
   }
 
-  MyDraftVideoEntity fromJson(Map<String, Object> json) {
+  MyDraftVideoEntity fromJson(Map<String, Object?> json) {
     return MyDraftVideoEntity.fromJson(json);
   }
 }
@@ -209,7 +210,7 @@ class _$_MyDraftVideoEntity implements _MyDraftVideoEntity {
       this.listLayer = const []});
 
   factory _$_MyDraftVideoEntity.fromJson(Map<String, dynamic> json) =>
-      _$_$_MyDraftVideoEntityFromJson(json);
+      _$$_MyDraftVideoEntityFromJson(json);
 
   @JsonKey(defaultValue: -1)
   @override
@@ -241,38 +242,30 @@ class _$_MyDraftVideoEntity implements _MyDraftVideoEntity {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _MyDraftVideoEntity &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.videoId, videoId) ||
-                const DeepCollectionEquality()
-                    .equals(other.videoId, videoId)) &&
+        (other.runtimeType == runtimeType &&
+            other is _MyDraftVideoEntity &&
+            const DeepCollectionEquality().equals(other.id, id) &&
+            const DeepCollectionEquality().equals(other.videoId, videoId) &&
             (identical(other.wkVideoName, wkVideoName) ||
-                const DeepCollectionEquality()
-                    .equals(other.wkVideoName, wkVideoName)) &&
+                other.wkVideoName == wkVideoName) &&
             (identical(other.duration, duration) ||
-                const DeepCollectionEquality()
-                    .equals(other.duration, duration)) &&
-            (identical(other.status, status) ||
-                const DeepCollectionEquality().equals(other.status, status)) &&
+                other.duration == duration) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.lastUpdatedAt, lastUpdatedAt) ||
-                const DeepCollectionEquality()
-                    .equals(other.lastUpdatedAt, lastUpdatedAt)) &&
-            (identical(other.listLayer, listLayer) ||
-                const DeepCollectionEquality()
-                    .equals(other.listLayer, listLayer)));
+                other.lastUpdatedAt == lastUpdatedAt) &&
+            const DeepCollectionEquality().equals(other.listLayer, listLayer));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(videoId) ^
-      const DeepCollectionEquality().hash(wkVideoName) ^
-      const DeepCollectionEquality().hash(duration) ^
-      const DeepCollectionEquality().hash(status) ^
-      const DeepCollectionEquality().hash(lastUpdatedAt) ^
-      const DeepCollectionEquality().hash(listLayer);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(id),
+      const DeepCollectionEquality().hash(videoId),
+      wkVideoName,
+      duration,
+      status,
+      lastUpdatedAt,
+      const DeepCollectionEquality().hash(listLayer));
 
   @JsonKey(ignore: true)
   @override
@@ -281,7 +274,7 @@ class _$_MyDraftVideoEntity implements _MyDraftVideoEntity {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$_$_MyDraftVideoEntityToJson(this);
+    return _$$_MyDraftVideoEntityToJson(this);
   }
 }
 
@@ -299,20 +292,19 @@ abstract class _MyDraftVideoEntity implements MyDraftVideoEntity {
       _$_MyDraftVideoEntity.fromJson;
 
   @override
-  dynamic get id => throw _privateConstructorUsedError;
+  dynamic get id;
   @override
-  dynamic get videoId => throw _privateConstructorUsedError;
+  dynamic get videoId;
   @override
-  String get wkVideoName => throw _privateConstructorUsedError;
+  String get wkVideoName;
   @override
-  int get duration => throw _privateConstructorUsedError;
+  int get duration;
   @override
-  int get status => throw _privateConstructorUsedError;
+  int get status;
   @override
-  String get lastUpdatedAt => throw _privateConstructorUsedError;
+  String get lastUpdatedAt;
   @override
-  List<DraftVideoItemEntity> get listLayer =>
-      throw _privateConstructorUsedError;
+  List<DraftVideoItemEntity> get listLayer;
   @override
   @JsonKey(ignore: true)
   _$MyDraftVideoEntityCopyWith<_MyDraftVideoEntity> get copyWith =>

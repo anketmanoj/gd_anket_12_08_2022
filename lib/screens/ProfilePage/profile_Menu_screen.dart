@@ -15,6 +15,7 @@ import 'package:diamon_rose_app/screens/Admin/upload_video_screen.dart';
 import 'package:diamon_rose_app/screens/ArPreviewSetting/ArPreviewScreen.dart';
 import 'package:diamon_rose_app/screens/ArViewCollection/arViewCollectionScreen.dart';
 import 'package:diamon_rose_app/screens/CartScreen/cartScreen.dart';
+import 'package:diamon_rose_app/screens/FilterOptions/HomescreenFilterOptions.dart';
 import 'package:diamon_rose_app/screens/GiphyTest/giphyTest.dart';
 import 'package:diamon_rose_app/screens/HelpScreen/helpScreen.dart';
 import 'package:diamon_rose_app/screens/MonitisationPage/monitisationScreen.dart';
@@ -27,6 +28,7 @@ import 'package:diamon_rose_app/screens/ProfilePage/update_email_screen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/update_password_screen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/update_profile_screen.dart';
 import 'package:diamon_rose_app/screens/PurchaseHistory/purchaseHistroy.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/blockedAccounts/blockedAccountsScreen.dart';
 import 'package:diamon_rose_app/screens/closeAccount/closeAccountScreen.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
@@ -36,6 +38,7 @@ import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
 import 'package:diamon_rose_app/services/dbService.dart';
 import 'package:diamon_rose_app/services/dynamic_link_service.dart';
+import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/apple_pay.dart';
@@ -45,6 +48,7 @@ import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -527,29 +531,16 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () async {
-                    await FirebaseFirestore.instance
-                        .collection("posts")
-                        .get()
-                        .then((value) => value.docs.forEach((element) async {
-                              if (!element.data().containsKey("views")) {
-                                await FirebaseFirestore.instance
-                                    .collection("posts")
-                                    .doc(element.id)
-                                    .update({
-                                  "views": 0,
-                                });
-                              }
-                            }));
-                    // Navigator.push(
-                    //   context,
-                    //   PageTransition(
-                    //       child: PurchaseHistoryScreen(),
-                    //       type: PageTransitionType.rightToLeft),
-                    // );
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          child: HomescreenFilterOptions(),
+                          type: PageTransitionType.rightToLeft),
+                    );
                   },
-                  leadingIcon: Icons.history,
+                  leadingIcon: Icons.filter_alt_rounded,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Diamond Histroy",
+                  text: "Post Filter",
                 ),
                 // ListTileOption(
                 //   constantColors: constantColors,

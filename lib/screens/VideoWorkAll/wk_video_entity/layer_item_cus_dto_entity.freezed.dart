@@ -1,5 +1,6 @@
+// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'layer_item_cus_dto_entity.dart';
 
@@ -30,7 +31,7 @@ class _$LayerItemCusDTOEntityTearOff {
     );
   }
 
-  LayerItemCusDTOEntity fromJson(Map<String, Object> json) {
+  LayerItemCusDTOEntity fromJson(Map<String, Object?> json) {
     return LayerItemCusDTOEntity.fromJson(json);
   }
 }
@@ -141,7 +142,7 @@ class _$_LayerItemCusDTOEntity implements _LayerItemCusDTOEntity {
       {this.id, this.itemUrl = '', this.itemThumbnailUrl = ''});
 
   factory _$_LayerItemCusDTOEntity.fromJson(Map<String, dynamic> json) =>
-      _$_$_LayerItemCusDTOEntityFromJson(json);
+      _$$_LayerItemCusDTOEntityFromJson(json);
 
   @override
   final int? id;
@@ -160,23 +161,16 @@ class _$_LayerItemCusDTOEntity implements _LayerItemCusDTOEntity {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _LayerItemCusDTOEntity &&
-            (identical(other.id, id) ||
-                const DeepCollectionEquality().equals(other.id, id)) &&
-            (identical(other.itemUrl, itemUrl) ||
-                const DeepCollectionEquality()
-                    .equals(other.itemUrl, itemUrl)) &&
+        (other.runtimeType == runtimeType &&
+            other is _LayerItemCusDTOEntity &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.itemUrl, itemUrl) || other.itemUrl == itemUrl) &&
             (identical(other.itemThumbnailUrl, itemThumbnailUrl) ||
-                const DeepCollectionEquality()
-                    .equals(other.itemThumbnailUrl, itemThumbnailUrl)));
+                other.itemThumbnailUrl == itemThumbnailUrl));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(id) ^
-      const DeepCollectionEquality().hash(itemUrl) ^
-      const DeepCollectionEquality().hash(itemThumbnailUrl);
+  int get hashCode => Object.hash(runtimeType, id, itemUrl, itemThumbnailUrl);
 
   @JsonKey(ignore: true)
   @override
@@ -186,7 +180,7 @@ class _$_LayerItemCusDTOEntity implements _LayerItemCusDTOEntity {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$_$_LayerItemCusDTOEntityToJson(this);
+    return _$$_LayerItemCusDTOEntityToJson(this);
   }
 }
 
@@ -200,11 +194,11 @@ abstract class _LayerItemCusDTOEntity implements LayerItemCusDTOEntity {
       _$_LayerItemCusDTOEntity.fromJson;
 
   @override
-  int? get id => throw _privateConstructorUsedError;
+  int? get id;
   @override
-  String get itemUrl => throw _privateConstructorUsedError;
+  String get itemUrl;
   @override
-  String get itemThumbnailUrl => throw _privateConstructorUsedError;
+  String get itemThumbnailUrl;
   @override
   @JsonKey(ignore: true)
   _$LayerItemCusDTOEntityCopyWith<_LayerItemCusDTOEntity> get copyWith =>

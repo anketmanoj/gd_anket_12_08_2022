@@ -8,4 +8,6 @@ class PreloadEvent with _$PreloadEvent {
   const factory PreloadEvent.updateUrls(List<Video> urls) = _UpdateUrls;
   const factory PreloadEvent.onVideoIndexChanged(int index) =
       _OnVideoIndexChanged;
+  const factory PreloadEvent.filterBetweenFreePaid(
+      HomeScreenOptions filterOption) = _FilterBetweenFreePaid;
 }

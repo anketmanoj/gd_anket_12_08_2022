@@ -1,5 +1,6 @@
+// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'following_preload_bloc.dart';
 
@@ -51,6 +52,14 @@ mixin _$FollowingPreloadEvent {
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function()? getVideosFromApi,
+    TResult Function()? setLoading,
+    TResult Function(List<Video> urls)? updateUrls,
+    TResult Function(int index)? onVideoIndexChanged,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
     TResult Function()? setLoading,
@@ -65,6 +74,14 @@ mixin _$FollowingPreloadEvent {
     required TResult Function(_SetLoading value) setLoading,
     required TResult Function(_UpdateUrls value) updateUrls,
     required TResult Function(_OnVideoIndexChanged value) onVideoIndexChanged,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_GetVideosFromApi value)? getVideosFromApi,
+    TResult Function(_SetLoading value)? setLoading,
+    TResult Function(_UpdateUrls value)? updateUrls,
+    TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -126,7 +143,8 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _GetVideosFromApi);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _GetVideosFromApi);
   }
 
   @override
@@ -141,6 +159,17 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     required TResult Function(int index) onVideoIndexChanged,
   }) {
     return getVideosFromApi();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function()? getVideosFromApi,
+    TResult Function()? setLoading,
+    TResult Function(List<Video> urls)? updateUrls,
+    TResult Function(int index)? onVideoIndexChanged,
+  }) {
+    return getVideosFromApi?.call();
   }
 
   @override
@@ -167,6 +196,17 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     required TResult Function(_OnVideoIndexChanged value) onVideoIndexChanged,
   }) {
     return getVideosFromApi(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_GetVideosFromApi value)? getVideosFromApi,
+    TResult Function(_SetLoading value)? setLoading,
+    TResult Function(_UpdateUrls value)? updateUrls,
+    TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
+  }) {
+    return getVideosFromApi?.call(this);
   }
 
   @override
@@ -220,7 +260,8 @@ class _$_SetLoading implements _SetLoading {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _SetLoading);
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _SetLoading);
   }
 
   @override
@@ -235,6 +276,17 @@ class _$_SetLoading implements _SetLoading {
     required TResult Function(int index) onVideoIndexChanged,
   }) {
     return setLoading();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function()? getVideosFromApi,
+    TResult Function()? setLoading,
+    TResult Function(List<Video> urls)? updateUrls,
+    TResult Function(int index)? onVideoIndexChanged,
+  }) {
+    return setLoading?.call();
   }
 
   @override
@@ -261,6 +313,17 @@ class _$_SetLoading implements _SetLoading {
     required TResult Function(_OnVideoIndexChanged value) onVideoIndexChanged,
   }) {
     return setLoading(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_GetVideosFromApi value)? getVideosFromApi,
+    TResult Function(_SetLoading value)? setLoading,
+    TResult Function(_UpdateUrls value)? updateUrls,
+    TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
+  }) {
+    return setLoading?.call(this);
   }
 
   @override
@@ -331,14 +394,14 @@ class _$_UpdateUrls implements _UpdateUrls {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _UpdateUrls &&
-            (identical(other.urls, urls) ||
-                const DeepCollectionEquality().equals(other.urls, urls)));
+        (other.runtimeType == runtimeType &&
+            other is _UpdateUrls &&
+            const DeepCollectionEquality().equals(other.urls, urls));
   }
 
   @override
   int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(urls);
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(urls));
 
   @JsonKey(ignore: true)
   @override
@@ -354,6 +417,17 @@ class _$_UpdateUrls implements _UpdateUrls {
     required TResult Function(int index) onVideoIndexChanged,
   }) {
     return updateUrls(urls);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function()? getVideosFromApi,
+    TResult Function()? setLoading,
+    TResult Function(List<Video> urls)? updateUrls,
+    TResult Function(int index)? onVideoIndexChanged,
+  }) {
+    return updateUrls?.call(urls);
   }
 
   @override
@@ -384,6 +458,17 @@ class _$_UpdateUrls implements _UpdateUrls {
 
   @override
   @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_GetVideosFromApi value)? getVideosFromApi,
+    TResult Function(_SetLoading value)? setLoading,
+    TResult Function(_UpdateUrls value)? updateUrls,
+    TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
+  }) {
+    return updateUrls?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_GetVideosFromApi value)? getVideosFromApi,
     TResult Function(_SetLoading value)? setLoading,
@@ -401,7 +486,7 @@ class _$_UpdateUrls implements _UpdateUrls {
 abstract class _UpdateUrls implements FollowingPreloadEvent {
   const factory _UpdateUrls(List<Video> urls) = _$_UpdateUrls;
 
-  List<Video> get urls => throw _privateConstructorUsedError;
+  List<Video> get urls;
   @JsonKey(ignore: true)
   _$UpdateUrlsCopyWith<_UpdateUrls> get copyWith =>
       throw _privateConstructorUsedError;
@@ -455,14 +540,13 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _OnVideoIndexChanged &&
-            (identical(other.index, index) ||
-                const DeepCollectionEquality().equals(other.index, index)));
+        (other.runtimeType == runtimeType &&
+            other is _OnVideoIndexChanged &&
+            (identical(other.index, index) || other.index == index));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(index);
+  int get hashCode => Object.hash(runtimeType, index);
 
   @JsonKey(ignore: true)
   @override
@@ -479,6 +563,17 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
     required TResult Function(int index) onVideoIndexChanged,
   }) {
     return onVideoIndexChanged(index);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function()? getVideosFromApi,
+    TResult Function()? setLoading,
+    TResult Function(List<Video> urls)? updateUrls,
+    TResult Function(int index)? onVideoIndexChanged,
+  }) {
+    return onVideoIndexChanged?.call(index);
   }
 
   @override
@@ -509,6 +604,17 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
 
   @override
   @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_GetVideosFromApi value)? getVideosFromApi,
+    TResult Function(_SetLoading value)? setLoading,
+    TResult Function(_UpdateUrls value)? updateUrls,
+    TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
+  }) {
+    return onVideoIndexChanged?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_GetVideosFromApi value)? getVideosFromApi,
     TResult Function(_SetLoading value)? setLoading,
@@ -526,7 +632,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
 abstract class _OnVideoIndexChanged implements FollowingPreloadEvent {
   const factory _OnVideoIndexChanged(int index) = _$_OnVideoIndexChanged;
 
-  int get index => throw _privateConstructorUsedError;
+  int get index;
   @JsonKey(ignore: true)
   _$OnVideoIndexChangedCopyWith<_OnVideoIndexChanged> get copyWith =>
       throw _privateConstructorUsedError;
@@ -712,31 +818,27 @@ class _$_FollowingPreloadState implements _FollowingPreloadState {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _FollowingPreloadState &&
-            (identical(other.urls, urls) ||
-                const DeepCollectionEquality().equals(other.urls, urls)) &&
-            (identical(other.controllers, controllers) ||
-                const DeepCollectionEquality()
-                    .equals(other.controllers, controllers)) &&
+        (other.runtimeType == runtimeType &&
+            other is _FollowingPreloadState &&
+            const DeepCollectionEquality().equals(other.urls, urls) &&
+            const DeepCollectionEquality()
+                .equals(other.controllers, controllers) &&
             (identical(other.focusedIndex, focusedIndex) ||
-                const DeepCollectionEquality()
-                    .equals(other.focusedIndex, focusedIndex)) &&
+                other.focusedIndex == focusedIndex) &&
             (identical(other.reloadCounter, reloadCounter) ||
-                const DeepCollectionEquality()
-                    .equals(other.reloadCounter, reloadCounter)) &&
+                other.reloadCounter == reloadCounter) &&
             (identical(other.isLoading, isLoading) ||
-                const DeepCollectionEquality()
-                    .equals(other.isLoading, isLoading)));
+                other.isLoading == isLoading));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(urls) ^
-      const DeepCollectionEquality().hash(controllers) ^
-      const DeepCollectionEquality().hash(focusedIndex) ^
-      const DeepCollectionEquality().hash(reloadCounter) ^
-      const DeepCollectionEquality().hash(isLoading);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(urls),
+      const DeepCollectionEquality().hash(controllers),
+      focusedIndex,
+      reloadCounter,
+      isLoading);
 
   @JsonKey(ignore: true)
   @override
@@ -754,16 +856,15 @@ abstract class _FollowingPreloadState implements FollowingPreloadState {
       required bool isLoading}) = _$_FollowingPreloadState;
 
   @override
-  List<Video> get urls => throw _privateConstructorUsedError;
+  List<Video> get urls;
   @override
-  Map<int, VideoPlayerController> get controllers =>
-      throw _privateConstructorUsedError;
+  Map<int, VideoPlayerController> get controllers;
   @override
-  int get focusedIndex => throw _privateConstructorUsedError;
+  int get focusedIndex;
   @override
-  int get reloadCounter => throw _privateConstructorUsedError;
+  int get reloadCounter;
   @override
-  bool get isLoading => throw _privateConstructorUsedError;
+  bool get isLoading;
   @override
   @JsonKey(ignore: true)
   _$FollowingPreloadStateCopyWith<_FollowingPreloadState> get copyWith =>

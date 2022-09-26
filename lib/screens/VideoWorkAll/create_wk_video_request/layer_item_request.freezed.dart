@@ -1,5 +1,6 @@
+// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'layer_item_request.dart';
 
@@ -48,7 +49,7 @@ class _$RequestLayerItemModelTearOff {
     );
   }
 
-  RequestLayerItemModel fromJson(Map<String, Object> json) {
+  RequestLayerItemModel fromJson(Map<String, Object?> json) {
     return RequestLayerItemModel.fromJson(json);
   }
 }
@@ -279,7 +280,7 @@ class _$_RequestLayerItemModel implements _RequestLayerItemModel {
       this.ycoordinates});
 
   factory _$_RequestLayerItemModel.fromJson(Map<String, dynamic> json) =>
-      _$_$_RequestLayerItemModelFromJson(json);
+      _$$_RequestLayerItemModelFromJson(json);
 
   @override
   final int? endTime;
@@ -312,51 +313,40 @@ class _$_RequestLayerItemModel implements _RequestLayerItemModel {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _RequestLayerItemModel &&
-            (identical(other.endTime, endTime) ||
-                const DeepCollectionEquality()
-                    .equals(other.endTime, endTime)) &&
-            (identical(other.height, height) ||
-                const DeepCollectionEquality().equals(other.height, height)) &&
-            (identical(other.itemId, itemId) ||
-                const DeepCollectionEquality().equals(other.itemId, itemId)) &&
+        (other.runtimeType == runtimeType &&
+            other is _RequestLayerItemModel &&
+            (identical(other.endTime, endTime) || other.endTime == endTime) &&
+            (identical(other.height, height) || other.height == height) &&
+            (identical(other.itemId, itemId) || other.itemId == itemId) &&
             (identical(other.itemType, itemType) ||
-                const DeepCollectionEquality()
-                    .equals(other.itemType, itemType)) &&
+                other.itemType == itemType) &&
             (identical(other.position, position) ||
-                const DeepCollectionEquality()
-                    .equals(other.position, position)) &&
-            (identical(other.radian, radian) ||
-                const DeepCollectionEquality().equals(other.radian, radian)) &&
-            (identical(other.volume, volume) ||
-                const DeepCollectionEquality().equals(other.volume, volume)) &&
+                other.position == position) &&
+            (identical(other.radian, radian) || other.radian == radian) &&
+            (identical(other.volume, volume) || other.volume == volume) &&
             (identical(other.startTime, startTime) ||
-                const DeepCollectionEquality()
-                    .equals(other.startTime, startTime)) &&
-            (identical(other.width, width) ||
-                const DeepCollectionEquality().equals(other.width, width)) &&
+                other.startTime == startTime) &&
+            (identical(other.width, width) || other.width == width) &&
             (identical(other.xcoordinates, xcoordinates) ||
-                const DeepCollectionEquality()
-                    .equals(other.xcoordinates, xcoordinates)) &&
+                other.xcoordinates == xcoordinates) &&
             (identical(other.ycoordinates, ycoordinates) ||
-                const DeepCollectionEquality()
-                    .equals(other.ycoordinates, ycoordinates)));
+                other.ycoordinates == ycoordinates));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(endTime) ^
-      const DeepCollectionEquality().hash(height) ^
-      const DeepCollectionEquality().hash(itemId) ^
-      const DeepCollectionEquality().hash(itemType) ^
-      const DeepCollectionEquality().hash(position) ^
-      const DeepCollectionEquality().hash(radian) ^
-      const DeepCollectionEquality().hash(volume) ^
-      const DeepCollectionEquality().hash(startTime) ^
-      const DeepCollectionEquality().hash(width) ^
-      const DeepCollectionEquality().hash(xcoordinates) ^
-      const DeepCollectionEquality().hash(ycoordinates);
+  int get hashCode => Object.hash(
+      runtimeType,
+      endTime,
+      height,
+      itemId,
+      itemType,
+      position,
+      radian,
+      volume,
+      startTime,
+      width,
+      xcoordinates,
+      ycoordinates);
 
   @JsonKey(ignore: true)
   @override
@@ -366,7 +356,7 @@ class _$_RequestLayerItemModel implements _RequestLayerItemModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$_$_RequestLayerItemModelToJson(this);
+    return _$$_RequestLayerItemModelToJson(this);
   }
 }
 
@@ -388,27 +378,27 @@ abstract class _RequestLayerItemModel implements RequestLayerItemModel {
       _$_RequestLayerItemModel.fromJson;
 
   @override
-  int? get endTime => throw _privateConstructorUsedError;
+  int? get endTime;
   @override
-  double? get height => throw _privateConstructorUsedError;
+  double? get height;
   @override
-  int? get itemId => throw _privateConstructorUsedError;
+  int? get itemId;
   @override
-  LayerType? get itemType => throw _privateConstructorUsedError;
+  LayerType? get itemType;
   @override
-  int? get position => throw _privateConstructorUsedError;
+  int? get position;
   @override
-  double? get radian => throw _privateConstructorUsedError;
+  double? get radian;
   @override
-  int? get volume => throw _privateConstructorUsedError;
+  int? get volume;
   @override
-  int? get startTime => throw _privateConstructorUsedError;
+  int? get startTime;
   @override
-  double? get width => throw _privateConstructorUsedError;
+  double? get width;
   @override
-  double? get xcoordinates => throw _privateConstructorUsedError;
+  double? get xcoordinates;
   @override
-  double? get ycoordinates => throw _privateConstructorUsedError;
+  double? get ycoordinates;
   @override
   @JsonKey(ignore: true)
   _$RequestLayerItemModelCopyWith<_RequestLayerItemModel> get copyWith =>

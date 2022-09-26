@@ -6,24 +6,23 @@ part of 'layer_item_request.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_RequestLayerItemModel _$_$_RequestLayerItemModelFromJson(
-    Map<String, dynamic> json) {
-  return _$_RequestLayerItemModel(
-    endTime: json['endTime'] as int?,
-    height: (json['height'] as num?)?.toDouble(),
-    itemId: json['itemId'] as int?,
-    itemType: _$enumDecodeNullable(_$LayerTypeEnumMap, json['itemType']),
-    position: json['position'] as int?,
-    radian: (json['radian'] as num?)?.toDouble(),
-    volume: json['volume'] as int?,
-    startTime: json['startTime'] as int?,
-    width: (json['width'] as num?)?.toDouble(),
-    xcoordinates: (json['xcoordinates'] as num?)?.toDouble(),
-    ycoordinates: (json['ycoordinates'] as num?)?.toDouble(),
-  );
-}
+_$_RequestLayerItemModel _$$_RequestLayerItemModelFromJson(
+        Map<String, dynamic> json) =>
+    _$_RequestLayerItemModel(
+      endTime: json['endTime'] as int?,
+      height: (json['height'] as num?)?.toDouble(),
+      itemId: json['itemId'] as int?,
+      itemType: $enumDecodeNullable(_$LayerTypeEnumMap, json['itemType']),
+      position: json['position'] as int?,
+      radian: (json['radian'] as num?)?.toDouble(),
+      volume: json['volume'] as int?,
+      startTime: json['startTime'] as int?,
+      width: (json['width'] as num?)?.toDouble(),
+      xcoordinates: (json['xcoordinates'] as num?)?.toDouble(),
+      ycoordinates: (json['ycoordinates'] as num?)?.toDouble(),
+    );
 
-Map<String, dynamic> _$_$_RequestLayerItemModelToJson(
+Map<String, dynamic> _$$_RequestLayerItemModelToJson(
         _$_RequestLayerItemModel instance) =>
     <String, dynamic>{
       'endTime': instance.endTime,
@@ -38,43 +37,6 @@ Map<String, dynamic> _$_$_RequestLayerItemModelToJson(
       'xcoordinates': instance.xcoordinates,
       'ycoordinates': instance.ycoordinates,
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
-
-K? _$enumDecodeNullable<K, V>(
-  Map<K, V> enumValues,
-  dynamic source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
-}
 
 const _$LayerTypeEnumMap = {
   LayerType.ar: 1,

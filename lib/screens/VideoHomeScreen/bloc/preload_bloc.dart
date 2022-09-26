@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:diamon_rose_app/main.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/core/constants.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/service/api_service.dart';
+import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -27,9 +28,76 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
       setLoading: (e) async* {
         yield state.copyWith(isLoading: true);
       },
+      filterBetweenFreePaid: (e) async* {
+        log("${e.filterOption} Anket chosen");
+        switch (e.filterOption) {
+          case HomeScreenOptions.Free:
+            state.urls.clear();
+            await ApiService.loadFreeOnly();
+            final List<Video> _urls = await ApiService.getVideos();
+            state.urls.addAll(
+                _urls.where((element) => element.isFree == true).toList());
+
+            log("state length in free == ${state.urls.length}");
+
+            /// Initialize 1st video
+            await _initializeControllerAtIndex(0);
+
+            /// Play 1st video
+            _playControllerAtIndex(0);
+
+            /// Initialize 2nd video
+            await _initializeControllerAtIndex(1);
+
+            yield state.copyWith(filterOption: e.filterOption);
+
+            break;
+          case HomeScreenOptions.Paid:
+            state.urls.clear();
+            await ApiService.loadPaidOnly();
+            final List<Video> _urls = await ApiService.getVideos();
+            state.urls.addAll(
+                _urls.where((element) => element.isPaid == true).toList());
+
+            log("state length in paid == ${state.urls.length}");
+
+            /// Initialize 1st video
+            await _initializeControllerAtIndex(0);
+
+            /// Play 1st video
+            _playControllerAtIndex(0);
+
+            /// Initialize 2nd video
+            await _initializeControllerAtIndex(1);
+            log("in paid");
+
+            yield state.copyWith(filterOption: e.filterOption);
+
+            break;
+
+          case HomeScreenOptions.Both:
+            state.urls.clear();
+            await ApiService.load();
+            final List<Video> _urls = await ApiService.getVideos();
+            state.urls.addAll(_urls);
+            log("state length in both == ${state.urls.length}");
+
+            /// Initialize 1st video
+            await _initializeControllerAtIndex(0);
+
+            /// Play 1st video
+            _playControllerAtIndex(0);
+
+            /// Initialize 2nd video
+            await _initializeControllerAtIndex(1);
+
+            yield state.copyWith(filterOption: e.filterOption);
+            break;
+        }
+      },
       getVideosFromApi: (e) async* {
         /// Fetch first 5 videos from api
-        await ApiService.load();
+        await ApiService.loadFreeOnly();
         final List<Video> _urls = await ApiService.getVideos();
         state.urls.addAll(_urls);
 

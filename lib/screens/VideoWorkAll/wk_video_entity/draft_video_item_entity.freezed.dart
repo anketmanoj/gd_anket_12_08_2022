@@ -1,5 +1,6 @@
+// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'draft_video_item_entity.dart';
 
@@ -29,7 +30,7 @@ class _$DraftVideoItemEntityTearOff {
     );
   }
 
-  DraftVideoItemEntity fromJson(Map<String, Object> json) {
+  DraftVideoItemEntity fromJson(Map<String, Object?> json) {
     return DraftVideoItemEntity.fromJson(json);
   }
 }
@@ -153,7 +154,7 @@ class _$_DraftVideoItemEntity implements _DraftVideoItemEntity {
       {required this.layerItem, required this.layerItemCusDTO});
 
   factory _$_DraftVideoItemEntity.fromJson(Map<String, dynamic> json) =>
-      _$_$_DraftVideoItemEntityFromJson(json);
+      _$$_DraftVideoItemEntityFromJson(json);
 
   @override
   final LayerItemEntity layerItem;
@@ -168,20 +169,16 @@ class _$_DraftVideoItemEntity implements _DraftVideoItemEntity {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other is _DraftVideoItemEntity &&
+        (other.runtimeType == runtimeType &&
+            other is _DraftVideoItemEntity &&
             (identical(other.layerItem, layerItem) ||
-                const DeepCollectionEquality()
-                    .equals(other.layerItem, layerItem)) &&
+                other.layerItem == layerItem) &&
             (identical(other.layerItemCusDTO, layerItemCusDTO) ||
-                const DeepCollectionEquality()
-                    .equals(other.layerItemCusDTO, layerItemCusDTO)));
+                other.layerItemCusDTO == layerItemCusDTO));
   }
 
   @override
-  int get hashCode =>
-      runtimeType.hashCode ^
-      const DeepCollectionEquality().hash(layerItem) ^
-      const DeepCollectionEquality().hash(layerItemCusDTO);
+  int get hashCode => Object.hash(runtimeType, layerItem, layerItemCusDTO);
 
   @JsonKey(ignore: true)
   @override
@@ -191,7 +188,7 @@ class _$_DraftVideoItemEntity implements _DraftVideoItemEntity {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$_$_DraftVideoItemEntityToJson(this);
+    return _$$_DraftVideoItemEntityToJson(this);
   }
 }
 
@@ -205,10 +202,9 @@ abstract class _DraftVideoItemEntity implements DraftVideoItemEntity {
       _$_DraftVideoItemEntity.fromJson;
 
   @override
-  LayerItemEntity get layerItem => throw _privateConstructorUsedError;
+  LayerItemEntity get layerItem;
   @override
-  LayerItemCusDTOEntity get layerItemCusDTO =>
-      throw _privateConstructorUsedError;
+  LayerItemCusDTOEntity get layerItemCusDTO;
   @override
   @JsonKey(ignore: true)
   _$DraftVideoItemEntityCopyWith<_DraftVideoItemEntity> get copyWith =>
