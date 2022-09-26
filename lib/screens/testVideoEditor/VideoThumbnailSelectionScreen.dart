@@ -108,6 +108,7 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
   }
 
   void _exportCover() async {
+    _isExporting.value = true;
     await _controller.extractCover(
       onCompleted: (cover) async {
         if (!mounted) return;
@@ -118,22 +119,17 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
             _isExporting.value = false;
             if (!mounted) return;
             if (videoFileNew != null) {
-              final VideoPlayerController _videoController =
-                  VideoPlayerController.file(videoFileNew);
-              await _videoController.initialize().then((value) {
-                Navigator.pushReplacement(
-                    context,
-                    PageTransition(
-                        child: PreviewVideoScreen(
-                          bgMaterialThumnailFile: widget.bgMaterialThumnailFile,
-                          bgFile: widget.file,
-                          thumbnailFile: cover!,
-                          videoFile: File(videoFileNew.path),
-                          videoPlayerController: _videoController,
-                          arList: widget.arList,
-                        ),
-                        type: PageTransitionType.fade));
-              });
+              Navigator.pushReplacement(
+                  context,
+                  PageTransition(
+                      child: PreviewVideoScreen(
+                        bgMaterialThumnailFile: widget.bgMaterialThumnailFile,
+                        bgFile: widget.file,
+                        thumbnailFile: cover!,
+                        videoFile: File(videoFileNew.path),
+                        arList: widget.arList,
+                      ),
+                      type: PageTransitionType.fade));
             }
           },
         );
@@ -313,6 +309,7 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
                           try {
                             _exportCover();
                           } catch (e) {
+                            _isExporting.value = false;
                             CoolAlert.show(
                                 context: context,
                                 type: CoolAlertType.info,

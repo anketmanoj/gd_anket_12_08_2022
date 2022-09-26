@@ -263,6 +263,7 @@ class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
                           try {
                             _exportVideo();
                           } catch (e) {
+                            _isExporting.value = false;
                             CoolAlert.show(
                                 context: context,
                                 type: CoolAlertType.info,
