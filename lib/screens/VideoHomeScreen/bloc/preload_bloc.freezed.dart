@@ -42,6 +42,12 @@ class _$PreloadEventTearOff {
       filterOption,
     );
   }
+
+  _SetLoadingForFilter setLoadingForFilter(bool loadingVal) {
+    return _SetLoadingForFilter(
+      loadingVal,
+    );
+  }
 }
 
 /// @nodoc
@@ -57,6 +63,7 @@ mixin _$PreloadEvent {
     required TResult Function(int index) onVideoIndexChanged,
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
+    required TResult Function(bool loadingVal) setLoadingForFilter,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -66,6 +73,7 @@ mixin _$PreloadEvent {
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -75,6 +83,7 @@ mixin _$PreloadEvent {
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -86,6 +95,7 @@ mixin _$PreloadEvent {
     required TResult Function(_OnVideoIndexChanged value) onVideoIndexChanged,
     required TResult Function(_FilterBetweenFreePaid value)
         filterBetweenFreePaid,
+    required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -95,6 +105,7 @@ mixin _$PreloadEvent {
     TResult Function(_UpdateUrls value)? updateUrls,
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -104,6 +115,7 @@ mixin _$PreloadEvent {
     TResult Function(_UpdateUrls value)? updateUrls,
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -172,6 +184,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     required TResult Function(int index) onVideoIndexChanged,
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
+    required TResult Function(bool loadingVal) setLoadingForFilter,
   }) {
     return getVideosFromApi();
   }
@@ -184,6 +197,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
   }) {
     return getVideosFromApi?.call();
   }
@@ -196,6 +210,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
     required TResult orElse(),
   }) {
     if (getVideosFromApi != null) {
@@ -213,6 +228,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     required TResult Function(_OnVideoIndexChanged value) onVideoIndexChanged,
     required TResult Function(_FilterBetweenFreePaid value)
         filterBetweenFreePaid,
+    required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
   }) {
     return getVideosFromApi(this);
   }
@@ -225,6 +241,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     TResult Function(_UpdateUrls value)? updateUrls,
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
   }) {
     return getVideosFromApi?.call(this);
   }
@@ -237,6 +254,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     TResult Function(_UpdateUrls value)? updateUrls,
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
     required TResult orElse(),
   }) {
     if (getVideosFromApi != null) {
@@ -296,6 +314,7 @@ class _$_SetLoading implements _SetLoading {
     required TResult Function(int index) onVideoIndexChanged,
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
+    required TResult Function(bool loadingVal) setLoadingForFilter,
   }) {
     return setLoading();
   }
@@ -308,6 +327,7 @@ class _$_SetLoading implements _SetLoading {
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
   }) {
     return setLoading?.call();
   }
@@ -320,6 +340,7 @@ class _$_SetLoading implements _SetLoading {
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
     required TResult orElse(),
   }) {
     if (setLoading != null) {
@@ -337,6 +358,7 @@ class _$_SetLoading implements _SetLoading {
     required TResult Function(_OnVideoIndexChanged value) onVideoIndexChanged,
     required TResult Function(_FilterBetweenFreePaid value)
         filterBetweenFreePaid,
+    required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
   }) {
     return setLoading(this);
   }
@@ -349,6 +371,7 @@ class _$_SetLoading implements _SetLoading {
     TResult Function(_UpdateUrls value)? updateUrls,
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
   }) {
     return setLoading?.call(this);
   }
@@ -361,6 +384,7 @@ class _$_SetLoading implements _SetLoading {
     TResult Function(_UpdateUrls value)? updateUrls,
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
     required TResult orElse(),
   }) {
     if (setLoading != null) {
@@ -444,6 +468,7 @@ class _$_UpdateUrls implements _UpdateUrls {
     required TResult Function(int index) onVideoIndexChanged,
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
+    required TResult Function(bool loadingVal) setLoadingForFilter,
   }) {
     return updateUrls(urls);
   }
@@ -456,6 +481,7 @@ class _$_UpdateUrls implements _UpdateUrls {
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
   }) {
     return updateUrls?.call(urls);
   }
@@ -468,6 +494,7 @@ class _$_UpdateUrls implements _UpdateUrls {
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
     required TResult orElse(),
   }) {
     if (updateUrls != null) {
@@ -485,6 +512,7 @@ class _$_UpdateUrls implements _UpdateUrls {
     required TResult Function(_OnVideoIndexChanged value) onVideoIndexChanged,
     required TResult Function(_FilterBetweenFreePaid value)
         filterBetweenFreePaid,
+    required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
   }) {
     return updateUrls(this);
   }
@@ -497,6 +525,7 @@ class _$_UpdateUrls implements _UpdateUrls {
     TResult Function(_UpdateUrls value)? updateUrls,
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
   }) {
     return updateUrls?.call(this);
   }
@@ -509,6 +538,7 @@ class _$_UpdateUrls implements _UpdateUrls {
     TResult Function(_UpdateUrls value)? updateUrls,
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
     required TResult orElse(),
   }) {
     if (updateUrls != null) {
@@ -598,6 +628,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
     required TResult Function(int index) onVideoIndexChanged,
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
+    required TResult Function(bool loadingVal) setLoadingForFilter,
   }) {
     return onVideoIndexChanged(index);
   }
@@ -610,6 +641,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
   }) {
     return onVideoIndexChanged?.call(index);
   }
@@ -622,6 +654,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
     required TResult orElse(),
   }) {
     if (onVideoIndexChanged != null) {
@@ -639,6 +672,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
     required TResult Function(_OnVideoIndexChanged value) onVideoIndexChanged,
     required TResult Function(_FilterBetweenFreePaid value)
         filterBetweenFreePaid,
+    required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
   }) {
     return onVideoIndexChanged(this);
   }
@@ -651,6 +685,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
     TResult Function(_UpdateUrls value)? updateUrls,
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
   }) {
     return onVideoIndexChanged?.call(this);
   }
@@ -663,6 +698,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
     TResult Function(_UpdateUrls value)? updateUrls,
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
     required TResult orElse(),
   }) {
     if (onVideoIndexChanged != null) {
@@ -731,13 +767,12 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _FilterBetweenFreePaid &&
-            const DeepCollectionEquality()
-                .equals(other.filterOption, filterOption));
+            (identical(other.filterOption, filterOption) ||
+                other.filterOption == filterOption));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(filterOption));
+  int get hashCode => Object.hash(runtimeType, filterOption);
 
   @JsonKey(ignore: true)
   @override
@@ -754,6 +789,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
     required TResult Function(int index) onVideoIndexChanged,
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
+    required TResult Function(bool loadingVal) setLoadingForFilter,
   }) {
     return filterBetweenFreePaid(filterOption);
   }
@@ -766,6 +802,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
   }) {
     return filterBetweenFreePaid?.call(filterOption);
   }
@@ -778,6 +815,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
     required TResult orElse(),
   }) {
     if (filterBetweenFreePaid != null) {
@@ -795,6 +833,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
     required TResult Function(_OnVideoIndexChanged value) onVideoIndexChanged,
     required TResult Function(_FilterBetweenFreePaid value)
         filterBetweenFreePaid,
+    required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
   }) {
     return filterBetweenFreePaid(this);
   }
@@ -807,6 +846,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
     TResult Function(_UpdateUrls value)? updateUrls,
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
   }) {
     return filterBetweenFreePaid?.call(this);
   }
@@ -819,6 +859,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
     TResult Function(_UpdateUrls value)? updateUrls,
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
     required TResult orElse(),
   }) {
     if (filterBetweenFreePaid != null) {
@@ -839,6 +880,167 @@ abstract class _FilterBetweenFreePaid implements PreloadEvent {
 }
 
 /// @nodoc
+abstract class _$SetLoadingForFilterCopyWith<$Res> {
+  factory _$SetLoadingForFilterCopyWith(_SetLoadingForFilter value,
+          $Res Function(_SetLoadingForFilter) then) =
+      __$SetLoadingForFilterCopyWithImpl<$Res>;
+  $Res call({bool loadingVal});
+}
+
+/// @nodoc
+class __$SetLoadingForFilterCopyWithImpl<$Res>
+    extends _$PreloadEventCopyWithImpl<$Res>
+    implements _$SetLoadingForFilterCopyWith<$Res> {
+  __$SetLoadingForFilterCopyWithImpl(
+      _SetLoadingForFilter _value, $Res Function(_SetLoadingForFilter) _then)
+      : super(_value, (v) => _then(v as _SetLoadingForFilter));
+
+  @override
+  _SetLoadingForFilter get _value => super._value as _SetLoadingForFilter;
+
+  @override
+  $Res call({
+    Object? loadingVal = freezed,
+  }) {
+    return _then(_SetLoadingForFilter(
+      loadingVal == freezed
+          ? _value.loadingVal
+          : loadingVal // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_SetLoadingForFilter implements _SetLoadingForFilter {
+  const _$_SetLoadingForFilter(this.loadingVal);
+
+  @override
+  final bool loadingVal;
+
+  @override
+  String toString() {
+    return 'PreloadEvent.setLoadingForFilter(loadingVal: $loadingVal)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _SetLoadingForFilter &&
+            (identical(other.loadingVal, loadingVal) ||
+                other.loadingVal == loadingVal));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, loadingVal);
+
+  @JsonKey(ignore: true)
+  @override
+  _$SetLoadingForFilterCopyWith<_SetLoadingForFilter> get copyWith =>
+      __$SetLoadingForFilterCopyWithImpl<_SetLoadingForFilter>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() getVideosFromApi,
+    required TResult Function() setLoading,
+    required TResult Function(List<Video> urls) updateUrls,
+    required TResult Function(int index) onVideoIndexChanged,
+    required TResult Function(HomeScreenOptions filterOption)
+        filterBetweenFreePaid,
+    required TResult Function(bool loadingVal) setLoadingForFilter,
+  }) {
+    return setLoadingForFilter(loadingVal);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function()? getVideosFromApi,
+    TResult Function()? setLoading,
+    TResult Function(List<Video> urls)? updateUrls,
+    TResult Function(int index)? onVideoIndexChanged,
+    TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
+  }) {
+    return setLoadingForFilter?.call(loadingVal);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? getVideosFromApi,
+    TResult Function()? setLoading,
+    TResult Function(List<Video> urls)? updateUrls,
+    TResult Function(int index)? onVideoIndexChanged,
+    TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
+    required TResult orElse(),
+  }) {
+    if (setLoadingForFilter != null) {
+      return setLoadingForFilter(loadingVal);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_GetVideosFromApi value) getVideosFromApi,
+    required TResult Function(_SetLoading value) setLoading,
+    required TResult Function(_UpdateUrls value) updateUrls,
+    required TResult Function(_OnVideoIndexChanged value) onVideoIndexChanged,
+    required TResult Function(_FilterBetweenFreePaid value)
+        filterBetweenFreePaid,
+    required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
+  }) {
+    return setLoadingForFilter(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_GetVideosFromApi value)? getVideosFromApi,
+    TResult Function(_SetLoading value)? setLoading,
+    TResult Function(_UpdateUrls value)? updateUrls,
+    TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
+    TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+  }) {
+    return setLoadingForFilter?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_GetVideosFromApi value)? getVideosFromApi,
+    TResult Function(_SetLoading value)? setLoading,
+    TResult Function(_UpdateUrls value)? updateUrls,
+    TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
+    TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    required TResult orElse(),
+  }) {
+    if (setLoadingForFilter != null) {
+      return setLoadingForFilter(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _SetLoadingForFilter implements PreloadEvent {
+  const factory _SetLoadingForFilter(bool loadingVal) = _$_SetLoadingForFilter;
+
+  bool get loadingVal;
+  @JsonKey(ignore: true)
+  _$SetLoadingForFilterCopyWith<_SetLoadingForFilter> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 class _$PreloadStateTearOff {
   const _$PreloadStateTearOff();
 
@@ -848,7 +1050,8 @@ class _$PreloadStateTearOff {
       required int focusedIndex,
       required int reloadCounter,
       required bool isLoading,
-      required HomeScreenOptions filterOption}) {
+      required HomeScreenOptions filterOption,
+      required bool isLoadingFilter}) {
     return _PreloadState(
       urls: urls,
       controllers: controllers,
@@ -856,6 +1059,7 @@ class _$PreloadStateTearOff {
       reloadCounter: reloadCounter,
       isLoading: isLoading,
       filterOption: filterOption,
+      isLoadingFilter: isLoadingFilter,
     );
   }
 }
@@ -872,6 +1076,7 @@ mixin _$PreloadState {
   int get reloadCounter => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
   HomeScreenOptions get filterOption => throw _privateConstructorUsedError;
+  bool get isLoadingFilter => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $PreloadStateCopyWith<PreloadState> get copyWith =>
@@ -889,7 +1094,8 @@ abstract class $PreloadStateCopyWith<$Res> {
       int focusedIndex,
       int reloadCounter,
       bool isLoading,
-      HomeScreenOptions filterOption});
+      HomeScreenOptions filterOption,
+      bool isLoadingFilter});
 }
 
 /// @nodoc
@@ -908,6 +1114,7 @@ class _$PreloadStateCopyWithImpl<$Res> implements $PreloadStateCopyWith<$Res> {
     Object? reloadCounter = freezed,
     Object? isLoading = freezed,
     Object? filterOption = freezed,
+    Object? isLoadingFilter = freezed,
   }) {
     return _then(_value.copyWith(
       urls: urls == freezed
@@ -934,6 +1141,10 @@ class _$PreloadStateCopyWithImpl<$Res> implements $PreloadStateCopyWith<$Res> {
           ? _value.filterOption
           : filterOption // ignore: cast_nullable_to_non_nullable
               as HomeScreenOptions,
+      isLoadingFilter: isLoadingFilter == freezed
+          ? _value.isLoadingFilter
+          : isLoadingFilter // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -951,7 +1162,8 @@ abstract class _$PreloadStateCopyWith<$Res>
       int focusedIndex,
       int reloadCounter,
       bool isLoading,
-      HomeScreenOptions filterOption});
+      HomeScreenOptions filterOption,
+      bool isLoadingFilter});
 }
 
 /// @nodoc
@@ -972,6 +1184,7 @@ class __$PreloadStateCopyWithImpl<$Res> extends _$PreloadStateCopyWithImpl<$Res>
     Object? reloadCounter = freezed,
     Object? isLoading = freezed,
     Object? filterOption = freezed,
+    Object? isLoadingFilter = freezed,
   }) {
     return _then(_PreloadState(
       urls: urls == freezed
@@ -998,6 +1211,10 @@ class __$PreloadStateCopyWithImpl<$Res> extends _$PreloadStateCopyWithImpl<$Res>
           ? _value.filterOption
           : filterOption // ignore: cast_nullable_to_non_nullable
               as HomeScreenOptions,
+      isLoadingFilter: isLoadingFilter == freezed
+          ? _value.isLoadingFilter
+          : isLoadingFilter // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -1011,7 +1228,8 @@ class _$_PreloadState implements _PreloadState {
       required this.focusedIndex,
       required this.reloadCounter,
       required this.isLoading,
-      required this.filterOption});
+      required this.filterOption,
+      required this.isLoadingFilter});
 
   @override
   final List<Video> urls;
@@ -1025,10 +1243,12 @@ class _$_PreloadState implements _PreloadState {
   final bool isLoading;
   @override
   final HomeScreenOptions filterOption;
+  @override
+  final bool isLoadingFilter;
 
   @override
   String toString() {
-    return 'PreloadState(urls: $urls, controllers: $controllers, focusedIndex: $focusedIndex, reloadCounter: $reloadCounter, isLoading: $isLoading, filterOption: $filterOption)';
+    return 'PreloadState(urls: $urls, controllers: $controllers, focusedIndex: $focusedIndex, reloadCounter: $reloadCounter, isLoading: $isLoading, filterOption: $filterOption, isLoadingFilter: $isLoadingFilter)';
   }
 
   @override
@@ -1045,8 +1265,10 @@ class _$_PreloadState implements _PreloadState {
                 other.reloadCounter == reloadCounter) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
-            const DeepCollectionEquality()
-                .equals(other.filterOption, filterOption));
+            (identical(other.filterOption, filterOption) ||
+                other.filterOption == filterOption) &&
+            (identical(other.isLoadingFilter, isLoadingFilter) ||
+                other.isLoadingFilter == isLoadingFilter));
   }
 
   @override
@@ -1057,7 +1279,8 @@ class _$_PreloadState implements _PreloadState {
       focusedIndex,
       reloadCounter,
       isLoading,
-      const DeepCollectionEquality().hash(filterOption));
+      filterOption,
+      isLoadingFilter);
 
   @JsonKey(ignore: true)
   @override
@@ -1072,7 +1295,8 @@ abstract class _PreloadState implements PreloadState {
       required int focusedIndex,
       required int reloadCounter,
       required bool isLoading,
-      required HomeScreenOptions filterOption}) = _$_PreloadState;
+      required HomeScreenOptions filterOption,
+      required bool isLoadingFilter}) = _$_PreloadState;
 
   @override
   List<Video> get urls;
@@ -1086,6 +1310,8 @@ abstract class _PreloadState implements PreloadState {
   bool get isLoading;
   @override
   HomeScreenOptions get filterOption;
+  @override
+  bool get isLoadingFilter;
   @override
   @JsonKey(ignore: true)
   _$PreloadStateCopyWith<_PreloadState> get copyWith =>

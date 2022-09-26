@@ -25,6 +25,9 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
     PreloadEvent event,
   ) async* {
     yield* event.map(
+      setLoadingForFilter: (e) async* {
+        yield state.copyWith(isLoadingFilter: e.loadingVal);
+      },
       setLoading: (e) async* {
         yield state.copyWith(isLoading: true);
       },

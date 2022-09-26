@@ -10,4 +10,6 @@ class PreloadEvent with _$PreloadEvent {
       _OnVideoIndexChanged;
   const factory PreloadEvent.filterBetweenFreePaid(
       HomeScreenOptions filterOption) = _FilterBetweenFreePaid;
+  const factory PreloadEvent.setLoadingForFilter(bool loadingVal) =
+      _SetLoadingForFilter;
 }

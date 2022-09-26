@@ -9,6 +9,7 @@ class PreloadState with _$PreloadState {
     required int reloadCounter,
     required bool isLoading,
     required HomeScreenOptions filterOption,
+    required bool isLoadingFilter,
   }) = _PreloadState;
 
   factory PreloadState.initial() => PreloadState(
@@ -18,5 +19,6 @@ class PreloadState with _$PreloadState {
         urls: [],
         controllers: {},
         filterOption: HomeScreenOptions.Free,
+        isLoadingFilter: false,
       );
 }
