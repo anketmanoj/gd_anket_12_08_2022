@@ -528,20 +528,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "Diamond History",
                 ),
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () async {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                          child: HomescreenFilterOptions(),
-                          type: PageTransitionType.rightToLeft),
-                    );
-                  },
-                  leadingIcon: Icons.filter_alt_rounded,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: "Post Filter",
-                ),
+
                 // ListTileOption(
                 //   constantColors: constantColors,
                 //   onTap: () async {
