@@ -8,6 +8,8 @@ class FollowingPreloadState with _$FollowingPreloadState {
     required int focusedIndex,
     required int reloadCounter,
     required bool isLoading,
+    required HomeScreenOptions filterOption,
+    required bool isLoadingFilter,
   }) = _FollowingPreloadState;
 
   factory FollowingPreloadState.initial() => FollowingPreloadState(
@@ -16,5 +18,7 @@ class FollowingPreloadState with _$FollowingPreloadState {
         isLoading: false,
         urls: [],
         controllers: {},
+        filterOption: HomeScreenOptions.Both,
+        isLoadingFilter: false,
       );
 }

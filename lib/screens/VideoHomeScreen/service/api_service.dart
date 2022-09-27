@@ -153,6 +153,30 @@ class ApiService extends ChangeNotifier {
   }
 
   static loadFollowingVideos() async {
+    _following_videos.clear();
+    List<String> followingUsers =
+        SharedPreferencesHelper.getListString("followersList");
+
+    log("following users list = ${followingUsers.length}");
+    await FirebaseFirestore.instance
+        .collection("posts")
+        .orderBy("timestamp", descending: true)
+        .where("useruid",
+            whereIn: followingUsers.map((e) => "$e").toList().sublist(
+                0, followingUsers.length > 10 ? 10 : followingUsers.length))
+        .get()
+        .then((value) {
+      value.docs.forEach((element) {
+        Video video = Video.fromJson(element.data());
+        _following_videos.add(video);
+      });
+    });
+
+    log("done loading all following videos");
+  }
+
+  static loadFollowingFreeVideos() async {
+    _following_videos.clear();
     List<String> followingUsers =
         SharedPreferencesHelper.getListString("followersList");
 
@@ -164,6 +188,30 @@ class ApiService extends ChangeNotifier {
             whereIn: followingUsers.map((e) => "$e").toList().sublist(
                 0, followingUsers.length > 10 ? 10 : followingUsers.length))
         .where("ispaid", isEqualTo: false)
+        .get()
+        .then((value) {
+      value.docs.forEach((element) {
+        Video video = Video.fromJson(element.data());
+        _following_videos.add(video);
+      });
+    });
+
+    log("done loading all following videos");
+  }
+
+  static loadFollowingPaidVideos() async {
+    _following_videos.clear();
+    List<String> followingUsers =
+        SharedPreferencesHelper.getListString("followersList");
+
+    log("following users list = ${followingUsers.length}");
+    await FirebaseFirestore.instance
+        .collection("posts")
+        .orderBy("timestamp", descending: true)
+        .where("useruid",
+            whereIn: followingUsers.map((e) => "$e").toList().sublist(
+                0, followingUsers.length > 10 ? 10 : followingUsers.length))
+        .where("ispaid", isEqualTo: true)
         .get()
         .then((value) {
       value.docs.forEach((element) {
