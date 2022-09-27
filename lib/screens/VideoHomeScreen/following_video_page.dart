@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:diamon_rose_app/screens/VideoHomeScreen/following_bloc/following_preload_bloc.dart';
 import 'package:diamon_rose_app/widgets/VideoWidget.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,7 @@ class _FollowingVideoPageState extends State<FollowingVideoPage>
               BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
                   .add(FollowingPreloadEvent.onVideoIndexChanged(index)),
           itemBuilder: (context, index) {
+            log("here in following now");
             // Is at end and isLoading
             final bool _isLoading =
                 state.isLoading && index == state.urls.length - 1;

@@ -1,12 +1,14 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diamon_rose_app/providers/homeScreenProvider.dart';
 import 'package:diamon_rose_app/providers/recommendedProvider.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/following_video_page.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/recommended_video_page.dart';
 import 'package:diamon_rose_app/screens/homePage/FollowingVideosFeed.dart';
 import 'package:diamon_rose_app/screens/homePage/RecommendedVideosFeed.dart';
+import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +26,32 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController homeScreenTabsController = PageController();
   ValueNotifier<int> pageIndex = ValueNotifier<int>(0);
+
+  void checkPage() async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(context.read<Authentication>().getUserId)
+        .collection("following")
+        .get()
+        .then((value) {
+      if (value.docs.length > 0) {
+        log("user has followers");
+        homeScreenTabsController.jumpToPage(1);
+        return true;
+      } else {
+        log("no followers");
+        pageIndex.value = 0;
+        return false;
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    checkPage();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(

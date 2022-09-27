@@ -107,7 +107,7 @@ class VideoWidget extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Container(
-                                  height: 20.h,
+                                  height: 40.h,
                                   width: 100.w,
                                   child: ImageNetworkLoader(
                                     imageUrl: video.thumbnailurl,
