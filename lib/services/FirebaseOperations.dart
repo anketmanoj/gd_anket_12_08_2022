@@ -2754,9 +2754,27 @@ class FirebaseOperations with ChangeNotifier {
     });
   }
 
-  Future updatePostView({required String videoId}) async {
-    await FirebaseFirestore.instance.collection("posts").doc(videoId).update({
-      "views": FieldValue.increment(1),
-    });
+  Future updatePostView(
+      {required String videoId,
+      required String useruidVal,
+      required Video videoVal}) async {
+    if (videoVal.isPaid) {
+      log("paid video but bought?");
+      if (videoVal.boughtBy.contains(useruidVal)) {
+        log("paid video but bought? YEs user bought");
+
+        await FirebaseFirestore.instance
+            .collection("posts")
+            .doc(videoId)
+            .update({
+          "views": FieldValue.increment(1),
+        });
+      }
+    } else if (videoVal.isFree) {
+      log("Free video view ");
+      await FirebaseFirestore.instance.collection("posts").doc(videoId).update({
+        "views": FieldValue.increment(1),
+      });
+    }
   }
 }

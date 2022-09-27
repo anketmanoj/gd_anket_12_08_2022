@@ -50,7 +50,11 @@ class VideoWidget extends StatelessWidget {
     final Authentication authentication =
         Provider.of<Authentication>(context, listen: false);
 
-    context.read<FirebaseOperations>().updatePostView(videoId: video.id);
+    context.read<FirebaseOperations>().updatePostView(
+          videoId: video.id,
+          useruidVal: context.read<Authentication>().getUserId,
+          videoVal: video,
+        );
     return VisibilityDetector(
       key: Key('${video.videotitle} + ${video.caption}'),
       onVisibilityChanged: (visibilityInfo) {
@@ -230,6 +234,13 @@ class VideoWidget extends StatelessWidget {
                                                 .getUserId)
                                             .snapshots(),
                                         builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.waiting) {
+                                            return Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          }
                                           if (snapshot.data!.exists) {
                                             return SizedBox();
                                           } else {
