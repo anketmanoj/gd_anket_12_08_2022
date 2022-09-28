@@ -150,4 +150,85 @@ class ArVideoCreation extends ChangeNotifier {
       await openAppSettings();
     }
   }
+
+  Future<void> arVideoCreatorAdmin({
+    required BuildContext ctx,
+    required File file,
+    required Duration endDuration,
+    required String fileName,
+    required String inputFileUrl,
+    required String ownerName,
+    required String useruid,
+    required String userToken,
+  }) async {
+    if (await Permission.storage.request().isGranted) {
+      log("starting | $ownerName");
+      final FirebaseOperations firebaseOperationsAdmin =
+          Provider.of<FirebaseOperations>(ctx, listen: false);
+
+      final String endDurationString = formatDuration(endDuration);
+
+      final Directory tmpDocument = await getApplicationDocumentsDirectory();
+      final String rawDocument = tmpDocument.path;
+      final String coverFolder = "${rawDocument}/";
+
+      String commandToExceute =
+          "-i ${file.path} -ss 00:00:00 -vframes 1 -y ${coverFolder}cover.jpg";
+      log("starting ffmpeg");
+      await FFmpegKit.execute(commandToExceute).then((value) {
+        _gifFile = File("${coverFolder}cover.jpg");
+        notifyListeners();
+      });
+      log("uploading cover image");
+      final String? gifFileUrl = await firebaseOperationsAdmin.uploadToAWS(
+          pop: false,
+          ctx: ctx,
+          file: File(_gifFile!.path),
+          startingFileName: fileName,
+          endingFileName: "cover.jpg");
+
+      log("cover image uploaded == $gifFileUrl");
+
+      log("end Duration == ${endDuration.toString()}");
+      log("End duration in String == ${endDurationString}");
+
+      await firebaseOperationsAdmin.createPendingArDoc(
+          endDurationString: endDurationString,
+          useruid: useruid,
+          ownerName: ownerName,
+          idVal: fileName,
+          gifUrl: gifFileUrl!);
+
+      log("created Pending Document");
+
+      log("filename ${fileName} and inputfile done");
+
+      final int audioFlag = await audioCheck(videoUrl: inputFileUrl);
+
+      log("audioFlag == $audioFlag");
+
+      notifyListeners();
+
+      try {
+        _rvmResponse = await firebaseOperationsAdmin.postData2(
+          endDuration: endDurationString,
+          idVal: fileName,
+          ownerName: ownerName,
+          useruid: useruid,
+          registrationId: userToken,
+          fileStarting: fileName,
+          audioFlag: audioFlag,
+        );
+        notifyListeners();
+        log("bg removal done");
+      } catch (e) {
+        log("Error anket == ${e.toString()}");
+      }
+
+      log("Sent request to server, now waiting ");
+      log("token == ${userToken}");
+    } else if (await Permission.storage.request().isDenied) {
+      await openAppSettings();
+    }
+  }
 }

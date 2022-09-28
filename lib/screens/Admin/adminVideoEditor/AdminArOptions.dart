@@ -1,30 +1,41 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
-import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/providers/adminCreateVideoProvider.dart';
 import 'package:diamon_rose_app/providers/video_editor_provider.dart';
-import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/MyCollectionHome.dart';
-import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/InitVideoEditorScreen.dart';
-import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/initArVideoEditorScreen.dart';
+import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminGdArNotificationScreen.dart';
+import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminInitArVideoEditorScreen.dart';
+import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/InitAdminVideoEditorScreen.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
-import 'package:diamon_rose_app/services/authentication.dart';
-import 'package:diamon_rose_app/services/debugClass.dart';
+import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
+import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
-
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:nanoid/nanoid.dart';
+import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
-import 'package:provider/provider.dart';
+import 'package:universal_io/io.dart';
 
-class VideoCreationOptionsScreen extends StatelessWidget {
-  VideoCreationOptionsScreen({Key? key}) : super(key: key);
-  ConstantColors constantColors = ConstantColors();
+class AdminArOptions extends StatelessWidget {
+  AdminArOptions({
+    Key? key,
+  }) : super(key: key);
 
+  final ValueNotifier<UserModel?> selectedUser =
+      ValueNotifier<UserModel?>(null);
   final ImagePicker _picker = ImagePicker();
 
   Future<int> audioCheck({required String videoUrl}) async {
@@ -59,7 +70,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
               context,
               MaterialPageRoute<void>(
                   builder: (BuildContext context) =>
-                      InitVideoEditorScreen(file: File(file.path))));
+                      InitAdminVideoEditorScreen(file: File(file.path))));
           break;
         default:
           CoolAlert.show(
@@ -75,6 +86,92 @@ class VideoCreationOptionsScreen extends StatelessWidget {
     }
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: constantColors.bioBg,
+      appBar: AppBarWidget(text: "Select User", context: context),
+      body: GestureDetector(
+        onTap: () {
+          final FocusScopeNode currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus &&
+              currentFocus.focusedChild != null) {
+            FocusManager.instance.primaryFocus!.unfocus();
+          }
+        },
+        child: SingleChildScrollView(
+          child: AnimatedBuilder(
+            animation: Listenable.merge([
+              selectedUser,
+            ]),
+            builder: (context, _) {
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DropdownSearch<UserModel>(
+                            showSelectedItems: true,
+                            compareFn: (i, s) => i == s,
+                            dropdownSearchDecoration: InputDecoration(
+                              labelText: "User",
+                              contentPadding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                              border: OutlineInputBorder(),
+                            ),
+                            onFind: (String? filter) => getData(filter),
+                            onChanged: (data) {
+                              selectedUser.value = data;
+                              context
+                                  .read<AdminVideoCreator>()
+                                  .setUserModel(data!);
+                            },
+                            dropdownBuilder: _customDropDownExample,
+                            popupItemBuilder: _customPopupItemBuilderExample2,
+                          ),
+                        ),
+                      ],
+                    ),
+                    selectedUser.value != null
+                        ? Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(top: 10),
+                                  child: ElevatedButton(
+                                    child: Text("Select AR Video"),
+                                    onPressed: () {
+                                      selectVideoOptionsSheet(context);
+                                    },
+                                  ),
+                                ),
+                                Divider(),
+                                Container(
+                                  height: 100.h,
+                                  width: 100.w,
+                                  child: AdminGDARNotificationScreen(
+                                    userModel: selectedUser.value!,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Container(),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<File?> _pickArVideo(
       {required BuildContext context, required ImageSource source}) async {
     final XFile? file = await _picker.pickVideo(
@@ -85,65 +182,6 @@ class VideoCreationOptionsScreen extends StatelessWidget {
     } else {
       return null;
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final FirebaseOperations firebaseOperations =
-        Provider.of<FirebaseOperations>(context, listen: false);
-    final Size size = MediaQuery.of(context).size;
-    return Scaffold(
-        body: Stack(
-      children: [
-        Container(
-          height: size.height,
-          width: size.width,
-          child: bodyColor(),
-        ),
-        Positioned(
-          top: 0,
-          left: 20,
-          right: 20,
-          bottom: 0,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              VideoOptions(
-                onTap: () {
-                  _pickVideo(context: context);
-                },
-                icon: Icons.video_settings_outlined,
-                text: "Create Video",
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: VideoOptions(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                            builder: (BuildContext context) =>
-                                MyCollectionHome()));
-                  },
-                  icon: Icons.collections_sharp,
-                  text: "My Materials",
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: VideoOptions(
-                  onTap: () {
-                    selectVideoOptionsSheet(context);
-                  },
-                  icon: Icons.video_file_outlined,
-                  text: "AR Options",
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ));
   }
 
   Future selectVideoOptionsSheet(BuildContext context) async {
@@ -207,7 +245,8 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                                     context,
                                     MaterialPageRoute<void>(
                                         builder: (BuildContext context) =>
-                                            ArVideoEditorScreen(
+                                            AdminArVideoEditorScreen(
+                                                userModel: selectedUser.value!,
                                                 file: inputFile)));
                                 break;
                               case 0:
@@ -216,7 +255,8 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                                     context,
                                     MaterialPageRoute<void>(
                                         builder: (BuildContext context) =>
-                                            ArVideoEditorScreen(
+                                            AdminArVideoEditorScreen(
+                                                userModel: selectedUser.value!,
                                                 file: inputFile)));
                                 break;
                               default:
@@ -266,7 +306,8 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                                     context,
                                     MaterialPageRoute<void>(
                                         builder: (BuildContext context) =>
-                                            ArVideoEditorScreen(
+                                            AdminArVideoEditorScreen(
+                                                userModel: selectedUser.value!,
                                                 file: inputFile)));
                                 break;
                               default:
@@ -302,5 +343,72 @@ class VideoCreationOptionsScreen extends StatelessWidget {
             ),
           );
         });
+  }
+
+  Widget _customDropDownExample(BuildContext context, UserModel? item) {
+    if (item == null) {
+      return Container();
+    }
+
+    return Container(
+      child: (item.userimage == null)
+          ? ListTile(
+              contentPadding: EdgeInsets.all(0),
+              leading: CircleAvatar(),
+              title: Text("No item selected"),
+            )
+          : ListTile(
+              contentPadding: EdgeInsets.all(0),
+              leading: CircleAvatar(
+                // this does not work - throws 404 error
+                backgroundImage: NetworkImage(item.userimage),
+              ),
+              title: Text(item.username),
+              subtitle: Text(
+                item.useremail,
+              ),
+            ),
+    );
+  }
+
+  Future<List<UserModel>> getData(filter) async {
+    List<UserModel> userList = [];
+
+    await FirebaseFirestore.instance
+        .collection("users")
+        .orderBy("username")
+        .get()
+        .then((value) {
+      value.docs.forEach((element) {
+        UserModel userModel = UserModel.fromMap(element.data());
+
+        userList.add(userModel);
+      });
+    });
+
+    return userList;
+  }
+
+  Widget _customPopupItemBuilderExample2(
+      BuildContext context, UserModel? item, bool isSelected) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 8),
+      decoration: !isSelected
+          ? null
+          : BoxDecoration(
+              border: Border.all(color: Theme.of(context).primaryColor),
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.white,
+            ),
+      child: ListTile(
+        selected: isSelected,
+        title: Text(item?.username ?? ''),
+        subtitle: Text(item?.useremail.toString() ?? ''),
+        leading: CircleAvatar(
+          // this does not work - throws 404 error
+          backgroundImage: NetworkImage(item?.userimage ?? ''),
+        ),
+      ),
+    );
   }
 }
