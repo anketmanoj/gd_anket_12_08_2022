@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
@@ -69,6 +71,7 @@ class ArViewcollectionScreen extends StatelessWidget {
 
                   return InkWell(
                     onTap: () {
+                      log("name == ${myAr.id}");
                       runARCommand(myAr: myAr, context: context);
                     },
                     child: GridTile(

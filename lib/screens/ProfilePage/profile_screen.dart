@@ -481,73 +481,72 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Video video = Video.fromJson(
                                 snapshot.data!.docs[index].data()
                                     as Map<String, dynamic>);
-                            if (index.toInt() < snapshot.data!.docs.length) {
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    PageTransition(
-                                      type: PageTransitionType.rightToLeft,
-                                      child: PostDetailsScreen(
-                                        videoId: video.id,
-                                      ),
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.rightToLeft,
+                                    child: PostDetailsScreen(
+                                      videoId: video.id,
                                     ),
-                                  );
-                                },
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        color: Colors.grey,
-                                        child: ImageNetworkLoader(
-                                            imageUrl: video.thumbnailurl),
-                                      ),
-                                      Positioned(
-                                        bottom: 5,
-                                        left: 10,
-                                        child: Container(
-                                          width: size.width,
-                                          height: 40,
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.play_arrow_outlined,
-                                                size: 16,
-                                                color: Colors.white,
-                                              ),
-                                              Stack(
-                                                children: [
-                                                  Text(
-                                                    video.views.toString(),
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      foreground: Paint()
-                                                        ..style =
-                                                            PaintingStyle.stroke
-                                                        ..strokeWidth = 2
-                                                        ..color = Colors.black,
-                                                    ),
+                                  ),
+                                );
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      color: Colors.grey,
+                                      child: ImageNetworkLoader(
+                                          imageUrl: video.thumbnailurl),
+                                    ),
+                                    Positioned(
+                                      bottom: 5,
+                                      left: 10,
+                                      child: Container(
+                                        width: size.width,
+                                        height: 40,
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.play_arrow_outlined,
+                                              size: 16,
+                                              color: Colors.white,
+                                            ),
+                                            Stack(
+                                              children: [
+                                                Text(
+                                                  video.views.toString(),
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    foreground: Paint()
+                                                      ..style =
+                                                          PaintingStyle.stroke
+                                                      ..strokeWidth = 2
+                                                      ..color = Colors.black,
                                                   ),
-                                                  Text(
-                                                    video.views.toString(),
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.white,
-                                                    ),
+                                                ),
+                                                Text(
+                                                  video.views.toString(),
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.white,
                                                   ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                              );
-                            }
+                              ),
+                            );
                           },
+                          childCount: snapshot.data!.docs.length,
                         ),
                       ),
                     );

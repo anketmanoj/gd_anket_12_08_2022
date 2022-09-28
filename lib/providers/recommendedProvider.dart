@@ -60,7 +60,7 @@ class RecommendedProvider extends ChangeNotifier {
     await FirebaseFirestore.instance
         .collection("users")
         .doc(Provider.of<Authentication>(context, listen: false).getUserId)
-        .collection("followers")
+        .collection("following")
         .get()
         .then((value) async {
       if (value.docs.isNotEmpty) {
