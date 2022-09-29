@@ -294,8 +294,11 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                     ),
                     Visibility(
                       visible: video!.useruid ==
-                          Provider.of<Authentication>(context, listen: false)
-                              .getUserId,
+                              Provider.of<Authentication>(context,
+                                      listen: false)
+                                  .getUserId ||
+                          adminUserId.contains(
+                              context.read<Authentication>().getUserId),
                       child: Positioned(
                         top: size.height * 0.1,
                         right: 10,

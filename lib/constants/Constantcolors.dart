@@ -21,6 +21,14 @@ class ConstantColors {
   final Color navButton = Color(0xFF50346C);
 }
 
+const List<String> adminUserId = [
+  "RoxEsgFFdLZu9un1i654DBIha4K3",
+  "JrSVhuyKNcWUUPvXEJx6VtLvFut1",
+  "Pbe9wKL0zVMfZdP9yjF8IdEPhsw2",
+  "dL92cdeOzThSxpNDBMx7Ohx5Mio2",
+  "tIH6Kdu6ugXkWPeA0hHY7XpuVfp1",
+];
+
 class ListTileOption extends StatelessWidget {
   const ListTileOption({
     Key? key,
