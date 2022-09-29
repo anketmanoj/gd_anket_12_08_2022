@@ -1921,7 +1921,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
                                 if (arElement.layerType == LayerType.AR) {
                                   alphaTransparencyLayer.add(
-                                      "[${arElement.arIndex! + 1}][${arElement.arIndex}]scale2ref[mask][main];[main][mask]alphamerge[vidMerged${arElement.arIndex}];[vidMerged${arElement.arIndex}]rotate=${arElement.rotation! * 180 / pi}*PI/180:c=none:ow=rotw(iw):oh=roth(ih)[vid${arElement.arIndex}];");
+                                      "[${arElement.arIndex! + 1}][${arElement.arIndex}]scale2ref[mask][main];[main][mask]alphamerge[vid${arElement.arIndex}];");
                                 }
 
                                 if (arElement.layerType == LayerType.AR) {
@@ -1933,7 +1933,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                 }
 
                                 ffmpegArFiltercomplex.add(
-                                    "[top${arElement.arIndex}]scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
+                                    "[top${arElement.arIndex}]rotate=${arElement.rotation! * 180 / pi}*PI/180:c=none:ow=rotw(${arElement.rotation! * 180 / pi}*PI/180):oh=roth(${arElement.rotation! * 180 / pi}*PI/180),scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
 
                                 if (arElement.arIndex == 1) {
                                   ffmpegOverlay.add(
