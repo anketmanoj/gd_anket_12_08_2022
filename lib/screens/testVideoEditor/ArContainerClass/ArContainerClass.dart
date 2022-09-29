@@ -39,6 +39,7 @@ class ARList {
   String? ownerId;
   String? ownerName;
   ValueNotifier<bool>? selectedMaterial = ValueNotifier<bool>(true);
+  ValueNotifier<Matrix4>? notifier = ValueNotifier(Matrix4.identity());
 
   ARList({
     this.arIndex,
@@ -70,5 +71,6 @@ class ARList {
     this.ownerId,
     this.ownerName,
     this.selectedMaterial,
+    this.notifier,
   });
 }
