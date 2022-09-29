@@ -60,6 +60,7 @@ class AdminGDARNotificationScreen extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(top: 10),
             child: ListView.builder(
+              shrinkWrap: true,
               itemCount: snaps.data!.docs.length,
               itemBuilder: (ctx, index) {
                 final ArPendingModel arPendingModel = ArPendingModel.fromMap(
