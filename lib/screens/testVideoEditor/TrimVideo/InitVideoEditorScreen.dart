@@ -77,6 +77,7 @@ class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
         _isExporting.value = false;
         if (!mounted) return;
         if (file != null) {
+          _controller.video.pause();
           Navigator.push(
               context,
               MaterialPageRoute(

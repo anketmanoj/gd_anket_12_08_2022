@@ -56,11 +56,9 @@ import 'package:http/http.dart' as http;
 enum _FrameBoundaries { left, right, inside, progress, none }
 
 class AdminCreateVideoScreen extends StatefulWidget {
-  const AdminCreateVideoScreen(
-      {Key? key, required this.file, required this.isHorizontal})
+  const AdminCreateVideoScreen({Key? key, required this.file})
       : super(key: key);
   final File file;
-  final bool isHorizontal;
 
   @override
   State<AdminCreateVideoScreen> createState() => _AdminCreateVideoScreenState();
@@ -890,12 +888,9 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                         Stack(
                           alignment: Alignment.center,
                           children: [
-                            widget.isHorizontal
+                            _videoController.value.isInitialized
                                 ? Container(
                                     key: videoContainerKey,
-                                    height: 500,
-                                    width: 150,
-                                    color: Colors.black,
                                     child: AspectRatio(
                                       aspectRatio:
                                           _videoController.value.aspectRatio,
@@ -904,16 +899,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                       ),
                                     ),
                                   )
-                                : Container(
-                                    key: videoContainerKey,
-                                    child: AspectRatio(
-                                      aspectRatio:
-                                          _videoController.value.aspectRatio,
-                                      child: VideoViewer(
-                                        controller: _controller,
-                                      ),
-                                    ),
-                                  ),
+                                : Center(child: CircularProgressIndicator()),
                             Positioned(
                               top: 0,
                               left: 0,
@@ -1834,6 +1820,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                       ),
                       onPressed: list.value.isNotEmpty
                           ? () async {
+                              await _controller.video.pause();
                               // ! for x = W - w (and the final bit for Ar position on screen)
                               double finalVideoContainerPointX =
                                   videoContainerKey
@@ -1862,6 +1849,18 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                   ValueNotifier<int>(0);
 
                               list.value.forEach((arElement) {
+                                if (_controller.isPlaying == false) {
+                                  if (arElement.finishedCaching!.value ==
+                                      true) {
+                                    arElement.arState!.pause();
+                                  }
+                                  if (arElement.audioFlag == true &&
+                                      arElement.finishedCaching!.value ==
+                                          true) {
+                                    arElement.audioPlayer!.pause();
+                                  }
+                                }
+
                                 double finalArContainerPointX = arElement
                                     .arKey!.globalPaintBounds!.bottomRight.dx;
                                 double finalArContainerPointY = arElement

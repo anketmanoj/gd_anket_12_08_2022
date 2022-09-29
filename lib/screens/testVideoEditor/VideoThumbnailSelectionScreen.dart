@@ -119,6 +119,7 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
             _isExporting.value = false;
             if (!mounted) return;
             if (videoFileNew != null) {
+              _controller.video.pause();
               Navigator.pushReplacement(
                   context,
                   PageTransition(

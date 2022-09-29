@@ -1821,6 +1821,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                       ),
                       onPressed: list.value.isNotEmpty
                           ? () async {
+                              await _controller.video.pause();
                               // ! for x = W - w (and the final bit for Ar position on screen)
                               double finalVideoContainerPointX =
                                   videoContainerKey
@@ -1849,6 +1850,17 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                   ValueNotifier<int>(0);
 
                               list.value.forEach((arElement) {
+                                if (_controller.isPlaying == false) {
+                                  if (arElement.finishedCaching!.value ==
+                                      true) {
+                                    arElement.arState!.pause();
+                                  }
+                                  if (arElement.audioFlag == true &&
+                                      arElement.finishedCaching!.value ==
+                                          true) {
+                                    arElement.audioPlayer!.pause();
+                                  }
+                                }
                                 dev.log(
                                     "rotations for ${arElement.arId} = rot = ${arElement.rotation}");
                                 double finalArContainerPointX = arElement

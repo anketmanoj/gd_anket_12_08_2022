@@ -1,19 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.diamant.jp.gd_anket">
    
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="com.android.vending.BILLING" />
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" android:exported="true"/>
+    <uses-permission android:name="com.android.vending.BILLING" android:exported="true"/>
+    <uses-permission android:name="android.permission.CAMERA" android:exported="true"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:exported="true"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:exported="true"/>
     <!-- <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />  -->
-    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" android:exported="true"/>
 
 
    
     <application
         android:label="Glamorous Diastation"
         android:name="${applicationName}"
+        android:exported="true"
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/launcher_icon">
         <activity
@@ -30,8 +31,8 @@
                  to determine the Window background behind the Flutter UI. -->
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
               android:exported="true" 
+              android:resource="@style/NormalTheme"
               />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" android:exported="true" />
@@ -40,6 +41,7 @@
         </activity>
         <activity
     android:name="com.yalantis.ucrop.UCropActivity"
+    android:exported="true" 
     android:screenOrientation="portrait"
     android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 

@@ -111,12 +111,10 @@ class _AdminVideothumbnailSelectorState
   }
 
   void _exportCover() async {
-    setState(() => _exported = false);
+    _isExporting.value = true;
     await _controller.extractCover(
       onCompleted: (cover) async {
         if (!mounted) return;
-
-        _exportText = "Cover exported! ${cover!.path}";
         await _controller.exportVideo(
           // preset: VideoExportPreset.medium,
           onProgress: (stats, value) => _exportingProgress.value = value,
@@ -124,108 +122,20 @@ class _AdminVideothumbnailSelectorState
             _isExporting.value = false;
             if (!mounted) return;
             if (videoFileNew != null) {
-              final VideoPlayerController _videoController =
-                  VideoPlayerController.file(videoFileNew);
-              _videoController.initialize().then((value) async {
-                setState(() {});
-
-                _videoController.setLooping(true);
-                await showDialog(
-                  context: context,
-                  builder: (_) => Padding(
-                    padding: const EdgeInsets.all(30),
-                    child: Container(
-                      color: Colors.black,
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 50,
-                            color: Colors.white,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Preview",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.height * 0.6,
-                            child: Center(
-                              child: GestureDetector(
-                                onTap: () {
-                                  _videoController.value.isPlaying
-                                      ? _videoController.pause()
-                                      : _videoController.play();
-                                },
-                                child: AspectRatio(
-                                  aspectRatio:
-                                      _videoController.value.aspectRatio,
-                                  child: VideoPlayer(_videoController),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            color: Colors.white,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text(
-                                    "Cancel",
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        PageTransition(
-                                            child: AdminPreviewVideoScreen(
-                                              bgMaterialThumnailFile:
-                                                  widget.bgMaterialThumnailFile,
-                                              bgFile: widget.file,
-                                              thumbnailFile: cover,
-                                              videoFile:
-                                                  File(videoFileNew.path),
-                                              videoPlayerController:
-                                                  _videoController,
-                                              arList: widget.arList,
-                                            ),
-                                            type: PageTransitionType.fade));
-                                  },
-                                  child: Text(
-                                    "Next",
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+              _controller.video.pause();
+              Get.back();
+              Navigator.pushReplacement(
+                  context,
+                  PageTransition(
+                      child: AdminPreviewVideoScreen(
+                        bgMaterialThumnailFile: widget.bgMaterialThumnailFile,
+                        bgFile: widget.file,
+                        thumbnailFile: cover!,
+                        videoFile: File(videoFileNew.path),
+                        arList: widget.arList,
                       ),
-                    ),
-                  ),
-                );
-                await _videoController.pause();
-                _videoController.dispose();
-              });
-
-              _exportText = "Video success export!";
-            } else {
-              _exportText = "Error on export video :(";
+                      type: PageTransitionType.fade));
             }
-
-            setState(() => _exported = true);
-            Future.delayed(const Duration(seconds: 2),
-                () => setState(() => _exported = false));
           },
         );
 

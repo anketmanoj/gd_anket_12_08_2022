@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminCreateVideoScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/CreateVideoScreen.dart';
@@ -80,124 +81,21 @@ class _InitAdminVideoEditorScreenState
         _isExporting.value = false;
         if (!mounted) return;
         if (file != null) {
-          await FFprobeKit.execute(
-                  "-v error -show_entries stream=width,height -of default=noprint_wrappers=1 ${file.path}")
-              .then((value) {
-            value.getOutput().then((mapOutput) {
-              List<String> test = mapOutput!.split("=");
-
-              final double width = double.parse(test[1].substring(0, 4));
-              final double height = double.parse(test[2].substring(0, 4));
-
-              bool horizontal = false;
-              print("out horizontal: $horizontal");
-
-              if (height < width) {
-                horizontal = true;
-              }
-
-              final VideoPlayerController _videoController =
-                  VideoPlayerController.file(file);
-              _videoController.initialize().then((value) async {
-                setState(() {});
-
-                _videoController.setLooping(true);
-                await showDialog(
-                  context: context,
-                  builder: (_) => Padding(
-                    padding: const EdgeInsets.all(30),
-                    child: Container(
-                      color: Colors.black,
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 50,
-                            color: Colors.white,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Preview",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.height * 0.6,
-                            child: Center(
-                              child: GestureDetector(
-                                onTap: () {
-                                  _videoController.value.isPlaying
-                                      ? _videoController.pause()
-                                      : _videoController.play();
-                                },
-                                child: AspectRatio(
-                                  aspectRatio:
-                                      _videoController.value.aspectRatio,
-                                  child: VideoPlayer(_videoController),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            color: Colors.white,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text(
-                                    "Cancel",
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                AdminCreateVideoScreen(
-                                                  file: file,
-                                                  isHorizontal: horizontal,
-                                                )));
-                                    await Provider.of<ArVideoCreation>(context,
-                                            listen: false)
-                                        .audioCheck(
-                                      videoUrl: file.path,
-                                    );
-                                  },
-                                  child: Text(
-                                    "Next",
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-                await _videoController.pause();
-                _videoController.dispose();
-              });
-            });
-          });
+          _controller.video.pause();
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AdminCreateVideoScreen(
+                        file: file,
+                      )));
+          await Provider.of<ArVideoCreation>(context, listen: false).audioCheck(
+            videoUrl: file.path,
+          );
 
           _exportText = "Video success export!";
         } else {
           _exportText = "Error on export video :(";
         }
-
-        setState(() => _exported = true);
-        Future.delayed(const Duration(seconds: 2),
-            () => setState(() => _exported = false));
       },
     );
   }
@@ -366,7 +264,18 @@ class _InitAdminVideoEditorScreenState
                     return AbsorbPointer(
                       absorbing: exporting,
                       child: IconButton(
-                        onPressed: _exportVideo,
+                        onPressed: () {
+                          try {
+                            _exportVideo();
+                          } catch (e) {
+                            _isExporting.value = false;
+                            CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.info,
+                                title: "Issue Detected",
+                                text: "Error: ${e.toString()}");
+                          }
+                        },
                         icon: const Icon(
                           Icons.arrow_forward_outlined,
                           color: Colors.white,

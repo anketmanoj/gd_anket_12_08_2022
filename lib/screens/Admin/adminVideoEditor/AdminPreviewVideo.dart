@@ -29,14 +29,13 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 class AdminPreviewVideoScreen extends StatefulWidget {
   const AdminPreviewVideoScreen(
       {Key? key,
-      required this.videoPlayerController,
       required this.videoFile,
       required this.thumbnailFile,
       required this.arList,
       required this.bgFile,
       required this.bgMaterialThumnailFile})
       : super(key: key);
-  final VideoPlayerController videoPlayerController;
+
   final File videoFile;
   final File bgFile;
   final File thumbnailFile;
@@ -139,7 +138,6 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
 
   @override
   void initState() {
-    widget.videoPlayerController.setLooping(true);
     selectMaterials = widget.arList;
 
     super.initState();
@@ -148,7 +146,6 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
   @override
   void dispose() {
     super.dispose();
-    widget.videoPlayerController.dispose();
   }
 
   String _contentAvailableToValue = "All";
@@ -789,7 +786,7 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
 
                               if (result == true) {
                                 log("works!!@!!");
-                                widget.videoPlayerController.dispose();
+
                                 widget.arList.forEach((arVal) {
                                   deleteFile(arVal.pathsForVideoFrames!);
                                 });
