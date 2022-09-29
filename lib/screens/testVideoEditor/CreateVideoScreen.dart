@@ -945,6 +945,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                   value.scale = details.scale *
                                                       _currentScale!;
                                                 });
+
+                                                // !Found rotation in degrees here
                                                 dev.log(
                                                     "rot = ${value.rotation! * 180 / pi}");
                                               },
@@ -1847,6 +1849,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                   ValueNotifier<int>(0);
 
                               list.value.forEach((arElement) {
+                                dev.log(
+                                    "rotations for ${arElement.arId} = rot = ${arElement.rotation}");
                                 double finalArContainerPointX = arElement
                                     .arKey!.globalPaintBounds!.bottomRight.dx;
                                 double finalArContainerPointY = arElement
@@ -1917,7 +1921,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
                                 if (arElement.layerType == LayerType.AR) {
                                   alphaTransparencyLayer.add(
-                                      "[${arElement.arIndex! + 1}][${arElement.arIndex}]scale2ref[mask][main];[main][mask]alphamerge[vid${arElement.arIndex}];");
+                                      "[${arElement.arIndex! + 1}][${arElement.arIndex}]scale2ref[mask][main];[main][mask]alphamerge[vidMerged${arElement.arIndex}];[vidMerged${arElement.arIndex}]rotate=${arElement.rotation! * 180 / pi}*PI/180:c=none:ow=rotw(iw):oh=roth(ih)[vid${arElement.arIndex}];");
                                 }
 
                                 if (arElement.layerType == LayerType.AR) {
