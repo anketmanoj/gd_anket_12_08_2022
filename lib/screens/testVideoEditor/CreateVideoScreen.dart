@@ -2432,6 +2432,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 max: 1,
                 onChanged: (double value) async {
                   point.value = value;
+                  // print(point.value);
+                  // await controller.video.setVolume(point.value);
 
                   // await ar.audioPlayer!.setVolume(value);
                 },
