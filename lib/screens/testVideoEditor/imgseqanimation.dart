@@ -61,10 +61,10 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
     log("init Ar");
     screen = Size(400, 500);
     list.add(ARList(
-      height: 200,
+      height: 400,
       rotation: 0,
       scale: 1,
-      width: 200,
+      width: 400,
       xPosition: 0,
       yPosition: 0,
       pathsForVideoFrames: widget.MyAR.imgSeq,

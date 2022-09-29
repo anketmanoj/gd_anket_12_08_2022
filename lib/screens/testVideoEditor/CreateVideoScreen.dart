@@ -1990,6 +1990,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                       widget.file.path);
 
                                       dev.log("Send!");
+                                      Get.back();
                                       Get.to(
                                         () => VideothumbnailSelector(
                                           arList: list.value,

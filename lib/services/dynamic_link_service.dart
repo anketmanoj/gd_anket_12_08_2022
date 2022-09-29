@@ -9,7 +9,7 @@ import 'package:diamon_rose_app/services/user.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+// import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 
 class DynamicLinkService {

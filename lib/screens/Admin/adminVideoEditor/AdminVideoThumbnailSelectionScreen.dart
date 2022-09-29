@@ -49,7 +49,7 @@ class _AdminVideothumbnailSelectorState
   @override
   void initState() {
     _controller = VideoEditorController.file(widget.file,
-        maxDuration: const Duration(seconds: 30))
+        maxDuration: const Duration(seconds: 60))
       ..initialize().then((_) => setState(() {}));
     super.initState();
   }

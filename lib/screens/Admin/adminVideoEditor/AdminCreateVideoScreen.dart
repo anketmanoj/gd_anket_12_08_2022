@@ -2007,6 +2007,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                       widget.file.path);
 
                                       dev.log("Send!");
+                                      Get.back();
                                       Get.to(() => AdminVideothumbnailSelector(
                                             arList: list.value,
                                             file: file,

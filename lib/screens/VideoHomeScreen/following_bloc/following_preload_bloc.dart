@@ -182,6 +182,8 @@ class FollowingPreloadBloc
 
   Future _initializeControllerAtIndex(int index) async {
     if (state.urls.length > index && index >= 0) {
+      log("we're here == ${state.urls[index].videotitle}");
+
       /// Create new controller
       final VideoPlayerController _controller =
           VideoPlayerController.network(state.urls[index].videourl);
