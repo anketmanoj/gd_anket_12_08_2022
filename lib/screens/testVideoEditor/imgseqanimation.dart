@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:camera/camera.dart';
 import 'package:diamon_rose_app/main.dart';
@@ -331,6 +332,8 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                                   details.rotation + _currentRotation!;
                               value.scale = details.scale * _currentScale!;
                             });
+
+                            log("current rotation == ${_currentRotation! * math.pi / 180}");
                           },
                           child: Stack(
                             children: [
@@ -362,7 +365,7 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                                                 value.yPosition!);
                                             _currentScale = value.scale;
                                             _currentRotation = value.rotation;
-                                            log("rotation == ${value.rotation! * 3.14 / 180}");
+                                            // log("rotation == ${value.rotation! * 3.14 / 180}");
                                           },
                                           child: InkWell(
                                             onLongPress: () {

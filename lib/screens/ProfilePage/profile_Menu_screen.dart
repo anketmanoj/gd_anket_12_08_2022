@@ -33,6 +33,7 @@ import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/blockedAccounts/blockedAccountsScreen.dart';
 import 'package:diamon_rose_app/screens/closeAccount/closeAccountScreen.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
+import 'package:diamon_rose_app/screens/testVideoEditor/demo.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/adminUserModels.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
@@ -669,6 +670,20 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   leadingIcon: FontAwesomeIcons.dollarSign,
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "Monitisation",
+                ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          child: TransformDemo(),
+                          type: PageTransitionType.rightToLeft),
+                    );
+                  },
+                  leadingIcon: FontAwesomeIcons.dollarSign,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Demo",
                 ),
                 // ListTileOption(
                 //   constantColors: constantColors,
