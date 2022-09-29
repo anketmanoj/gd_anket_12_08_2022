@@ -1944,7 +1944,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                 }
 
                                 ffmpegArFiltercomplex.add(
-                                    "[top${arElement.arIndex}]scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
+                                    "[top${arElement.arIndex}]rotate=${arElement.rotation! * 180 / pi}*PI/180:c=none:ow=rotw(${arElement.rotation! * 180 / pi}*PI/180):oh=roth(${arElement.rotation! * 180 / pi}*PI/180),scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
 
                                 if (arElement.arIndex == 1) {
                                   ffmpegOverlay.add(
