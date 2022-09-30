@@ -1,5 +1,5 @@
 // Customize
-const int kPreloadLimit = 2;
+const int kPreloadLimit = 3;
 
 // Customize
 const int kNextLimit = 5;

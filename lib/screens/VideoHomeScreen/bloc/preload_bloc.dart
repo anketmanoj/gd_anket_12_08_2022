@@ -122,6 +122,7 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
       // initialize: (e) async* {},
       onVideoIndexChanged: (e) async* {
         /// Condition to fetch new videos
+        log("index == ${e.index}");
         final bool shouldFetch = (e.index + kPreloadLimit) % kNextLimit == 0 &&
             state.urls.length == e.index + kPreloadLimit;
 
