@@ -102,6 +102,8 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
         }
       },
       getVideosFromApi: (e) async* {
+        log("running isolate");
+
         /// Fetch first 5 videos from api
         await ApiService.loadFreeOnly();
         final List<Video> _urls = await ApiService.getVideos();
@@ -123,19 +125,13 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
       onVideoIndexChanged: (e) async* {
         /// Condition to fetch new videos
         log("index == ${e.index}");
+
         final bool shouldFetch = (e.index + kPreloadLimit) % kNextLimit == 0 &&
             state.urls.length == e.index + kPreloadLimit;
 
         if (e.index == state.urls.length - 1) {
-          log("now loading more!");
-          log("state urls length before == ${state.urls.length}");
-          await ApiService.loadNextFreeOnly();
-          final List<Video> _urls = await ApiService.getVideos();
-          final List<Video> newList =
-              _urls.sublist(state.urls.length, _urls.length);
-          state.urls.addAll(newList);
-          log("state urls length after == ${state.urls.length}");
-          yield state.copyWith(isLoading: false);
+          log("running now");
+          createIsolate(e.index);
         }
 
         if (shouldFetch) {
@@ -156,7 +152,7 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
         log("run now!!!!!!!!!!!");
         state.urls.addAll(e.urls);
 
-        /// Initialize new url
+        // /// Initialize new url
         _initializeControllerAtIndex(state.focusedIndex + 1);
 
         yield state.copyWith(

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/following_bloc/following_preload_bloc.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/service/api_service.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
@@ -87,6 +88,10 @@ class RecommendedProvider extends ChangeNotifier {
           BlocProvider.of<FollowingPreloadBloc>(context, listen: false).add(
               FollowingPreloadEvent.filterBetweenFreePaid(
                   HomeScreenOptions.Both));
+          log("loaded following vids");
+          BlocProvider.of<PreloadBloc>(context, listen: false)
+              .add(PreloadEvent.filterBetweenFreePaid(HomeScreenOptions.Free));
+          log("loaded recommended vids");
         }
         notifyListeners();
         // await ApiService.loadFollowingVideos();
