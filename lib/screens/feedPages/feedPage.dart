@@ -23,6 +23,7 @@ import 'package:diamon_rose_app/screens/testVideoEditor/videoEditorTest.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/dynamic_link_service.dart';
+import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -92,6 +93,9 @@ class _FeedPageState extends State<FeedPage> {
         .whenComplete(() {
       log("following users set here | ${Provider.of<Authentication>(context, listen: false).getUserId}");
     });
+
+    SharedPreferencesHelper.setString("userid",
+        "${Provider.of<Authentication>(context, listen: false).getUserId}");
   }
 
   @override

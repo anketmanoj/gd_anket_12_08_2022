@@ -167,8 +167,12 @@ class ApiService extends ChangeNotifier {
         .get()
         .then((value) {
       value.docs.forEach((element) {
-        Video video = Video.fromJson(element.data());
-        _following_videos.add(video);
+        if (element.data().containsKey("views") &&
+            element.data().containsKey("totalBilled") &&
+            element.data().containsKey("verifiedUser")) {
+          Video video = Video.fromJson(element.data());
+          _following_videos.add(video);
+        }
       });
     });
 
@@ -191,8 +195,12 @@ class ApiService extends ChangeNotifier {
         .get()
         .then((value) {
       value.docs.forEach((element) {
-        Video video = Video.fromJson(element.data());
-        _following_videos.add(video);
+        if (element.data().containsKey("views") &&
+            element.data().containsKey("totalBilled") &&
+            element.data().containsKey("verifiedUser")) {
+          Video video = Video.fromJson(element.data());
+          _following_videos.add(video);
+        }
       });
     });
 
@@ -215,8 +223,12 @@ class ApiService extends ChangeNotifier {
         .get()
         .then((value) {
       value.docs.forEach((element) {
-        Video video = Video.fromJson(element.data());
-        _following_videos.add(video);
+        if (element.data().containsKey("views") &&
+            element.data().containsKey("totalBilled") &&
+            element.data().containsKey("verifiedUser")) {
+          Video video = Video.fromJson(element.data());
+          _following_videos.add(video);
+        }
       });
     });
 

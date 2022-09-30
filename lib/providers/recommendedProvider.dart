@@ -1,11 +1,16 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/following_bloc/following_preload_bloc.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/service/api_service.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+
+import '../config.dart';
 
 class RecommendedProvider extends ChangeNotifier {
   List<String?> _recommendedOptions = [
@@ -65,13 +70,24 @@ class RecommendedProvider extends ChangeNotifier {
         .collection("following")
         .get()
         .then((value) async {
+      log("does this worl");
       if (value.docs.length > 0) {
+        log("yes we're here");
+        log("id from shared == ${SharedPreferencesHelper.getString("userid")}");
         BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
             .add(FollowingPreloadEvent.userFollowsNoOne(false));
+
         _followingUsers = value.docs.map((doc) => doc.id).toList();
         _followingUsers.shuffle();
         SharedPreferencesHelper.setListString("followersList", _followingUsers);
         _noFollowers = false;
+        if (SharedPreferencesHelper.getString("userid") !=
+            context.read<Authentication>().getUserId.toString()) {
+          log("new user detected");
+          BlocProvider.of<FollowingPreloadBloc>(context, listen: false).add(
+              FollowingPreloadEvent.filterBetweenFreePaid(
+                  HomeScreenOptions.Both));
+        }
         notifyListeners();
         await ApiService.loadFollowingVideos();
       } else {
