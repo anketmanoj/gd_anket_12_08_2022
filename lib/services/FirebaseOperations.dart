@@ -2298,7 +2298,8 @@ class FirebaseOperations with ChangeNotifier {
 
     var response = await http.post(
       Uri.parse(
-        "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api_ad1v2/adminpost/",
+        "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api_ad1v3/adminpost/",
+        // "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api_ad1v2/adminpost/",
         // "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api_ad1/adminpost/",
       ),
       headers: {"Content-Type": "application/json"},

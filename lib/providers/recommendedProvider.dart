@@ -89,7 +89,7 @@ class RecommendedProvider extends ChangeNotifier {
                   HomeScreenOptions.Both));
         }
         notifyListeners();
-        await ApiService.loadFollowingVideos();
+        // await ApiService.loadFollowingVideos();
       } else {
         BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
             .add(FollowingPreloadEvent.userFollowsNoOne(true));
