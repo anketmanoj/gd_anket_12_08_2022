@@ -40,6 +40,7 @@ class FollowingPreloadBloc
         log("${e.filterOption} Anket Following chosen");
         switch (e.filterOption) {
           case HomeScreenOptions.Free:
+            yield state.copyWith(isLoading: true);
             state.urls.clear();
             await ApiService.loadFollowingFreeVideos();
             final List<Video> _urls = await ApiService.getFollowingVideos();
@@ -66,10 +67,12 @@ class FollowingPreloadBloc
             yield state.copyWith(
                 filterOption: e.filterOption,
                 isLoadingFilter: false,
+                noFollowingVideos: _urls.isNotEmpty ? false : true,
                 isLoading: false);
 
             break;
           case HomeScreenOptions.Paid:
+            yield state.copyWith(isLoading: true);
             state.urls.clear();
             await ApiService.loadFollowingPaidVideos();
             final List<Video> _urls = await ApiService.getFollowingVideos();
@@ -97,19 +100,25 @@ class FollowingPreloadBloc
             yield state.copyWith(
                 filterOption: e.filterOption,
                 isLoadingFilter: false,
+                noFollowingVideos: _urls.isNotEmpty ? false : true,
                 isLoading: false);
 
             break;
 
           case HomeScreenOptions.Both:
+            yield state.copyWith(isLoading: true);
             state.urls.clear();
             await ApiService.loadFollowingVideos();
             final List<Video> _urls = await ApiService.getFollowingVideos();
             state.urls.addAll(_urls);
 
+            log("here no in both | ${state.urls.length}");
+
             if (state.urls.isNotEmpty) {
+              log("not empty following val");
               yield state.copyWith(noFollowingVideos: false);
             } else {
+              log(" empty following val");
               yield state.copyWith(noFollowingVideos: true);
             }
 
@@ -123,6 +132,8 @@ class FollowingPreloadBloc
             await _initializeControllerAtIndex(1);
 
             yield state.copyWith(
+                userFollowsNoOne: _urls.isNotEmpty ? false : true,
+                noFollowingVideos: _urls.isNotEmpty ? false : true,
                 filterOption: e.filterOption,
                 isLoadingFilter: false,
                 isLoading: false);

@@ -90,7 +90,7 @@ class _FeedPageState extends State<FeedPage> {
     await Provider.of<RecommendedProvider>(context, listen: false)
         .setFollowingUsers(context: context)
         .whenComplete(() {
-      log("following users set");
+      log("following users set here | ${Provider.of<Authentication>(context, listen: false).getUserId}");
     });
   }
 

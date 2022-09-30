@@ -65,7 +65,7 @@ class RecommendedProvider extends ChangeNotifier {
         .collection("following")
         .get()
         .then((value) async {
-      if (value.docs.isNotEmpty) {
+      if (value.docs.length > 0) {
         BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
             .add(FollowingPreloadEvent.userFollowsNoOne(false));
         _followingUsers = value.docs.map((doc) => doc.id).toList();
