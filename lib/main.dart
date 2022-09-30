@@ -66,52 +66,52 @@ void main() async {
   ));
 }
 
-Future createIsolate(int index) async {
-  // Set loading to true
-  BlocProvider.of<PreloadBloc>(context, listen: false)
-      .add(PreloadEvent.setLoading(true));
-  BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
-      .add(FollowingPreloadEvent.setLoading(true));
+// Future createIsolate(int index) async {
+//   // Set loading to true
+//   BlocProvider.of<PreloadBloc>(context, listen: false)
+//       .add(PreloadEvent.setLoading(true));
+//   BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
+//       .add(FollowingPreloadEvent.setLoading(true));
 
-  ReceivePort mainReceivePort = ReceivePort();
+//   ReceivePort mainReceivePort = ReceivePort();
 
-  Isolate.spawn<SendPort>(getVideosTask, mainReceivePort.sendPort);
+//   Isolate.spawn<SendPort>(getVideosTask, mainReceivePort.sendPort);
 
-  SendPort isolateSendPort = await mainReceivePort.first;
+//   SendPort isolateSendPort = await mainReceivePort.first;
 
-  ReceivePort isolateResponseReceivePort = ReceivePort();
+//   ReceivePort isolateResponseReceivePort = ReceivePort();
 
-  isolateSendPort.send([index, isolateResponseReceivePort.sendPort]);
+//   isolateSendPort.send([index, isolateResponseReceivePort.sendPort]);
 
-  final isolateResponse = await isolateResponseReceivePort.first;
-  final _urls = isolateResponse;
+//   final isolateResponse = await isolateResponseReceivePort.first;
+//   final _urls = isolateResponse;
 
-  // Update new urls
-  BlocProvider.of<PreloadBloc>(context, listen: false)
-      .add(PreloadEvent.updateUrls(_urls));
-  BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
-      .add(FollowingPreloadEvent.updateUrls(_urls));
-}
+//   // Update new urls
+//   BlocProvider.of<PreloadBloc>(context, listen: false)
+//       .add(PreloadEvent.updateUrls(_urls));
+//   BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
+//       .add(FollowingPreloadEvent.updateUrls(_urls));
+// }
 
-void getVideosTask(SendPort mySendPort) async {
-  ReceivePort isolateReceivePort = ReceivePort();
+// void getVideosTask(SendPort mySendPort) async {
+//   ReceivePort isolateReceivePort = ReceivePort();
 
-  mySendPort.send(isolateReceivePort.sendPort);
+//   mySendPort.send(isolateReceivePort.sendPort);
 
-  await for (var message in isolateReceivePort) {
-    if (message is List) {
-      final int index = message[0];
+//   await for (var message in isolateReceivePort) {
+//     if (message is List) {
+//       final int index = message[0];
 
-      final SendPort isolateResponseSendPort = message[1];
-      await ApiService.load();
+//       final SendPort isolateResponseSendPort = message[1];
+//       await ApiService.loadFreeOnly();
 
-      final List<Video> _urls =
-          await ApiService.getVideos(id: index + kPreloadLimit);
+//       final List<Video> _urls =
+//           await ApiService.getVideos(id: index + kPreloadLimit);
 
-      isolateResponseSendPort.send(_urls);
-    }
-  }
-}
+//       isolateResponseSendPort.send(_urls);
+//     }
+//   }
+// }
 
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);

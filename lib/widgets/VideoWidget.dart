@@ -56,11 +56,12 @@ class VideoWidget extends StatelessWidget {
           videoVal: video,
         );
     return VisibilityDetector(
-      key: Key('${video.videotitle} + ${video.caption}'),
+      key: Key('${video.videotitle} + ${video.caption} + ${DateTime.now()}'),
       onVisibilityChanged: (visibilityInfo) {
         var visiblePercentage = visibilityInfo.visibleFraction * 100;
         if (visiblePercentage == 100) {
           log("${video.videotitle} played");
+
           controller.play();
           if (video.isPaid &&
               !video.boughtBy

@@ -126,8 +126,20 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
         final bool shouldFetch = (e.index + kPreloadLimit) % kNextLimit == 0 &&
             state.urls.length == e.index + kPreloadLimit;
 
+        if (e.index == state.urls.length - 1) {
+          log("now loading more!");
+          log("state urls length before == ${state.urls.length}");
+          await ApiService.loadNextFreeOnly();
+          final List<Video> _urls = await ApiService.getVideos();
+          final List<Video> newList =
+              _urls.sublist(state.urls.length, _urls.length);
+          state.urls.addAll(newList);
+          log("state urls length after == ${state.urls.length}");
+          yield state.copyWith(isLoading: false);
+        }
+
         if (shouldFetch) {
-          createIsolate(e.index);
+          // createIsolate(e.index);
         }
 
         /// Next / Prev video decider
@@ -141,6 +153,7 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
       },
       updateUrls: (e) async* {
         /// Add new urls to current urls
+        log("run now!!!!!!!!!!!");
         state.urls.addAll(e.urls);
 
         /// Initialize new url

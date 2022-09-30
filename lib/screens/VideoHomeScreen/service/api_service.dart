@@ -64,6 +64,7 @@ class ApiService extends ChangeNotifier {
         .collection("posts")
         .orderBy("timestamp", descending: true)
         .where("ispaid", isEqualTo: false)
+        .limit(10)
         .get()
         .then((value) {
       value.docs.forEach((element) {
@@ -101,6 +102,57 @@ class ApiService extends ChangeNotifier {
         }
       });
     });
+
+    log("done loading all videos");
+  }
+
+  static loadNextFreeOnly() async {
+    await FirebaseFirestore.instance
+        .collection("posts")
+        .orderBy("timestamp", descending: true)
+        .where("ispaid", isEqualTo: false)
+        .startAfter([_videos.last.timestamp])
+        .limit(10)
+        .get()
+        .then((value) {
+          log("here now + New values == ${value.docs.length}");
+
+          value.docs.forEach((element) {
+            if (element.data().containsKey("views") &&
+                element.data().containsKey("totalBilled") &&
+                element.data().containsKey("verifiedUser")) {
+              Video video = Video(
+                id: element['id'] as String,
+                useruid: element['useruid'] as String,
+                videourl: element['videourl'] as String,
+                caption: element['caption'] as String,
+                isPaid: element['ispaid'] as bool,
+                price: element['price'] as double,
+                discountAmount:
+                    double.parse(element['discountamount'].toString()),
+                startDiscountDate: element['startdiscountdate'] as Timestamp,
+                endDiscountDate: element['enddiscountdate'] as Timestamp,
+                isSubscription: element['issubscription'] as bool,
+                contentAvailability: element['contentavailability'] as String,
+                isFree: element['isfree'] as bool,
+                username: element['username'] as String,
+                userimage: element['userimage'] as String,
+                videotitle: element['videotitle'].toString(),
+                videoType: element['videoType'] as String,
+                timestamp: element['timestamp'] as Timestamp,
+                thumbnailurl: element['thumbnailurl'].toString(),
+                ownerFcmToken: element['ownerFcmToken'] as String?,
+                genre: element['genre'] as List<dynamic>,
+                boughtBy: element['boughtBy'] as List<dynamic>,
+                totalBilled: element['totalBilled'] as int?,
+                verifiedUser: element['verifiedUser'] as bool?,
+                views: element['views'],
+              );
+              log("HEEEERRRRREEEEEEE");
+              _videos.add(video);
+            }
+          });
+        });
 
     log("done loading all videos");
   }
@@ -245,8 +297,11 @@ class ApiService extends ChangeNotifier {
     await Future.delayed(const Duration(seconds: kLatency));
 
     if ((id + kNextLimit >= _videos.length)) {
+      _videos.sort((a, b) => b.timestamp.compareTo(a.timestamp));
       return _videos.sublist(id, _videos.length);
     }
+
+    _videos.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
     return _videos.sublist(id, _videos.length);
   }

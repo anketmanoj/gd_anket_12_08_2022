@@ -173,7 +173,7 @@ class FollowingPreloadBloc
             state.urls.length == e.index + kPreloadLimit;
 
         if (shouldFetch) {
-          createIsolate(e.index);
+          // createIsolate(e.index);
         }
 
         /// Next / Prev video decider
