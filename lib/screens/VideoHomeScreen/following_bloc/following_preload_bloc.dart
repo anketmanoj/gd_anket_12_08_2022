@@ -31,7 +31,7 @@ class FollowingPreloadBloc
         yield state.copyWith(isLoadingFilter: e.loadingVal);
       },
       setLoading: (e) async* {
-        yield state.copyWith(isLoading: true);
+        yield state.copyWith(isLoading: e.isLoading);
       },
       userFollowsNoOne: (e) async* {
         yield state.copyWith(userFollowsNoOne: e.userFollowsNoOne);
@@ -64,7 +64,9 @@ class FollowingPreloadBloc
             await _initializeControllerAtIndex(1);
 
             yield state.copyWith(
-                filterOption: e.filterOption, isLoadingFilter: false);
+                filterOption: e.filterOption,
+                isLoadingFilter: false,
+                isLoading: false);
 
             break;
           case HomeScreenOptions.Paid:
@@ -93,7 +95,9 @@ class FollowingPreloadBloc
             log("in paid");
 
             yield state.copyWith(
-                filterOption: e.filterOption, isLoadingFilter: false);
+                filterOption: e.filterOption,
+                isLoadingFilter: false,
+                isLoading: false);
 
             break;
 
@@ -119,7 +123,9 @@ class FollowingPreloadBloc
             await _initializeControllerAtIndex(1);
 
             yield state.copyWith(
-                filterOption: e.filterOption, isLoadingFilter: false);
+                filterOption: e.filterOption,
+                isLoadingFilter: false,
+                isLoading: false);
             break;
         }
       },
@@ -146,7 +152,8 @@ class FollowingPreloadBloc
         /// Initialize 2nd video
         await _initializeControllerAtIndex(1);
 
-        yield state.copyWith(reloadCounter: state.reloadCounter + 1);
+        yield state.copyWith(
+            reloadCounter: state.reloadCounter + 1, isLoading: false);
       },
       // initialize: (e) async* {},
       onVideoIndexChanged: (e) async* {

@@ -17,7 +17,7 @@ class FollowingPreloadState with _$FollowingPreloadState {
   factory FollowingPreloadState.initial() => FollowingPreloadState(
         focusedIndex: 0,
         reloadCounter: 0,
-        isLoading: false,
+        isLoading: true,
         urls: [],
         controllers: {},
         filterOption: HomeScreenOptions.Both,

@@ -71,7 +71,7 @@ Future createIsolate(int index) async {
   BlocProvider.of<PreloadBloc>(context, listen: false)
       .add(PreloadEvent.setLoading());
   BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
-      .add(FollowingPreloadEvent.setLoading());
+      .add(FollowingPreloadEvent.setLoading(true));
 
   ReceivePort mainReceivePort = ReceivePort();
 

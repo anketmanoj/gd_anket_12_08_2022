@@ -24,6 +24,29 @@ class _FollowingVideoPageState extends State<FollowingVideoPage>
   Widget build(BuildContext context) {
     return BlocBuilder<FollowingPreloadBloc, FollowingPreloadState>(
       builder: (context, state) {
+        if (state.isLoading) {
+          return Container(
+            height: 100.h,
+            width: 100.w,
+            color: constantColors.black,
+            padding: EdgeInsets.all(30),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Fetching Posts!",
+                  style: TextStyle(
+                    color: constantColors.whiteColor,
+                    fontSize: 16,
+                  ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: CircularProgressIndicator()),
+              ],
+            ),
+          );
+        }
         if (state.userFollowsNoOne == true) {
           return Container(
             height: 100.h,
