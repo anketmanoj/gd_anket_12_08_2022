@@ -69,7 +69,7 @@ void main() async {
 Future createIsolate(int index) async {
   // Set loading to true
   BlocProvider.of<PreloadBloc>(context, listen: false)
-      .add(PreloadEvent.setLoading());
+      .add(PreloadEvent.setLoading(true));
   BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
       .add(FollowingPreloadEvent.setLoading(true));
 

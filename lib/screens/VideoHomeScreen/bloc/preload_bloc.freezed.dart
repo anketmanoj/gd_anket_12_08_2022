@@ -21,8 +21,10 @@ class _$PreloadEventTearOff {
     return const _GetVideosFromApi();
   }
 
-  _SetLoading setLoading() {
-    return const _SetLoading();
+  _SetLoading setLoading(bool isLoading) {
+    return _SetLoading(
+      isLoading,
+    );
   }
 
   _UpdateUrls updateUrls(List<Video> urls) {
@@ -58,7 +60,7 @@ mixin _$PreloadEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() getVideosFromApi,
-    required TResult Function() setLoading,
+    required TResult Function(bool isLoading) setLoading,
     required TResult Function(List<Video> urls) updateUrls,
     required TResult Function(int index) onVideoIndexChanged,
     required TResult Function(HomeScreenOptions filterOption)
@@ -69,7 +71,7 @@ mixin _$PreloadEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
@@ -79,7 +81,7 @@ mixin _$PreloadEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
@@ -179,7 +181,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() getVideosFromApi,
-    required TResult Function() setLoading,
+    required TResult Function(bool isLoading) setLoading,
     required TResult Function(List<Video> urls) updateUrls,
     required TResult Function(int index) onVideoIndexChanged,
     required TResult Function(HomeScreenOptions filterOption)
@@ -193,7 +195,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
@@ -206,7 +208,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
@@ -273,6 +275,7 @@ abstract class _$SetLoadingCopyWith<$Res> {
   factory _$SetLoadingCopyWith(
           _SetLoading value, $Res Function(_SetLoading) then) =
       __$SetLoadingCopyWithImpl<$Res>;
+  $Res call({bool isLoading});
 }
 
 /// @nodoc
@@ -284,59 +287,82 @@ class __$SetLoadingCopyWithImpl<$Res> extends _$PreloadEventCopyWithImpl<$Res>
 
   @override
   _SetLoading get _value => super._value as _SetLoading;
+
+  @override
+  $Res call({
+    Object? isLoading = freezed,
+  }) {
+    return _then(_SetLoading(
+      isLoading == freezed
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$_SetLoading implements _SetLoading {
-  const _$_SetLoading();
+  const _$_SetLoading(this.isLoading);
+
+  @override
+  final bool isLoading;
 
   @override
   String toString() {
-    return 'PreloadEvent.setLoading()';
+    return 'PreloadEvent.setLoading(isLoading: $isLoading)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _SetLoading);
+        (other.runtimeType == runtimeType &&
+            other is _SetLoading &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, isLoading);
+
+  @JsonKey(ignore: true)
+  @override
+  _$SetLoadingCopyWith<_SetLoading> get copyWith =>
+      __$SetLoadingCopyWithImpl<_SetLoading>(this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() getVideosFromApi,
-    required TResult Function() setLoading,
+    required TResult Function(bool isLoading) setLoading,
     required TResult Function(List<Video> urls) updateUrls,
     required TResult Function(int index) onVideoIndexChanged,
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
     required TResult Function(bool loadingVal) setLoadingForFilter,
   }) {
-    return setLoading();
+    return setLoading(isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
   }) {
-    return setLoading?.call();
+    return setLoading?.call(isLoading);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
@@ -344,7 +370,7 @@ class _$_SetLoading implements _SetLoading {
     required TResult orElse(),
   }) {
     if (setLoading != null) {
-      return setLoading();
+      return setLoading(isLoading);
     }
     return orElse();
   }
@@ -395,7 +421,12 @@ class _$_SetLoading implements _SetLoading {
 }
 
 abstract class _SetLoading implements PreloadEvent {
-  const factory _SetLoading() = _$_SetLoading;
+  const factory _SetLoading(bool isLoading) = _$_SetLoading;
+
+  bool get isLoading;
+  @JsonKey(ignore: true)
+  _$SetLoadingCopyWith<_SetLoading> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -463,7 +494,7 @@ class _$_UpdateUrls implements _UpdateUrls {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() getVideosFromApi,
-    required TResult Function() setLoading,
+    required TResult Function(bool isLoading) setLoading,
     required TResult Function(List<Video> urls) updateUrls,
     required TResult Function(int index) onVideoIndexChanged,
     required TResult Function(HomeScreenOptions filterOption)
@@ -477,7 +508,7 @@ class _$_UpdateUrls implements _UpdateUrls {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
@@ -490,7 +521,7 @@ class _$_UpdateUrls implements _UpdateUrls {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
@@ -623,7 +654,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() getVideosFromApi,
-    required TResult Function() setLoading,
+    required TResult Function(bool isLoading) setLoading,
     required TResult Function(List<Video> urls) updateUrls,
     required TResult Function(int index) onVideoIndexChanged,
     required TResult Function(HomeScreenOptions filterOption)
@@ -637,7 +668,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
@@ -650,7 +681,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
@@ -784,7 +815,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() getVideosFromApi,
-    required TResult Function() setLoading,
+    required TResult Function(bool isLoading) setLoading,
     required TResult Function(List<Video> urls) updateUrls,
     required TResult Function(int index) onVideoIndexChanged,
     required TResult Function(HomeScreenOptions filterOption)
@@ -798,7 +829,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
@@ -811,7 +842,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
@@ -946,7 +977,7 @@ class _$_SetLoadingForFilter implements _SetLoadingForFilter {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() getVideosFromApi,
-    required TResult Function() setLoading,
+    required TResult Function(bool isLoading) setLoading,
     required TResult Function(List<Video> urls) updateUrls,
     required TResult Function(int index) onVideoIndexChanged,
     required TResult Function(HomeScreenOptions filterOption)
@@ -960,7 +991,7 @@ class _$_SetLoadingForFilter implements _SetLoadingForFilter {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
@@ -973,7 +1004,7 @@ class _$_SetLoadingForFilter implements _SetLoadingForFilter {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? getVideosFromApi,
-    TResult Function()? setLoading,
+    TResult Function(bool isLoading)? setLoading,
     TResult Function(List<Video> urls)? updateUrls,
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,

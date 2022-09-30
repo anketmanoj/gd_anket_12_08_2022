@@ -43,6 +43,29 @@ class _RecommendedVideoPageState extends State<RecommendedVideoPage>
   Widget build(BuildContext context) {
     return BlocBuilder<PreloadBloc, PreloadState>(
       builder: (context, state) {
+        if (state.isLoading) {
+          return Container(
+            height: 100.h,
+            width: 100.w,
+            color: constantColors.black,
+            padding: EdgeInsets.all(30),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Fetching Posts!",
+                  style: TextStyle(
+                    color: constantColors.whiteColor,
+                    fontSize: 16,
+                  ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: CircularProgressIndicator()),
+              ],
+            ),
+          );
+        }
         switch (state.filterOption) {
           case HomeScreenOptions.Free:
             log("We're here in Free!");

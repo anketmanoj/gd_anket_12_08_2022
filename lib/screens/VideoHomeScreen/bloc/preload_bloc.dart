@@ -29,7 +29,7 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
         yield state.copyWith(isLoadingFilter: e.loadingVal);
       },
       setLoading: (e) async* {
-        yield state.copyWith(isLoading: true);
+        yield state.copyWith(isLoading: e.isLoading);
       },
       filterBetweenFreePaid: (e) async* {
         log("${e.filterOption} Anket chosen");
@@ -52,7 +52,8 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
             /// Initialize 2nd video
             await _initializeControllerAtIndex(1);
 
-            yield state.copyWith(filterOption: e.filterOption);
+            yield state.copyWith(
+                filterOption: e.filterOption, isLoading: false);
 
             break;
           case HomeScreenOptions.Paid:
@@ -74,7 +75,8 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
             await _initializeControllerAtIndex(1);
             log("in paid");
 
-            yield state.copyWith(filterOption: e.filterOption);
+            yield state.copyWith(
+                filterOption: e.filterOption, isLoading: false);
 
             break;
 
@@ -94,7 +96,8 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
             /// Initialize 2nd video
             await _initializeControllerAtIndex(1);
 
-            yield state.copyWith(filterOption: e.filterOption);
+            yield state.copyWith(
+                filterOption: e.filterOption, isLoading: false);
             break;
         }
       },
@@ -113,7 +116,8 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
         /// Initialize 2nd video
         await _initializeControllerAtIndex(1);
 
-        yield state.copyWith(reloadCounter: state.reloadCounter + 1);
+        yield state.copyWith(
+            reloadCounter: state.reloadCounter + 1, isLoading: false);
       },
       // initialize: (e) async* {},
       onVideoIndexChanged: (e) async* {
