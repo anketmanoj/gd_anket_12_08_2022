@@ -24,6 +24,66 @@ class _FollowingVideoPageState extends State<FollowingVideoPage>
   Widget build(BuildContext context) {
     return BlocBuilder<FollowingPreloadBloc, FollowingPreloadState>(
       builder: (context, state) {
+        if (state.userFollowsNoOne == true) {
+          return Container(
+            height: 100.h,
+            width: 100.w,
+            color: constantColors.black,
+            padding: EdgeInsets.all(30),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "you do not follow anyone yet!",
+                  style: TextStyle(
+                    color: constantColors.whiteColor,
+                    fontSize: 16,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Text(
+                    "Please refresh if you've already following users or check out the recommended tab!",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: constantColors.whiteColor,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              constantColors.navButton),
+                        ),
+                        onPressed: () {
+                          BlocProvider.of<FollowingPreloadBloc>(context,
+                                  listen: false)
+                              .add(FollowingPreloadEvent.setLoadingForFilter(
+                                  true));
+
+                          BlocProvider.of<FollowingPreloadBloc>(context,
+                                  listen: false)
+                              .add(FollowingPreloadEvent.filterBetweenFreePaid(
+                                  HomeScreenOptions.Both));
+                        },
+                        icon: Icon(Icons.refresh),
+                        label: Text("Refresh"),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
         if (state.noFollowingVideos == true) {
           return state.isLoadingFilter
               ? Column(

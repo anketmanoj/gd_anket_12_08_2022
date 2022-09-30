@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/following_bloc/following_preload_bloc.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/service/api_service.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class RecommendedProvider extends ChangeNotifier {
@@ -64,6 +66,8 @@ class RecommendedProvider extends ChangeNotifier {
         .get()
         .then((value) async {
       if (value.docs.isNotEmpty) {
+        BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
+            .add(FollowingPreloadEvent.userFollowsNoOne(false));
         _followingUsers = value.docs.map((doc) => doc.id).toList();
         _followingUsers.shuffle();
         SharedPreferencesHelper.setListString("followersList", _followingUsers);
@@ -71,6 +75,8 @@ class RecommendedProvider extends ChangeNotifier {
         notifyListeners();
         await ApiService.loadFollowingVideos();
       } else {
+        BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
+            .add(FollowingPreloadEvent.userFollowsNoOne(true));
         _noFollowers = true;
         notifyListeners();
       }

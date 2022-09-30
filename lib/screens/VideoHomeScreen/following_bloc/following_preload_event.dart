@@ -13,4 +13,6 @@ class FollowingPreloadEvent with _$FollowingPreloadEvent {
       HomeScreenOptions filterOption) = _FilterBetweenFreePaid;
   const factory FollowingPreloadEvent.setLoadingForFilter(bool loadingVal) =
       _SetLoadingForFilter;
+  const factory FollowingPreloadEvent.userFollowsNoOne(bool userFollowsNoOne) =
+      _UserFollowsNoOne;
 }

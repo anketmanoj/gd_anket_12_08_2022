@@ -33,6 +33,9 @@ class FollowingPreloadBloc
       setLoading: (e) async* {
         yield state.copyWith(isLoading: true);
       },
+      userFollowsNoOne: (e) async* {
+        yield state.copyWith(userFollowsNoOne: e.userFollowsNoOne);
+      },
       filterBetweenFreePaid: (e) async* {
         log("${e.filterOption} Anket Following chosen");
         switch (e.filterOption) {
