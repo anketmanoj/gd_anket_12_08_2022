@@ -10,6 +10,7 @@ class FollowingPreloadState with _$FollowingPreloadState {
     required bool isLoading,
     required HomeScreenOptions filterOption,
     required bool isLoadingFilter,
+    required bool noFollowingVideos,
   }) = _FollowingPreloadState;
 
   factory FollowingPreloadState.initial() => FollowingPreloadState(
@@ -20,5 +21,6 @@ class FollowingPreloadState with _$FollowingPreloadState {
         controllers: {},
         filterOption: HomeScreenOptions.Both,
         isLoadingFilter: false,
+        noFollowingVideos: false,
       );
 }

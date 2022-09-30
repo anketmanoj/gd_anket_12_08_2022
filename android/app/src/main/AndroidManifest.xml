@@ -1,13 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.diamant.jp.gd_anket">
    
-    <uses-permission android:name="android.permission.INTERNET" android:exported="true"/>
-    <uses-permission android:name="com.android.vending.BILLING" android:exported="true"/>
-    <uses-permission android:name="android.permission.CAMERA" android:exported="true"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:exported="true"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:exported="true"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.android.vending.BILLING" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />  -->
-    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" android:exported="true"/>
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
 
 
    
@@ -17,6 +17,7 @@
         android:exported="true"
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/launcher_icon">
+       
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -39,7 +40,8 @@
                 <category android:name="android.intent.category.LAUNCHER" android:exported="true" />
             </intent-filter>
         </activity>
-        <activity
+
+               <activity
     android:name="com.yalantis.ucrop.UCropActivity"
     android:exported="true" 
     android:screenOrientation="portrait"

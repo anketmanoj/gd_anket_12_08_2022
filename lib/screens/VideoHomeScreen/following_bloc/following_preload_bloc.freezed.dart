@@ -1054,7 +1054,8 @@ class _$FollowingPreloadStateTearOff {
       required int reloadCounter,
       required bool isLoading,
       required HomeScreenOptions filterOption,
-      required bool isLoadingFilter}) {
+      required bool isLoadingFilter,
+      required bool noFollowingVideos}) {
     return _FollowingPreloadState(
       urls: urls,
       controllers: controllers,
@@ -1063,6 +1064,7 @@ class _$FollowingPreloadStateTearOff {
       isLoading: isLoading,
       filterOption: filterOption,
       isLoadingFilter: isLoadingFilter,
+      noFollowingVideos: noFollowingVideos,
     );
   }
 }
@@ -1080,6 +1082,7 @@ mixin _$FollowingPreloadState {
   bool get isLoading => throw _privateConstructorUsedError;
   HomeScreenOptions get filterOption => throw _privateConstructorUsedError;
   bool get isLoadingFilter => throw _privateConstructorUsedError;
+  bool get noFollowingVideos => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $FollowingPreloadStateCopyWith<FollowingPreloadState> get copyWith =>
@@ -1098,7 +1101,8 @@ abstract class $FollowingPreloadStateCopyWith<$Res> {
       int reloadCounter,
       bool isLoading,
       HomeScreenOptions filterOption,
-      bool isLoadingFilter});
+      bool isLoadingFilter,
+      bool noFollowingVideos});
 }
 
 /// @nodoc
@@ -1119,6 +1123,7 @@ class _$FollowingPreloadStateCopyWithImpl<$Res>
     Object? isLoading = freezed,
     Object? filterOption = freezed,
     Object? isLoadingFilter = freezed,
+    Object? noFollowingVideos = freezed,
   }) {
     return _then(_value.copyWith(
       urls: urls == freezed
@@ -1149,6 +1154,10 @@ class _$FollowingPreloadStateCopyWithImpl<$Res>
           ? _value.isLoadingFilter
           : isLoadingFilter // ignore: cast_nullable_to_non_nullable
               as bool,
+      noFollowingVideos: noFollowingVideos == freezed
+          ? _value.noFollowingVideos
+          : noFollowingVideos // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -1167,7 +1176,8 @@ abstract class _$FollowingPreloadStateCopyWith<$Res>
       int reloadCounter,
       bool isLoading,
       HomeScreenOptions filterOption,
-      bool isLoadingFilter});
+      bool isLoadingFilter,
+      bool noFollowingVideos});
 }
 
 /// @nodoc
@@ -1190,6 +1200,7 @@ class __$FollowingPreloadStateCopyWithImpl<$Res>
     Object? isLoading = freezed,
     Object? filterOption = freezed,
     Object? isLoadingFilter = freezed,
+    Object? noFollowingVideos = freezed,
   }) {
     return _then(_FollowingPreloadState(
       urls: urls == freezed
@@ -1220,6 +1231,10 @@ class __$FollowingPreloadStateCopyWithImpl<$Res>
           ? _value.isLoadingFilter
           : isLoadingFilter // ignore: cast_nullable_to_non_nullable
               as bool,
+      noFollowingVideos: noFollowingVideos == freezed
+          ? _value.noFollowingVideos
+          : noFollowingVideos // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -1234,7 +1249,8 @@ class _$_FollowingPreloadState implements _FollowingPreloadState {
       required this.reloadCounter,
       required this.isLoading,
       required this.filterOption,
-      required this.isLoadingFilter});
+      required this.isLoadingFilter,
+      required this.noFollowingVideos});
 
   @override
   final List<Video> urls;
@@ -1250,10 +1266,12 @@ class _$_FollowingPreloadState implements _FollowingPreloadState {
   final HomeScreenOptions filterOption;
   @override
   final bool isLoadingFilter;
+  @override
+  final bool noFollowingVideos;
 
   @override
   String toString() {
-    return 'FollowingPreloadState(urls: $urls, controllers: $controllers, focusedIndex: $focusedIndex, reloadCounter: $reloadCounter, isLoading: $isLoading, filterOption: $filterOption, isLoadingFilter: $isLoadingFilter)';
+    return 'FollowingPreloadState(urls: $urls, controllers: $controllers, focusedIndex: $focusedIndex, reloadCounter: $reloadCounter, isLoading: $isLoading, filterOption: $filterOption, isLoadingFilter: $isLoadingFilter, noFollowingVideos: $noFollowingVideos)';
   }
 
   @override
@@ -1273,7 +1291,9 @@ class _$_FollowingPreloadState implements _FollowingPreloadState {
             (identical(other.filterOption, filterOption) ||
                 other.filterOption == filterOption) &&
             (identical(other.isLoadingFilter, isLoadingFilter) ||
-                other.isLoadingFilter == isLoadingFilter));
+                other.isLoadingFilter == isLoadingFilter) &&
+            (identical(other.noFollowingVideos, noFollowingVideos) ||
+                other.noFollowingVideos == noFollowingVideos));
   }
 
   @override
@@ -1285,7 +1305,8 @@ class _$_FollowingPreloadState implements _FollowingPreloadState {
       reloadCounter,
       isLoading,
       filterOption,
-      isLoadingFilter);
+      isLoadingFilter,
+      noFollowingVideos);
 
   @JsonKey(ignore: true)
   @override
@@ -1302,7 +1323,8 @@ abstract class _FollowingPreloadState implements FollowingPreloadState {
       required int reloadCounter,
       required bool isLoading,
       required HomeScreenOptions filterOption,
-      required bool isLoadingFilter}) = _$_FollowingPreloadState;
+      required bool isLoadingFilter,
+      required bool noFollowingVideos}) = _$_FollowingPreloadState;
 
   @override
   List<Video> get urls;
@@ -1318,6 +1340,8 @@ abstract class _FollowingPreloadState implements FollowingPreloadState {
   HomeScreenOptions get filterOption;
   @override
   bool get isLoadingFilter;
+  @override
+  bool get noFollowingVideos;
   @override
   @JsonKey(ignore: true)
   _$FollowingPreloadStateCopyWith<_FollowingPreloadState> get copyWith =>

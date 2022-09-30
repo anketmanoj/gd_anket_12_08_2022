@@ -45,6 +45,12 @@ class FollowingPreloadBloc
 
             log("state length following in free == ${state.urls.length}");
 
+            if (state.urls.isNotEmpty) {
+              yield state.copyWith(noFollowingVideos: false);
+            } else {
+              yield state.copyWith(noFollowingVideos: true);
+            }
+
             /// Initialize 1st video
             await _initializeControllerAtIndex(0);
 
@@ -54,7 +60,8 @@ class FollowingPreloadBloc
             /// Initialize 2nd video
             await _initializeControllerAtIndex(1);
 
-            yield state.copyWith(filterOption: e.filterOption);
+            yield state.copyWith(
+                filterOption: e.filterOption, isLoadingFilter: false);
 
             break;
           case HomeScreenOptions.Paid:
@@ -66,6 +73,12 @@ class FollowingPreloadBloc
 
             log("state length following in paid == ${state.urls.length}");
 
+            if (state.urls.isNotEmpty) {
+              yield state.copyWith(noFollowingVideos: false);
+            } else {
+              yield state.copyWith(noFollowingVideos: true);
+            }
+
             /// Initialize 1st video
             await _initializeControllerAtIndex(0);
 
@@ -76,7 +89,8 @@ class FollowingPreloadBloc
             await _initializeControllerAtIndex(1);
             log("in paid");
 
-            yield state.copyWith(filterOption: e.filterOption);
+            yield state.copyWith(
+                filterOption: e.filterOption, isLoadingFilter: false);
 
             break;
 
@@ -85,7 +99,12 @@ class FollowingPreloadBloc
             await ApiService.loadFollowingVideos();
             final List<Video> _urls = await ApiService.getFollowingVideos();
             state.urls.addAll(_urls);
-            log("state length following in both == ${state.urls.length}");
+
+            if (state.urls.isNotEmpty) {
+              yield state.copyWith(noFollowingVideos: false);
+            } else {
+              yield state.copyWith(noFollowingVideos: true);
+            }
 
             /// Initialize 1st video
             await _initializeControllerAtIndex(0);
@@ -96,7 +115,8 @@ class FollowingPreloadBloc
             /// Initialize 2nd video
             await _initializeControllerAtIndex(1);
 
-            yield state.copyWith(filterOption: e.filterOption);
+            yield state.copyWith(
+                filterOption: e.filterOption, isLoadingFilter: false);
             break;
         }
       },
@@ -105,6 +125,14 @@ class FollowingPreloadBloc
         await ApiService.loadFollowingVideos();
         final List<Video> _urls = await ApiService.getFollowingVideos();
         state.urls.addAll(_urls);
+
+        yield state.copyWith(isLoadingFilter: false);
+
+        if (state.urls.isNotEmpty) {
+          yield state.copyWith(noFollowingVideos: false);
+        } else {
+          yield state.copyWith(noFollowingVideos: true);
+        }
 
         /// Initialize 1st video
         await _initializeControllerAtIndex(0);
