@@ -13,6 +13,7 @@ import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/NotifyUserModels.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/dynamic_link_service.dart';
+import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/OptionsWidget.dart';
@@ -416,6 +417,15 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                       )
                                           .whenComplete(() async {
                                         try {
+                                          List<String> currentFollowingList =
+                                              SharedPreferencesHelper
+                                                  .getListString(
+                                                      "followersList");
+                                          currentFollowingList.add(
+                                              "${widget.userModel.useruid}");
+                                          SharedPreferencesHelper.setListString(
+                                              "followersList",
+                                              currentFollowingList);
                                           await Provider.of<FirebaseOperations>(
                                                   context,
                                                   listen: false)
@@ -821,64 +831,64 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                           log(video.thumbnailurl);
                           return InkWell(
                             onTap: () {
-                              if (video.isFree == true) {
-                                log("free");
-                                Navigator.push(
-                                  context,
-                                  PageTransition(
-                                    type: PageTransitionType.rightToLeft,
-                                    child: PostDetailsScreen(
-                                      videoId: video.id,
-                                    ),
+                              // if (video.isFree == true) {
+                              //   log("free");
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: PostDetailsScreen(
+                                    videoId: video.id,
                                   ),
-                                );
-                              } else if (video.isPaid == true &&
-                                      video.boughtBy.contains(auth.getUserId) ||
-                                  video.useruid ==
-                                      Provider.of<Authentication>(context,
-                                              listen: false)
-                                          .getUserId) {
-                                log("paid already");
-                                Navigator.push(
-                                  context,
-                                  PageTransition(
-                                    type: PageTransitionType.rightToLeft,
-                                    child: PostDetailsScreen(
-                                      videoId: video.id,
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                final String videoUrl =
-                                    "https://gdfe-ac584.web.app/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
-                                // "http://192.168.1.6:8080/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
-                                // "https://gdfe-ac584.web.app/#/video/0ReK4oZIhGdbuYxBiUG5J/sjhbjhs";
+                                ),
+                              );
+                              // } else if (video.isPaid == true &&
+                              //         video.boughtBy.contains(auth.getUserId) ||
+                              //     video.useruid ==
+                              //         Provider.of<Authentication>(context,
+                              //                 listen: false)
+                              //             .getUserId) {
+                              //   log("paid already");
+                              //   Navigator.push(
+                              //     context,
+                              //     PageTransition(
+                              //       type: PageTransitionType.rightToLeft,
+                              //       child: PostDetailsScreen(
+                              //         videoId: video.id,
+                              //       ),
+                              //     ),
+                              //   );
+                              // } else {
+                              //   final String videoUrl =
+                              //       "https://gdfe-ac584.web.app/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
+                              //   // "http://192.168.1.6:8080/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
+                              //   // "https://gdfe-ac584.web.app/#/video/0ReK4oZIhGdbuYxBiUG5J/sjhbjhs";
 
-                                ViewPaidVideoWeb(context, video, videoUrl);
-                                // CoolAlert.show(
-                                //   context: context,
-                                //   type: CoolAlertType.info,
-                                //   title: "Premium Content",
-                                //   text:
-                                //       "You cannot unlock this content within the app; please unlock the content on the Glamorous Diastation website and you'll be able to view it on the Glamorous Diastation app or in the web browser",
-                                //   confirmBtnText: "Unlock Video",
-                                //   cancelBtnText: "Nevermind",
-                                //   confirmBtnColor: constantColors.navButton,
-                                //   showCancelBtn: true,
-                                //   onCancelBtnTap: () {
-                                //     Navigator.pop(context);
-                                //   },
-                                //   onConfirmBtnTap: () => ViewPaidVideoWeb(
-                                //       context, video, videoUrl),
-                                //   confirmBtnTextStyle: TextStyle(
-                                //     fontSize: 14,
-                                //     color: constantColors.whiteColor,
-                                //   ),
-                                //   cancelBtnTextStyle: TextStyle(
-                                //     fontSize: 14,
-                                //   ),
-                                // );
-                              }
+                              //   ViewPaidVideoWeb(context, video, videoUrl);
+                              //   // CoolAlert.show(
+                              //   //   context: context,
+                              //   //   type: CoolAlertType.info,
+                              //   //   title: "Premium Content",
+                              //   //   text:
+                              //   //       "You cannot unlock this content within the app; please unlock the content on the Glamorous Diastation website and you'll be able to view it on the Glamorous Diastation app or in the web browser",
+                              //   //   confirmBtnText: "Unlock Video",
+                              //   //   cancelBtnText: "Nevermind",
+                              //   //   confirmBtnColor: constantColors.navButton,
+                              //   //   showCancelBtn: true,
+                              //   //   onCancelBtnTap: () {
+                              //   //     Navigator.pop(context);
+                              //   //   },
+                              //   //   onConfirmBtnTap: () => ViewPaidVideoWeb(
+                              //   //       context, video, videoUrl),
+                              //   //   confirmBtnTextStyle: TextStyle(
+                              //   //     fontSize: 14,
+                              //   //     color: constantColors.whiteColor,
+                              //   //   ),
+                              //   //   cancelBtnTextStyle: TextStyle(
+                              //   //     fontSize: 14,
+                              //   //   ),
+                              //   // );
+                              // }
                             },
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(30),

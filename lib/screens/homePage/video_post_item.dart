@@ -1301,6 +1301,11 @@ class _VideoPostItemState extends State<VideoPostItem> {
                       msg: message,
                       urlPath: widget.video.videourl,
                       videoOwnerName: widget.video.username,
+                      canShareToSocialMedia: widget.video.boughtBy.contains(
+                                  context.read<Authentication>().getUserId) &&
+                              widget.video.isPaid ||
+                          widget.video.useruid ==
+                              context.read<Authentication>().getUserId,
                     ),
                   );
                 },

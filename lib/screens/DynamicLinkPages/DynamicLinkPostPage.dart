@@ -1,3 +1,5 @@
+// ignore_for_file: unawaited_futures
+
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -534,11 +536,27 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                     short: true);
                             final String message = generatedLink.toString();
 
+                            bool canShareVal = false;
+
+                            if (video!.isPaid) {
+                              if (video!.boughtBy.contains(
+                                  context.read<Authentication>().getUserId)) {
+                                canShareVal = true;
+                              }
+                              if (video!.useruid ==
+                                  context.read<Authentication>().getUserId) {
+                                canShareVal == true;
+                              }
+                            } else {
+                              canShareVal = true;
+                            }
+
                             Get.bottomSheet(
                               ShareWidget(
                                 msg: message,
                                 urlPath: video!.videourl,
                                 videoOwnerName: video!.username,
+                                canShareToSocialMedia: canShareVal,
                               ),
                             );
                           },

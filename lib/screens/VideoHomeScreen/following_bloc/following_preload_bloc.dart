@@ -67,6 +67,7 @@ class FollowingPreloadBloc
             yield state.copyWith(
                 filterOption: e.filterOption,
                 isLoadingFilter: false,
+                userFollowsNoOne: _urls.isNotEmpty ? false : true,
                 noFollowingVideos: _urls.isNotEmpty ? false : true,
                 isLoading: false);
 
@@ -100,6 +101,7 @@ class FollowingPreloadBloc
             yield state.copyWith(
                 filterOption: e.filterOption,
                 isLoadingFilter: false,
+                userFollowsNoOne: _urls.isNotEmpty ? false : true,
                 noFollowingVideos: _urls.isNotEmpty ? false : true,
                 isLoading: false);
 
@@ -110,7 +112,9 @@ class FollowingPreloadBloc
             state.urls.clear();
             await ApiService.loadFollowingVideos();
             final List<Video> _urls = await ApiService.getFollowingVideos();
+
             state.urls.addAll(_urls);
+            log("################# len = ${state.urls.length}");
 
             log("here no in both | ${state.urls.length}");
 

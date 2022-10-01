@@ -44,6 +44,7 @@ class VideoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log("This sense?");
     final Size size = MediaQuery.of(context).size;
     final FirebaseOperations firebaseOperations =
         Provider.of<FirebaseOperations>(context, listen: false);
@@ -471,11 +472,27 @@ class VideoWidget extends StatelessWidget {
                                   short: true);
                           final String message = generatedLink.toString();
 
+                          bool canShareVal = false;
+
+                          if (video.isPaid) {
+                            if (video.boughtBy.contains(
+                                context.read<Authentication>().getUserId)) {
+                              canShareVal = true;
+                            }
+                            if (video.useruid ==
+                                context.read<Authentication>().getUserId) {
+                              canShareVal == true;
+                            }
+                          } else {
+                            canShareVal = true;
+                          }
+
                           Get.bottomSheet(
                             ShareWidget(
                               msg: message,
                               urlPath: video.videourl,
                               videoOwnerName: video.username,
+                              canShareToSocialMedia: canShareVal,
                             ),
                           );
                         },

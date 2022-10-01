@@ -43,7 +43,7 @@ class _RecommendedVideoPageState extends State<RecommendedVideoPage>
   Widget build(BuildContext context) {
     return BlocBuilder<PreloadBloc, PreloadState>(
       builder: (context, state) {
-        if (state.isLoading) {
+        if (state.isLoading == true) {
           return Container(
             height: 100.h,
             width: 100.w,
@@ -66,87 +66,110 @@ class _RecommendedVideoPageState extends State<RecommendedVideoPage>
             ),
           );
         }
-        switch (state.filterOption) {
-          case HomeScreenOptions.Free:
-            log("We're here in Free!");
-            return PageView.builder(
-              itemCount: state.urls.length,
-              scrollDirection: Axis.vertical,
-              onPageChanged: (index) =>
-                  BlocProvider.of<PreloadBloc>(context, listen: false)
-                      .add(PreloadEvent.onVideoIndexChanged(index)),
-              itemBuilder: (context, index) {
-                // Is at end and isLoading
-                final bool _isLoading =
-                    state.isLoading && index == state.urls.length - 1;
 
-                return state.focusedIndex == index
-                    ? VideoWidget(
-                        video: state.urls[index],
-                        isLoading: _isLoading,
-                        controller: state.controllers[index]!,
-                      )
-                    : Container(
-                        height: 200,
-                        width: 200,
-                      );
-              },
-            );
-          case HomeScreenOptions.Paid:
-            log("We're here in Paid!");
+        // switch (state.filterOption) {
+        //   case HomeScreenOptions.Free:
+        //     log("We're here in Free! !!!");
+        //     return PageView.builder(
+        //       itemCount: state.urls.length,
+        //       scrollDirection: Axis.vertical,
+        //       onPageChanged: (index) =>
+        //           BlocProvider.of<PreloadBloc>(context, listen: false)
+        //               .add(PreloadEvent.onVideoIndexChanged(index)),
+        //       itemBuilder: (context, index) {
+        //         // Is at end and isLoading
+        //         final bool _isLoading =
+        //             state.isLoading && index == state.urls.length - 1;
 
-            return PageView.builder(
-              itemCount: state.urls.length,
-              scrollDirection: Axis.vertical,
-              onPageChanged: (index) =>
-                  BlocProvider.of<PreloadBloc>(context, listen: false)
-                      .add(PreloadEvent.onVideoIndexChanged(index)),
-              itemBuilder: (context, index) {
-                // Is at end and isLoading
-                final bool _isLoading =
-                    state.isLoading && index == state.urls.length - 1;
+        //         return state.focusedIndex == index
+        //             ? VideoWidget(
+        //                 video: state.urls[index],
+        //                 isLoading: _isLoading,
+        //                 controller: state.controllers[index]!,
+        //               )
+        //             : Container(
+        //                 height: 200,
+        //                 width: 200,
+        //               );
+        //       },
+        //     );
+        //   case HomeScreenOptions.Paid:
+        //     log("We're here in Paid!");
 
-                return state.focusedIndex == index
-                    ? VideoWidget(
-                        video: state.urls[index],
-                        isLoading: _isLoading,
-                        controller: state.controllers[index]!,
-                      )
-                    : Container(
-                        height: 200,
-                        width: 200,
-                      );
-              },
-            );
-          case HomeScreenOptions.Both:
-            log("We're here in Both!");
+        //     return PageView.builder(
+        //       itemCount: state.urls.length,
+        //       scrollDirection: Axis.vertical,
+        //       onPageChanged: (index) =>
+        //           BlocProvider.of<PreloadBloc>(context, listen: false)
+        //               .add(PreloadEvent.onVideoIndexChanged(index)),
+        //       itemBuilder: (context, index) {
+        //         // Is at end and isLoading
+        //         final bool _isLoading =
+        //             state.isLoading && index == state.urls.length - 1;
 
-            return PageView.builder(
-              itemCount: state.urls.length,
-              scrollDirection: Axis.vertical,
-              onPageChanged: (index) =>
-                  BlocProvider.of<PreloadBloc>(context, listen: false)
-                      .add(PreloadEvent.onVideoIndexChanged(index)),
-              itemBuilder: (context, index) {
-                // Is at end and isLoading
-                final bool _isLoading =
-                    state.isLoading && index == state.urls.length - 1;
+        //         return state.focusedIndex == index
+        //             ? VideoWidget(
+        //                 video: state.urls[index],
+        //                 isLoading: _isLoading,
+        //                 controller: state.controllers[index]!,
+        //               )
+        //             : Container(
+        //                 height: 200,
+        //                 width: 200,
+        //               );
+        //       },
+        //     );
+        //   case HomeScreenOptions.Both:
+        //     log("We're here in Both!");
 
-                return state.focusedIndex == index
-                    ? VideoWidget(
-                        video: state.urls[index],
-                        isLoading: _isLoading,
-                        controller: state.controllers[index]!,
-                      )
-                    : Container(
-                        height: 200,
-                        width: 200,
-                      );
-              },
-            );
-        }
+        //     return PageView.builder(
+        //       itemCount: state.urls.length,
+        //       scrollDirection: Axis.vertical,
+        //       onPageChanged: (index) =>
+        //           BlocProvider.of<PreloadBloc>(context, listen: false)
+        //               .add(PreloadEvent.onVideoIndexChanged(index)),
+        //       itemBuilder: (context, index) {
+        //         // Is at end and isLoading
+        //         final bool _isLoading =
+        //             state.isLoading && index == state.urls.length - 1;
 
-        return SizedBox();
+        //         return state.focusedIndex == index
+        //             ? VideoWidget(
+        //                 video: state.urls[index],
+        //                 isLoading: _isLoading,
+        //                 controller: state.controllers[index]!,
+        //               )
+        //             : Container(
+        //                 height: 200,
+        //                 width: 200,
+        //               );
+        //       },
+        //     );
+        // }
+
+        return PageView.builder(
+          itemCount: state.urls.length,
+          scrollDirection: Axis.vertical,
+          onPageChanged: (index) =>
+              BlocProvider.of<PreloadBloc>(context, listen: false)
+                  .add(PreloadEvent.onVideoIndexChanged(index)),
+          itemBuilder: (context, index) {
+            // Is at end and isLoading
+            final bool _isLoading =
+                state.isLoading && index == state.urls.length - 1;
+
+            return state.focusedIndex == index
+                ? VideoWidget(
+                    video: state.urls[index],
+                    isLoading: _isLoading,
+                    controller: state.controllers[index]!,
+                  )
+                : Container(
+                    height: 200,
+                    width: 200,
+                  );
+          },
+        );
       },
     );
   }

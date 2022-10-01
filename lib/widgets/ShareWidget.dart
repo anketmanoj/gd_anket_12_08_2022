@@ -28,15 +28,17 @@ enum Share {
 }
 
 class ShareWidget extends StatefulWidget {
-  ShareWidget(
-      {Key? key,
-      required this.msg,
-      required this.urlPath,
-      required this.videoOwnerName})
-      : super(key: key);
+  ShareWidget({
+    Key? key,
+    required this.msg,
+    required this.urlPath,
+    required this.videoOwnerName,
+    required this.canShareToSocialMedia,
+  }) : super(key: key);
   final String msg;
   final String urlPath;
   final String videoOwnerName;
+  final bool canShareToSocialMedia;
 
   @override
   State<ShareWidget> createState() => _ShareWidgetState();
@@ -50,7 +52,8 @@ class _ShareWidgetState extends State<ShareWidget> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      await getImage(url: widget.urlPath);
+      if (widget.canShareToSocialMedia == true)
+        await getImage(url: widget.urlPath);
     });
   }
 
@@ -91,132 +94,197 @@ class _ShareWidgetState extends State<ShareWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final List<ShareButtons> listOfShares = [
-      ShareButtons(
-        iconData: FontAwesomeIcons.facebook,
-        onButtonTop: () => onButtonTap(Share.facebook),
-      ),
-      ShareButtons(
-        iconData: FontAwesomeIcons.twitter,
-        onButtonTop: () => onButtonTap(Share.twitter),
-      ),
-      ShareButtons(
-        iconData: FontAwesomeIcons.whatsapp,
-        onButtonTop: () => onButtonTap(Share.whatsapp),
-      ),
-      ShareButtons(
-        iconData: FontAwesomeIcons.instagram,
-        onButtonTop: () => onButtonTap(Share.share_instagram),
-      ),
-      ShareButtons(
-        iconData: FontAwesomeIcons.mobileScreenButton,
-        onButtonTop: () => onButtonTap(Share.share_system),
-      ),
-    ];
+    switch (widget.canShareToSocialMedia) {
+      case true:
+        final List<ShareButtons> listOfShares = [
+          ShareButtons(
+            iconData: FontAwesomeIcons.facebook,
+            onButtonTop: () => onButtonTap(Share.facebook),
+          ),
+          ShareButtons(
+            iconData: FontAwesomeIcons.twitter,
+            onButtonTop: () => onButtonTap(Share.twitter),
+          ),
+          ShareButtons(
+            iconData: FontAwesomeIcons.whatsapp,
+            onButtonTop: () => onButtonTap(Share.whatsapp),
+          ),
+          ShareButtons(
+            iconData: FontAwesomeIcons.instagram,
+            onButtonTop: () => onButtonTap(Share.share_instagram),
+          ),
+          ShareButtons(
+            iconData: FontAwesomeIcons.mobileScreenButton,
+            onButtonTop: () => onButtonTap(Share.share_system),
+          ),
+        ];
 
-    return Container(
-      height: 40.h,
-      width: 100.w,
-      decoration: BoxDecoration(
-        color: constantColors.bioBg,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 150),
-              child: Divider(
-                thickness: 4,
-                color: constantColors.greyColor,
-              ),
+        return Container(
+          height: 40.h,
+          width: 100.w,
+          decoration: BoxDecoration(
+            color: constantColors.bioBg,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
             ),
-            InkWell(
-              onTap: () => onButtonTap(Share.share_system),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 60,
-                  width: 100.w,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    widget.msg,
-                    textAlign: TextAlign.center,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: constantColors.greyColor,
                   ),
                 ),
-              ),
-            ),
-            videoFile != null
-                ? Wrap(
-                    spacing: (10 / 100.w * 100).w, //vertical spacing
-                    runSpacing: 2.h, //horizontal spacing
-                    alignment: WrapAlignment.center,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: listOfShares.map((shareVal) {
-                      return InkWell(
-                        onTap: shareVal.onButtonTop,
-                        child: Container(
-                          height: 10.h,
-                          width: 20.w,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: constantColors.navButton,
-                              width: 1,
-                            ),
-                          ),
-                          child: Icon(
-                            shareVal.iconData,
-                            size: 40,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  )
-                // GridView.builder(
-                //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                //       crossAxisCount: 3,
-                //       crossAxisSpacing: 5,
-                //       mainAxisSpacing: 5,
-                //     ),
-                //     itemCount: listOfShares.length,
-                //     shrinkWrap: true,
-                //     physics: NeverScrollableScrollPhysics(),
-                //     itemBuilder: (context, index) {
-                //       return InkWell(
-                //         onTap: listOfShares[index].onButtonTop,
-                //         child: Container(
-                //           decoration: BoxDecoration(
-                //             border: Border.all(
-                //               color: constantColors.navButton,
-                //               width: 1,
-                //             ),
-                //           ),
-                //           child: Icon(
-                //             listOfShares[index].iconData,
-                //             size: 40,
-                //           ),
-                //         ),
-                //       );
-                //     },
-                //   )
-                : Expanded(
-                    child: Center(
-                      child: CircularProgressIndicator(),
+                InkWell(
+                  onTap: () => onButtonTap(Share.share_system),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 60,
+                      width: 100.w,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        widget.msg,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
-          ],
-        ),
-      ),
-    );
+                ),
+                videoFile != null
+                    ? Wrap(
+                        spacing: (10 / 100.w * 100).w, //vertical spacing
+                        runSpacing: 2.h, //horizontal spacing
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: listOfShares.map((shareVal) {
+                          return InkWell(
+                            onTap: shareVal.onButtonTop,
+                            child: Container(
+                              height: 10.h,
+                              width: 20.w,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: constantColors.navButton,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Icon(
+                                shareVal.iconData,
+                                size: 40,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      )
+                    // GridView.builder(
+                    //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    //       crossAxisCount: 3,
+                    //       crossAxisSpacing: 5,
+                    //       mainAxisSpacing: 5,
+                    //     ),
+                    //     itemCount: listOfShares.length,
+                    //     shrinkWrap: true,
+                    //     physics: NeverScrollableScrollPhysics(),
+                    //     itemBuilder: (context, index) {
+                    //       return InkWell(
+                    //         onTap: listOfShares[index].onButtonTop,
+                    //         child: Container(
+                    //           decoration: BoxDecoration(
+                    //             border: Border.all(
+                    //               color: constantColors.navButton,
+                    //               width: 1,
+                    //             ),
+                    //           ),
+                    //           child: Icon(
+                    //             listOfShares[index].iconData,
+                    //             size: 40,
+                    //           ),
+                    //         ),
+                    //       );
+                    //     },
+                    //   )
+                    : Expanded(
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+              ],
+            ),
+          ),
+        );
+
+      case false:
+        return Container(
+          height: 25.h,
+          width: 100.w,
+          decoration: BoxDecoration(
+            color: constantColors.bioBg,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: constantColors.greyColor,
+                  ),
+                ),
+                InkWell(
+                  onTap: () => onButtonTap(Share.share_system),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 60,
+                      width: 100.w,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        widget.msg,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+
+      default:
+        return Container(
+          height: 25.h,
+          width: 100.w,
+          decoration: BoxDecoration(
+            color: constantColors.bioBg,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+    }
   }
 
   Future<void> onButtonTap(Share share) async {

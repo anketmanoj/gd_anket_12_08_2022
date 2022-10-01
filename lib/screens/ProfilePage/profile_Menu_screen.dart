@@ -671,20 +671,20 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "Monitisation",
                 ),
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                          child: TransformDemo(),
-                          type: PageTransitionType.rightToLeft),
-                    );
-                  },
-                  leadingIcon: FontAwesomeIcons.dollarSign,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: "Demo",
-                ),
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () {
+                //     Navigator.push(
+                //       context,
+                //       PageTransition(
+                //           child: TransformDemo(),
+                //           type: PageTransitionType.rightToLeft),
+                //     );
+                //   },
+                //   leadingIcon: FontAwesomeIcons.dollarSign,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "Demo",
+                // ),
                 // ListTileOption(
                 //   constantColors: constantColors,
                 //   onTap: () {
@@ -1043,6 +1043,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
       title: "Are you sure you want to log out?",
       confirmBtnText: "Log Out",
       onConfirmBtnTap: () {
+        SharedPreferencesHelper.setListString("followersList", [""]);
         Provider.of<Authentication>(context, listen: false).facebookLogOut();
         Provider.of<Authentication>(context, listen: false).signOutWithGoogle();
         Provider.of<Authentication>(context, listen: false)
