@@ -3093,6 +3093,20 @@ class FirebaseOperations with ChangeNotifier {
     });
   }
 
+  Future hideUnhideItemDrafts(
+      {required String videoId,
+      required String itemId,
+      required bool hideVal}) async {
+    return FirebaseFirestore.instance
+        .collection("drafts")
+        .doc(videoId)
+        .collection("materials")
+        .doc(itemId)
+        .update({
+      "hideItem": hideVal,
+    });
+  }
+
   Future updatePostView(
       {required String videoId,
       required String useruidVal,
@@ -3115,5 +3129,85 @@ class FirebaseOperations with ChangeNotifier {
         "views": FieldValue.increment(1),
       });
     }
+  }
+
+  Future goFromDraftToPosts({
+    required String caption,
+    required String video_title,
+    required String id,
+    required String userUid,
+    required String coverThumbnailUrl,
+    required bool isFree,
+    required bool isPaid,
+    required String videoUrlVal,
+    double? price,
+    double? discountAmount,
+    Timestamp? startDiscountDate,
+    Timestamp? endDiscountDate,
+    required List<String?> genre,
+    required bool isverifiedVal,
+  }) async {
+    String name = "${caption} ${video_title}";
+
+    List<String> splitList = name.split(" ");
+    List<String> indexList = [];
+
+    for (int i = 0; i < splitList.length; i++) {
+      for (int j = 0; j < splitList[i].length; j++) {
+        indexList.add(splitList[i].substring(0, j + 1).toLowerCase());
+      }
+    }
+
+    log("updating from drafts to posts == id $id");
+
+    await FirebaseFirestore.instance.collection("posts").doc(id).set({
+      "id": id,
+      "useruid": userUid,
+      "videourl": videoUrlVal,
+      "videotitle": video_title,
+      "caption": caption,
+      "timestamp": Timestamp.now(),
+      "username": initUserName,
+      "userimage": initUserImage,
+      "thumbnailurl": coverThumbnailUrl,
+      "isfree": isFree,
+      "ispaid": isPaid,
+      "issubscription": false,
+      "price": price,
+      "discountamount": discountAmount,
+      "startdiscountdate": startDiscountDate,
+      "enddiscountdate": endDiscountDate,
+      "contentavailability": "All",
+      'ownerFcmToken': fcmToken,
+      "searchindexList": indexList,
+      "genre": genre,
+      'boughtBy': [],
+      'totalBilled': 0,
+      'verifiedUser': isverifiedVal,
+      "videoType": "video",
+    }).then((value) async {
+      log("now moving materials");
+
+      await FirebaseFirestore.instance
+          .collection("drafts")
+          .doc(id)
+          .collection("materials")
+          .get()
+          .then((materialsVal) async {
+        for (QueryDocumentSnapshot<Map<String, dynamic>> element
+            in materialsVal.docs) {
+          await FirebaseFirestore.instance
+              .collection("posts")
+              .doc(id)
+              .collection("materials")
+              .doc(element.id)
+              .set(element.data());
+        }
+      });
+
+      log("posted everything, now delete from draft");
+      await FirebaseFirestore.instance.collection("drafts").doc(id).delete();
+      log("deleted from drafts");
+    });
   }
 }

@@ -2,11 +2,14 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:diamon_rose_app/screens/PostPage/editDraftPreviewVideo.dart';
+import 'package:diamon_rose_app/screens/PostPage/editPreviewVideo.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/draftVideos.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -57,7 +60,7 @@ class USerDraftVideoScreen extends StatelessWidget {
                     child: Text("Error connecting to server"),
                   );
                 }
-                if (!snapshot.hasData) {
+                if (snapshot.data!.docs.isEmpty) {
                   return Center(
                     child: Text("No Drafts Saved!"),
                   );
@@ -83,6 +86,14 @@ class USerDraftVideoScreen extends StatelessWidget {
                                 return ListTile(
                                   onTap: () {
                                     // Navigate to Edit screen
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          child: EditDraftPreviewVideoScreen(
+                                            videoFile: video,
+                                          ),
+                                          type: PageTransitionType.leftToRight),
+                                    );
                                   },
                                   leading: Container(
                                     height: 50,

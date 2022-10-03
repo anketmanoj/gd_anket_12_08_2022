@@ -184,19 +184,6 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
     final Authentication authentication =
         Provider.of<Authentication>(context, listen: false);
 
-    bool canShareVal = false;
-
-    if (video!.isPaid) {
-      if (video!.boughtBy.contains(context.read<Authentication>().getUserId)) {
-        canShareVal = true;
-      }
-      if (video!.useruid == context.read<Authentication>().getUserId) {
-        canShareVal == true;
-      }
-    } else {
-      canShareVal = true;
-    }
-
     Future<dynamic> otherUserOptionsMenu(
         {required BuildContext context, required Video video}) {
       final List<String> optionsList = [
@@ -305,7 +292,11 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                       ),
                     ),
                     Visibility(
-                      visible: !canShareVal,
+                      visible: video!.isPaid &&
+                          !video!.boughtBy.contains(
+                              context.read<Authentication>().getUserId) &&
+                          video!.useruid !=
+                              context.read<Authentication>().getUserId,
                       child: Positioned(
                         child: Center(
                           child: BlurryContainer.expand(
