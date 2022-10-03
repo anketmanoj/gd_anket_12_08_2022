@@ -500,7 +500,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                       closeManually: false,
                       children: [
                         SpeedDialChild(
-                          visible: video!.isPaid,
+                          // visible: video!.isPaid,
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,

@@ -5,6 +5,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
 class ArPendingModel {
   ArPendingModel({
     required this.gif,
@@ -16,6 +18,7 @@ class ArPendingModel {
     required this.ownerName,
     required this.usage,
     this.main,
+    this.deletethis,
   });
 
   String gif;
@@ -27,6 +30,7 @@ class ArPendingModel {
   String ownerName;
   String usage;
   String? main;
+  ValueNotifier<bool>? deletethis = ValueNotifier<bool>(false);
 
   factory ArPendingModel.fromJson(String str) =>
       ArPendingModel.fromMap(json.decode(str));
@@ -43,6 +47,7 @@ class ArPendingModel {
         ownerName: json["ownerName"],
         usage: json["usage"],
         main: json["main"],
+        deletethis: ValueNotifier<bool>(false),
       );
 
   Map<String, dynamic> toMap() => {

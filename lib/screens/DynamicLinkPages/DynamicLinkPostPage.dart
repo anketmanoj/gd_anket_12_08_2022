@@ -507,7 +507,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                       closeManually: false,
                       children: [
                         SpeedDialChild(
-                          visible: video!.isPaid,
+                          // visible: video!.isPaid,
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,

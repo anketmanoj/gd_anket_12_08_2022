@@ -304,20 +304,6 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
   @override
   bool get wantKeepAlive => true;
 
-  @override
-  void dispose() {
-    _exportingProgress.dispose();
-    _isExporting.dispose();
-
-    // timer.cancel();
-    // _controller.dispose();
-    // list.value.forEach((element) {
-    //   element.arState!.dispose();
-    //   if (element.audioFlag == true) element.audioPlayer!.dispose();
-    // });
-    super.dispose();
-  }
-
   // * running ffmpeg to get video with no background
   Future<void> runFFmpegCommand({
     required int arVal,
@@ -1737,9 +1723,19 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                       ),
                       onPressed: () async {
                         if (list.value.isNotEmpty) {
-                          for (ARList arVal in list.value) {
-                            await deleteFile(arVal.pathsForVideoFrames!);
+                          _exportingProgress.dispose();
+                          _isExporting.dispose();
+
+                          timer.cancel();
+                          _controller.dispose();
+                          for (ARList element in list.value) {
+                            element.arState!.dispose();
+                            if (element.audioFlag == true)
+                              element.audioPlayer!.dispose();
                           }
+                          // for (ARList arVal in list.value) {
+                          //   await deleteFile(arVal.pathsForVideoFrames!);
+                          // }
                         }
                         Navigator.pop(context);
                       },
