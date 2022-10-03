@@ -297,13 +297,12 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        Provider.of<HomeScreenProvider>(context, listen: false)
-                            .setHomeScreen(true);
-
                         Navigator.pushReplacement(
                           context,
                           PageTransition(
-                            child: FeedPage(),
+                            child: FeedPage(
+                              pageIndexValue: 0,
+                            ),
                             type: PageTransitionType.bottomToTop,
                           ),
                         );

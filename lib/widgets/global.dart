@@ -644,7 +644,10 @@ class _HeartAnimationwidgetState extends State<HeartAnimationwidget>
 }
 
 PreferredSizeWidget AppBarWidget(
-    {required String text, required BuildContext context, bool? goBack}) {
+    {required String text,
+    required BuildContext context,
+    bool? goBack,
+    List<Widget>? actions}) {
   final Size size = MediaQuery.of(context).size;
   return AppBar(
     automaticallyImplyLeading: goBack ?? true,
@@ -656,6 +659,7 @@ PreferredSizeWidget AppBarWidget(
       ),
     ),
     centerTitle: true,
+    actions: actions,
     title: Text(
       text,
       style: TextStyle(

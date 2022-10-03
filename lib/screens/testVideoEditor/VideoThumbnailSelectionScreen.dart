@@ -313,11 +313,6 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
                       absorbing: exporting,
                       child: IconButton(
                         onPressed: () {
-                          CoolAlert.show(
-                            context: context,
-                            type: CoolAlertType.loading,
-                            barrierDismissible: false,
-                          );
                           try {
                             _exportCover();
                           } catch (e) {

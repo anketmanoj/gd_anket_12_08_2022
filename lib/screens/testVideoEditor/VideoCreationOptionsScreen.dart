@@ -8,6 +8,7 @@ import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/MyCollectionHome.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/InitVideoEditorScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/initArVideoEditorScreen.dart';
+import 'package:diamon_rose_app/screens/testVideoEditor/userDraftVideos.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
@@ -18,6 +19,7 @@ import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:page_transition/page_transition.dart';
 
 import 'package:provider/provider.dart';
 
@@ -110,7 +112,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
             children: [
               VideoOptions(
                 onTap: () {
-                  _pickVideo(context: context);
+                  createVideoOptionsSheet(context);
                 },
                 icon: Icons.video_settings_outlined,
                 text: "Create Video",
@@ -290,6 +292,96 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                         },
                       ),
                     ],
+                  )
+                ],
+              ),
+              height: MediaQuery.of(context).size.height * 0.2,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: constantColors.whiteColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
+        });
+  }
+
+  Future createVideoOptionsSheet(BuildContext context) async {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return SafeArea(
+            bottom: true,
+            child: Container(
+              // ignore: sort_child_properties_last
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 150),
+                    child: Divider(
+                      thickness: 4,
+                      color: constantColors.navButton,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Create Video Option",
+                          style: TextStyle(
+                            color: constantColors.navButton,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          )),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: MaterialButton(
+                            color: constantColors.navButton,
+                            child: Text(
+                              'New Video',
+                              style: TextStyle(
+                                color: constantColors.whiteColor,
+                                fontSize: 16,
+                              ),
+                            ),
+                            onPressed: () {
+                              _pickVideo(context: context);
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: MaterialButton(
+                            color: constantColors.navButton,
+                            child: Text(
+                              'Drafts',
+                              style: TextStyle(
+                                color: constantColors.whiteColor,
+                                fontSize: 16,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                PageTransition(
+                                  child: USerDraftVideoScreen(),
+                                  type: PageTransitionType.fade,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   )
                 ],
               ),

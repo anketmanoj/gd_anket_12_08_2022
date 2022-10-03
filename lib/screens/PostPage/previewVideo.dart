@@ -19,6 +19,7 @@ import 'package:diamon_rose_app/services/mux/mux_video_stream.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:page_transition/page_transition.dart';
@@ -157,7 +158,94 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
     final Authentication auth =
         Provider.of<Authentication>(context, listen: false);
     return Scaffold(
-      appBar: AppBarWidget(text: "Video Settings", context: context),
+      appBar: AppBarWidget(text: "Video Settings", context: context, actions: [
+        Consumer<VideoEditorProvider>(builder: (context, videoEditor, _) {
+          return IconButton(
+            onPressed: () async {
+              // ignore: unawaited_futures
+              CoolAlert.show(
+                  barrierDismissible: true,
+                  context: context,
+                  type: CoolAlertType.loading,
+                  text: "Uploading Video");
+
+              log("now");
+
+              String? coverThumbnail = await AwsAnketS3.uploadFile(
+                  accessKey: "AKIATF76MVYR34JAVB7H",
+                  secretKey: "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",
+                  bucket: "anketvideobucket",
+                  file: widget.thumbnailFile,
+                  filename:
+                      "${Timestamp.now().millisecondsSinceEpoch}_bgThumbnailGif.gif",
+                  region: "us-east-1",
+                  destDir: "${Timestamp.now().millisecondsSinceEpoch}");
+
+              log("thumbnail == $coverThumbnail");
+
+              final bool result = await firebaseOperations.uploadDraftVideo(
+                coverThumbnailUrl: coverThumbnail!,
+                addBgToMaterials: bgSelected.value,
+                ctx: context,
+                backgroundVideoFile: videoEditor.getBackgroundVideoFile,
+                arListVal: selectMaterials,
+                videoFile: widget.videoFile,
+                userUid: auth.getUserId,
+                caption: _videoCaptionController.text,
+                isPaid: _isPaid,
+                price: _contentPrice.text.isEmpty
+                    ? 0
+                    : double.parse(_contentPrice.text),
+                discountAmount: _contentDiscount.text.isEmpty
+                    ? 0
+                    : double.parse(_contentDiscount.text),
+                startDiscountDate: Timestamp.fromDate(_startDiscountDate),
+                endDiscountDate: Timestamp.fromDate(_endDiscountDate),
+                isSubscription: _isSubscription,
+                contentAvailability: _contentAvailableToValue,
+                isFree: _isFree,
+                video_title: _videotitleController.text,
+                genre: _selectedRecommendedOptions,
+              );
+
+              log("done uploading");
+
+              if (result == true) {
+                log("works!!@!!");
+                widget.arList.forEach((arVal) {
+                  deleteFile(arVal.pathsForVideoFrames!);
+                });
+                Navigator.pushReplacement(
+                  context,
+                  PageTransition(
+                      child: FeedPage(), type: PageTransitionType.leftToRight),
+                );
+                Get.dialog(SimpleDialog(
+                  children: [
+                    Container(
+                      child: Text(
+                        "Video Saved to Drafts!",
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  ],
+                ));
+              } else if (result == false) {
+                log("SHIT!");
+                CoolAlert.show(
+                  context: context,
+                  type: CoolAlertType.error,
+                  title: "Error Uploading Video",
+                  text: "AWS error",
+                );
+              }
+
+              //ignore: avoid_catches_without_on_clauses
+            },
+            icon: Icon(Icons.save),
+          );
+        }),
+      ]),
       backgroundColor: constantColors.bioBg,
       body: GestureDetector(
         onTap: () {
