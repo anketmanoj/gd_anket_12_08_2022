@@ -443,7 +443,7 @@ class VideoWidget extends StatelessWidget {
                         },
                       ),
                       SpeedDialChild(
-                        visible: video.isPaid,
+                        // visible: video.isPaid,
                         child: Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
