@@ -90,7 +90,7 @@ class AdminArOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: constantColors.bioBg,
-      appBar: AppBarWidget(text: "Select User", context: context),
+      appBar: AppBarWidget(text: "Admin AR Options", context: context),
       body: GestureDetector(
         onTap: () {
           final FocusScopeNode currentFocus = FocusScope.of(context);
@@ -152,7 +152,7 @@ class AdminArOptions extends StatelessWidget {
                                 ),
                                 Divider(),
                                 Container(
-                                  height: 50.h,
+                                  height: 60.h,
                                   width: 100.w,
                                   child: AdminGDARNotificationScreen(
                                     userModel: selectedUser.value!,

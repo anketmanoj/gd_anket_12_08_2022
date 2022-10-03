@@ -46,6 +46,7 @@ class GDARNotificationScreen extends StatelessWidget {
             floatingActionButton: FloatingActionButton(
               backgroundColor: constantColors.navButton,
               onPressed: () {
+                postIdsToDelete.value.clear();
                 selectDelete.value = !selectDelete.value;
               },
               child: Icon(
