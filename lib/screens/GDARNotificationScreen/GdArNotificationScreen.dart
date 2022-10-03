@@ -71,22 +71,23 @@ class GDARNotificationScreen extends StatelessWidget {
                       SlidableAction(
                         onPressed: (_) {
                           CoolAlert.show(
-                              context: context,
-                              type: CoolAlertType.info,
-                              title: "Delete this AR?",
-                              text: "Are you sure you want to delete this AR?",
-                              onConfirmBtnTap: () async {
-                                await FirebaseFirestore.instance
-                                    .collection("users")
-                                    .doc(Provider.of<Authentication>(context,
-                                            listen: false)
-                                        .getUserId)
-                                    .collection("MyCollection")
-                                    .doc(arPendingModel.id)
-                                    .delete();
+                            context: context,
+                            type: CoolAlertType.info,
+                            title: "Delete this AR?",
+                            text: "Are you sure you want to delete this AR?",
+                            onConfirmBtnTap: () async {
+                              await FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(Provider.of<Authentication>(context,
+                                          listen: false)
+                                      .getUserId)
+                                  .collection("MyCollection")
+                                  .doc(arPendingModel.id)
+                                  .delete();
 
-                                Navigator.pop(context);
-                              });
+                              Navigator.pop(context);
+                            },
+                          );
                         },
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,

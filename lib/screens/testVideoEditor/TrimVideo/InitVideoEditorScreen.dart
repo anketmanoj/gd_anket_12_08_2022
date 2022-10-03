@@ -16,6 +16,7 @@ import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -77,13 +78,13 @@ class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
         _isExporting.value = false;
         if (!mounted) return;
         if (file != null) {
+          _controller.video.seekTo(Duration.zero);
           _controller.video.pause();
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => CreateVideoScreen(
-                        file: file,
-                      )));
+          Get.to(
+            () => CreateVideoScreen(
+              file: file,
+            ),
+          );
           await Provider.of<ArVideoCreation>(context, listen: false).audioCheck(
             videoUrl: file.path,
           );

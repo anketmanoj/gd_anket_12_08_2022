@@ -6,6 +6,7 @@
 import 'dart:io';
 
 import 'package:cool_alert/cool_alert.dart';
+import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
 import 'package:diamon_rose_app/screens/PostPage/previewVideo.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/CropVideo/InitCropVideoScreen.dart';
@@ -16,19 +17,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:helpers/helpers/transition.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class VideothumbnailSelector extends StatefulWidget {
   const VideothumbnailSelector(
       {Key? key,
       required this.file,
-      required this.bgMaterialThumnailFile,
-      required this.arList})
+      required this.arList,
+      required this.forBgMaterialThumnailFile})
       : super(key: key);
 
   final File file;
-  final File bgMaterialThumnailFile;
+
   final List<ARList> arList;
+  final File forBgMaterialThumnailFile;
 
   @override
   State<VideothumbnailSelector> createState() => _VideothumbnailSelectorState();
@@ -38,6 +41,7 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
   final _exportingProgress = ValueNotifier<double>(0.0);
   final _isExporting = ValueNotifier<bool>(false);
   final double height = 60;
+  late File bgMaterialThumnailFile;
 
   bool _exported = false;
   String _exportText = "";
@@ -47,7 +51,14 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
   void initState() {
     _controller = VideoEditorController.file(widget.file,
         maxDuration: const Duration(seconds: 60))
-      ..initialize().then((_) => setState(() {}));
+      ..initialize().then((_) async {
+        bgMaterialThumnailFile =
+            await Provider.of<FFmpegProvider>(context, listen: false)
+                .bgMaterialThumbnailCreator(
+                    vidFilePath: widget.forBgMaterialThumnailFile.path);
+        setState(() {});
+      });
+
     super.initState();
   }
 
@@ -124,7 +135,7 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
                   context,
                   PageTransition(
                       child: PreviewVideoScreen(
-                        bgMaterialThumnailFile: widget.bgMaterialThumnailFile,
+                        bgMaterialThumnailFile: bgMaterialThumnailFile,
                         bgFile: widget.file,
                         thumbnailFile: cover!,
                         videoFile: File(videoFileNew.path),

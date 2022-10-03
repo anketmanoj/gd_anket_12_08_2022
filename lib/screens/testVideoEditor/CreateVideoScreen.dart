@@ -227,7 +227,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
         });
       }
 
-      list.value.forEach((arElement) {
+      for (ARList arElement in list.value) {
         if (_controller.video.value.position.inMicroseconds <= 0 &&
             list.value.isNotEmpty) {
           if (arElement.finishedCaching!.value == true)
@@ -291,7 +291,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 (_fullLayout.width / _controller.maxDuration.inSeconds);
           });
         }
-      });
+      }
     });
     super.initState();
   }
@@ -309,12 +309,12 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     _exportingProgress.dispose();
     _isExporting.dispose();
 
-    timer.cancel();
-    _controller.dispose();
-    list.value.forEach((element) {
-      element.arState!.dispose();
-      if (element.audioFlag == true) element.audioPlayer!.dispose();
-    });
+    // timer.cancel();
+    // _controller.dispose();
+    // list.value.forEach((element) {
+    //   element.arState!.dispose();
+    //   if (element.audioFlag == true) element.audioPlayer!.dispose();
+    // });
     super.dispose();
   }
 
@@ -741,7 +741,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       _videoController.value.duration * (position / _fullLayout.width),
     );
 
-    list.value.forEach((ar) {
+    for (ARList ar in list.value) {
       if (position >= ar.startingPositon! &&
           position <= ar.startingPositon! + ar.endingPosition!) {
         _controller.video.pause();
@@ -777,7 +777,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
         ar.showAr!.value = false;
         ar.arState!.skip(ar.arState!.totalTime);
       }
-    });
+    }
   }
 
   void _updateControllerTrim() {
@@ -984,9 +984,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                   selected =
                                                                       value;
 
-                                                                  list.value
-                                                                      .forEach(
-                                                                          (arPlaying) {
+                                                                  for (ARList arPlaying
+                                                                      in list
+                                                                          .value) {
                                                                     if (arPlaying
                                                                             .showAr!
                                                                             .value ==
@@ -1002,7 +1002,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                             .pause();
                                                                       }
                                                                     }
-                                                                  });
+                                                                  }
                                                                 });
                                                               },
                                                               onPointerUp:
@@ -1114,7 +1114,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                   ? _controller.video.pause()
                                   : _controller.video.play();
 
-                              list.value.forEach((arPlaying) {
+                              for (ARList arPlaying in list.value) {
                                 if (arPlaying.showAr!.value == true) {
                                   arPlaying.arState!.isPlaying &&
                                           arPlaying.finishedCaching!.value ==
@@ -1127,7 +1127,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                       ? arPlaying.audioPlayer!.pause()
                                       : arPlaying.audioPlayer!.play();
                                 }
-                              });
+                              }
                             });
                           },
                           icon: Icon(
@@ -1290,27 +1290,25 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                           // print(
                                                           //     "ending time ${arVal.pathsForVideoFrames!.length / 30}");
 
-                                                          list.value.forEach(
-                                                            (arElement) {
-                                                              if (arElement
-                                                                      .arState!
-                                                                      .isPlaying ||
-                                                                  arElement
-                                                                      .audioPlayer!
-                                                                      .playing) {
-                                                                arElement
+                                                          for (ARList arElement
+                                                              in list.value) {
+                                                            if (arElement
                                                                     .arState!
+                                                                    .isPlaying ||
+                                                                arElement
+                                                                    .audioPlayer!
+                                                                    .playing) {
+                                                              arElement.arState!
+                                                                  .pause();
+                                                              if (arElement
+                                                                      .audioFlag ==
+                                                                  true) {
+                                                                arElement
+                                                                    .audioPlayer!
                                                                     .pause();
-                                                                if (arElement
-                                                                        .audioFlag ==
-                                                                    true) {
-                                                                  arElement
-                                                                      .audioPlayer!
-                                                                      .pause();
-                                                                }
                                                               }
-                                                            },
-                                                          );
+                                                            }
+                                                          }
                                                         },
                                                       )
                                                     ],
@@ -1651,23 +1649,22 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                   .pixels;
                                                           _controllerSeekTo(
                                                               _rect.left);
-                                                          list.value.forEach(
-                                                            (element) {
-                                                              element.arState!
-                                                                  .skip(_rect
-                                                                      .left);
-                                                              if (element
-                                                                      .audioFlag ==
-                                                                  true) {
-                                                                element
-                                                                    .audioPlayer!
-                                                                    .seek(Duration(
-                                                                        seconds: _rect
-                                                                            .left
-                                                                            .toInt()));
-                                                              }
-                                                            },
-                                                          );
+                                                          for (ARList element
+                                                              in list.value) {
+                                                            element.arState!
+                                                                .skip(
+                                                                    _rect.left);
+                                                            if (element
+                                                                    .audioFlag ==
+                                                                true) {
+                                                              element
+                                                                  .audioPlayer!
+                                                                  .seek(Duration(
+                                                                      seconds: _rect
+                                                                          .left
+                                                                          .toInt()));
+                                                            }
+                                                          }
                                                           _updateControllerIsTrimming(
                                                               false);
                                                           _updateControllerTrim();
@@ -1740,9 +1737,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                       ),
                       onPressed: () async {
                         if (list.value.isNotEmpty) {
-                          list.value.forEach((arVal) async {
+                          for (ARList arVal in list.value) {
                             await deleteFile(arVal.pathsForVideoFrames!);
-                          });
+                          }
                         }
                         Navigator.pop(context);
                       },
@@ -1821,6 +1818,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                       ),
                       onPressed: list.value.isNotEmpty
                           ? () async {
+                              await _controller.video.seekTo(Duration.zero);
                               await _controller.video.pause();
                               // ! for x = W - w (and the final bit for Ar position on screen)
                               double finalVideoContainerPointX =
@@ -1849,18 +1847,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                               ValueNotifier<int> lastVal =
                                   ValueNotifier<int>(0);
 
-                              list.value.forEach((arElement) {
-                                if (_controller.isPlaying == false) {
-                                  if (arElement.finishedCaching!.value ==
-                                      true) {
-                                    arElement.arState!.pause();
-                                  }
-                                  if (arElement.audioFlag == true &&
-                                      arElement.finishedCaching!.value ==
-                                          true) {
-                                    arElement.audioPlayer!.pause();
-                                  }
-                                }
+                              for (ARList arElement in list.value) {
                                 dev.log(
                                     "rotations for ${arElement.arId} = rot = ${arElement.rotation}");
                                 double finalArContainerPointX = arElement
@@ -1964,8 +1951,20 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                       .add("[a${arElement.arIndex}]");
                                 }
 
+                                if (arElement.finishedCaching!.value == true)
+                                  arElement.arState!.skip(0);
+                                arElement.arState!.pause();
+                                if (arElement.audioFlag == true)
+                                  arElement.audioPlayer!
+                                      .seek(Duration(milliseconds: 0));
+                                arElement.audioPlayer!.pause();
+
                                 // print("arIndex = ${arElement.arIndex} | x = $x | y = $y");
-                              });
+
+                              }
+
+                              // list.value.forEach((arElement) {
+                              // });
 
                               String commandNoBgAudio =
                                   "${ffmpegInputList.join()} -t ${_videoController.value.duration} -filter_complex \"${alphaTransparencyLayer.join()}${ffmpegStartPointList.join()}[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];${ffmpegArFiltercomplex.join()}${ffmpegOverlay.join()}${ffmpegVolumeList.join()}${ffmpegSoundInputs.join()}${ffmpegSoundInputs.isEmpty ? '' : 'amix=inputs=${ffmpegSoundInputs.length + 1}[a]'}\" -map ''[${lastVal.value}out]'' ${ffmpegSoundInputs.isEmpty ? '' : '-map ' '[a]' ''} -y ";
@@ -1999,22 +1998,14 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                     if (file != null) {
                                       dev.log("we're here now");
 
-                                      final bgMaterialThumnailFile =
-                                          await Provider.of<FFmpegProvider>(
-                                                  context,
-                                                  listen: false)
-                                              .bgMaterialThumbnailCreator(
-                                                  vidFilePath:
-                                                      widget.file.path);
-
                                       dev.log("Send!");
                                       Get.back();
-                                      Get.to(
+                                      await Get.to(
                                         () => VideothumbnailSelector(
                                           arList: list.value,
+                                          forBgMaterialThumnailFile:
+                                              widget.file,
                                           file: file,
-                                          bgMaterialThumnailFile:
-                                              bgMaterialThumnailFile,
                                         ),
                                       );
 
