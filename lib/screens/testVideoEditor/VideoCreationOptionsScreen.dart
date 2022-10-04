@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/video_editor_provider.dart';
+import 'package:diamon_rose_app/screens/HelpScreen/tutorialVideos.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/MyCollectionHome.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/InitVideoEditorScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/initArVideoEditorScreen.dart';
@@ -22,6 +23,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
 
 class VideoCreationOptionsScreen extends StatelessWidget {
   VideoCreationOptionsScreen({Key? key}) : super(key: key);
@@ -101,6 +103,23 @@ class VideoCreationOptionsScreen extends StatelessWidget {
           height: size.height,
           width: size.width,
           child: bodyColor(),
+        ),
+        Positioned(
+          top: 5.h,
+          right: 5.w,
+          child: TextButton.icon(
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              ),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        child: TutorialVideoScreen(),
+                        type: PageTransitionType.fade));
+              },
+              icon: Icon(Icons.info_outline_rounded),
+              label: Text("Tutorials")),
         ),
         Positioned(
           top: 0,
