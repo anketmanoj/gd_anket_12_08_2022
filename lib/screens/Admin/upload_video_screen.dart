@@ -33,13 +33,28 @@ class UploadVideoScreen extends StatefulWidget {
   State<UploadVideoScreen> createState() => _UploadVideoScreenState();
 }
 
-class _UploadVideoScreenState extends State<UploadVideoScreen> {
+class _UploadVideoScreenState extends State<UploadVideoScreen>
+    with TickerProviderStateMixin {
   final ValueNotifier<UserModel?> selectedUser =
       ValueNotifier<UserModel?>(null);
   File? mainVideo;
   File? alphaVideo;
   final ImagePicker _picker = ImagePicker();
   ValueNotifier<bool> _asMaterialAlso = ValueNotifier<bool>(false);
+
+  late TabController tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    tabController = TabController(
+      initialIndex: 0,
+      length: 2,
+      vsync: this,
+    );
+  }
+
+  final String fileName = Timestamp.now().millisecondsSinceEpoch.toString();
 
   TextEditingController _arTitleController = TextEditingController();
   TextEditingController _arCaptionController = TextEditingController();
@@ -56,6 +71,8 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
   ValueNotifier<bool> _isFree = ValueNotifier<bool>(true);
   ValueNotifier<bool> _isPaid = ValueNotifier<bool>(false);
   List<String?> _selectedRecommendedOptions = [];
+
+  ValueNotifier<int> responseResult = ValueNotifier<int>(0);
 
   List<String?> _recommendedOptions = [
     'Musician',
@@ -274,455 +291,837 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                       ),
                                     ],
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 15),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                  Container(
+                                    height: 5.h,
+                                    width: 400,
+                                    child: TabBar(
+                                      labelColor: Color.fromRGBO(4, 2, 46, 1),
+                                      indicatorColor:
+                                          Color.fromRGBO(4, 2, 46, 1),
+                                      unselectedLabelColor: Colors.grey,
+                                      controller: tabController,
+                                      tabs: [
+                                        Text('GD AR Material'),
+                                        Text('AR View Only'),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 100.h,
+                                    width: 100.w,
+                                    child: TabBarView(
+                                      controller: tabController,
                                       children: [
-                                        Container(
-                                          child: ProfileUserDetails(
-                                            controller: _arTitleController,
-                                            labelText: "Title",
-                                            onSubmit: (val) {},
-                                            validator: (val) {
-                                              if (val!.isEmpty) {
-                                                return "Please Enter a Title";
-                                              }
-                                              return null;
-                                            },
-                                          ),
-                                        ),
                                         Padding(
                                           padding:
                                               const EdgeInsets.only(top: 10),
-                                          child: Container(
-                                            child: ProfileUserDetails(
-                                              lines: 4,
-                                              controller: _arCaptionController,
-                                              labelText: "Caption",
-                                              onSubmit: (val) {},
-                                              validator: (val) {
-                                                if (val!.isEmpty) {
-                                                  return "Please Enter a Caption";
-                                                }
-                                                return null;
-                                              },
-                                            ),
+                                          child: Column(
+                                            children: [
+                                              AnimatedBuilder(
+                                                  animation: Listenable.merge([
+                                                    responseResult,
+                                                  ]),
+                                                  builder: (context, _) {
+                                                    switch (
+                                                        responseResult.value) {
+                                                      case 0:
+                                                        return Column(
+                                                          children: [
+                                                            Container(
+                                                              height: 40.h,
+                                                              width: 80.w,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                image:
+                                                                    DecorationImage(
+                                                                  image: Image.asset(
+                                                                          "assets/arViewer/bg.png")
+                                                                      .image,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              height: 20,
+                                                            ),
+                                                            SubmitButton(
+                                                              text:
+                                                                  "Submit as Materials",
+                                                              function:
+                                                                  () async {
+                                                                CoolAlert.show(
+                                                                    context:
+                                                                        context,
+                                                                    type: CoolAlertType
+                                                                        .loading,
+                                                                    text:
+                                                                        "Uploading videos and submitting details to server");
+
+                                                                log("fileName == $fileName");
+                                                                final String? mainVideoUrl = await AwsAnketS3.uploadFile(
+                                                                    accessKey:
+                                                                        "AKIATF76MVYR34JAVB7H",
+                                                                    secretKey:
+                                                                        "qNosurynLH/WHV4iYu8vYWtSxkKqBFav0qbXEvdd",
+                                                                    bucket:
+                                                                        "anketvideobucket",
+                                                                    file:
+                                                                        mainVideo!,
+                                                                    filename:
+                                                                        "${fileName}videoFile.mp4",
+                                                                    region:
+                                                                        "us-east-1",
+                                                                    destDir:
+                                                                        "$fileName");
+
+                                                                final String? alphaVideoUrl = await AwsAnketS3.uploadFile(
+                                                                    accessKey:
+                                                                        "AKIATF76MVYR34JAVB7H",
+                                                                    secretKey:
+                                                                        "qNosurynLH/WHV4iYu8vYWtSxkKqBFav0qbXEvdd",
+                                                                    bucket:
+                                                                        "anketvideobucket",
+                                                                    file:
+                                                                        alphaVideo!,
+                                                                    filename:
+                                                                        "${fileName}_alpha.mp4",
+                                                                    region:
+                                                                        "us-east-1",
+                                                                    destDir:
+                                                                        "$fileName");
+
+                                                                log("mainurl == $mainVideoUrl || alpha url = $alphaVideoUrl");
+
+                                                                responseResult
+                                                                        .value =
+                                                                    await context
+                                                                        .read<
+                                                                            FirebaseOperations>()
+                                                                        .postMaterialOnlyServer(
+                                                                          mainUrl:
+                                                                              mainVideoUrl!,
+                                                                          alphaUrl:
+                                                                              alphaVideoUrl!,
+                                                                          fileName:
+                                                                              fileName,
+                                                                          useruidVal: selectedUser
+                                                                              .value!
+                                                                              .useruid,
+                                                                          ownerNameVal: selectedUser
+                                                                              .value!
+                                                                              .username,
+                                                                        );
+
+                                                                log("response == ${responseResult.value}");
+                                                                Get.back();
+                                                              },
+                                                              color:
+                                                                  constantColors
+                                                                      .black,
+                                                            ),
+                                                          ],
+                                                        );
+                                                      case 200:
+                                                        return Column(
+                                                          children: [
+                                                            FutureBuilder<
+                                                                    DocumentSnapshot>(
+                                                                future: FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        "users")
+                                                                    .doc(selectedUser
+                                                                        .value!
+                                                                        .useruid)
+                                                                    .collection(
+                                                                        "MyCollection")
+                                                                    .doc(
+                                                                        fileName)
+                                                                    .get(),
+                                                                builder: (context,
+                                                                    snapshot) {
+                                                                  if (snapshot
+                                                                          .connectionState ==
+                                                                      ConnectionState
+                                                                          .waiting) {
+                                                                    return Center(
+                                                                      child:
+                                                                          CircularProgressIndicator(),
+                                                                    );
+                                                                  }
+
+                                                                  if (snapshot
+                                                                      .hasError) {
+                                                                    return Center(
+                                                                      child: Text(
+                                                                          "Error"),
+                                                                    );
+                                                                  }
+
+                                                                  MyArCollection
+                                                                      myAr =
+                                                                      MyArCollection.fromJson(snapshot
+                                                                              .data!
+                                                                              .data()
+                                                                          as Map<
+                                                                              String,
+                                                                              dynamic>);
+
+                                                                  return Container(
+                                                                      height:
+                                                                          40.h,
+                                                                      width:
+                                                                          80.w,
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        image:
+                                                                            DecorationImage(
+                                                                          image:
+                                                                              Image.asset("assets/arViewer/bg.png").image,
+                                                                          fit: BoxFit
+                                                                              .cover,
+                                                                        ),
+                                                                      ),
+                                                                      child: ImageNetworkLoader(
+                                                                          imageUrl:
+                                                                              myAr.gif));
+                                                                }),
+                                                            SizedBox(
+                                                              height: 20,
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  child:
+                                                                      SubmitButton(
+                                                                    text:
+                                                                        "Reject",
+                                                                    color: Colors
+                                                                        .red,
+                                                                    function:
+                                                                        () async {
+                                                                      await FirebaseFirestore
+                                                                          .instance
+                                                                          .collection(
+                                                                              "users")
+                                                                          .doc(selectedUser
+                                                                              .value!
+                                                                              .useruid)
+                                                                          .collection(
+                                                                              "MyCollection")
+                                                                          .doc(
+                                                                              fileName)
+                                                                          .delete();
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 10,
+                                                                ),
+                                                                Expanded(
+                                                                  child:
+                                                                      SubmitButton(
+                                                                    text:
+                                                                        "Approve",
+                                                                    color: Colors
+                                                                        .green,
+                                                                    function:
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        );
+
+                                                      case 500:
+                                                        return Center(
+                                                          child: Text(
+                                                              "Server Error 500"),
+                                                        );
+                                                    }
+                                                    return SizedBox();
+                                                  })
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 15),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      child: ProfileUserDetails(
+                                                        controller:
+                                                            _arTitleController,
+                                                        labelText: "Title",
+                                                        onSubmit: (val) {},
+                                                        validator: (val) {
+                                                          if (val!.isEmpty) {
+                                                            return "Please Enter a Title";
+                                                          }
+                                                          return null;
+                                                        },
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 10),
+                                                      child: Container(
+                                                        child:
+                                                            ProfileUserDetails(
+                                                          lines: 4,
+                                                          controller:
+                                                              _arCaptionController,
+                                                          labelText: "Caption",
+                                                          onSubmit: (val) {},
+                                                          validator: (val) {
+                                                            if (val!.isEmpty) {
+                                                              return "Please Enter a Caption";
+                                                            }
+                                                            return null;
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 10),
+                                                    child: Container(
+                                                      child:
+                                                          MultiSelectChipField<
+                                                              String?>(
+                                                        headerColor:
+                                                            constantColors
+                                                                .navButton,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(20),
+                                                        ),
+                                                        selectedChipColor:
+                                                            constantColors
+                                                                .navButton
+                                                                .withOpacity(
+                                                                    0.4),
+                                                        title: Text(
+                                                          "Select Genre",
+                                                          style: TextStyle(
+                                                            color:
+                                                                constantColors
+                                                                    .whiteColor,
+                                                            fontSize: 15,
+                                                          ),
+                                                        ),
+                                                        items: _recommendedOptions
+                                                            .map((e) =>
+                                                                MultiSelectItem(
+                                                                    e, e!))
+                                                            .toList(),
+                                                        onTap: (values) {
+                                                          // _recommendedOptions = values;
+                                                          _selectedRecommendedOptions =
+                                                              values;
+
+                                                          print(
+                                                              "length == ${_selectedRecommendedOptions.length}");
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  ListTile(
+                                                    leading: Icon(
+                                                        FontAwesomeIcons.video),
+                                                    minLeadingWidth: 10,
+                                                    trailing: Switch(
+                                                        activeColor:
+                                                            constantColors
+                                                                .navButton,
+                                                        value: _asMaterialAlso
+                                                            .value,
+                                                        onChanged: (value) {
+                                                          _asMaterialAlso
+                                                              .value = value;
+                                                        }),
+                                                    title: Text(
+                                                      "Allow usage as Material",
+                                                    ),
+                                                  ),
+                                                  ListTile(
+                                                    leading: Icon(
+                                                        FontAwesomeIcons
+                                                            .cloudDownloadAlt),
+                                                    minLeadingWidth: 10,
+                                                    trailing: Switch(
+                                                        activeColor:
+                                                            constantColors
+                                                                .navButton,
+                                                        value: _isFree.value,
+                                                        onChanged: (value) {
+                                                          _isFree.value = value;
+                                                          _isPaid.value =
+                                                              !value;
+                                                        }),
+                                                    title: Text(
+                                                      "Free",
+                                                    ),
+                                                  ),
+                                                  ListTile(
+                                                    leading: Icon(
+                                                        FontAwesomeIcons
+                                                            .moneyBillAlt),
+                                                    minLeadingWidth: 10,
+                                                    trailing: Switch(
+                                                      activeColor:
+                                                          constantColors
+                                                              .navButton,
+                                                      value: _isPaid.value,
+                                                      onChanged: (value) {
+                                                        _isPaid.value = value;
+                                                        _isFree.value = !value;
+                                                      },
+                                                    ),
+                                                    title: Text(
+                                                      "Premium",
+                                                    ),
+                                                  ),
+                                                  Visibility(
+                                                    visible: _isPaid.value,
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                              "Price",
+                                                              style: TextStyle(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 40,
+                                                            ),
+                                                            Expanded(
+                                                              child: Container(
+                                                                height: 50,
+                                                                child:
+                                                                    TextFormField(
+                                                                  controller:
+                                                                      _arPrice
+                                                                          .value,
+                                                                  onFieldSubmitted:
+                                                                      (value) {
+                                                                    _arPrice.value
+                                                                            .text =
+                                                                        value;
+                                                                  },
+                                                                  keyboardType:
+                                                                      TextInputType
+                                                                          .number,
+                                                                  decoration:
+                                                                      InputDecoration(
+                                                                    suffixIcon:
+                                                                        Icon(
+                                                                      FontAwesomeIcons
+                                                                          .dollarSign,
+                                                                      size: 16,
+                                                                      color: constantColors
+                                                                          .navButton,
+                                                                    ),
+                                                                    labelStyle:
+                                                                        TextStyle(
+                                                                            color:
+                                                                                Colors.black),
+                                                                    border:
+                                                                        OutlineInputBorder(),
+                                                                    enabledBorder:
+                                                                        OutlineInputBorder(
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                              color: Colors.black),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              30),
+                                                                    ),
+                                                                    focusedBorder:
+                                                                        OutlineInputBorder(
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                              color: Colors.black),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              30),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 30,
+                                                            bottom: 30),
+                                                    child: SubmitButton(
+                                                      text: "Upload Video",
+                                                      function: () async {
+                                                        if (_formKey
+                                                                .currentState!
+                                                                .validate() &&
+                                                            mainVideo != null &&
+                                                            alphaVideo !=
+                                                                null) {
+                                                          try {
+                                                            // ignore: unawaited_futures
+                                                            CoolAlert.show(
+                                                                context:
+                                                                    context,
+                                                                type:
+                                                                    CoolAlertType
+                                                                        .loading,
+                                                                text:
+                                                                    "Uploading videos and submitting details to server");
+                                                            final String
+                                                                fileName =
+                                                                Timestamp.now()
+                                                                    .millisecondsSinceEpoch
+                                                                    .toString();
+
+                                                            log("fileName == $fileName");
+                                                            final String? mainVideoUrl = await AwsAnketS3.uploadFile(
+                                                                accessKey:
+                                                                    "AKIATF76MVYR34JAVB7H",
+                                                                secretKey:
+                                                                    "qNosurynLH/WHV4iYu8vYWtSxkKqBFav0qbXEvdd",
+                                                                bucket:
+                                                                    "anketvideobucket",
+                                                                file:
+                                                                    mainVideo!,
+                                                                filename:
+                                                                    "${fileName}videoFile.mp4",
+                                                                region:
+                                                                    "us-east-1",
+                                                                destDir:
+                                                                    "$fileName");
+
+                                                            final String? alphaVideoUrl = await AwsAnketS3.uploadFile(
+                                                                accessKey:
+                                                                    "AKIATF76MVYR34JAVB7H",
+                                                                secretKey:
+                                                                    "qNosurynLH/WHV4iYu8vYWtSxkKqBFav0qbXEvdd",
+                                                                bucket:
+                                                                    "anketvideobucket",
+                                                                file:
+                                                                    alphaVideo!,
+                                                                filename:
+                                                                    "${fileName}_alpha.mp4",
+                                                                region:
+                                                                    "us-east-1",
+                                                                destDir:
+                                                                    "$fileName");
+
+                                                            log("mainurl == $mainVideoUrl || alpha url = $alphaVideoUrl");
+
+                                                            String name =
+                                                                "${_arCaptionController.text} ${_arTitleController.text}";
+
+                                                            List<String>
+                                                                splitList =
+                                                                name.split(" ");
+                                                            List<String>
+                                                                indexList = [];
+
+                                                            for (int i = 0;
+                                                                i <
+                                                                    splitList
+                                                                        .length;
+                                                                i++) {
+                                                              for (int j = 0;
+                                                                  j <
+                                                                      splitList[
+                                                                              i]
+                                                                          .length;
+                                                                  j++) {
+                                                                indexList.add(splitList[
+                                                                        i]
+                                                                    .substring(
+                                                                        0,
+                                                                        j + 1)
+                                                                    .toLowerCase());
+                                                              }
+                                                            }
+
+                                                            final String
+                                                                videoId =
+                                                                nanoid();
+
+                                                            final int response =
+                                                                await firebaseOperations
+                                                                    .uploadDataForUser(
+                                                              mainUrl:
+                                                                  mainVideoUrl!,
+                                                              alphaUrl:
+                                                                  alphaVideoUrl!,
+                                                              fileName:
+                                                                  fileName,
+                                                              useruid:
+                                                                  selectedUser
+                                                                      .value!
+                                                                      .useruid,
+                                                              ownerName:
+                                                                  selectedUser
+                                                                      .value!
+                                                                      .username,
+                                                              isVerified:
+                                                                  selectedUser
+                                                                      .value!
+                                                                      .isverified!,
+                                                              price: _arPrice
+                                                                      .value
+                                                                      .text
+                                                                      .isEmpty
+                                                                  ? 0
+                                                                  : double.parse(
+                                                                      _arPrice
+                                                                          .value
+                                                                          .text),
+                                                              genre:
+                                                                  _selectedRecommendedOptions,
+                                                              isFree:
+                                                                  _isFree.value,
+                                                              isPaid:
+                                                                  _isPaid.value,
+                                                              userimageUrl:
+                                                                  selectedUser
+                                                                      .value!
+                                                                      .userimage,
+                                                              searchindexList:
+                                                                  indexList,
+                                                              caption:
+                                                                  _arCaptionController
+                                                                      .text,
+                                                              fcmToken:
+                                                                  selectedUser
+                                                                      .value!
+                                                                      .token,
+                                                              registrationId:
+                                                                  selectedUser
+                                                                      .value!
+                                                                      .token,
+                                                              title:
+                                                                  _arTitleController
+                                                                      .text,
+                                                              videoId: videoId,
+                                                              startDiscountDate:
+                                                                  DateTime.now()
+                                                                      .toString(),
+                                                              endDiscountDate:
+                                                                  DateTime.now()
+                                                                      .toString(),
+                                                            );
+
+                                                            switch (response) {
+                                                              case 200:
+
+                                                                // Navigator.pop(context);
+                                                                if (_asMaterialAlso
+                                                                        .value ==
+                                                                    true) {
+                                                                  await FirebaseFirestore
+                                                                      .instance
+                                                                      .collection(
+                                                                          "users")
+                                                                      .doc(selectedUser
+                                                                          .value!
+                                                                          .useruid)
+                                                                      .collection(
+                                                                          "MyCollection")
+                                                                      .doc(
+                                                                          fileName)
+                                                                      .get()
+                                                                      .then(
+                                                                          (arSnapshot) async {
+                                                                    Map<String,
+                                                                            dynamic>
+                                                                        submitAsMaterial =
+                                                                        {
+                                                                      "alpha":
+                                                                          arSnapshot[
+                                                                              'alpha'],
+                                                                      "main": arSnapshot[
+                                                                          'main'],
+                                                                      "audioFile":
+                                                                          arSnapshot[
+                                                                              'audioFile'],
+                                                                      "gif": arSnapshot[
+                                                                          'gif'],
+                                                                      "layerType":
+                                                                          "AR",
+                                                                      "valueType":
+                                                                          "myItems",
+                                                                      "timestamp":
+                                                                          Timestamp
+                                                                              .now(),
+                                                                      "id":
+                                                                          "${fileName}asMaterialAlso",
+                                                                      "imgSeq":
+                                                                          arSnapshot[
+                                                                              'imgSeq'],
+                                                                      "audioFlag":
+                                                                          arSnapshot[
+                                                                              'audioFlag'],
+                                                                      "ownerId":
+                                                                          arSnapshot[
+                                                                              'ownerId'],
+                                                                      "ownerName":
+                                                                          arSnapshot[
+                                                                              'ownerName'],
+                                                                      "usage":
+                                                                          "Material",
+                                                                      "hideItem":
+                                                                          false,
+                                                                    };
+
+                                                                    await FirebaseFirestore
+                                                                        .instance
+                                                                        .collection(
+                                                                            "users")
+                                                                        .doc(selectedUser
+                                                                            .value!
+                                                                            .useruid)
+                                                                        .collection(
+                                                                            "MyCollection")
+                                                                        .doc(
+                                                                            "${fileName}asMaterialAlso")
+                                                                        .set(
+                                                                            submitAsMaterial);
+                                                                  });
+                                                                }
+
+                                                                await FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        "posts")
+                                                                    .doc(
+                                                                        videoId)
+                                                                    .update({
+                                                                  "videotitle":
+                                                                      _arTitleController
+                                                                          .text,
+                                                                  "caption":
+                                                                      _arCaptionController
+                                                                          .text,
+                                                                });
+                                                                log("done uploading to videoid = $videoId and AR fileName = $fileName ");
+                                                                Navigator.pop(
+                                                                    context);
+
+                                                                break;
+                                                              case 500:
+                                                                Get.back();
+                                                                CoolAlert.show(
+                                                                    context:
+                                                                        context,
+                                                                    type: CoolAlertType
+                                                                        .error,
+                                                                    title:
+                                                                        "ERROR 500",
+                                                                    text:
+                                                                        "Video Processing Error");
+                                                                break;
+                                                              case 406:
+                                                                Get.back();
+                                                                CoolAlert.show(
+                                                                    context:
+                                                                        context,
+                                                                    type: CoolAlertType
+                                                                        .error,
+                                                                    title:
+                                                                        "ERROR 406",
+                                                                    text:
+                                                                        "Title / Caption Invalid Characters!");
+                                                                break;
+                                                            }
+
+                                                            log("Results\nmainUrl: $mainVideoUrl\nalphaUrl: $alphaVideoUrl\nfileName: $fileName\nUseruid: ${selectedUser.value!.useruid}\ntitle: ${_arTitleController.text}\ncaption: ${_arCaptionController.text}\ngenre: $_selectedRecommendedOptions\nisFree: ${_isFree.value}\nisPaid: ${_isPaid.value}\nPrice: ${_arPrice.value.text}");
+                                                          } catch (e) {
+                                                            Navigator.pop(
+                                                                context);
+                                                            // ignore: unawaited_futures
+                                                            CoolAlert.show(
+                                                                context:
+                                                                    context,
+                                                                type:
+                                                                    CoolAlertType
+                                                                        .error,
+                                                                title:
+                                                                    "Something went wrong",
+                                                                text: e
+                                                                    .toString());
+                                                          }
+                                                        }
+
+                                                        if (mainVideo == null) {
+                                                          CoolAlert.show(
+                                                              context: context,
+                                                              type:
+                                                                  CoolAlertType
+                                                                      .error,
+                                                              title:
+                                                                  "Main video not selected",
+                                                              text:
+                                                                  "Need to select main video");
+                                                        }
+                                                        if (alphaVideo ==
+                                                            null) {
+                                                          CoolAlert.show(
+                                                              context: context,
+                                                              type:
+                                                                  CoolAlertType
+                                                                      .error,
+                                                              title:
+                                                                  "Alpha video not selected",
+                                                              text:
+                                                                  "Need to select alpha video");
+                                                        }
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 10),
-                                        child: Container(
-                                          child: MultiSelectChipField<String?>(
-                                            headerColor:
-                                                constantColors.navButton,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            selectedChipColor: constantColors
-                                                .navButton
-                                                .withOpacity(0.4),
-                                            title: Text(
-                                              "Select Genre",
-                                              style: TextStyle(
-                                                color:
-                                                    constantColors.whiteColor,
-                                                fontSize: 15,
-                                              ),
-                                            ),
-                                            items: _recommendedOptions
-                                                .map((e) =>
-                                                    MultiSelectItem(e, e!))
-                                                .toList(),
-                                            onTap: (values) {
-                                              // _recommendedOptions = values;
-                                              _selectedRecommendedOptions =
-                                                  values;
-
-                                              print(
-                                                  "length == ${_selectedRecommendedOptions.length}");
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      ListTile(
-                                        leading: Icon(FontAwesomeIcons.video),
-                                        minLeadingWidth: 10,
-                                        trailing: Switch(
-                                            activeColor:
-                                                constantColors.navButton,
-                                            value: _asMaterialAlso.value,
-                                            onChanged: (value) {
-                                              _asMaterialAlso.value = value;
-                                            }),
-                                        title: Text(
-                                          "Allow usage as Material",
-                                        ),
-                                      ),
-                                      ListTile(
-                                        leading: Icon(
-                                            FontAwesomeIcons.cloudDownloadAlt),
-                                        minLeadingWidth: 10,
-                                        trailing: Switch(
-                                            activeColor:
-                                                constantColors.navButton,
-                                            value: _isFree.value,
-                                            onChanged: (value) {
-                                              _isFree.value = value;
-                                              _isPaid.value = !value;
-                                            }),
-                                        title: Text(
-                                          "Free",
-                                        ),
-                                      ),
-                                      ListTile(
-                                        leading:
-                                            Icon(FontAwesomeIcons.moneyBillAlt),
-                                        minLeadingWidth: 10,
-                                        trailing: Switch(
-                                          activeColor: constantColors.navButton,
-                                          value: _isPaid.value,
-                                          onChanged: (value) {
-                                            _isPaid.value = value;
-                                            _isFree.value = !value;
-                                          },
-                                        ),
-                                        title: Text(
-                                          "Premium",
-                                        ),
-                                      ),
-                                      Visibility(
-                                        visible: _isPaid.value,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  "Price",
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width: 40,
-                                                ),
-                                                Expanded(
-                                                  child: Container(
-                                                    height: 50,
-                                                    child: TextFormField(
-                                                      controller:
-                                                          _arPrice.value,
-                                                      onFieldSubmitted:
-                                                          (value) {
-                                                        _arPrice.value.text =
-                                                            value;
-                                                      },
-                                                      keyboardType:
-                                                          TextInputType.number,
-                                                      decoration:
-                                                          InputDecoration(
-                                                        suffixIcon: Icon(
-                                                          FontAwesomeIcons
-                                                              .dollarSign,
-                                                          size: 16,
-                                                          color: constantColors
-                                                              .navButton,
-                                                        ),
-                                                        labelStyle: TextStyle(
-                                                            color:
-                                                                Colors.black),
-                                                        border:
-                                                            OutlineInputBorder(),
-                                                        enabledBorder:
-                                                            OutlineInputBorder(
-                                                          borderSide:
-                                                              BorderSide(
-                                                                  color: Colors
-                                                                      .black),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(30),
-                                                        ),
-                                                        focusedBorder:
-                                                            OutlineInputBorder(
-                                                          borderSide:
-                                                              BorderSide(
-                                                                  color: Colors
-                                                                      .black),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(30),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 30, bottom: 30),
-                                        child: SubmitButton(
-                                          text: "Upload Video",
-                                          function: () async {
-                                            if (_formKey.currentState!
-                                                    .validate() &&
-                                                mainVideo != null &&
-                                                alphaVideo != null) {
-                                              try {
-                                                // ignore: unawaited_futures
-                                                CoolAlert.show(
-                                                    context: context,
-                                                    type: CoolAlertType.loading,
-                                                    text:
-                                                        "Uploading videos and submitting details to server");
-                                                final String fileName =
-                                                    Timestamp.now()
-                                                        .millisecondsSinceEpoch
-                                                        .toString();
-
-                                                log("fileName == $fileName");
-                                                final String? mainVideoUrl =
-                                                    await AwsAnketS3.uploadFile(
-                                                        accessKey:
-                                                            "AKIATF76MVYR34JAVB7H",
-                                                        secretKey:
-                                                            "qNosurynLH/WHV4iYu8vYWtSxkKqBFav0qbXEvdd",
-                                                        bucket:
-                                                            "anketvideobucket",
-                                                        file: mainVideo!,
-                                                        filename:
-                                                            "${fileName}videoFile.mp4",
-                                                        region: "us-east-1",
-                                                        destDir: "$fileName");
-
-                                                final String? alphaVideoUrl =
-                                                    await AwsAnketS3.uploadFile(
-                                                        accessKey:
-                                                            "AKIATF76MVYR34JAVB7H",
-                                                        secretKey:
-                                                            "qNosurynLH/WHV4iYu8vYWtSxkKqBFav0qbXEvdd",
-                                                        bucket:
-                                                            "anketvideobucket",
-                                                        file: alphaVideo!,
-                                                        filename:
-                                                            "${fileName}_alpha.mp4",
-                                                        region: "us-east-1",
-                                                        destDir: "$fileName");
-
-                                                log("mainurl == $mainVideoUrl || alpha url = $alphaVideoUrl");
-
-                                                String name =
-                                                    "${_arCaptionController.text} ${_arTitleController.text}";
-
-                                                List<String> splitList =
-                                                    name.split(" ");
-                                                List<String> indexList = [];
-
-                                                for (int i = 0;
-                                                    i < splitList.length;
-                                                    i++) {
-                                                  for (int j = 0;
-                                                      j < splitList[i].length;
-                                                      j++) {
-                                                    indexList.add(splitList[i]
-                                                        .substring(0, j + 1)
-                                                        .toLowerCase());
-                                                  }
-                                                }
-
-                                                final String videoId = nanoid();
-
-                                                final int response =
-                                                    await firebaseOperations
-                                                        .uploadDataForUser(
-                                                  mainUrl: mainVideoUrl!,
-                                                  alphaUrl: alphaVideoUrl!,
-                                                  fileName: fileName,
-                                                  useruid: selectedUser
-                                                      .value!.useruid,
-                                                  ownerName: selectedUser
-                                                      .value!.username,
-                                                  isVerified: selectedUser
-                                                      .value!.isverified!,
-                                                  price: _arPrice
-                                                          .value.text.isEmpty
-                                                      ? 0
-                                                      : double.parse(
-                                                          _arPrice.value.text),
-                                                  genre:
-                                                      _selectedRecommendedOptions,
-                                                  isFree: _isFree.value,
-                                                  isPaid: _isPaid.value,
-                                                  userimageUrl: selectedUser
-                                                      .value!.userimage,
-                                                  searchindexList: indexList,
-                                                  caption:
-                                                      _arCaptionController.text,
-                                                  fcmToken:
-                                                      selectedUser.value!.token,
-                                                  registrationId:
-                                                      selectedUser.value!.token,
-                                                  title:
-                                                      _arTitleController.text,
-                                                  videoId: videoId,
-                                                  startDiscountDate:
-                                                      DateTime.now().toString(),
-                                                  endDiscountDate:
-                                                      DateTime.now().toString(),
-                                                );
-
-                                                switch (response) {
-                                                  case 200:
-
-                                                    // Navigator.pop(context);
-                                                    if (_asMaterialAlso.value ==
-                                                        true) {
-                                                      await FirebaseFirestore
-                                                          .instance
-                                                          .collection("users")
-                                                          .doc(selectedUser
-                                                              .value!.useruid)
-                                                          .collection(
-                                                              "MyCollection")
-                                                          .doc(fileName)
-                                                          .get()
-                                                          .then(
-                                                              (arSnapshot) async {
-                                                        Map<String, dynamic>
-                                                            submitAsMaterial = {
-                                                          "alpha": arSnapshot[
-                                                              'alpha'],
-                                                          "main": arSnapshot[
-                                                              'main'],
-                                                          "audioFile":
-                                                              arSnapshot[
-                                                                  'audioFile'],
-                                                          "gif":
-                                                              arSnapshot['gif'],
-                                                          "layerType": "AR",
-                                                          "valueType":
-                                                              "myItems",
-                                                          "timestamp":
-                                                              Timestamp.now(),
-                                                          "id":
-                                                              "${fileName}asMaterialAlso",
-                                                          "imgSeq": arSnapshot[
-                                                              'imgSeq'],
-                                                          "audioFlag":
-                                                              arSnapshot[
-                                                                  'audioFlag'],
-                                                          "ownerId": arSnapshot[
-                                                              'ownerId'],
-                                                          "ownerName":
-                                                              arSnapshot[
-                                                                  'ownerName'],
-                                                          "usage": "Material",
-                                                          "hideItem": false,
-                                                        };
-
-                                                        await FirebaseFirestore
-                                                            .instance
-                                                            .collection("users")
-                                                            .doc(selectedUser
-                                                                .value!.useruid)
-                                                            .collection(
-                                                                "MyCollection")
-                                                            .doc(
-                                                                "${fileName}asMaterialAlso")
-                                                            .set(
-                                                                submitAsMaterial);
-                                                      });
-                                                    }
-
-                                                    await FirebaseFirestore
-                                                        .instance
-                                                        .collection("posts")
-                                                        .doc(videoId)
-                                                        .update({
-                                                      "videotitle":
-                                                          _arTitleController
-                                                              .text,
-                                                      "caption":
-                                                          _arCaptionController
-                                                              .text,
-                                                    });
-                                                    log("done uploading to videoid = $videoId and AR fileName = $fileName ");
-                                                    Navigator.pop(context);
-
-                                                    break;
-                                                  case 500:
-                                                    Get.back();
-                                                    CoolAlert.show(
-                                                        context: context,
-                                                        type:
-                                                            CoolAlertType.error,
-                                                        title: "ERROR 500",
-                                                        text:
-                                                            "Video Processing Error");
-                                                    break;
-                                                  case 406:
-                                                    Get.back();
-                                                    CoolAlert.show(
-                                                        context: context,
-                                                        type:
-                                                            CoolAlertType.error,
-                                                        title: "ERROR 406",
-                                                        text:
-                                                            "Title / Caption Invalid Characters!");
-                                                    break;
-                                                }
-
-                                                log("Results\nmainUrl: $mainVideoUrl\nalphaUrl: $alphaVideoUrl\nfileName: $fileName\nUseruid: ${selectedUser.value!.useruid}\ntitle: ${_arTitleController.text}\ncaption: ${_arCaptionController.text}\ngenre: $_selectedRecommendedOptions\nisFree: ${_isFree.value}\nisPaid: ${_isPaid.value}\nPrice: ${_arPrice.value.text}");
-                                              } catch (e) {
-                                                Navigator.pop(context);
-                                                // ignore: unawaited_futures
-                                                CoolAlert.show(
-                                                    context: context,
-                                                    type: CoolAlertType.error,
-                                                    title:
-                                                        "Something went wrong",
-                                                    text: e.toString());
-                                              }
-                                            }
-
-                                            if (mainVideo == null) {
-                                              CoolAlert.show(
-                                                  context: context,
-                                                  type: CoolAlertType.error,
-                                                  title:
-                                                      "Main video not selected",
-                                                  text:
-                                                      "Need to select main video");
-                                            }
-                                            if (alphaVideo == null) {
-                                              CoolAlert.show(
-                                                  context: context,
-                                                  type: CoolAlertType.error,
-                                                  title:
-                                                      "Alpha video not selected",
-                                                  text:
-                                                      "Need to select alpha video");
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                    ],
                                   ),
                                 ],
                               ),

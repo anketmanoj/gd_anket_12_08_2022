@@ -20,6 +20,7 @@ import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
 import 'package:diamon_rose_app/services/fcm_notification_Service.dart';
 import 'package:diamon_rose_app/services/mux/mux_video_stream.dart';
+import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
@@ -2861,6 +2862,48 @@ class FirebaseOperations with ChangeNotifier {
       // ignore: unawaited_futures
       log("Anket Error arViewOnlyResponse ${response.statusCode}");
       return null;
+    }
+  }
+
+  Future<int> postMaterialOnlyServer({
+    required String mainUrl,
+    required String alphaUrl,
+    required String fileName,
+    required String useruidVal,
+    required String ownerNameVal,
+  }) async {
+    // ignore: unawaited_futures
+
+    var response = await http.post(
+      Uri.parse(
+        "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api_ad2/adminmaterial/",
+        // "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api2/combine_body_GDback/",
+      ),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(
+        {
+          "mainUrl": mainUrl,
+          "alphaUrl": alphaUrl,
+          "fileName": fileName,
+          "Useruid": useruidVal,
+          "ownerName": ownerNameVal,
+          "s3_dir_name": "${fileName}/"
+        },
+      ),
+    );
+
+    // log(response.statusCode)
+
+    if (response.statusCode == 200) {
+      log("Anket response OK");
+
+      log("rvm response full = ${response.body}");
+
+      return 200;
+    } else {
+      // ignore: unawaited_futures
+      log("Anket Error arViewOnlyResponse ${response.statusCode}");
+      return 500;
     }
   }
 

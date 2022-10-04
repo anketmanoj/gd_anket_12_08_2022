@@ -164,10 +164,10 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
             onPressed: () async {
               // ignore: unawaited_futures
               CoolAlert.show(
-                  barrierDismissible: true,
+                  barrierDismissible: false,
                   context: context,
                   type: CoolAlertType.loading,
-                  text: "Uploading Video");
+                  text: "Saving as Draft");
 
               log("now");
 
