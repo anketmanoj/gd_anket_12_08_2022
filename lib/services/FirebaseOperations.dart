@@ -1866,25 +1866,40 @@ class FirebaseOperations with ChangeNotifier {
     required String userUid,
     required BuildContext context,
   }) async {
+    log("useruidd = $userUid");
     await FirebaseFirestore.instance
         .collection("users")
         .doc(userUid)
         .get()
         .then((value) {
       if (value.exists) {
+        log("here");
         try {
           UserModel user = UserModel.fromMap(value.data()!);
+
           Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => OtherUserProfile(
-                userModel: user,
-              ),
-            ),
-          );
+              context,
+              MaterialPageRoute(
+                  builder: (context) => OtherUserProfile(userModel: user)));
+
+          // Get.to(
+          //   (_) => OtherUserProfile(
+          //     userModel: user,
+          //   ),
+          // );
+          log("went");
         } catch (e) {
           print(e.toString());
         }
+      } else {
+        Get.dialog(SimpleDialog(
+          children: [
+            Text(
+              "User does not exist!",
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ));
       }
     });
   }

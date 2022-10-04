@@ -668,7 +668,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                                                     .docs[index]
                                                                 ['username']),
                                                             onTap: () {
-                                                              userProvider.goToUserProfile(
+                                                              context.read<FirebaseOperations>().goToUserProfile(
                                                                   userUid: following
                                                                           .data!
                                                                           .docs[index]

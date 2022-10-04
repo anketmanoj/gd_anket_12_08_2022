@@ -155,6 +155,51 @@ class VideoWidget extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Container(
+                                  height: size.height * 0.07,
+                                  width: size.width,
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                      try {
+                                        firebaseOperations.goToUserProfile(
+                                            userUid: video.useruid,
+                                            context: context);
+                                      } catch (e) {
+                                        log("error == $e");
+                                      }
+                                    },
+                                    style: ButtonStyle(
+                                      foregroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              constantColors.navButton),
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              constantColors.navButton),
+                                      shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                      ),
+                                    ),
+                                    icon: Icon(
+                                      Icons.person,
+                                      color: constantColors.whiteColor,
+                                      size: 30,
+                                    ),
+                                    label: Text(
+                                      "Visit Profile",
+                                      style: TextStyle(
+                                        color: constantColors.whiteColor,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
