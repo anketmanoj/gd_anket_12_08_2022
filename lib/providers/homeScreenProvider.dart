@@ -1,15 +1,26 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/providers/promoCodeModel.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/following_bloc/following_preload_bloc.dart';
+import 'package:diamon_rose_app/services/FirebaseOperations.dart';
+import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
+import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
+import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class HomeScreenProvider with ChangeNotifier {
   bool _isHomeScreen = true;
   bool get isHomeScreen => _isHomeScreen;
+
+  // Method to Submit Feedback and save it in Google Sheets
 
   setHomeScreen(bool value) {
     _isHomeScreen = value;
@@ -44,7 +55,7 @@ class HomeScreenProvider with ChangeNotifier {
           Visibility(
             visible: index == 1,
             child: IconButton(
-              onPressed: () {
+              onPressed: () async {
                 Get.bottomSheet(
                   Container(
                     height: 40.h,

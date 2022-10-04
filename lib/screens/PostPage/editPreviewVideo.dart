@@ -358,7 +358,7 @@ class _EditPreviewVideoScreenState extends State<EditPreviewVideoScreen> {
                                       return ListTile(
                                         trailing: Switch(
                                           activeColor: constantColors.navButton,
-                                          value: hideItem.value,
+                                          value: !hideItem.value,
                                           onChanged: (val) async {
                                             hideItem.value = val;
                                             Get.dialog(

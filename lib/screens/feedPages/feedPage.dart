@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/providers/feed_page_provider.dart';
 import 'package:diamon_rose_app/providers/homeScreenProvider.dart';
 import 'package:diamon_rose_app/providers/recommendedProvider.dart';
@@ -129,6 +130,7 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     final HomeScreenProvider homeScreenProvider =
         Provider.of<HomeScreenProvider>(context, listen: false);
+
     return ValueListenableBuilder<int>(
         valueListenable: pageIndex,
         builder: (context, page, _) {

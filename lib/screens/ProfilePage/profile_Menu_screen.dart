@@ -940,28 +940,28 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                                 color: Colors.yellow,
                               ),
                             ),
-                            // ListTile(
-                            //   onTap: () {
-                            //     Navigator.push(
-                            //       context,
-                            //       PageTransition(
-                            //         child: AdminUserPromoScreen(),
-                            //         type: PageTransitionType.fade,
-                            //       ),
-                            //     );
-                            //   },
-                            //   title: Text(
-                            //     "Admin User Promocodes",
-                            //     style: TextStyle(
-                            //       color: Colors.yellow,
-                            //       fontSize: 16,
-                            //     ),
-                            //   ),
-                            //   leading: Icon(
-                            //     Icons.admin_panel_settings,
-                            //     color: Colors.yellow,
-                            //   ),
-                            // ),
+                            ListTile(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    child: AdminUserPromoScreen(),
+                                    type: PageTransitionType.fade,
+                                  ),
+                                );
+                              },
+                              title: Text(
+                                "Admin User Promocodes",
+                                style: TextStyle(
+                                  color: Colors.yellow,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              leading: Icon(
+                                Icons.admin_panel_settings,
+                                color: Colors.yellow,
+                              ),
+                            ),
                             ListTile(
                               onTap: () {
                                 Navigator.push(

@@ -600,6 +600,24 @@ class FirebaseOperations with ChangeNotifier {
     });
   }
 
+  // check if user exists based on field userrealname
+  Future<bool> checkUserAlreadySubmitted({required String useruid}) async {
+    log("user here");
+    return FirebaseFirestore.instance
+        .collection("promoTracker")
+        .doc(useruid)
+        .get()
+        .then((value) {
+      if (value.exists == true) {
+        log("anket here -- true");
+        return true;
+      } else {
+        log("anket here -- false");
+        return false;
+      }
+    });
+  }
+
   // Update users bio
   Future updateBio(
       {required String uid,

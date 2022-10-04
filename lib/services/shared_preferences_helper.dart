@@ -20,12 +20,20 @@ class SharedPreferencesHelper {
     await prefs.setString(key, value);
   }
 
+  static setBool(String key, bool value) async {
+    await prefs.setBool(key, value);
+  }
+
   static setListString(String key, List<String> value) async {
     await prefs.setStringList(key, value);
   }
 
   static String getString(String key) {
     return prefs.getString(key) ?? "";
+  }
+
+  static bool getBool(String key) {
+    return prefs.getBool(key) ?? false;
   }
 
   static List<String> getListString(String key) {

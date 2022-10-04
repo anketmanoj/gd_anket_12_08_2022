@@ -203,6 +203,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                     .then((value) {
                   Get.back();
                   Get.back();
+                  Get.back();
                 });
               });
         },

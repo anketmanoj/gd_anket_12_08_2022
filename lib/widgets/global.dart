@@ -898,10 +898,12 @@ class NextButton extends StatelessWidget {
 class SubmitButton extends StatelessWidget {
   void Function()? function;
   String text;
+  Color color;
 
   SubmitButton({
     Key? key,
     required this.function,
+    this.color = Colors.black,
     this.text = "Submit",
   }) : super(key: key);
 
@@ -912,7 +914,7 @@ class SubmitButton extends StatelessWidget {
       child: Container(
         height: 50,
         decoration: BoxDecoration(
-          color: Colors.black,
+          color: color,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
