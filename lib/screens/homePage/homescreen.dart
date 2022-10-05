@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/providers/homeScreenProvider.dart';
 import 'package:diamon_rose_app/providers/promoCodeModel.dart';
 import 'package:diamon_rose_app/providers/recommendedProvider.dart';
@@ -59,6 +60,15 @@ class _HomeScreenState extends State<HomeScreen> {
         .collection("promoTracker")
         .doc(useruid)
         .set(promoData.toMap());
+
+    context
+        .read<CaratProvider>()
+        .setCarats(context.read<CaratProvider>().getCarats + 5);
+
+    await context.read<FirebaseOperations>().addCaratsToUser(
+          userid: context.read<Authentication>().getUserId,
+          caratValue: context.read<CaratProvider>().getCarats,
+        );
   }
 
   @override

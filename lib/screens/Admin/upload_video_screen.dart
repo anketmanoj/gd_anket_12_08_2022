@@ -351,6 +351,8 @@ class _UploadVideoScreenState extends State<UploadVideoScreen>
                                                               function:
                                                                   () async {
                                                                 CoolAlert.show(
+                                                                    barrierDismissible:
+                                                                        false,
                                                                     context:
                                                                         context,
                                                                     type: CoolAlertType
