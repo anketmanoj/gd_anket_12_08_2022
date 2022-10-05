@@ -1212,6 +1212,7 @@ class ImageTitleAndCaption extends StatelessWidget {
                 height: size.height * 0.25,
                 child: Image.file(
                   widget.thumbnailFile,
+                  filterQuality: FilterQuality.medium,
                   fit: BoxFit.cover,
                 )),
           ),

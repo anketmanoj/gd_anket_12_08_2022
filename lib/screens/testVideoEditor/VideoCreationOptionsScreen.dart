@@ -59,11 +59,12 @@ class VideoCreationOptionsScreen extends StatelessWidget {
           context
               .read<VideoEditorProvider>()
               .setBackgroundVideoFile(File(file.path));
+
+          context.read<VideoEditorProvider>().setBackgroundVideoController();
           Navigator.push(
               context,
               MaterialPageRoute<void>(
-                  builder: (BuildContext context) =>
-                      InitVideoEditorScreen(file: File(file.path))));
+                  builder: (BuildContext context) => InitVideoEditorScreen()));
           break;
         default:
           CoolAlert.show(

@@ -56,8 +56,9 @@ import 'package:http/http.dart' as http;
 enum _FrameBoundaries { left, right, inside, progress, none }
 
 class CreateVideoScreen extends StatefulWidget {
-  const CreateVideoScreen({Key? key, required this.file}) : super(key: key);
-  final File file;
+  const CreateVideoScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<CreateVideoScreen> createState() => _CreateVideoScreenState();
@@ -180,12 +181,12 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
   double _trimWidth = 0.0;
 
   double deg2rad(double deg) => deg * pi / 180;
-  double posX = 0.1;
+  double posX = 0.0001;
   final oneSec = Duration(milliseconds: 100);
   bool gotArContainerWidth = false;
   double arContainerWidth = 0;
   bool showArContainer = false;
-  late String _videoPath;
+  // late String _videoPath;
 
   late Timer timer;
 
@@ -193,7 +194,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
   void initState() {
     screen = Size(50, 50);
 
-    _videoPath = widget.file.path;
+    // _videoPath =
+    //     context.read<VideoEditorProvider>().getBackgroundVideoFile.path;
 
     client = GiphyClient(apiKey: giphyApiKey, randomId: '');
     WidgetsBinding.instance!.addPostFrameCallback((_) {
@@ -204,15 +206,15 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       });
     });
 
-    _controller = VideoEditorController.file(
-      widget.file,
-      maxDuration: const Duration(seconds: 60),
-      trimStyle: TrimSliderStyle(),
-    )..initialize().then((_) {
-        _controller.video.setLooping(false);
-        _videoController = _controller.video;
-        setState(() {});
-      });
+    _controller =
+        context.read<VideoEditorProvider>().getBackgroundVideoController;
+    _videoController =
+        context.read<VideoEditorProvider>().getVideoPlayerController;
+
+    _controller.video.setLooping(false);
+
+    setState(() {});
+
     _ratio = getRatioDuration();
     _trimWidth = _controller.trimStyle.lineWidth;
 
@@ -505,7 +507,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
             //! #############################################################
             final String commandForGifSeqFile =
-                '-y -i ${gifFile.path} -filter_complex "fps=30,scale=480:-1" ${gifSeqFolder}${arVal}gifSeq%d.png';
+                '-y -i ${gifFile.path} -filter_complex "fps=30,scale=480:-1" -preset ultrafast  ${gifSeqFolder}${arVal}gifSeq%d.png';
 
             List<String> _fullPathsOffline = [];
 
@@ -731,7 +733,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       if (position >= ar.startingPositon! &&
           position <= ar.startingPositon! + ar.endingPosition!) {
         _controller.video.pause();
-        if (ar.finishedCaching!.value == true) {
+        if (ar.finishedCaching!.value == true && ar.arState != null) {
           ar.arState!.pause();
           ar.arState!.skip(position);
         }
@@ -1049,7 +1051,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                     },
                                                                     waitUntilCacheIsComplete:
                                                                         true,
-                                                                    fps: 30,
+                                                                    fps: 35,
                                                                     isAutoPlay:
                                                                         false,
                                                                     onPlaying: value.layerType ==
@@ -1230,7 +1232,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                     ? Image
                                                                         .file(
                                                                         File(arVal
-                                                                            .pathsForVideoFrames![0]),
+                                                                            .pathsForVideoFrames![2]),
                                                                       )
                                                                     : Center(
                                                                         child:
@@ -1695,7 +1697,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                         )
                                       : Container(
                                           height: 90,
-                                          color: Colors.amber,
+                                          child: Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
                                         ),
                                 ),
                               ],
@@ -1729,6 +1733,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                           timer.cancel();
                           _controller.dispose();
                           for (ARList element in list.value) {
+                            if (element.gifFilePath != null) {
+                              await deleteFile([element.gifFilePath!]);
+                            }
+                            await deleteFile(element.pathsForVideoFrames!);
                             element.arState!.dispose();
                             if (element.audioFlag == true)
                               element.audioPlayer!.dispose();
@@ -1981,7 +1989,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                               );
                               try {
                                 await combineBgAr(
-                                  bgVideoFile: widget.file,
+                                  bgVideoFile: context
+                                      .read<VideoEditorProvider>()
+                                      .getBackgroundVideoFile,
                                   ffmpegArCommand:
                                       arVideoCreation.getArAudioFlagGeneral == 1
                                           ? command
@@ -1994,14 +2004,23 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                     if (file != null) {
                                       dev.log("we're here now");
 
+                                      context
+                                          .read<VideoEditorProvider>()
+                                          .setAfterEditorVideoController(file);
+
+                                      await context
+                                          .read<VideoEditorProvider>()
+                                          .setBgMaterialThumnailFile();
+
+                                      // context
+                                      //     .read<VideoEditorProvider>()
+                                      //     .setBackgroundVideoFile(file);
+
                                       dev.log("Send!");
                                       Get.back();
                                       await Get.to(
                                         () => VideothumbnailSelector(
                                           arList: list.value,
-                                          forBgMaterialThumnailFile:
-                                              widget.file,
-                                          file: file,
                                         ),
                                       );
 
@@ -2024,7 +2043,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                         type: CoolAlertType.error,
                                         title: "Error Processing Video",
                                         text:
-                                            "Device RAM issue. Please free up space on your phone to be able to process the video properly",
+                                            "Device RAM issue. Main Please free up space on your phone to be able to process the video properly",
                                       );
                                       dev.log("hello ?? ");
                                     }
@@ -2235,15 +2254,16 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
           debugPrint(
               "FFmpeg process exited with state $state and return code $code.${(failStackTrace == null) ? "" : "\\n" + failStackTrace}");
+          dev.log("code value == ${code!.isValueSuccess()}");
 
-          if (code!.isValueError()) {
+          if (code.isValueError()) {
             Navigator.pop(context);
             CoolAlert.show(
               context: context,
               type: CoolAlertType.error,
               title: "Error Processing Video",
               text:
-                  "Device RAM issue. Please free up space on your phone to be able to process the video properly",
+                  "Device RAM issue. FFMPEG Please free up space on your phone to be able to process the video properly",
             );
           }
 

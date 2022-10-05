@@ -647,7 +647,8 @@ class VideoEditorController extends ChangeNotifier {
     void Function(Statistics)? onProgress,
     bool isFiltersEnabled = true,
   }) async {
-    final String tempPath = outDir ?? (await getTemporaryDirectory()).path;
+    final String tempPath =
+        outDir ?? (await getApplicationDocumentsDirectory()).path;
     // file generated from the thumbnail library or video source
     final String? _coverPath = await _generateCoverFile(
       quality: quality,

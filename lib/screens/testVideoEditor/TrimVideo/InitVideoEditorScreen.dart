@@ -9,6 +9,7 @@ import 'dart:io';
 
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/CreateVideoScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/CropVideo/InitCropVideoScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/video_editor.dart';
@@ -25,9 +26,7 @@ import 'package:helpers/helpers.dart'
     show OpacityTransition, SwipeTransition, AnimatedInteractiveViewer;
 
 class InitVideoEditorScreen extends StatefulWidget {
-  const InitVideoEditorScreen({Key? key, required this.file}) : super(key: key);
-
-  final File file;
+  const InitVideoEditorScreen({Key? key}) : super(key: key);
 
   @override
   _InitVideoEditorScreenState createState() => _InitVideoEditorScreenState();
@@ -45,7 +44,7 @@ class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
   @override
   void initState() {
     _controller = VideoEditorController.file(
-      widget.file,
+      context.read<VideoEditorProvider>().getBackgroundVideoFile,
       maxDuration: const Duration(seconds: 60),
       trimStyle: TrimSliderStyle(),
     )..initialize().then((_) => setState(() {}));
@@ -78,13 +77,17 @@ class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
         _isExporting.value = false;
         if (!mounted) return;
         if (file != null) {
-          _controller.video.seekTo(Duration.zero);
-          _controller.video.pause();
-          Get.to(
-            () => CreateVideoScreen(
-              file: file,
-            ),
-          );
+          _controller.video.dispose();
+
+          context.read<VideoEditorProvider>().setBackgroundVideoFile(file);
+          context.read<VideoEditorProvider>().setBackgroundVideoController();
+          context.read<VideoEditorProvider>().setVideoPlayerController();
+
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CreateVideoScreen(),
+              ));
           await Provider.of<ArVideoCreation>(context, listen: false).audioCheck(
             videoUrl: file.path,
           );

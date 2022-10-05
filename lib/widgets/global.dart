@@ -517,6 +517,52 @@ Widget ImageNetworkLoader(
   );
 }
 
+Widget ImageFileLoader(
+    {required File imageUrl, bool hide = false, BoxFit fit = BoxFit.cover}) {
+  return Stack(
+    children: [
+      Container(
+        height: 100.h,
+        width: 100.w,
+        child: Image.file(
+          imageUrl,
+          fit: fit,
+          cacheWidth: 0,
+          cacheHeight: 0,
+          gaplessPlayback: true,
+          isAntiAlias: false,
+          errorBuilder: (BuildContext context, val, _) {
+            return Center(
+              child: Icon(Icons.error),
+            );
+          },
+        ),
+      ),
+      Visibility(
+        visible: hide,
+        child: Positioned(
+          bottom: 0,
+          right: 0,
+          child: Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              color: constantColors.black.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            alignment: Alignment.center,
+            child: Icon(
+              Icons.lock_outline,
+              color: constantColors.whiteColor,
+              size: 30,
+            ),
+          ),
+        ),
+      )
+    ],
+  );
+}
+
 Widget privacyPolicyLinkAndTermsOfService() {
   return Container(
     alignment: Alignment.center,
@@ -939,7 +985,7 @@ class SubmitButton extends StatelessWidget {
 }
 
 Future<void> deleteFile(List<String> fullPathsForFiles) async {
-  fullPathsForFiles.forEach((element) async {
+  for (String element in fullPathsForFiles) {
     final File file = File(element);
     try {
       // ignore: avoid_slow_async_io
@@ -950,7 +996,7 @@ Future<void> deleteFile(List<String> fullPathsForFiles) async {
     } catch (e) {
       print("error deleting == $e");
     }
-  });
+  }
 }
 
 class VerifiedMark extends StatelessWidget {
