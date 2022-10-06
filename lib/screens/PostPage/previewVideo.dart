@@ -466,8 +466,9 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                                 ? Container(
                                                     height: 50,
                                                     width: 50,
-                                                    child: Image.network(
-                                                        selectMaterials[index]
+                                                    child: ImageNetworkLoader(
+                                                        imageUrl: selectMaterials[
+                                                                index]
                                                             .pathsForVideoFrames![0]),
                                                   )
                                                 : Container(
@@ -1212,7 +1213,7 @@ class ImageTitleAndCaption extends StatelessWidget {
                 height: size.height * 0.25,
                 child: Image.file(
                   widget.thumbnailFile,
-                  filterQuality: FilterQuality.medium,
+                  filterQuality: FilterQuality.low,
                   fit: BoxFit.cover,
                 )),
           ),

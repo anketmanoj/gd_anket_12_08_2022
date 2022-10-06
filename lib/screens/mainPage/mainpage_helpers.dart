@@ -5,11 +5,21 @@ import 'dart:io';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/mainPage/loginScreen.dart';
 import 'package:diamon_rose_app/screens/mainPage/signup_screen.dart';
+import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 class MainPageHelpers with ChangeNotifier {
   ConstantColors constantColors = ConstantColors();
+
+  bool _hideTutorial = false;
+  bool get getHideTutorial => _hideTutorial;
+
+  void setHideTutorial(bool value) {
+    _hideTutorial = value;
+    SharedPreferencesHelper.setBool("hideTutorial", _hideTutorial);
+    notifyListeners();
+  }
 
   Widget bodyImage(BuildContext context) {
     return Positioned(

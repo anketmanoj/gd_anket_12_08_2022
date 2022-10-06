@@ -507,7 +507,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
             //! #############################################################
             final String commandForGifSeqFile =
-                '-y -i ${gifFile.path} -filter_complex "fps=30,scale=480:-1" -preset ultrafast  ${gifSeqFolder}${arVal}gifSeq%d.png';
+                '-y -i ${gifFile.path} -filter_complex "fps=30,scale=480:-1"  -preset ultrafast  ${gifSeqFolder}${arVal}gifSeq%d.png';
 
             List<String> _fullPathsOffline = [];
 

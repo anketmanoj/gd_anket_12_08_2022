@@ -34,6 +34,7 @@ import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/blockedAccounts/blockedAccountsScreen.dart';
 import 'package:diamon_rose_app/screens/closeAccount/closeAccountScreen.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
+import 'package:diamon_rose_app/screens/mainPage/mainpage_helpers.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/demo.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/adminUserModels.dart';
@@ -770,6 +771,37 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 Divider(
                   color: Colors.white,
                 ),
+                Consumer<MainPageHelpers>(builder: (context, hideShow, _) {
+                  return ListTile(
+                      onTap: () {
+                        hideShow.setHideTutorial(
+                            !SharedPreferencesHelper.getBool("hideTutorial"));
+
+                        log("hide from shared == ${SharedPreferencesHelper.getBool("hideTutorial")}");
+                      },
+                      title: Text(
+                        SharedPreferencesHelper.getBool("hideTutorial")
+                            ? "Hide Tutorial Icon"
+                            : "Show Tutorial Icon",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                      leading: Icon(
+                        hideShow.getHideTutorial
+                            ? Icons.visibility_off
+                            : Icons.remove_red_eye_outlined,
+                        color: constantColors.whiteColor,
+                      ),
+                      trailing: Switch(
+                          value: hideShow.getHideTutorial,
+                          onChanged: (val) {
+                            hideShow.setHideTutorial(
+                                !SharedPreferencesHelper.getBool(
+                                    "hideTutorial"));
+                          }));
+                }),
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () {

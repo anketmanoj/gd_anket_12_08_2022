@@ -1,11 +1,13 @@
 import 'dart:developer';
 
+import 'package:diamon_rose_app/screens/HelpScreen/tutorialVideos.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/following_bloc/following_preload_bloc.dart';
 import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/widgets/VideoWidget.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 
 class FollowingVideoPage extends StatefulWidget {
@@ -43,6 +45,35 @@ class _FollowingVideoPageState extends State<FollowingVideoPage>
                 Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: CircularProgressIndicator()),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  "In the meantime, we've made some tutorials on how to maximize your experience on Glamorous Diastation!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: constantColors.whiteColor,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            child: TutorialVideoScreen(),
+                            type: PageTransitionType.fade));
+                  },
+                  child: Container(
+                    height: 30.h,
+                    width: 70.w,
+                    // color: constantColors.whiteColor,
+                    child: Image.asset("assets/images/tipsntricks.png"),
+                  ),
+                ),
               ],
             ),
           );
