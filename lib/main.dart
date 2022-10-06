@@ -31,6 +31,8 @@ import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/translations/codegen_loader.g.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +65,16 @@ void main() async {
 
   runApp(Provider<AppleSignInAvailable>.value(
     value: appleSignInAvailable,
-    child: MyApp(),
+    child: EasyLocalization(
+      supportedLocales: [Locale('en'), Locale('ja')],
+      path:
+          'assets/translations', // <-- change the path of the translation files
+      fallbackLocale: Locale('en'),
+      saveLocale: true,
+      assetLoader: CodegenLoader(),
+
+      child: MyApp(),
+    ),
   ));
 }
 
@@ -214,6 +225,9 @@ class MyApp extends StatelessWidget {
         child: Sizer(
           builder: (context, orientation, deviceType) {
             return GetMaterialApp(
+              supportedLocales: context.supportedLocales,
+              localizationsDelegates: context.localizationDelegates,
+              locale: context.locale,
               themeMode: ThemeMode.light,
               navigatorKey: _navigationService.navigationKey,
               defaultTransition: getTransition.Transition.fadeIn,

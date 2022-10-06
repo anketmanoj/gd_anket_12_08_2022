@@ -56,9 +56,7 @@ import 'package:http/http.dart' as http;
 enum _FrameBoundaries { left, right, inside, progress, none }
 
 class AdminCreateVideoScreen extends StatefulWidget {
-  const AdminCreateVideoScreen({Key? key, required this.file})
-      : super(key: key);
-  final File file;
+  const AdminCreateVideoScreen({Key? key}) : super(key: key);
 
   @override
   State<AdminCreateVideoScreen> createState() => _AdminCreateVideoScreenState();
@@ -186,15 +184,12 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
   bool gotArContainerWidth = false;
   double arContainerWidth = 0;
   bool showArContainer = false;
-  late String _videoPath;
 
   late Timer timer;
 
   @override
   void initState() {
     screen = Size(50, 50);
-
-    _videoPath = widget.file.path;
 
     client = GiphyClient(apiKey: giphyApiKey, randomId: '');
     WidgetsBinding.instance!.addPostFrameCallback((_) {
@@ -205,18 +200,17 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
       });
     });
 
-    _controller = VideoEditorController.file(
-      widget.file,
-      maxDuration: const Duration(seconds: 60),
-      trimStyle: TrimSliderStyle(),
-    )..initialize().then((_) {
-        _controller.video.setLooping(false);
-        _videoController = _controller.video;
-        setState(() {});
-      });
+    _controller =
+        context.read<VideoEditorProvider>().getBackgroundVideoController;
+    _videoController =
+        context.read<VideoEditorProvider>().getVideoPlayerController;
+
+    _controller.video.setLooping(false);
+
+    setState(() {});
+
     _ratio = getRatioDuration();
     _trimWidth = _controller.trimStyle.lineWidth;
-
     timer = Timer.periodic(oneSec, (Timer t) {
       double bgDuration = _fullLayout.width * _controller.trimPosition;
 
@@ -1048,7 +1042,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                                     },
                                                                     waitUntilCacheIsComplete:
                                                                         true,
-                                                                    fps: 30,
+                                                                    fps: 35,
                                                                     isAutoPlay:
                                                                         false,
                                                                     onPlaying: value.layerType ==
@@ -1694,7 +1688,9 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                         )
                                       : Container(
                                           height: 90,
-                                          color: Colors.amber,
+                                          child: Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
                                         ),
                                 ),
                               ],
@@ -1728,10 +1724,17 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                           timer.cancel();
                           _controller.dispose();
                           for (ARList element in list.value) {
+                            if (element.gifFilePath != null) {
+                              await deleteFile([element.gifFilePath!]);
+                            }
+                            await deleteFile(element.pathsForVideoFrames!);
                             element.arState!.dispose();
                             if (element.audioFlag == true)
                               element.audioPlayer!.dispose();
                           }
+                          // for (ARList arVal in list.value) {
+                          //   await deleteFile(arVal.pathsForVideoFrames!);
+                          // }
                         }
                         Navigator.pop(context);
                       },
@@ -1971,7 +1974,9 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                               );
                               try {
                                 await combineBgAr(
-                                  bgVideoFile: widget.file,
+                                  bgVideoFile: context
+                                      .read<VideoEditorProvider>()
+                                      .getBackgroundVideoFile,
                                   ffmpegArCommand:
                                       arVideoCreation.getArAudioFlagGeneral == 1
                                           ? command
@@ -1982,16 +1987,24 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                       _exportingProgress.value = value,
                                   onCompleted: (file) async {
                                     if (file != null) {
+                                      context
+                                          .read<VideoEditorProvider>()
+                                          .setAfterEditorVideoController(file);
+
+                                      await context
+                                          .read<VideoEditorProvider>()
+                                          .setBgMaterialThumnailFile();
+
                                       dev.log("we're here now");
 
                                       dev.log("Send!");
                                       Get.back();
-                                      Get.to(() => AdminVideothumbnailSelector(
-                                            arList: list.value,
-                                            file: file,
-                                            forBgMaterialThumnailFile:
-                                                widget.file,
-                                          ));
+
+                                      await Get.to(
+                                        () => AdminVideothumbnailSelector(
+                                          arList: list.value,
+                                        ),
+                                      );
 
                                       // Navigator.pushReplacement(
                                       //     context,

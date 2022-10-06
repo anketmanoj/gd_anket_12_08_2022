@@ -473,6 +473,8 @@ Widget ImageNetworkLoader(
         child: Image.network(
           imageUrl,
           fit: fit,
+          filterQuality: FilterQuality.low,
+          isAntiAlias: false,
           loadingBuilder: (BuildContext context, Widget child,
               ImageChunkEvent? loadingProgress) {
             if (loadingProgress == null) return child;

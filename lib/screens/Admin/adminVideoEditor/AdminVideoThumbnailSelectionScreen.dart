@@ -3,10 +3,12 @@
 //-------------------//
 // ignore_for_file: unawaited_futures
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
+import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminPreviewVideo.dart';
 import 'package:diamon_rose_app/screens/PostPage/previewVideo.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
@@ -22,17 +24,12 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class AdminVideothumbnailSelector extends StatefulWidget {
-  const AdminVideothumbnailSelector(
-      {Key? key,
-      required this.file,
-      required this.arList,
-      required this.forBgMaterialThumnailFile})
-      : super(key: key);
-
-  final File file;
+  const AdminVideothumbnailSelector({
+    Key? key,
+    required this.arList,
+  }) : super(key: key);
 
   final List<ARList> arList;
-  final File forBgMaterialThumnailFile;
 
   @override
   State<AdminVideothumbnailSelector> createState() =>
@@ -52,15 +49,8 @@ class _AdminVideothumbnailSelectorState
 
   @override
   void initState() {
-    _controller = VideoEditorController.file(widget.file,
-        maxDuration: const Duration(seconds: 60))
-      ..initialize().then((_) async {
-        bgMaterialThumnailFile =
-            await Provider.of<FFmpegProvider>(context, listen: false)
-                .bgMaterialThumbnailCreator(
-                    vidFilePath: widget.forBgMaterialThumnailFile.path);
-        setState(() {});
-      });
+    _controller =
+        context.read<VideoEditorProvider>().getAfterEditorVideoController;
     super.initState();
   }
 
@@ -84,70 +74,72 @@ class _AdminVideothumbnailSelectorState
     // NOTE: To use `-crf 1` and [VideoExportPreset] you need `ffmpeg_kit_flutter_min_gpl` package (with `ffmpeg_kit` only it won't work)
     await _controller.exportVideo(
       // preset: VideoExportPreset.medium,
-      // customInstruction: "-crf 17",
       onProgress: (stats, value) => _exportingProgress.value = value,
-      onCompleted: (file, endDuration) {
+      onCompleted: (videoFileNew, endDuration) async {
         _isExporting.value = false;
         if (!mounted) return;
+        if (videoFileNew != null) {
+          _controller.video.dispose();
+          context.read<VideoEditorProvider>().setFinalVideoFile(videoFileNew);
 
-        final VideoPlayerController videoController =
-            VideoPlayerController.file(file!);
-        videoController.initialize().then((value) async {
-          setState(() {});
-          videoController.play();
-          videoController.setLooping(true);
-          await showDialog(
-            context: context,
-            builder: (_) => Padding(
-              padding: const EdgeInsets.all(30),
-              child: Center(
-                child: AspectRatio(
-                  aspectRatio: videoController.value.aspectRatio,
-                  child: VideoPlayer(videoController),
-                ),
-              ),
-            ),
-          );
-          await videoController.pause();
-          videoController.dispose();
-        });
-
-        _exportText = "Video success export!";
-        setState(() => _exported = true);
-        Future.delayed(const Duration(seconds: 2),
-            () => setState(() => _exported = false));
+          Navigator.pushReplacement(
+              context,
+              PageTransition(
+                  child: AdminPreviewVideoScreen(
+                    bgMaterialThumnailFile: context
+                        .read<VideoEditorProvider>()
+                        .getBgMaterialThumnailFile,
+                    bgFile: context
+                        .read<VideoEditorProvider>()
+                        .getBackgroundVideoFile,
+                    thumbnailFile:
+                        context.read<VideoEditorProvider>().getCoverGif,
+                    videoFile: File(videoFileNew.path),
+                    arList: widget.arList,
+                  ),
+                  type: PageTransitionType.fade));
+        }
       },
     );
   }
 
-  void _exportCover() async {
+  Future<void> _exportCover() async {
     _isExporting.value = true;
     await _controller.extractCover(
       onCompleted: (cover) async {
         if (!mounted) return;
-        await _controller.exportVideo(
-          // preset: VideoExportPreset.medium,
-          onProgress: (stats, value) => _exportingProgress.value = value,
-          onCompleted: (videoFileNew, endDuration) async {
-            _isExporting.value = false;
-            if (!mounted) return;
-            if (videoFileNew != null) {
-              _controller.video.pause();
-              Get.back();
-              Navigator.pushReplacement(
-                  context,
-                  PageTransition(
-                      child: AdminPreviewVideoScreen(
-                        bgMaterialThumnailFile: bgMaterialThumnailFile,
-                        bgFile: widget.file,
-                        thumbnailFile: cover!,
-                        videoFile: File(videoFileNew.path),
-                        arList: widget.arList,
-                      ),
-                      type: PageTransitionType.fade));
-            }
-          },
-        );
+        context.read<VideoEditorProvider>().setCoverGif(cover!);
+        // await _controller.exportVideo(
+        //   // preset: VideoExportPreset.medium,
+        //   onProgress: (stats, value) => _exportingProgress.value = value,
+        //   onCompleted: (videoFileNew, endDuration) async {
+        //     _isExporting.value = false;
+        //     if (!mounted) return;
+        //     if (videoFileNew != null) {
+        //       _controller.video.dispose();
+        //       context
+        //           .read<VideoEditorProvider>()
+        //           .setFinalVideoFile(videoFileNew);
+
+        //       Navigator.pushReplacement(
+        //           context,
+        //           PageTransition(
+        //               child: AdminPreviewVideoScreen(
+        //                 bgMaterialThumnailFile: context
+        //                     .read<VideoEditorProvider>()
+        //                     .getBgMaterialThumnailFile,
+        //                 bgFile: context
+        //                     .read<VideoEditorProvider>()
+        //                     .getBackgroundVideoFile,
+        //                 thumbnailFile:
+        //                     context.read<VideoEditorProvider>().getCoverGif,
+        //                 videoFile: File(videoFileNew.path),
+        //                 arList: widget.arList,
+        //               ),
+        //               type: PageTransitionType.fade));
+        //     }
+        //   },
+        // );
 
         // ignore: unawaited_futures
 
@@ -315,13 +307,24 @@ class _AdminVideothumbnailSelectorState
                     return AbsorbPointer(
                       absorbing: exporting,
                       child: IconButton(
-                        onPressed: () {
-                          CoolAlert.show(
-                            context: context,
-                            type: CoolAlertType.loading,
-                            barrierDismissible: false,
-                          );
-                          _exportCover();
+                        onPressed: () async {
+                          _controller.video.pause();
+                          try {
+                            await _exportCover().then((value) {
+                              log("done creating cover, now export video");
+                            });
+
+                            Future.delayed(Duration(seconds: 2), () {
+                              _exportVideo();
+                            });
+                          } catch (e) {
+                            _isExporting.value = false;
+                            CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.info,
+                                title: "Issue Detected",
+                                text: "Error: ${e.toString()}");
+                          }
                         },
                         icon: const Icon(
                           Icons.arrow_forward_outlined,

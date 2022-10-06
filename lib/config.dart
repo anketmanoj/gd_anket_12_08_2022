@@ -5,6 +5,7 @@ import 'package:diamon_rose_app/services/feed_viewmodel.dart';
 import 'package:diamon_rose_app/services/get_http_client.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 // import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -26,6 +27,8 @@ final getIt = GetIt.instance;
 
 config() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+
   await Firebase.initializeApp();
   await FirebaseMessaging.instance.requestPermission();
   configureInjection(Environment.prod);

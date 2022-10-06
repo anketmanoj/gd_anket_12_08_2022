@@ -23,6 +23,7 @@ import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -376,8 +377,9 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                                 ? Container(
                                                     height: 50,
                                                     width: 50,
-                                                    child: Image.network(
-                                                        selectMaterials[index]
+                                                    child: ImageNetworkLoader(
+                                                        imageUrl: selectMaterials[
+                                                                index]
                                                             .pathsForVideoFrames![0]),
                                                   )
                                                 : Container(
@@ -424,8 +426,9 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                                 ? Container(
                                                     height: 50,
                                                     width: 50,
-                                                    child: Image.network(
-                                                        selectMaterials[index]
+                                                    child: ImageNetworkLoader(
+                                                        imageUrl: selectMaterials[
+                                                                index]
                                                             .pathsForVideoFrames![0]),
                                                   )
                                                 : Container(
@@ -1127,9 +1130,10 @@ class ImageTitleAndCaption extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Container(
-                height: size.height * 0.25,
+                height: 25.h,
                 child: Image.file(
                   widget.thumbnailFile,
+                  filterQuality: FilterQuality.low,
                   fit: BoxFit.cover,
                 )),
           ),

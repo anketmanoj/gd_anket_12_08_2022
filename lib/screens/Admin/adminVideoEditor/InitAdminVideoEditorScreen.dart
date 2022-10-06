@@ -9,6 +9,7 @@ import 'dart:io';
 
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminCreateVideoScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/CreateVideoScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/CropVideo/InitCropVideoScreen.dart';
@@ -82,13 +83,18 @@ class _InitAdminVideoEditorScreenState
         _isExporting.value = false;
         if (!mounted) return;
         if (file != null) {
-          _controller.video.seekTo(Duration.zero);
-          _controller.video.pause();
-          Get.to(
-            () => AdminCreateVideoScreen(
-              file: file,
-            ),
-          );
+          _controller.video.dispose();
+
+          context.read<VideoEditorProvider>().setBackgroundVideoFile(file);
+          context.read<VideoEditorProvider>().setBackgroundVideoController();
+          context.read<VideoEditorProvider>().setVideoPlayerController();
+
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AdminCreateVideoScreen(),
+              ));
+
           await Provider.of<ArVideoCreation>(context, listen: false).audioCheck(
             videoUrl: file.path,
           );
