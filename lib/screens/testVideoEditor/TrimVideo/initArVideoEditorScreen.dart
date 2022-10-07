@@ -17,11 +17,13 @@ import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/video_editor.d
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:nanoid/nanoid.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -285,7 +287,7 @@ class _ArVideoEditorScreenState extends State<ArVideoEditorScreen> {
                                     );
                                   },
                                   child: Text(
-                                    "Next",
+                                    LocaleKeys.next.tr(),
                                   ),
                                 ),
                               ],

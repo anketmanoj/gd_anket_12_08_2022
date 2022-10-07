@@ -18,11 +18,12 @@ import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/user.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:nanoid/nanoid.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -32,7 +33,7 @@ import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:video_player/video_player.dart';
 import 'package:helpers/helpers.dart'
     show OpacityTransition, SwipeTransition, AnimatedInteractiveViewer;
-import 'package:http/http.dart' as http;
+import 'package:easy_localization/easy_localization.dart';
 
 class AdminArVideoEditorScreen extends StatefulWidget {
   const AdminArVideoEditorScreen(
@@ -293,7 +294,7 @@ class _AdminArVideoEditorScreenState extends State<AdminArVideoEditorScreen> {
                                     );
                                   },
                                   child: Text(
-                                    "Next",
+                                    LocaleKeys.next.tr(),
                                   ),
                                 ),
                               ],

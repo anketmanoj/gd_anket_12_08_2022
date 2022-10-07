@@ -9,7 +9,9 @@ import 'package:diamon_rose_app/screens/mainPage/reset_password_screen.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 50,
               alignment: Alignment.center,
               child: Text(
-                "Log In",
+                LocaleKeys.login.tr(),
                 style: TextStyle(
                   fontSize: 35,
                   fontWeight: FontWeight.bold,
@@ -82,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _emailController,
                       validator: (value) {
                         if (value!.isEmpty || !value.contains("@")) {
-                          return 'Invalid Email';
+                          return LocaleKeys.invalidemail.tr();
                         }
                         return null;
                       },
@@ -191,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: Text(
-                      "Log In",
+                      LocaleKeys.login.tr(),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -213,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Container(
                     height: 40,
                     child: Text(
-                      "Forgot password?",
+                      LocaleKeys.forgetpassword.tr(),
                       style: TextStyle(
                         color: Colors.black.withOpacity(0.5),
                         fontSize: 15,
@@ -226,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Login with your Social Media Accounts",
+                      LocaleKeys.loginwithyoursocialmediaaccounts.tr(),
                       style: TextStyle(
                         color: Colors.black.withOpacity(0.5),
                         fontSize: 15,

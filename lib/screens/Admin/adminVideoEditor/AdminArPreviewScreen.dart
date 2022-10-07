@@ -12,10 +12,12 @@ import 'package:diamon_rose_app/screens/PostPage/previewVideo.dart';
 import 'package:diamon_rose_app/services/ArViewOnlyServerResponse.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/user.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:intl/intl.dart';
 import 'package:multi_select_flutter/chip_field/multi_select_chip_field.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
@@ -109,40 +111,40 @@ class AdminArPreviewSetting extends StatelessWidget {
   List<String?> _selectedRecommendedOptions = [];
 
   List<String?> _recommendedOptions = [
-    'Musician',
-    'Performer',
-    'Dance',
-    'Cosplayers',
-    'Movie',
-    'Actor',
-    'Fashion',
-    'Landscape',
-    'Sports',
-    'Animals',
-    'Space',
-    'Art',
-    'Mystery',
-    'Airplane',
-    'Games',
-    'Food',
-    'Romance',
-    'Sexy',
-    'Science fiction',
-    'Car',
-    'Jobs',
-    'Anime',
-    'Ship',
-    'Railroads',
-    'Building',
-    'Health',
-    'Science',
-    'Natural',
-    'Machine',
-    'Trip',
-    'Travel',
-    'Fantasy',
-    'Funny',
-    'Beauty',
+    LocaleKeys.musician.tr(),
+    LocaleKeys.performers.tr(),
+    LocaleKeys.dance.tr(),
+    LocaleKeys.cosplayers.tr(),
+    LocaleKeys.movie.tr(),
+    LocaleKeys.actor.tr(),
+    LocaleKeys.fashion.tr(),
+    LocaleKeys.landscape.tr(),
+    LocaleKeys.sports.tr(),
+    LocaleKeys.animals.tr(),
+    LocaleKeys.space.tr(),
+    LocaleKeys.art.tr(),
+    LocaleKeys.mystery.tr(),
+    LocaleKeys.airplane.tr(),
+    LocaleKeys.games.tr(),
+    LocaleKeys.food.tr(),
+    LocaleKeys.romance.tr(),
+    LocaleKeys.sexy.tr(),
+    LocaleKeys.sciencefiction.tr(),
+    LocaleKeys.car.tr(),
+    LocaleKeys.jobs.tr(),
+    LocaleKeys.anime.tr(),
+    LocaleKeys.ship.tr(),
+    LocaleKeys.railroads.tr(),
+    LocaleKeys.building.tr(),
+    LocaleKeys.health.tr(),
+    LocaleKeys.science.tr(),
+    LocaleKeys.natural.tr(),
+    LocaleKeys.machine.tr(),
+    LocaleKeys.trip.tr(),
+    LocaleKeys.travel.tr(),
+    LocaleKeys.fantasy.tr(),
+    LocaleKeys.funny.tr(),
+    LocaleKeys.beauty.tr(),
   ];
 
   @override

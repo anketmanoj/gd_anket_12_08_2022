@@ -69,7 +69,7 @@ void main() async {
       supportedLocales: [Locale('en'), Locale('ja')],
       path:
           'assets/translations', // <-- change the path of the translation files
-      fallbackLocale: Locale('en'),
+      fallbackLocale: Locale('ja'),
       saveLocale: true,
       assetLoader: CodegenLoader(),
 

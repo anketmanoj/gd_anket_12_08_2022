@@ -6,6 +6,8 @@ import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/mainPage/loginScreen.dart';
 import 'package:diamon_rose_app/screens/mainPage/signup_screen.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -46,7 +48,7 @@ class MainPageHelpers with ChangeNotifier {
         children: [
           _LoginOptions(
             constantColors: constantColors,
-            text: "Sign up",
+            text: LocaleKeys.signup.tr(),
             function: () {
               Navigator.push(
                   context,
@@ -58,7 +60,7 @@ class MainPageHelpers with ChangeNotifier {
             padding: const EdgeInsets.only(top: 15.0),
             child: _LoginOptions(
               constantColors: constantColors,
-              text: "Login",
+              text: LocaleKeys.login.tr(),
               function: () {
                 Navigator.push(
                     context,

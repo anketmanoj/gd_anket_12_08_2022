@@ -8,9 +8,11 @@ import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/PurchaseCaratsModel.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
@@ -698,7 +700,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
     return Scaffold(
       backgroundColor: constantColors.whiteColor,
       appBar: AppBarWidget(
-        text: "Collect Carats",
+        text: LocaleKeys.collectcarats.tr(),
         context: context,
       ),
       body: Stack(

@@ -9,7 +9,9 @@ import 'package:diamon_rose_app/providers/user_signup_provider.dart';
 import 'package:diamon_rose_app/screens/mainPage/Signupflow/FAQ_screen.dart';
 import 'package:diamon_rose_app/screens/mainPage/Signupflow/signup_otp.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:email_auth/email_auth.dart';
@@ -111,7 +113,7 @@ class _SignUpEmailState extends State<SignUpEmail> {
                     enableInteractiveSelection: false,
                     validator: (value) {
                       if (value!.isEmpty || !value.contains("@")) {
-                        return 'Invalid Email';
+                        return LocaleKeys.invalidemail.tr();
                       }
                       return null;
                     },
@@ -120,7 +122,7 @@ class _SignUpEmailState extends State<SignUpEmail> {
                       color: Colors.white,
                     ),
                     decoration: InputDecoration(
-                      label: Text("User Email"),
+                      label: Text(LocaleKeys.useremail.tr()),
                       hintText: "johndoe@email.com",
                       hintStyle: TextStyle(
                         color: Colors.black.withOpacity(0.3),
@@ -148,13 +150,13 @@ class _SignUpEmailState extends State<SignUpEmail> {
                       enableInteractiveSelection: false,
                       validator: (value) {
                         if (value!.isEmpty || !value.contains("@")) {
-                          return 'Invalid Email';
+                          return LocaleKeys.invalidemail.tr();
                         }
 
                         if (value != _emailController.text ||
                             _emailConfrimController.text !=
                                 _emailConfrimController.text) {
-                          return "Emails don't match";
+                          return LocaleKeys.emaildontmatch.tr();
                         }
                         return null;
                       },
@@ -163,8 +165,8 @@ class _SignUpEmailState extends State<SignUpEmail> {
                         color: Colors.white,
                       ),
                       decoration: InputDecoration(
-                        label: Text("Confrim Email"),
-                        hintText: "confirm email",
+                        label: Text(LocaleKeys.confirmemail.tr()),
+                        hintText: LocaleKeys.confirmemail.tr(),
                         hintStyle: TextStyle(
                           color: Colors.black.withOpacity(0.3),
                           fontSize: 15,
@@ -202,7 +204,7 @@ class _SignUpEmailState extends State<SignUpEmail> {
                     context: context,
                     type: CoolAlertType.info,
                     title: "Please wait",
-                    text: "We are sending you an email",
+                    text: LocaleKeys.pleasewaitwearesendingyouanemail.tr(),
                     barrierDismissible: false,
                   );
                   createOtp();

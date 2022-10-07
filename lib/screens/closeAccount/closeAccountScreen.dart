@@ -7,6 +7,7 @@ import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
 import 'package:diamon_rose_app/screens/mainPage/reset_password_screen.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -81,7 +82,7 @@ class _CloseAccountScreenState extends State<CloseAccountScreen> {
                       controller: _emailController,
                       validator: (value) {
                         if (value!.isEmpty || !value.contains("@")) {
-                          return 'Invalid Email';
+                          return "${LocaleKeys.invalidemail.tr}";
                         }
                         return null;
                       },

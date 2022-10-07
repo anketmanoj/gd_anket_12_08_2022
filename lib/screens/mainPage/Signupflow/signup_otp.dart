@@ -2,7 +2,9 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/providers/user_signup_provider.dart';
 import 'package:diamon_rose_app/screens/mainPage/Signupflow/signUp_password.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -73,7 +75,7 @@ class _SignUpOTPState extends State<SignUpOTP> {
             child: Column(
               children: [
                 Text(
-                  "Verification",
+                  LocaleKeys.verification.tr(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 25,
@@ -84,7 +86,7 @@ class _SignUpOTPState extends State<SignUpOTP> {
                 Padding(
                   padding: const EdgeInsets.only(top: 50),
                   child: Text(
-                    "Enter the code sent to the email",
+                    LocaleKeys.enterthecodesenttotheemail.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 15,
@@ -131,7 +133,7 @@ class _SignUpOTPState extends State<SignUpOTP> {
                           context: context,
                           type: CoolAlertType.error,
                           title: "Error",
-                          text: "Invalid OTP",
+                          text: LocaleKeys.errorinvalidotp.tr(),
                         );
                       }
                     },

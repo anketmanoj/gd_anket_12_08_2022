@@ -46,8 +46,10 @@ import 'package:diamon_rose_app/services/dynamic_link_service.dart';
 import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/apple_pay.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -56,7 +58,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pay/pay.dart';
@@ -207,7 +209,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         );
                       },
                       title: Text(
-                        "Update User Details",
+                        LocaleKeys.updateuserdetails.tr(),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -235,7 +237,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         );
                       },
                       title: Text(
-                        "Add Social Media Links",
+                        LocaleKeys.addsocialmedialinks.tr(),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -256,7 +258,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: FontAwesomeIcons.diamond,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Buy Carats",
+                  text: LocaleKeys.buycarats.tr(),
                 ),
                 Visibility(
                   visible: _auth.emailAuth,
@@ -343,7 +345,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: FontAwesomeIcons.solidFileVideo,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "AR View Collection",
+                  text: LocaleKeys.arviewcollection.tr(),
                 ),
 
                 // Visibility(
@@ -409,7 +411,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: Icons.recommend_outlined,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Post Recommendations",
+                  text: LocaleKeys.postrecommendations.tr(),
                 ),
 
                 // ListTileOption(
@@ -516,7 +518,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     },
                     leadingIcon: Icons.shopping_cart_checkout,
                     trailingIcon: Icons.arrow_forward_ios,
-                    text: "Shopping Cart",
+                    text: LocaleKeys.shoppingcart.tr(),
                   );
                 }),
                 ListTileOption(
@@ -817,20 +819,20 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "Help",
                 ),
-                // ListTileOption(
-                //   constantColors: constantColors,
-                //   onTap: () {
-                //     Navigator.push(
-                //       context,
-                //       PageTransition(
-                //           child: ChangeLanguageScreen(),
-                //           type: PageTransitionType.rightToLeft),
-                //     );
-                //   },
-                //   leadingIcon: Icons.language_outlined,
-                //   trailingIcon: Icons.arrow_forward_ios,
-                //   text: "Change Language",
-                // ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          child: ChangeLanguageScreen(),
+                          type: PageTransitionType.rightToLeft),
+                    );
+                  },
+                  leadingIcon: Icons.language_outlined,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Change Language",
+                ),
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () async {

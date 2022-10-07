@@ -23,15 +23,25 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: constantColors.whiteColor,
-      appBar:
-          AppBarWidget(text: LocaleKeys.changeLanguage.tr(), context: context),
+      appBar: AppBarWidget(text: "Change Language", context: context),
       body: ListView.builder(
         shrinkWrap: true,
         itemCount: languages.length,
         itemBuilder: (context, index) {
           return ListTile(
+            trailing: Switch(
+              value: context.locale == Locale(languages[index].locale),
+              onChanged: (v) async {
+                final _newLocale = Locale(languages[index].locale);
+
+                await context
+                    .setLocale(_newLocale); // change `easy_localization` locale
+                Get.updateLocale(_newLocale); // change `Get` locale d
+              },
+            ),
             onTap: () async {
               final _newLocale = Locale(languages[index].locale);
+
               await context
                   .setLocale(_newLocale); // change `easy_localization` locale
               Get.updateLocale(_newLocale); // change `Get` locale direction

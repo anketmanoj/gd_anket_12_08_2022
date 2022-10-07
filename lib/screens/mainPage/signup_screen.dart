@@ -9,7 +9,9 @@ import 'package:diamon_rose_app/screens/mainPage/Signupflow/signup_email.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +48,7 @@ class SignUpscreen extends StatelessWidget {
               height: 50,
               alignment: Alignment.center,
               child: Text(
-                "Welcome",
+                LocaleKeys.welcome.tr(),
                 style: TextStyle(
                   fontSize: 35,
                   fontWeight: FontWeight.bold,
