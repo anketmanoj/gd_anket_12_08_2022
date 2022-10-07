@@ -4,8 +4,10 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/providers/image_utils_provider.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -131,9 +133,10 @@ class _ProfileImageSelectorState extends State<ProfileImageSelector> {
           onPressed: () async {
             // ignore: unawaited_futures
             CoolAlert.show(
-                context: context,
-                type: CoolAlertType.loading,
-                text: "Updating your profile picture");
+              context: context,
+              type: CoolAlertType.loading,
+              text: LocaleKeys.updatingyourprofilepicture.tr(),
+            );
 
             await Provider.of<FirebaseOperations>(context, listen: false)
                 .uploadUserProfile(
@@ -239,7 +242,9 @@ class _ProfileImageSelectorState extends State<ProfileImageSelector> {
                   onPressed: () {
                     _uploadImage();
                   },
-                  child: const Text('Select Profile Picture'),
+                  child: Text(
+                    LocaleKeys.selectprofilepicture.tr(),
+                  ),
                 ),
               ),
             ],

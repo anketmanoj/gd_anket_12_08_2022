@@ -16,12 +16,14 @@ import 'package:diamon_rose_app/services/dynamic_link_service.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/OptionsWidget.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -587,13 +589,13 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                       },
                                       child: UserStats(
                                         text: "${followers.data!.docs.length}",
-                                        label: "Followers",
+                                        label: LocaleKeys.followers.tr(),
                                       ),
                                     );
                                   } else {
                                     return UserStats(
                                       text: "0",
-                                      label: "Followers",
+                                      label: LocaleKeys.followers.tr(),
                                     );
                                   }
                                 }),
@@ -698,13 +700,13 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                       },
                                       child: UserStats(
                                         text: "${following.data!.docs.length}",
-                                        label: "Following",
+                                        label: LocaleKeys.following.tr(),
                                       ),
                                     );
                                   } else {
                                     return UserStats(
                                       text: "0",
-                                      label: "Following",
+                                      label: LocaleKeys.following.tr(),
                                     );
                                   }
                                 }),
@@ -719,12 +721,12 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                   if (posts.hasData) {
                                     return UserStats(
                                       text: "${posts.data!.docs.length}",
-                                      label: "Posts",
+                                      label: LocaleKeys.posts.tr(),
                                     );
                                   } else {
                                     return UserStats(
                                       text: "0",
-                                      label: "Posts",
+                                      label: LocaleKeys.posts.tr(),
                                     );
                                   }
                                 }),
@@ -758,7 +760,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                         alignment: Alignment.center,
                         width: size.width * 0.4,
                         child: Text(
-                          "Free",
+                          LocaleKeys.free.tr(),
                           style: TextStyle(
                             color: constantColors.whiteColor,
                           ),
@@ -784,7 +786,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                         alignment: Alignment.center,
                         width: size.width * 0.4,
                         child: Text(
-                          "Premium",
+                          LocaleKeys.premium.tr(),
                           style: TextStyle(
                             color: constantColors.whiteColor,
                           ),
@@ -996,7 +998,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                       InkWell(
                         onTap: Get.back,
                         child: Text(
-                          "Done",
+                          LocaleKeys.done.tr(),
                           style: TextStyle(
                             color: constantColors.bioBg,
                             fontSize: 16,
@@ -1463,7 +1465,7 @@ class _TopProfileStackState extends State<TopProfileStack> {
                           Navigator.pop(context);
                           Get.snackbar(
                             'Account Reported',
-                            'Thank you for letting us know!',
+                            LocaleKeys.thankyouforlettingusknow.tr(),
                             overlayColor: constantColors.navButton,
                             colorText: constantColors.whiteColor,
                             snackPosition: SnackPosition.TOP,
@@ -1593,7 +1595,11 @@ class _TopProfileStackState extends State<TopProfileStack> {
   }
 
   Future<dynamic> otherUserOptionsMenu(BuildContext context) {
-    final List<String> optionsList = ["Report", "Block", "Share"];
+    final List<String> optionsList = [
+      LocaleKeys.reportUser.tr(),
+      LocaleKeys.block.tr(),
+      LocaleKeys.share.tr(),
+    ];
     final List<void Function()> functionsList = [
       () {
         reportAccountMenu(context);
@@ -1609,7 +1615,7 @@ class _TopProfileStackState extends State<TopProfileStack> {
         final String message = generatedLink.toString();
 
         Share.share(
-          'check out @${widget.userModel.username}\n\n$generatedLink',
+          '${LocaleKeys.checkout.tr()} @${widget.userModel.username}\n\n$generatedLink',
         );
       }
     ];

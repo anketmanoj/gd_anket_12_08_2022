@@ -1,4 +1,4 @@
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 class GlobalMessagesController extends GetxController {
   RxMap<String, String> messageToShow = RxMap<String, String>();

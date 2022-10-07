@@ -1,5 +1,7 @@
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +25,7 @@ class _UpdateEmailScreenState extends State<UpdateEmailScreen> {
         Provider.of<Authentication>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBarWidget(text: "Update Email", context: context),
+      appBar: AppBarWidget(text: LocaleKeys.updateemail.tr(), context: context),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -36,7 +38,7 @@ class _UpdateEmailScreenState extends State<UpdateEmailScreen> {
                   padding: const EdgeInsets.only(top: 100),
                   child: ProfileUserDetails(
                     controller: _emailController,
-                    labelText: "New Email",
+                    labelText: LocaleKeys.newemail.tr(),
                     onSubmit: (val) {},
                     prefixIcon: Icon(FontAwesomeIcons.envelope),
                     validator: (val) {
@@ -54,7 +56,7 @@ class _UpdateEmailScreenState extends State<UpdateEmailScreen> {
                   padding: const EdgeInsets.only(top: 20),
                   child: ProfileUserDetails(
                     controller: _passwordController,
-                    labelText: "Current Password",
+                    labelText: LocaleKeys.currentpassword.tr(),
                     onSubmit: (val) {},
                     hide: true,
                     prefixIcon: Icon(FontAwesomeIcons.lock),

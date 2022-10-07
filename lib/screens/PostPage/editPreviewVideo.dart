@@ -956,7 +956,7 @@ class _EditPreviewVideoScreenState extends State<EditPreviewVideoScreen> {
                         Padding(
                           padding: const EdgeInsets.only(top: 30, bottom: 30),
                           child: SubmitButton(
-                              text: "Update Post",
+                              text: LocaleKeys.updatepost.tr(),
                               function: () async {
                                 if (_formKey.currentState!.validate() &&
                                     _selectedRecommendedOptions.length > 0) {
@@ -1014,9 +1014,10 @@ class _EditPreviewVideoScreenState extends State<EditPreviewVideoScreen> {
                                   CoolAlert.show(
                                     context: context,
                                     type: CoolAlertType.error,
-                                    title: "No Selected Genre",
-                                    text:
-                                        "Please Select a Genre for your video",
+                                    title: LocaleKeys.noselectedgenre.tr(),
+                                    text: LocaleKeys
+                                        .pleaseselectagenreforyourvideo
+                                        .tr(),
                                   );
                                 }
                               }),
@@ -1100,7 +1101,7 @@ class ImageTitleAndCaption extends StatelessWidget {
                       onSubmit: (val) {},
                       validator: (val) {
                         if (val!.isEmpty) {
-                          return "Please Enter a Title";
+                          return LocaleKeys.pleaseenteratitle.tr();
                         }
                         return null;
                       },
@@ -1116,7 +1117,7 @@ class ImageTitleAndCaption extends StatelessWidget {
                         onSubmit: (val) {},
                         validator: (val) {
                           if (val!.isEmpty) {
-                            return "Please Enter a Caption";
+                            return LocaleKeys.pleaseenteracaption.tr();
                           }
                           return null;
                         },

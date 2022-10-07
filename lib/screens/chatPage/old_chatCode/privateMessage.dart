@@ -5,6 +5,8 @@ import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateMessageHelp
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/fcm_notification_Service.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -215,7 +217,7 @@ class _PrivateMessageState extends State<PrivateMessage> {
                             ),
                             maxLines: null,
                             decoration: InputDecoration(
-                                hintText: 'Type a message',
+                                hintText: LocaleKeys.typeamessage.tr(),
                                 border: InputBorder.none,
                                 suffixIcon: IconButton(
                                   onPressed: () async {

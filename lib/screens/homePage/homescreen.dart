@@ -13,9 +13,11 @@ import 'package:diamon_rose_app/screens/homePage/RecommendedVideosFeed.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -193,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Expanded(
                             child: SubmitButton(
-                              text: "Cancel",
+                              text: LocaleKeys.cancel.tr(),
                               function: Get.back,
                               color: constantColors.redColor,
                             ),

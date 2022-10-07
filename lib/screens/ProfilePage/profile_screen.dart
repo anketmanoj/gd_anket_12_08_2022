@@ -15,12 +15,14 @@ import 'package:diamon_rose_app/screens/ProfilePage/profile_Menu_screen.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -240,13 +242,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     },
                                     child: UserStats(
                                       text: "${followers.data!.docs.length}",
-                                      label: "Followers",
+                                      label: LocaleKeys.followers.tr(),
                                     ),
                                   );
                                 } else {
                                   return UserStats(
                                     text: "0",
-                                    label: "Followers",
+                                    label: LocaleKeys.followers.tr(),
                                   );
                                 }
                               }),
@@ -344,13 +346,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     },
                                     child: UserStats(
                                       text: "${following.data!.docs.length}",
-                                      label: "Following",
+                                      label: LocaleKeys.following.tr(),
                                     ),
                                   );
                                 } else {
                                   return UserStats(
                                     text: "0",
-                                    label: "Following",
+                                    label: LocaleKeys.following.tr(),
                                   );
                                 }
                               }),
@@ -364,12 +366,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 if (posts.hasData) {
                                   return UserStats(
                                     text: "${posts.data!.docs.length}",
-                                    label: "Posts",
+                                    label: LocaleKeys.posts.tr(),
                                   );
                                 } else {
                                   return UserStats(
                                     text: "0",
-                                    label: "Posts",
+                                    label: LocaleKeys.posts.tr(),
                                   );
                                 }
                               }),
@@ -402,7 +404,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         alignment: Alignment.center,
                         width: size.width * 0.4,
                         child: Text(
-                          "Free",
+                          LocaleKeys.free.tr(),
                           style: TextStyle(
                             color: constantColors.whiteColor,
                           ),
@@ -428,7 +430,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         alignment: Alignment.center,
                         width: size.width * 0.4,
                         child: Text(
-                          "Premium",
+                          LocaleKeys.premium.tr(),
                           style: TextStyle(
                             color: constantColors.whiteColor,
                           ),
@@ -557,7 +559,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         width: 200,
                         child: Center(
                           child: Text(
-                            "No Posts yet",
+                            LocaleKeys.noPostYet.tr(),
                             style: TextStyle(
                               color: constantColors.mainColor,
                               fontSize: 20,
@@ -926,13 +928,13 @@ class MidProfileStack extends StatelessWidget {
                               },
                               child: UserStats(
                                 text: "${followers.data!.docs.length}",
-                                label: "Followers",
+                                label: LocaleKeys.followers.tr(),
                               ),
                             );
                           } else {
                             return UserStats(
                               text: "0",
-                              label: "Followers",
+                              label: LocaleKeys.followers.tr(),
                             );
                           }
                         }),
@@ -1026,13 +1028,13 @@ class MidProfileStack extends StatelessWidget {
                               },
                               child: UserStats(
                                 text: "${following.data!.docs.length}",
-                                label: "Following",
+                                label: LocaleKeys.following.tr(),
                               ),
                             );
                           } else {
                             return UserStats(
                               text: "0",
-                              label: "Following",
+                              label: LocaleKeys.following.tr(),
                             );
                           }
                         }),
@@ -1046,12 +1048,12 @@ class MidProfileStack extends StatelessWidget {
                           if (posts.hasData) {
                             return UserStats(
                               text: "${posts.data!.docs.length}",
-                              label: "Posts",
+                              label: LocaleKeys.posts.tr(),
                             );
                           } else {
                             return UserStats(
                               text: "0",
-                              label: "Posts",
+                              label: LocaleKeys.posts.tr(),
                             );
                           }
                         }),
@@ -1359,7 +1361,8 @@ class _TopProfileStackState extends State<TopProfileStack> {
                               context,
                               PageTransition(
                                   child: ProfileImageSelector(
-                                      title: "Profile Picture"),
+                                    title: LocaleKeys.profilepicture.tr(),
+                                  ),
                                   type: PageTransitionType.rightToLeft));
                           // await selectAvatarOptionsSheet(context);
                           // setState(() {});
@@ -1472,7 +1475,8 @@ class _TopProfileStackState extends State<TopProfileStack> {
                                         context,
                                         PageTransition(
                                             child: ProfileCoverImageSelector(
-                                                title: "Cover Image"),
+                                              title: LocaleKeys.coverimage.tr(),
+                                            ),
                                             type: PageTransitionType
                                                 .rightToLeft));
 
@@ -1522,7 +1526,7 @@ class _TopProfileStackState extends State<TopProfileStack> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Select Profile Picture",
+                      Text(LocaleKeys.selectprofilepicture.tr(),
                           style: TextStyle(
                             color: widget.constantColors.whiteColor,
                             fontSize: 16,
@@ -1607,7 +1611,7 @@ class _TopProfileStackState extends State<TopProfileStack> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Select Cover Image",
+                      Text(LocaleKeys.selectcoverimage.tr(),
                           style: TextStyle(
                             color: widget.constantColors.whiteColor,
                             fontSize: 16,

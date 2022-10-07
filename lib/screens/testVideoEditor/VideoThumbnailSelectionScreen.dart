@@ -14,9 +14,11 @@ import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArConta
 import 'package:diamon_rose_app/screens/testVideoEditor/CropVideo/InitCropVideoScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/domain/bloc/controller.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/video_editor.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:helpers/helpers/transition.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -124,7 +126,8 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(text: "Final Touches", context: context),
+      appBar:
+          AppBarWidget(text: LocaleKeys.finaltouches.tr(), context: context),
       backgroundColor: constantColors.navButton,
       body: _controller.initialized
           ? SafeArea(
@@ -177,11 +180,11 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
                                     Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
-                                        children: const [
+                                        children: [
                                           Padding(
                                               padding: EdgeInsets.all(5),
                                               child: Icon(Icons.content_cut)),
-                                          Text('Trim')
+                                          Text(LocaleKeys.trim.tr())
                                         ]),
                                     Row(
                                         mainAxisAlignment:

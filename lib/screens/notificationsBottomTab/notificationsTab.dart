@@ -2,7 +2,9 @@ import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/GDARNotificationScreen/GdArNotificationScreen.dart';
 import 'package:diamon_rose_app/screens/NotificationPage/notificationScreen.dart';
 import 'package:diamon_rose_app/screens/chatPage/chatScreenMain.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,13 +26,21 @@ class _NotificationsTabState extends State<NotificationsTab> {
           backgroundColor: constantColors.whiteColor,
           appBar: AppBar(
             backgroundColor: constantColors.navButton,
-            title: const Text('Interactions'),
+            title: Text(
+              LocaleKeys.interactions.tr(),
+            ),
             bottom: TabBar(
               indicatorColor: constantColors.bioBg,
               tabs: [
-                Tab(text: 'Chats'),
-                Tab(text: 'Notifications'),
-                Tab(text: 'GD AR'),
+                Tab(
+                  text: LocaleKeys.chats.tr(),
+                ),
+                Tab(
+                  text: LocaleKeys.notifications.tr(),
+                ),
+                Tab(
+                  text: LocaleKeys.gdar.tr(),
+                ),
               ],
             ),
           ),

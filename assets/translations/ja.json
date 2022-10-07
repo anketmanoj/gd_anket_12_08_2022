@@ -211,7 +211,7 @@
   "violenceordangerousorganizations": "暴力または危険な団体",
   "scamorfraud": "詐欺・欺瞞",
   "intellectualpropertyviolation": "知的財産権の侵害",
-  "fetchingposts": "Fetching Posts",
+  "fetchingposts": "投稿を取得する",
   "visitprofile": "Visit Profile",
   "doneFollowAnyoneYet": "you do not follow anyone yet Please refresh if you\"ve already following users or check out the recommended tab",
   "refresh": "Refresh",
@@ -234,5 +234,44 @@
   "deletepost": "投稿を削除",
   "editpost": "投稿を再編集",
   "editpostsetting": "投稿設定を再編集",
-  "updatepost": "投稿を更新"
+  "updatepost": "投稿を更新",
+
+  "profile": "プロフィール",
+  "buyCarats": "カラットを購入する",
+  "arViewCollection": "AR Viewコレクション",
+  "hideTutorial": "チュートリアルアイコンを隠す",
+  "showTutorial": "チュートリアルアイコンを表示する",
+  "adminUserPromocodes": "アドミンユーザープロモコード",
+  "adminVideoEditor": "管理者用ビデオエディター",
+  "adminAROptions": "Admin ARオプション",
+  "adminUserControl": "管理者ユーザーコントロール",
+  "changeLanguage": "言語を変更する",
+
+  "free": "無料",
+  "premium": "プレミアム",
+  "noPostYet": "まだ投稿はありません",
+
+  "followers": "フォロワー数",
+  "following": "フォロー",
+  "posts": "投稿",
+
+  "createVideo": "動画作成",
+  "myMaterials": "マイマテリアル",
+  "arOptions": "ARオプション",
+
+  "createVideoOption": "動画オプションの作成",
+  "newVideo": "新着動画",
+  "drafts": "草案",
+  "background": "背景",
+  "package": "パッケージ",
+
+  "selectVideoOption": "ビデオオプションの選択",
+  "gallery": "ギャラリー",
+  "camera": "カメラ",
+
+  "recommended": "おすすめ",
+  "block": "ブロック",
+  "share": "シェア",
+  "reportUser": "報告書",
+  "inTheMeantime": "そこで、Glamorous Diastationを最大限に活用するためのチュートリアルをご用意しました。"
 }

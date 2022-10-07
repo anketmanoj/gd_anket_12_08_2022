@@ -187,7 +187,7 @@ class AdminArPreviewSetting extends StatelessWidget {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 8.0),
                                 child: Text(
-                                  "Set GD AR usage as",
+                                  LocaleKeys.setgdarusageas.tr(),
                                   style: TextStyle(
                                     color: constantColors.whiteColor,
                                     fontSize: 15,
@@ -371,7 +371,10 @@ class AdminArPreviewSetting extends StatelessWidget {
                                                   onSubmit: (val) {},
                                                   validator: (val) {
                                                     if (val!.isEmpty) {
-                                                      return "Please Enter a Title";
+                                                      return LocaleKeys
+                                                          .pleaseenteratitle
+                                                          .tr();
+                                                      ;
                                                     }
                                                     return null;
                                                   },
@@ -389,7 +392,9 @@ class AdminArPreviewSetting extends StatelessWidget {
                                                     onSubmit: (val) {},
                                                     validator: (val) {
                                                       if (val!.isEmpty) {
-                                                        return "Please Enter a Caption";
+                                                        return LocaleKeys
+                                                            .pleaseenteracaption
+                                                            .tr();
                                                       }
                                                       return null;
                                                     },
@@ -927,9 +932,12 @@ class AdminArPreviewSetting extends StatelessWidget {
                                                 CoolAlert.show(
                                                   context: context,
                                                   type: CoolAlertType.error,
-                                                  title: "No Selected Genre",
-                                                  text:
-                                                      "Please Select a Genre for your video",
+                                                  title: LocaleKeys
+                                                      .noselectedgenre
+                                                      .tr(),
+                                                  text: LocaleKeys
+                                                      .pleaseselectagenreforyourvideo
+                                                      .tr(),
                                                 );
                                               }
 

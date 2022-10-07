@@ -5,7 +5,9 @@ import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/seeChatImage.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -341,8 +343,9 @@ class PrivateMessageHelper with ChangeNotifier {
       context: context,
       type: CoolAlertType.warning,
       backgroundColor: constantColors.darkColor,
-      title: "Delete Chat with ${documentSnapshot['username']}?",
-      text: "Are you sure you want to delete this conversation?",
+      title:
+          "${LocaleKeys.deletechatwith.tr()} ${documentSnapshot['username']}?",
+      text: LocaleKeys.areyousureyouwanttodeletethisconversation.tr(),
       showCancelBtn: true,
       cancelBtnText: "No",
       confirmBtnText: "Yes",

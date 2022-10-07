@@ -231,5 +231,37 @@ abstract class  LocaleKeys {
   static const editpost = 'editpost';
   static const editpostsetting = 'editpostsetting';
   static const updatepost = 'updatepost';
+  static const profile = 'profile';
+  static const buyCarats = 'buyCarats';
+  static const arViewCollection = 'arViewCollection';
+  static const hideTutorial = 'hideTutorial';
+  static const showTutorial = 'showTutorial';
+  static const adminUserPromocodes = 'adminUserPromocodes';
+  static const adminVideoEditor = 'adminVideoEditor';
+  static const adminAROptions = 'adminAROptions';
+  static const adminUserControl = 'adminUserControl';
+  static const changeLanguage = 'changeLanguage';
+  static const free = 'free';
+  static const premium = 'premium';
+  static const noPostYet = 'noPostYet';
+  static const followers = 'followers';
+  static const following = 'following';
+  static const posts = 'posts';
+  static const createVideo = 'createVideo';
+  static const myMaterials = 'myMaterials';
+  static const arOptions = 'arOptions';
+  static const createVideoOption = 'createVideoOption';
+  static const newVideo = 'newVideo';
+  static const drafts = 'drafts';
+  static const background = 'background';
+  static const package = 'package';
+  static const selectVideoOption = 'selectVideoOption';
+  static const gallery = 'gallery';
+  static const camera = 'camera';
+  static const recommended = 'recommended';
+  static const block = 'block';
+  static const share = 'share';
+  static const reportUser = 'reportUser';
+  static const inTheMeantime = 'inTheMeantime';
 
 }

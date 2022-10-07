@@ -189,8 +189,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
     Future<dynamic> otherUserOptionsMenu(
         {required BuildContext context, required Video video}) {
       final List<String> optionsList = [
-        "Delete Post",
-        "Edit Post",
+        LocaleKeys.deletepost.tr(),
+        LocaleKeys.editpost.tr(),
       ];
       final List<void Function()> functionsList = [
         () {
@@ -972,7 +972,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                             children: [
                                               Container(
                                                 child: Text(
-                                                  "Visit Owner",
+                                                  LocaleKeys.visitowner.tr(),
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.bold,
@@ -986,7 +986,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                       ),
                                     ),
                                     subtitle: Text(
-                                      "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
+                                      "${LocaleKeys.ownedby.tr()} ${snapshot.data!.docs[index]["ownerName"]}",
                                     ),
                                     leading: Container(
                                       height: 40,
@@ -1107,7 +1107,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                             // paymentController.makePayment(
                             //     amount: "10", currency: "USD"),
                             child: Text(
-                              "Add to Cart",
+                              LocaleKeys.addtocart.tr(),
                               style: TextStyle(
                                 color: constantColors.navButton,
                               ),
@@ -1148,7 +1148,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                             // paymentController.makePayment(
                             //     amount: "10", currency: "USD"),
                             child: Text(
-                              "Add To My Materials",
+                              LocaleKeys.addtomymaterials.tr(),
                               style: TextStyle(
                                 color: constantColors.navButton,
                               ),
@@ -1270,7 +1270,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                               children: [
                                                 Container(
                                                   child: Text(
-                                                    "Visit Owner",
+                                                    LocaleKeys.visitowner.tr(),
                                                     style: TextStyle(
                                                       fontSize: 12,
                                                       fontWeight:
@@ -1285,7 +1285,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                         ),
                                       ),
                                       subtitle: Text(
-                                        "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
+                                        "${LocaleKeys.ownedby.tr()} ${snapshot.data!.docs[index]["ownerName"]}",
                                       ),
                                       leading: Container(
                                         height: 40,
@@ -1354,7 +1354,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         child: Text(
                           video!.videoType == "video"
                               ? "Add to My Inventory"
-                              : "Add to AR View Collection",
+                              : LocaleKeys.addtoarviewcollection.tr(),
                           style: TextStyle(
                             color: constantColors.navButton,
                           ),

@@ -23,10 +23,12 @@ import 'package:diamon_rose_app/services/mux/mux_video_stream.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:nanoid/nanoid.dart';
 import 'package:path_provider/path_provider.dart';
 // import 'package:glamorous_diastation/screens/LandingPage/landingUtils.dart';
@@ -2206,7 +2208,7 @@ class FirebaseOperations with ChangeNotifier {
       showTopSnackBar(
         ctx,
         CustomSnackBar.success(
-          message: "Added To Cart!",
+          message: LocaleKeys.addtocart.tr(),
         ),
       );
     });
@@ -2439,7 +2441,7 @@ class FirebaseOperations with ChangeNotifier {
         showTopSnackBar(
           ctx,
           CustomSnackBar.success(
-            message: "Added To Your Collection!",
+            message: LocaleKeys.addedtoyourcollections.tr(),
           ),
         );
       }

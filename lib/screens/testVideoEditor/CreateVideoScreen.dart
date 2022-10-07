@@ -25,11 +25,13 @@ import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/extensions.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:diamon_rose_app/widgets/measure_widget_size.dart';
 import 'package:diamon_rose_app/widgets/utils.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:easy_localization/easy_localization.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit_config.dart';
@@ -40,7 +42,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:giphy_get/giphy_get.dart';
 import 'package:helpers/helpers/transition.dart';
 import 'package:image_sequence_animator/image_sequence_animator.dart';
@@ -317,7 +319,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
         context: context,
         type: CoolAlertType.loading,
         barrierDismissible: false,
-        text: "Loading AR",
+        text: LocaleKeys.loadingar.tr(),
       );
       // Form matte file
       final Directory appDocument = await getApplicationDocumentsDirectory();
@@ -1358,7 +1360,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                             Icons.add,
                                                             color: Colors.white,
                                                           ),
-                                                          Text("Add AR"),
+                                                          Text(
+                                                            LocaleKeys.addar
+                                                                .tr(),
+                                                          ),
                                                         ],
                                                       ),
                                                     ),
@@ -1431,8 +1436,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                   color: Colors
                                                                       .white,
                                                                 ),
-                                                                Text(
-                                                                    "Add Effect"),
+                                                                Text(LocaleKeys
+                                                                    .addeffect
+                                                                    .tr()),
                                                               ],
                                                             ),
                                                           );
@@ -1810,7 +1816,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                           CoolAlert.show(
                             context: context,
                             type: CoolAlertType.info,
-                            title: "No AR Selected",
+                            title: LocaleKeys.noarselected.tr(),
                             onConfirmBtnTap: () {
                               Navigator.pop(context);
                             },
@@ -1988,7 +1994,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                               CoolAlert.show(
                                 context: context,
                                 type: CoolAlertType.loading,
-                                text: "Processing Video",
+                                text: LocaleKeys.processingvideo.tr(),
                                 barrierDismissible: false,
                               );
                               try {
@@ -2047,7 +2053,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                       CoolAlert.show(
                                         context: context,
                                         type: CoolAlertType.error,
-                                        title: "Error Processing Video",
+                                        title: LocaleKeys.errorprocessingvideo
+                                            .tr(),
                                         text:
                                             "Device RAM issue. Main Please free up space on your phone to be able to process the video properly",
                                       );
@@ -2199,8 +2206,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                             }
                           : () {
                               Get.snackbar(
-                                'No AR or Effect Added',
-                                "Please add at least 1 AR or 1 Effect to make a customized video on Glamorous Diastation and move forward!",
+                                LocaleKeys.noareffectadded.tr(),
+                                LocaleKeys.OneAROrOneEffect.tr(),
                                 overlayColor: constantColors.navButton,
                                 colorText: constantColors.whiteColor,
                                 duration: Duration(seconds: 10),
@@ -2267,7 +2274,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             CoolAlert.show(
               context: context,
               type: CoolAlertType.error,
-              title: "Error Processing Video",
+              title: LocaleKeys.errorprocessingvideo.tr(),
               text:
                   "Device RAM issue. FFMPEG Please free up space on your phone to be able to process the video properly",
             );
@@ -2315,7 +2322,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       CoolAlert.show(
         context: context,
         type: CoolAlertType.error,
-        title: "Error Processing Video",
+        title: LocaleKeys.errorprocessingvideo.tr(),
         text:
             "This is due to poor network  / wifi connection. Please ensure you have a strong stable connection and try again!",
       );
@@ -2399,7 +2406,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("AR Volume"),
+      title: Text(
+        LocaleKeys.arvolume.tr(),
+      ),
       content: Row(
         children: [
           Icon(Icons.volume_down),
@@ -2452,7 +2461,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("BG Volume"),
+      title: Text(
+        LocaleKeys.bgvolume.tr(),
+      ),
       content: Row(
         children: [
           Icon(Icons.volume_down),
@@ -2692,7 +2703,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                         ),
                       ),
                       child: Text(
-                        "Select New Effect",
+                        LocaleKeys.selectneweffect.tr(),
                         style: TextStyle(
                           color: constantColors.whiteColor,
                           fontSize: 16,

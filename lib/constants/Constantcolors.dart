@@ -1,6 +1,7 @@
 // ignore: file_names
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ConstantColors {
   final Color lightColor = const Color(0xff6c788a);
@@ -186,7 +187,7 @@ Widget _buildBottomSheet(BuildContext context) {
               ),
             ),
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('CANCEL'),
+            child: Text(LocaleKeys.cancel.tr()),
           ),
           TextButton(
             style: ButtonStyle(

@@ -188,7 +188,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: profileDrop
                       ? Icons.arrow_downward_outlined
                       : Icons.arrow_forward_ios,
-                  text: "Profile",
+                  text: LocaleKeys.profile.tr(),
                 ),
                 Visibility(
                   visible: profileDrop,
@@ -258,7 +258,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: FontAwesomeIcons.diamond,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: LocaleKeys.buycarats.tr(),
+                  text: LocaleKeys.buyCarats.tr(),
                 ),
                 Visibility(
                   visible: _auth.emailAuth,
@@ -273,7 +273,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     trailingIcon: accountInfo
                         ? Icons.arrow_downward_outlined
                         : Icons.arrow_forward_ios,
-                    text: "Account Information",
+                    text: LocaleKeys.accountinformation.tr(),
                   ),
                 ),
                 Visibility(
@@ -295,7 +295,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         );
                       },
                       title: Text(
-                        "Update Email",
+                        LocaleKeys.updateemail.tr(),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -323,7 +323,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         );
                       },
                       title: Text(
-                        "Update Password",
+                        LocaleKeys.updatepassword.tr(),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -345,7 +345,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: FontAwesomeIcons.solidFileVideo,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: LocaleKeys.arviewcollection.tr(),
+                  text: LocaleKeys.arViewCollection.tr(),
                 ),
 
                 // Visibility(
@@ -533,7 +533,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: Icons.history,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Diamond History",
+                  text: LocaleKeys.diamondhistroy.tr(),
                 ),
 
                 // ListTileOption(
@@ -674,7 +674,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: FontAwesomeIcons.dollarSign,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Monitisation",
+                  text: LocaleKeys.monitisation.tr(),
                 ),
                 // ListTileOption(
                 //   constantColors: constantColors,
@@ -754,7 +754,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: Icons.star_border_outlined,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Favorites",
+                  text: LocaleKeys.favorites.tr(),
                 ),
                 ListTileOption(
                   constantColors: constantColors,
@@ -768,7 +768,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: Icons.block_outlined,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Blocked Accounts",
+                  text: LocaleKeys.blockedaccounts.tr(),
                 ),
 
                 Divider(
@@ -784,8 +784,8 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                       },
                       title: Text(
                         SharedPreferencesHelper.getBool("hideTutorial")
-                            ? "Hide Tutorial Icon"
-                            : "Show Tutorial Icon",
+                            ? LocaleKeys.hideTutorial.tr()
+                            : LocaleKeys.showTutorial.tr(),
                         style: TextStyle(
                           color: constantColors.whiteColor,
                           fontSize: 16,
@@ -817,7 +817,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: Icons.help_outline,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Help",
+                  text: LocaleKeys.help.tr(),
                 ),
                 ListTileOption(
                   constantColors: constantColors,
@@ -831,7 +831,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: Icons.language_outlined,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Change Language",
+                  text: LocaleKeys.changeLanguage.tr(),
                 ),
                 ListTileOption(
                   constantColors: constantColors,
@@ -843,12 +843,12 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     final String message = generatedLink.toString();
 
                     Share.share(
-                      'check out @${context.read<FirebaseOperations>().initUserName}\n\n$generatedLink',
+                      '${LocaleKeys.checkout.tr()} @${context.read<FirebaseOperations>().initUserName}\n\n$generatedLink',
                     );
                   },
                   leadingIcon: Icons.person_search,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Share your profile",
+                  text: LocaleKeys.shareyourprofile.tr(),
                 ),
                 ListTileOption(
                   constantColors: constantColors,
@@ -868,7 +868,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         CoolAlert.show(
                           context: context,
                           type: CoolAlertType.info,
-                          title: "Delete Account?",
+                          title: "${LocaleKeys.deleteaccount.tr()}?",
                           text:
                               "Are you sure you want to delete your account?\n\nThis action is permanent.",
                           showCancelBtn: true,
@@ -896,7 +896,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         CoolAlert.show(
                           context: context,
                           type: CoolAlertType.info,
-                          title: "Delete Account?",
+                          title: "${LocaleKeys.deleteaccount.tr()}?",
                           text:
                               "Are you sure you want to delete your account?\n\nThis action is permanent.",
                           showCancelBtn: true,
@@ -924,7 +924,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         CoolAlert.show(
                           context: context,
                           type: CoolAlertType.info,
-                          title: "Delete Account?",
+                          title: "${LocaleKeys.deleteaccount.tr()}?",
                           text:
                               "Are you sure you want to delete your account?\n\nThis action is permanent.",
                           showCancelBtn: true,
@@ -952,7 +952,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: Icons.close_rounded,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Delete Account",
+                  text: "${LocaleKeys.deleteaccount.tr()}",
                 ),
                 StreamBuilder<DocumentSnapshot>(
                     stream: FirebaseFirestore.instance
@@ -978,7 +978,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                                 );
                               },
                               title: Text(
-                                "Admin Upload",
+                                LocaleKeys.adminupload.tr(),
                                 style: TextStyle(
                                   color: Colors.yellow,
                                   fontSize: 16,
@@ -1000,7 +1000,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                                 );
                               },
                               title: Text(
-                                "Admin User Promocodes",
+                                LocaleKeys.adminUserPromocodes.tr(),
                                 style: TextStyle(
                                   color: Colors.yellow,
                                   fontSize: 16,
@@ -1022,7 +1022,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                                 );
                               },
                               title: Text(
-                                "Admin Video Editor",
+                                LocaleKeys.adminVideoEditor.tr(),
                                 style: TextStyle(
                                   color: Colors.yellow,
                                   fontSize: 16,
@@ -1044,7 +1044,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                                 );
                               },
                               title: Text(
-                                "Admin AR Options",
+                                LocaleKeys.adminAROptions.tr(),
                                 style: TextStyle(
                                   color: Colors.yellow,
                                   fontSize: 16,
@@ -1066,7 +1066,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                                 );
                               },
                               title: Text(
-                                "Admin User Control",
+                                LocaleKeys.adminUserControl.tr(),
                                 style: TextStyle(
                                   color: Colors.yellow,
                                   fontSize: 16,
@@ -1087,7 +1087,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     logOutDialog(context);
                   },
                   title: Text(
-                    "Log out",
+                    LocaleKeys.logout.tr(),
                     style: TextStyle(
                       color: Colors.red,
                       fontSize: 16,
@@ -1112,8 +1112,8 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
       backgroundColor: constantColors.darkColor,
       type: CoolAlertType.info,
       showCancelBtn: true,
-      title: "Are you sure you want to log out?",
-      confirmBtnText: "Log Out",
+      title: LocaleKeys.areyousureyouwanttologout.tr(),
+      confirmBtnText: LocaleKeys.logout.tr(),
       onConfirmBtnTap: () {
         SharedPreferencesHelper.setListString("followersList", [""]);
         Provider.of<Authentication>(context, listen: false).facebookLogOut();
@@ -1181,7 +1181,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                       InkWell(
                         onTap: Get.back,
                         child: Text(
-                          "Done",
+                          LocaleKeys.done.tr(),
                           style: TextStyle(
                             color: constantColors.bioBg,
                             fontSize: 16,

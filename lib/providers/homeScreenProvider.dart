@@ -8,10 +8,12 @@ import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:lottie/lottie.dart';
 import 'package:sizer/sizer.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -43,7 +45,10 @@ class HomeScreenProvider with ChangeNotifier {
               constantColors.navButton,
             ],
             inactiveBgColor: constantColors.bioBg,
-            labels: ["Recommended", "Following"],
+            labels: [
+              LocaleKeys.recommended.tr(),
+              LocaleKeys.following.tr(),
+            ],
             changeOnTap: true,
             onToggle: (val) {
               pageController.jumpToPage(
@@ -56,7 +61,7 @@ class HomeScreenProvider with ChangeNotifier {
             visible: index == 1,
             child: IconButton(
               onPressed: () async {
-                Get.bottomSheet(
+                await Get.bottomSheet(
                   Container(
                     height: 40.h,
                     width: 100.w,

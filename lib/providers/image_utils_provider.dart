@@ -6,6 +6,8 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -130,7 +132,7 @@ class ImageUtils extends ChangeNotifier {
                           Navigator.of(context).pop();
                         },
                         child: Text(
-                          "Cancel",
+                          LocaleKeys.cancel.tr(),
                           style: TextStyle(
                             color: constantColors.redColor,
                             fontSize: 20,
@@ -194,7 +196,7 @@ class ImageUtils extends ChangeNotifier {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Select Profile Picture",
+                      Text(LocaleKeys.selectprofilepicture.tr(),
                           style: TextStyle(
                             color: constantColors.whiteColor,
                             fontSize: 16,
@@ -246,9 +248,10 @@ class ImageUtils extends ChangeNotifier {
                           onPressed: () async {
                             // ignore: unawaited_futures
                             CoolAlert.show(
-                                context: context,
-                                type: CoolAlertType.loading,
-                                text: "Updating your profile picture");
+                              context: context,
+                              type: CoolAlertType.loading,
+                              text: LocaleKeys.updatingyourprofilepicture.tr(),
+                            );
                             await Provider.of<FirebaseOperations>(context,
                                     listen: false)
                                 .uploadUserAvatar(context)
@@ -309,7 +312,7 @@ class ImageUtils extends ChangeNotifier {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Select Cover Image",
+                      Text(LocaleKeys.selectcoverimage.tr(),
                           style: TextStyle(
                             color: constantColors.whiteColor,
                             fontSize: 16,
@@ -422,7 +425,7 @@ class ImageUtils extends ChangeNotifier {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Select Profile Picture",
+                      Text(LocaleKeys.selectprofilepicture.tr(),
                           style: TextStyle(
                             color: constantColors.whiteColor,
                             fontSize: 16,

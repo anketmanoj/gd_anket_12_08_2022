@@ -3,8 +3,10 @@ import 'dart:developer';
 import 'package:diamon_rose_app/screens/HelpScreen/tutorialVideos.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/following_bloc/following_preload_bloc.dart';
 import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/VideoWidget.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:page_transition/page_transition.dart';
@@ -36,7 +38,7 @@ class _FollowingVideoPageState extends State<FollowingVideoPage>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Fetching Posts!",
+                  LocaleKeys.fetchingposts.tr(),
                   style: TextStyle(
                     color: constantColors.whiteColor,
                     fontSize: 16,
@@ -49,7 +51,7 @@ class _FollowingVideoPageState extends State<FollowingVideoPage>
                   height: 20,
                 ),
                 Text(
-                  "In the meantime, we've made some tutorials on how to maximize your experience on Glamorous Diastation!",
+                  LocaleKeys.inTheMeantime.tr(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: constantColors.whiteColor,
@@ -129,7 +131,7 @@ class _FollowingVideoPageState extends State<FollowingVideoPage>
                                   HomeScreenOptions.Both));
                         },
                         icon: Icon(Icons.refresh),
-                        label: Text("Refresh"),
+                        label: Text(LocaleKeys.refresh.tr()),
                       ),
                     ],
                   ),
@@ -239,7 +241,7 @@ class _FollowingVideoPageState extends State<FollowingVideoPage>
                                             HomeScreenOptions.Both));
                               },
                               icon: Icon(Icons.refresh),
-                              label: Text("Refresh"),
+                              label: Text(LocaleKeys.refresh.tr()),
                             ),
                           ],
                         ),

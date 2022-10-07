@@ -3,7 +3,9 @@
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -48,7 +50,7 @@ class PayPalLinkScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    'Set up PayPal',
+                    LocaleKeys.setuppaypal.tr(),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -76,7 +78,7 @@ class PayPalLinkScreen extends StatelessWidget {
                       prefixStyle: TextStyle(
                         color: constantColors.black,
                       ),
-                      hintText: "Paypal account name",
+                      hintText: LocaleKeys.paypalaccountname.tr(),
                       hintStyle: TextStyle(
                         color: Colors.black.withOpacity(0.3),
                       ),
@@ -118,7 +120,7 @@ class PayPalLinkScreen extends StatelessWidget {
                         prefixStyle: TextStyle(
                           color: constantColors.black,
                         ),
-                        hintText: "Confirm paypal account",
+                        hintText: LocaleKeys.confirmpaypalaccount.tr(),
                         hintStyle: TextStyle(
                           color: Colors.black.withOpacity(0.3),
                         ),

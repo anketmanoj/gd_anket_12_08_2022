@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -62,7 +64,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     onSubmit:
                         userProvider.setUserName(_usernameController.text),
                     controller: _usernameController,
-                    labelText: "Username",
+                    labelText: LocaleKeys.username.tr(),
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'Username cannot be empty';
@@ -77,7 +79,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     onSubmit:
                         userProvider.setUserRealName(_realnameController.text),
                     controller: _realnameController,
-                    labelText: "Name",
+                    labelText: LocaleKeys.name.tr(),
                   ),
                 ),
                 Padding(
@@ -85,7 +87,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   child: ProfileUserDetails(
                     onSubmit: userProvider.setUserBio(_userbioController.text),
                     controller: _userbioController,
-                    labelText: "Your Bio",
+                    labelText: LocaleKeys.yourbio.tr(),
                     lines: 3,
                   ),
                 ),
@@ -121,7 +123,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           onSubmit: userProvider.setUserContactNumber(
                               _phonenumberController.text),
                           controller: _phonenumberController,
-                          labelText: "Telephone Number",
+                          labelText: LocaleKeys.telephonenumber.tr(),
                         ),
                       ),
                     ],
@@ -132,7 +134,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Select Country"),
+                      Text(
+                        LocaleKeys.selectcountry.tr(),
+                      ),
                       Row(
                         children: [
                           Expanded(
@@ -164,7 +168,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Gender",
+                        LocaleKeys.gender.tr(),
                       ),
                       const SizedBox(
                         height: 10,
@@ -221,7 +225,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Date of Birth",
+                        LocaleKeys.dateofbirth.tr(),
                       ),
                       const SizedBox(
                         height: 10,

@@ -4,8 +4,10 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/providers/image_utils_provider.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -209,7 +211,7 @@ class _ProfileCoverImageSelectorState extends State<ProfileCoverImageSelector> {
                           ),
                           const SizedBox(height: 24.0),
                           Text(
-                            'Upload an image to start',
+                            LocaleKeys.uploadanimagetostart.tr(),
                             style: kIsWeb
                                 ? Theme.of(context)
                                     .textTheme
@@ -241,7 +243,9 @@ class _ProfileCoverImageSelectorState extends State<ProfileCoverImageSelector> {
                   onPressed: () {
                     _uploadImage();
                   },
-                  child: const Text('Select Cover Image'),
+                  child: Text(
+                    LocaleKeys.selectcoverimage.tr(),
+                  ),
                 ),
               ),
             ],

@@ -10,7 +10,7 @@ import 'package:diamon_rose_app/widgets/widgets.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 class SelectModelScreen extends GetView<SelectModelPresenter> {
   final _controller = Get.put(SelectModelPresenter());

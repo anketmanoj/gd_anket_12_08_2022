@@ -5,6 +5,8 @@ import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/searchPage/searchPageHelper.dart';
 import 'package:diamon_rose_app/screens/searchPage/searchPageWidgets.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -39,7 +41,7 @@ class _SearchScreenState extends State<SearchScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Search",
+              LocaleKeys.search.tr(),
               style: TextStyle(
                 color: constantColors.whiteColor,
               ),
@@ -65,7 +67,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: constantColors.black,
-                  hintText: "Search by user or video",
+                  hintText: LocaleKeys.searchbyuserorvideo.tr(),
                   hintStyle: TextStyle(
                     color: constantColors.whiteColor,
                     fontSize: 12,

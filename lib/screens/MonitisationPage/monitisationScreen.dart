@@ -7,7 +7,9 @@ import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/graphData.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -28,7 +30,8 @@ class MonitizationScreen extends StatelessWidget {
         Provider.of<Authentication>(context, listen: false);
     return Scaffold(
       backgroundColor: constantColors.whiteColor,
-      appBar: AppBarWidget(text: "Monitisation", context: context),
+      appBar:
+          AppBarWidget(text: LocaleKeys.monitisation.tr(), context: context),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -220,7 +223,7 @@ class MonitizationScreen extends StatelessWidget {
                                               });
                                         }
                                       },
-                                      text: "Payout",
+                                      text: LocaleKeys.payout.tr(),
                                     ),
                                   ),
                                 ],
@@ -304,7 +307,9 @@ class MonitizationScreen extends StatelessWidget {
                                             titlesData: FlTitlesData(
                                               show: true,
                                               bottomTitles: AxisTitles(
-                                                axisNameWidget: Text("Months"),
+                                                axisNameWidget: Text(
+                                                  LocaleKeys.months.tr(),
+                                                ),
                                                 sideTitles: SideTitles(
                                                   reservedSize:
                                                       size.height * 0.03,
@@ -341,7 +346,9 @@ class MonitizationScreen extends StatelessWidget {
                                                 ),
                                               ),
                                               leftTitles: AxisTitles(
-                                                axisNameWidget: Text("Amount"),
+                                                axisNameWidget: Text(
+                                                  LocaleKeys.amount.tr(),
+                                                ),
                                                 sideTitles: SideTitles(
                                                   reservedSize:
                                                       size.width * 0.1,
@@ -421,14 +428,14 @@ class MonitizationScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "TOP CONTENT",
+                          LocaleKeys.topcontent.tr(),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
                         ),
                         Text(
-                          "SHOW ALL",
+                          LocaleKeys.showall.tr(),
                           style: TextStyle(
                             color: constantColors.blueColor.withOpacity(0.5),
                           ),
@@ -573,7 +580,7 @@ class TotalAmount extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          "Total Sales",
+          LocaleKeys.totalsales.tr(),
           style: TextStyle(
             color: constantColors.black,
             fontSize: 14,

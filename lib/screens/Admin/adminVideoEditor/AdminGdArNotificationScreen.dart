@@ -7,7 +7,9 @@ import 'package:diamon_rose_app/screens/ArPreviewSetting/ArPreviewScreen.dart';
 import 'package:diamon_rose_app/services/ArPendingModel.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/services/user.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:page_transition/page_transition.dart';
@@ -73,7 +75,7 @@ class AdminGDARNotificationScreen extends StatelessWidget {
 
                 if (snaps.data!.docs.length == 0) {
                   return Center(
-                    child: Text("No GD AR Pending"),
+                    child: Text(LocaleKeys.nogdarpending.tr()),
                   );
                 }
 
@@ -135,9 +137,10 @@ class AdminGDARNotificationScreen extends StatelessWidget {
                                         CoolAlert.show(
                                           context: context,
                                           type: CoolAlertType.info,
-                                          title: "GD AR Processing",
-                                          text:
-                                              "Your GD AR is being processed, you will be notified once its done",
+                                          title: LocaleKeys.gdarprocessing.tr(),
+                                          text: LocaleKeys
+                                              .yourgdarisbeingprocessedyouwillbenotifiedonceitsdone
+                                              .tr(),
                                         );
                                       } else {
                                         await FirebaseFirestore.instance
@@ -231,8 +234,8 @@ class AdminGDARNotificationScreen extends StatelessWidget {
                                                 snaps.data!.docs[index]
                                                             ['main'] ==
                                                         null
-                                                    ? "Pending"
-                                                    : "Ready",
+                                                    ? LocaleKeys.pending.tr()
+                                                    : LocaleKeys.ready.tr(),
                                                 style: TextStyle(
                                                   color:
                                                       constantColors.whiteColor,

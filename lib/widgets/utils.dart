@@ -8,15 +8,15 @@ import 'package:diamon_rose_app/widgets/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:path_provider/path_provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 double widthScreen({int? percent}) =>
     percent != null ? (Get.width * percent) / 100 : Get.width;
 
-String getLocalize(String key, {List<String> args = const []}) =>
-    key.trArgs(args);
+// String getLocalize(String key, {List<String> args = const []}) =>
+//     key.trArgs(args);
 
 double heightScreen({double? percent}) =>
     percent != null ? (Get.height * percent) / 100 : Get.height;
@@ -47,8 +47,8 @@ Future? goToAndRemoveAll({
 }) =>
     Get.offAllNamed(screen, arguments: argument, parameters: parameter);
 
-Future<void> showToast(String content) =>
-    EasyLoading.showToast(getLocalize(content));
+// Future<void> showToast(String content) =>
+//     EasyLoading.showToast(getLocalize(content));
 
 Future<void> showLoading() => EasyLoading.show();
 

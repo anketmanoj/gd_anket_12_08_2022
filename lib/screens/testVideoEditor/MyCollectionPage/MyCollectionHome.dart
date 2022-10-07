@@ -11,7 +11,9 @@ import 'package:diamon_rose_app/screens/testVideoEditor/imgseqanimation.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
@@ -68,7 +70,7 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: constantColors.whiteColor,
-      appBar: AppBarWidget(text: "My Materials", context: context),
+      appBar: AppBarWidget(text: LocaleKeys.myMaterials.tr(), context: context),
       body: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
@@ -82,7 +84,11 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                   constantColors.navButton,
                   constantColors.navButton,
                 ],
-                labels: ['My Items', 'Standard', 'Diamond'],
+                labels: [
+                  LocaleKeys.myitems.tr(),
+                  LocaleKeys.standard.tr(),
+                  LocaleKeys.diamond.tr(),
+                ],
                 onToggle: (index) {
                   switch (index) {
                     case 0:
@@ -115,7 +121,10 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                           ],
                           minWidth: size.width * 0.5,
                           totalSwitches: 2,
-                          labels: ['Package', 'Materials'],
+                          labels: [
+                            LocaleKeys.package.tr(),
+                            LocaleKeys.material.tr()
+                          ],
                           onToggle: (index) {
                             if (index == 0) {
                               _isPackageVal.value = true;
@@ -138,7 +147,7 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                           initialLabelIndex: 0,
                           minWidth: size.width * 0.5,
                           totalSwitches: 2,
-                          labels: ['AR', 'Effects'],
+                          labels: [LocaleKeys.ar.tr(), LocaleKeys.effects.tr()],
                           onToggle: (index) {
                             switch (index) {
                               case 0:
@@ -170,7 +179,11 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                         initialLabelIndex: 0,
                         minWidth: size.width * 0.5,
                         totalSwitches: 3,
-                        labels: ['AR', 'Background', 'Effects'],
+                        labels: [
+                          LocaleKeys.ar.tr(),
+                          LocaleKeys.background.tr(),
+                          LocaleKeys.effects.tr()
+                        ],
                         onToggle: (index) {
                           switch (index) {
                             case 0:

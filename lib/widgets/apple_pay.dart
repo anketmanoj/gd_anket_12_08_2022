@@ -7,7 +7,7 @@ import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:pay/pay.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';

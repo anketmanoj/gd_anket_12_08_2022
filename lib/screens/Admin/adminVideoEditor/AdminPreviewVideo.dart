@@ -310,7 +310,7 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
-                            "Add / Remove Materials",
+                            LocaleKeys.addremovematerials.tr(),
                             style: TextStyle(
                               color: constantColors.whiteColor,
                               fontSize: 15,
@@ -741,7 +741,7 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                 top: 10,
                               ),
                               child: Text(
-                                "\$1 = 1 Carat on Glamorous Diastation. Although you're setting the value of your content in Dollars, user will be using Carats to purchase items you've created!",
+                                "${LocaleKeys.dollar1Carat.tr()}",
                                 style: TextStyle(
                                   fontSize: 12,
                                 ),
@@ -771,10 +771,11 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                 _selectedRecommendedOptions.length > 0) {
                               // ignore: unawaited_futures
                               CoolAlert.show(
-                                  barrierDismissible: false,
-                                  context: context,
-                                  type: CoolAlertType.loading,
-                                  text: "Uploading Video");
+                                barrierDismissible: false,
+                                context: context,
+                                type: CoolAlertType.loading,
+                                text: LocaleKeys.uploadingvideo.tr(),
+                              );
 
                               log("now");
 
@@ -862,8 +863,9 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                               CoolAlert.show(
                                 context: context,
                                 type: CoolAlertType.error,
-                                title: "No Selected Genre",
-                                text: "Please Select a Genre for your video",
+                                title: LocaleKeys.noselectedgenre.tr(),
+                                text: LocaleKeys.pleaseselectagenreforyourvideo
+                                    .tr(),
                               );
                             }
                           }),
@@ -1188,7 +1190,7 @@ class ImageTitleAndCaption extends StatelessWidget {
                           onSubmit: (val) {},
                           validator: (val) {
                             if (val!.isEmpty) {
-                              return "Please Enter a Title";
+                              return LocaleKeys.pleaseenteratitle.tr();
                             }
                             return null;
                           },
@@ -1239,7 +1241,7 @@ class ImageTitleAndCaption extends StatelessWidget {
               onSubmit: (val) {},
               validator: (val) {
                 if (val!.isEmpty) {
-                  return "Please Enter a Caption";
+                  return LocaleKeys.pleaseenteracaption.tr();
                 }
                 return null;
               },

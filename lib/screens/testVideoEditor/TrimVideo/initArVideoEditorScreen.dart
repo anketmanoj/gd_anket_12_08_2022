@@ -128,7 +128,7 @@ class _ArVideoEditorScreenState extends State<ArVideoEditorScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Preview",
+                                  LocaleKeys.preview.tr(),
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 20,
@@ -179,7 +179,7 @@ class _ArVideoEditorScreenState extends State<ArVideoEditorScreen> {
                                     CoolAlert.show(
                                       context: context,
                                       type: CoolAlertType.loading,
-                                      text: "Uploading Video",
+                                      text: LocaleKeys.uploadingvideo.tr(),
                                       barrierDismissible: false,
                                     );
 
@@ -347,7 +347,8 @@ class _ArVideoEditorScreenState extends State<ArVideoEditorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(text: "Ar Video Editor", context: context),
+      appBar:
+          AppBarWidget(text: LocaleKeys.arvideoeditor.tr(), context: context),
       backgroundColor: constantColors.navButton.withOpacity(1),
       body: _controller.initialized
           ? SafeArea(
@@ -400,11 +401,11 @@ class _ArVideoEditorScreenState extends State<ArVideoEditorScreen> {
                                     Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
-                                        children: const [
+                                        children: [
                                           Padding(
                                               padding: EdgeInsets.all(5),
                                               child: Icon(Icons.content_cut)),
-                                          Text('Trim')
+                                          Text(LocaleKeys.trim.tr())
                                         ]),
                                   ],
                                 ),
@@ -429,7 +430,7 @@ class _ArVideoEditorScreenState extends State<ArVideoEditorScreen> {
                                 title: ValueListenableBuilder(
                                   valueListenable: _exportingProgress,
                                   builder: (_, double value, __) => Text(
-                                    "Trimming video ${(value * 100).ceil()}%",
+                                    "${LocaleKeys.trimmingvideo.tr()} ${(value * 100).ceil()}%",
                                     style: const TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,

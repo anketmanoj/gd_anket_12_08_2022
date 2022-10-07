@@ -1,4 +1,6 @@
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -81,7 +83,7 @@ class ResetPassword extends StatelessWidget {
             left: MediaQuery.of(context).size.width * 0.12,
             right: MediaQuery.of(context).size.width * 0.12,
             child: SubmitButton(
-              text: "Submit",
+              text: LocaleKeys.submit.tr(),
               function: () {
                 if (_formKey.currentState!.validate()) {
                   FirebaseAuth.instance

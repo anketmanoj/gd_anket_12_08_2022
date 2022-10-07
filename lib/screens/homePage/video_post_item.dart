@@ -22,14 +22,16 @@ import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/services/stripe_payment_services/controllers/payment_controllers.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/ShareWidget.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 // import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -498,7 +500,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                                                         Container(
                                                                           child:
                                                                               Text(
-                                                                            "Visit Owner",
+                                                                            LocaleKeys.visitowner.tr(),
                                                                             style:
                                                                                 TextStyle(
                                                                               fontSize: 12,
@@ -513,7 +515,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                                                 ),
                                                               ),
                                                               subtitle: Text(
-                                                                "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
+                                                                "${LocaleKeys.ownedby.tr()} ${snapshot.data!.docs[index]["ownerName"]}",
                                                               ),
                                                               leading:
                                                                   Container(
@@ -1083,7 +1085,9 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                                             children: [
                                                               Container(
                                                                 child: Text(
-                                                                  "Visit Owner",
+                                                                  LocaleKeys
+                                                                      .visitowner
+                                                                      .tr(),
                                                                   style:
                                                                       TextStyle(
                                                                     fontSize:
@@ -1102,7 +1106,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                                       ),
                                                     ),
                                                     subtitle: Text(
-                                                      "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
+                                                      "${LocaleKeys.ownedby.tr()} ${snapshot.data!.docs[index]["ownerName"]}",
                                                     ),
                                                     leading: Container(
                                                       height: 40,
@@ -1268,7 +1272,9 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                             child: Text(
                                               widget.video.videoType == "video"
                                                   ? "Add to My Inventory"
-                                                  : "Add to AR View Collection",
+                                                  : LocaleKeys
+                                                      .addtoarviewcollection
+                                                      .tr(),
                                               style: TextStyle(
                                                 color: constantColors.navButton,
                                               ),
@@ -1521,15 +1527,15 @@ class _VideoPostItemState extends State<VideoPostItem> {
 
   Future<dynamic> reportVideoMenu(BuildContext context, Size size) {
     List<String> reportingReasons = [
-      "It's spam",
-      "Nudity or sexual activity",
-      "Hate speech or symbols",
-      "I just dont like it",
-      "Bullying or harassment",
-      "False Information",
-      "Violence or dangerous organizations",
-      "Scam or fraud",
-      "Intellectual property violation"
+      LocaleKeys.itsspam.tr(),
+      LocaleKeys.nudityorsexualactivity.tr(),
+      LocaleKeys.hatespeechorsymbols.tr(),
+      LocaleKeys.ijustdontlikeit.tr(),
+      LocaleKeys.bullyingorharassment.tr(),
+      LocaleKeys.falseinformation.tr(),
+      LocaleKeys.violenceordangerousorganizations.tr(),
+      LocaleKeys.scamorfraud.tr(),
+      LocaleKeys.intellectualpropertyviolation.tr(),
     ];
     return showModalBottomSheet(
       isDismissible: true,
@@ -1566,7 +1572,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Report Video",
+                      LocaleKeys.reportvideo.tr(),
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white,
@@ -1576,7 +1582,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                 ),
                 Divider(),
                 Text(
-                  "Why are you reporting this post?",
+                  LocaleKeys.whyareyoureportingthispost.tr(),
                   style: TextStyle(
                     color: constantColors.bioBg,
                     fontWeight: FontWeight.bold,
@@ -1609,8 +1615,8 @@ class _VideoPostItemState extends State<VideoPostItem> {
                             );
                             Navigator.pop(context);
                             Get.snackbar(
-                              'Video Reported',
-                              'Thank you for letting us know!',
+                              LocaleKeys.videoreported.tr(),
+                              LocaleKeys.thankyouforlettingusknow.tr(),
                               overlayColor: constantColors.navButton,
                               colorText: constantColors.whiteColor,
                               snackPosition: SnackPosition.TOP,

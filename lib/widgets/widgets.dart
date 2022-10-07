@@ -2,7 +2,7 @@ import 'package:diamon_rose_app/constants/styles/colors.dart';
 import 'package:diamon_rose_app/constants/styles/style.dart';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 Widget textCustom(
         {required String content,

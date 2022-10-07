@@ -892,7 +892,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                               children: [
                                                 Container(
                                                   child: Text(
-                                                    "Visit Owner",
+                                                    LocaleKeys.visitowner.tr(),
                                                     style: TextStyle(
                                                       fontSize: 12,
                                                       fontWeight:
@@ -907,7 +907,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                         ),
                                       ),
                                       subtitle: Text(
-                                        "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
+                                        "${LocaleKeys.ownedby.tr()} ${snapshot.data!.docs[index]["ownerName"]}",
                                       ),
                                       leading: Container(
                                         height: 40,
@@ -1183,7 +1183,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                             children: [
                                               Container(
                                                 child: Text(
-                                                  "Visit Owner",
+                                                  LocaleKeys.visitowner.tr(),
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.bold,
@@ -1197,7 +1197,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                       ),
                                     ),
                                     subtitle: Text(
-                                      "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
+                                      "${LocaleKeys.ownedby.tr()} ${snapshot.data!.docs[index]["ownerName"]}",
                                     ),
                                     leading: Container(
                                       height: 40,
@@ -1318,7 +1318,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                             // paymentController.makePayment(
                             //     amount: "10", currency: "USD"),
                             child: Text(
-                              "Add to Cart",
+                              LocaleKeys.addtocart.tr(),
                               style: TextStyle(
                                 color: constantColors.navButton,
                               ),
@@ -1359,7 +1359,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                             // paymentController.makePayment(
                             //     amount: "10", currency: "USD"),
                             child: Text(
-                              "Add To My Materials",
+                              LocaleKeys.addtomymaterials.tr(),
                               style: TextStyle(
                                 color: constantColors.navButton,
                               ),

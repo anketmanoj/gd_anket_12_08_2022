@@ -163,94 +163,98 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
     final Authentication auth =
         Provider.of<Authentication>(context, listen: false);
     return Scaffold(
-      appBar: AppBarWidget(text: "Video Settings", context: context, actions: [
-        Consumer<VideoEditorProvider>(builder: (context, videoEditor, _) {
-          return IconButton(
-            onPressed: () async {
-              // ignore: unawaited_futures
-              CoolAlert.show(
-                  barrierDismissible: false,
-                  context: context,
-                  type: CoolAlertType.loading,
-                  text: "Saving as Draft");
+      appBar: AppBarWidget(
+          text: LocaleKeys.videosettings.tr(),
+          context: context,
+          actions: [
+            Consumer<VideoEditorProvider>(builder: (context, videoEditor, _) {
+              return IconButton(
+                onPressed: () async {
+                  // ignore: unawaited_futures
+                  CoolAlert.show(
+                      barrierDismissible: false,
+                      context: context,
+                      type: CoolAlertType.loading,
+                      text: "Saving as Draft");
 
-              log("now");
+                  log("now");
 
-              String? coverThumbnail = await AwsAnketS3.uploadFile(
-                  accessKey: "AKIATF76MVYR34JAVB7H",
-                  secretKey: "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",
-                  bucket: "anketvideobucket",
-                  file: widget.thumbnailFile,
-                  filename:
-                      "${Timestamp.now().millisecondsSinceEpoch}_bgThumbnailGif.gif",
-                  region: "us-east-1",
-                  destDir: "${Timestamp.now().millisecondsSinceEpoch}");
+                  String? coverThumbnail = await AwsAnketS3.uploadFile(
+                      accessKey: "AKIATF76MVYR34JAVB7H",
+                      secretKey: "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",
+                      bucket: "anketvideobucket",
+                      file: widget.thumbnailFile,
+                      filename:
+                          "${Timestamp.now().millisecondsSinceEpoch}_bgThumbnailGif.gif",
+                      region: "us-east-1",
+                      destDir: "${Timestamp.now().millisecondsSinceEpoch}");
 
-              log("thumbnail == $coverThumbnail");
+                  log("thumbnail == $coverThumbnail");
 
-              final bool result = await firebaseOperations.uploadDraftVideo(
-                coverThumbnailUrl: coverThumbnail!,
-                addBgToMaterials: bgSelected.value,
-                ctx: context,
-                backgroundVideoFile: videoEditor.getBackgroundVideoFile,
-                arListVal: selectMaterials,
-                videoFile: widget.videoFile,
-                userUid: auth.getUserId,
-                caption: _videoCaptionController.text,
-                isPaid: _isPaid,
-                price: _contentPrice.text.isEmpty
-                    ? 0
-                    : double.parse(_contentPrice.text),
-                discountAmount: _contentDiscount.text.isEmpty
-                    ? 0
-                    : double.parse(_contentDiscount.text),
-                startDiscountDate: Timestamp.fromDate(_startDiscountDate),
-                endDiscountDate: Timestamp.fromDate(_endDiscountDate),
-                isSubscription: _isSubscription,
-                contentAvailability: _contentAvailableToValue,
-                isFree: _isFree,
-                video_title: _videotitleController.text,
-                genre: _selectedRecommendedOptions,
+                  final bool result = await firebaseOperations.uploadDraftVideo(
+                    coverThumbnailUrl: coverThumbnail!,
+                    addBgToMaterials: bgSelected.value,
+                    ctx: context,
+                    backgroundVideoFile: videoEditor.getBackgroundVideoFile,
+                    arListVal: selectMaterials,
+                    videoFile: widget.videoFile,
+                    userUid: auth.getUserId,
+                    caption: _videoCaptionController.text,
+                    isPaid: _isPaid,
+                    price: _contentPrice.text.isEmpty
+                        ? 0
+                        : double.parse(_contentPrice.text),
+                    discountAmount: _contentDiscount.text.isEmpty
+                        ? 0
+                        : double.parse(_contentDiscount.text),
+                    startDiscountDate: Timestamp.fromDate(_startDiscountDate),
+                    endDiscountDate: Timestamp.fromDate(_endDiscountDate),
+                    isSubscription: _isSubscription,
+                    contentAvailability: _contentAvailableToValue,
+                    isFree: _isFree,
+                    video_title: _videotitleController.text,
+                    genre: _selectedRecommendedOptions,
+                  );
+
+                  log("done uploading");
+
+                  if (result == true) {
+                    log("works!!@!!");
+                    widget.arList.forEach((arVal) {
+                      deleteFile(arVal.pathsForVideoFrames!);
+                    });
+                    Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                          child: FeedPage(),
+                          type: PageTransitionType.leftToRight),
+                    );
+                    Get.dialog(SimpleDialog(
+                      children: [
+                        Container(
+                          child: Text(
+                            "Video Saved to Drafts!",
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      ],
+                    ));
+                  } else if (result == false) {
+                    log("SHIT!");
+                    CoolAlert.show(
+                      context: context,
+                      type: CoolAlertType.error,
+                      title: "Error Uploading Video",
+                      text: "AWS error",
+                    );
+                  }
+
+                  //ignore: avoid_catches_without_on_clauses
+                },
+                icon: Icon(Icons.save),
               );
-
-              log("done uploading");
-
-              if (result == true) {
-                log("works!!@!!");
-                widget.arList.forEach((arVal) {
-                  deleteFile(arVal.pathsForVideoFrames!);
-                });
-                Navigator.pushReplacement(
-                  context,
-                  PageTransition(
-                      child: FeedPage(), type: PageTransitionType.leftToRight),
-                );
-                Get.dialog(SimpleDialog(
-                  children: [
-                    Container(
-                      child: Text(
-                        "Video Saved to Drafts!",
-                        textAlign: TextAlign.center,
-                      ),
-                    )
-                  ],
-                ));
-              } else if (result == false) {
-                log("SHIT!");
-                CoolAlert.show(
-                  context: context,
-                  type: CoolAlertType.error,
-                  title: "Error Uploading Video",
-                  text: "AWS error",
-                );
-              }
-
-              //ignore: avoid_catches_without_on_clauses
-            },
-            icon: Icon(Icons.save),
-          );
-        }),
-      ]),
+            }),
+          ]),
       backgroundColor: constantColors.bioBg,
       body: GestureDetector(
         onTap: () {
@@ -399,7 +403,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
-                            "Add / Remove Materials",
+                            LocaleKeys.addremovematerials.tr(),
                             style: TextStyle(
                               color: constantColors.whiteColor,
                               fontSize: 15,
@@ -623,7 +627,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                             Row(
                               children: [
                                 Text(
-                                  "Price",
+                                  LocaleKeys.price.tr(),
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -686,7 +690,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                               child: Row(
                                 children: [
                                   Text(
-                                    "Discount",
+                                    LocaleKeys.discount.tr(),
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -753,7 +757,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                             Padding(
                               padding: const EdgeInsets.only(top: 10),
                               child: Text(
-                                "Discount Period",
+                                LocaleKeys.discountperiod.tr(),
                                 style: TextStyle(
                                   fontSize: 14,
                                 ),
@@ -808,7 +812,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                 top: 10,
                               ),
                               child: Text(
-                                "\$1 = 1 Carat on Glamorous Diastation. Although you're setting the value of your content in Dollars, user will be using Carats to purchase items you've created!",
+                                "${LocaleKeys.dollar1Carat.tr()}",
                                 style: TextStyle(
                                   fontSize: 12,
                                 ),
@@ -819,7 +823,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                 top: 10,
                               ),
                               child: Text(
-                                "*Due to the regulations of the App Stores, purchases made with in-app payment by the user will result in price differences to accommodate the split between the Creator, Glamorous Diastation and the App Stores.",
+                                "*${LocaleKeys.appstoreRegulation.tr()}",
                                 style: TextStyle(
                                   fontSize: 12,
                                 ),
@@ -838,10 +842,11 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                 _selectedRecommendedOptions.length > 0) {
                               // ignore: unawaited_futures
                               CoolAlert.show(
-                                  barrierDismissible: false,
-                                  context: context,
-                                  type: CoolAlertType.loading,
-                                  text: "Uploading Video");
+                                barrierDismissible: false,
+                                context: context,
+                                type: CoolAlertType.loading,
+                                text: LocaleKeys.uploadingvideo.tr(),
+                              );
 
                               log("now");
 
@@ -921,8 +926,9 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                               CoolAlert.show(
                                 context: context,
                                 type: CoolAlertType.error,
-                                title: "No Selected Genre",
-                                text: "Please Select a Genre for your video",
+                                title: LocaleKeys.noselectedgenre.tr(),
+                                text: LocaleKeys.pleaseselectagenreforyourvideo
+                                    .tr(),
                               );
                             }
                           }),
@@ -1247,7 +1253,7 @@ class ImageTitleAndCaption extends StatelessWidget {
                           onSubmit: (val) {},
                           validator: (val) {
                             if (val!.isEmpty) {
-                              return "Please Enter a Title";
+                              return LocaleKeys.pleaseenteratitle.tr();
                             }
                             return null;
                           },
@@ -1298,7 +1304,7 @@ class ImageTitleAndCaption extends StatelessWidget {
               onSubmit: (val) {},
               validator: (val) {
                 if (val!.isEmpty) {
-                  return "Please Enter a Caption";
+                  return LocaleKeys.pleaseenteracaption.tr();
                 }
                 return null;
               },

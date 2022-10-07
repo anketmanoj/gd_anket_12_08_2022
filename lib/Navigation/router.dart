@@ -2,7 +2,7 @@ import 'package:diamon_rose_app/Navigation/page.dart';
 import 'package:diamon_rose_app/screens/VideoWorkAll/ar_record/ar_record_binding.dart';
 import 'package:diamon_rose_app/screens/VideoWorkAll/ar_record/ar_record_screen.dart';
 
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 class Routers {
   static final route = [

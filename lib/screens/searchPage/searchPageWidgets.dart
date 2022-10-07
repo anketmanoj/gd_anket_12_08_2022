@@ -263,7 +263,7 @@ class _VideoSearchState extends State<VideoSearch> {
                         Navigator.pop(context);
                       },
                       child: Text(
-                        "Done",
+                        LocaleKeys.done.tr(),
                         style: TextStyle(
                           color: constantColors.bioBg,
                           fontSize: 16,
@@ -556,7 +556,7 @@ class NoSearchText extends StatelessWidget {
                   child: Lottie.asset("assets/animations/searching.json"),
                 ),
                 Text(
-                  "Use the search bar above to get what you desire",
+                  LocaleKeys.usethesearchbarabovetogetwhatyoudesire.tr(),
                   style: TextStyle(color: constantColors.navButton),
                 ),
               ],

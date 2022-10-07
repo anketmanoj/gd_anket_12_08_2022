@@ -4,8 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/promoCodeModel.dart';
 import 'package:diamon_rose_app/services/user.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
@@ -313,7 +315,9 @@ class _AdminUserPromoScreenState extends State<AdminUserPromoScreen>
                                     },
                                   ),
                                   DataColumn(
-                                    label: Text("Name"),
+                                    label: Text(
+                                      LocaleKeys.name.tr(),
+                                    ),
                                     onSort: (int, bool) {
                                       setState(() {
                                         this.sortColumnIndex = int;
@@ -491,7 +495,9 @@ class _AdminUserPromoScreenState extends State<AdminUserPromoScreen>
                                     },
                                   ),
                                   DataColumn(
-                                    label: Text("Name"),
+                                    label: Text(
+                                      LocaleKeys.name.tr(),
+                                    ),
                                     onSort: (int, bool) {
                                       setState(() {
                                         this.sortColumnIndex = int;

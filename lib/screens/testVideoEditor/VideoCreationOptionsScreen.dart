@@ -14,7 +14,9 @@ import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/debugClass.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
 import 'package:file_picker/file_picker.dart';
@@ -70,9 +72,8 @@ class VideoCreationOptionsScreen extends StatelessWidget {
           CoolAlert.show(
             context: context,
             type: CoolAlertType.info,
-            title: "Video contains no audio",
-            text:
-                "at the moment, GD can only work on video's that have background audio. Please select a video that has audio to it.",
+            title: LocaleKeys.videocontainsnoaudio.tr(),
+            text: LocaleKeys.onlyVideoWithAudioSupported.tr(),
           );
       }
       // ignore: unawaited_futures
@@ -135,7 +136,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                   createVideoOptionsSheet(context);
                 },
                 icon: Icons.video_settings_outlined,
-                text: "Create Video",
+                text: LocaleKeys.createVideo.tr(),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 10),
@@ -148,7 +149,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                                 MyCollectionHome()));
                   },
                   icon: Icons.collections_sharp,
-                  text: "My Materials",
+                  text: LocaleKeys.myMaterials.tr(),
                 ),
               ),
               Padding(
@@ -158,7 +159,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                     selectVideoOptionsSheet(context);
                   },
                   icon: Icons.video_file_outlined,
-                  text: "AR Options",
+                  text: LocaleKeys.arOptions.tr(),
                 ),
               ),
             ],
@@ -188,7 +189,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Select Video Option",
+                      Text(LocaleKeys.selectVideoOption.tr(),
                           style: TextStyle(
                             color: constantColors.navButton,
                             fontSize: 16,
@@ -205,7 +206,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                       MaterialButton(
                         color: constantColors.navButton,
                         child: Text(
-                          'Gallery',
+                          LocaleKeys.gallery.tr(),
                           style: TextStyle(
                             color: constantColors.whiteColor,
                             fontWeight: FontWeight.bold,
@@ -256,7 +257,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                               context: context,
                               type: CoolAlertType.error,
                               title: "Error",
-                              text: "No video selected",
+                              text: LocaleKeys.novideoselected.tr(),
                             );
                           }
                         },
@@ -264,7 +265,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                       MaterialButton(
                         color: constantColors.navButton,
                         child: Text(
-                          'Camera',
+                          LocaleKeys.camera.tr(),
                           style: TextStyle(
                             color: constantColors.whiteColor,
                             fontWeight: FontWeight.bold,
@@ -295,9 +296,9 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                                 CoolAlert.show(
                                   context: context,
                                   type: CoolAlertType.info,
-                                  title: "Video contains no audio",
-                                  text:
-                                      "at the moment, GD can only work on video's that have background audio. Please select a video that has audio to it.",
+                                  title: LocaleKeys.videocontainsnoaudio.tr(),
+                                  text: LocaleKeys.onlyVideoWithAudioSupported
+                                      .tr(),
                                 );
                             }
                           } else {
@@ -306,7 +307,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                               context: context,
                               type: CoolAlertType.error,
                               title: "Error",
-                              text: "No video selected",
+                              text: LocaleKeys.novideoselected.tr(),
                             );
                           }
                         },
@@ -346,7 +347,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Create Video Option",
+                      Text(LocaleKeys.createVideoOption.tr(),
                           style: TextStyle(
                             color: constantColors.navButton,
                             fontSize: 16,
@@ -365,7 +366,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                           child: MaterialButton(
                             color: constantColors.navButton,
                             child: Text(
-                              'New Video',
+                              LocaleKeys.newVideo.tr(),
                               style: TextStyle(
                                 color: constantColors.whiteColor,
                                 fontSize: 16,
@@ -383,7 +384,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                           child: MaterialButton(
                             color: constantColors.navButton,
                             child: Text(
-                              'Drafts',
+                              LocaleKeys.drafts.tr(),
                               style: TextStyle(
                                 color: constantColors.whiteColor,
                                 fontSize: 16,

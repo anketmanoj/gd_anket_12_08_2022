@@ -95,7 +95,7 @@ ViewMenuWebApp(
                           child: InkWell(
                             onTap: Get.back,
                             child: Text(
-                              "Done",
+                              LocaleKeys.done.tr(),
                               style: TextStyle(
                                 color: constantColors.bioBg,
                                 fontSize: 16,
@@ -343,7 +343,7 @@ ViewMenuWebApp(
                           final String message = generatedLink.toString();
 
                           Share.share(
-                            'check out @${firebaseOperations.initUserName}\n\n$generatedLink',
+                            '${LocaleKeys.checkout.tr()} @${firebaseOperations.initUserName}\n\n$generatedLink',
                           );
                         } else if (uri.toString().contains('/updateemail')) {
                           log("Update Email");
@@ -439,7 +439,7 @@ dynamic logOutDialog(
     backgroundColor: constantColors.darkColor,
     type: CoolAlertType.info,
     showCancelBtn: true,
-    title: "Are you sure you want to log out?",
+    title: LocaleKeys.areyousureyouwanttologout.tr(),
     confirmBtnText: "Log Out",
     onConfirmBtnTap: () {
       auth.facebookLogOut();

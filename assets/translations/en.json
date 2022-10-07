@@ -74,7 +74,7 @@
   "checkoutwithapplepay": "Checkout with Apple Pay",
   "remove": "Remove",
   "removeFromCart": "Are you sure you want to remove this content from your carts",
-  "diamondhistroy": "Diamond Histroy",
+  "diamondhistroy": "Diamond History",
   "monitisation": "Monitisation",
   "totalsales": "Total Sales",
   "payout": "Payout",
@@ -235,5 +235,46 @@
   "deletepost": "Delete  Post ",
   "editpost": "Edit Post ",
   "editpostsetting": "Edit Post setting",
-  "updatepost": "Update Post"
+  "updatepost": "Update Post",
+
+  "profile": "Profile",
+  "buyCarats": "Buy Carats",
+  "arViewCollection": "AR View Collection",
+  "hideTutorial": "Hide Tutorial Icons",
+  "showTutorial": "Show Tutorial Icons",
+  "adminUserPromocodes": "Admin User Promocodes",
+  "adminVideoEditor": "Admin Video Editor",
+  "adminAROptions": "Admin AR Options",
+  "adminUserControl": "Admin User Control",
+  "changeLanguage": "Change Language",
+
+  "free": "Free",
+  "premium": "Premium",
+  "noPostYet": "No Posts Yet",
+
+  "followers": "Followers",
+  "following": "Following",
+  "posts": "Posts",
+
+  "createVideo": "Create Video",
+  "myMaterials": "My Materials",
+  "arOptions": "AR Options",
+
+  "createVideoOption": "Create Video Options",
+  "newVideo": "New Video",
+  "drafts": "Drafts",
+  "background": "Background",
+  "package": "Package",
+
+  "selectVideoOption": "Select Video Options",
+  "gallery": "Gallery",
+  "camera": "Camera",
+
+  "recommended": "Recommended",
+
+  "block": "Block",
+  "share": "Share",
+  "reportUser": "Report",
+
+  "inTheMeantime": "In the meantime, we've made some tutorials on how to maximize your experience on Glamorous Diastation!"
 }

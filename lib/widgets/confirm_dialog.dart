@@ -4,7 +4,7 @@ import 'package:diamon_rose_app/share/localizations/l10n/localy.dart';
 import 'package:diamon_rose_app/widgets/validate_utils.dart';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 class ConfirmDialog extends StatelessWidget {
   const ConfirmDialog({

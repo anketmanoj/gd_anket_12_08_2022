@@ -23,7 +23,8 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: constantColors.whiteColor,
-      appBar: AppBarWidget(text: "Change Language", context: context),
+      appBar:
+          AppBarWidget(text: LocaleKeys.changeLanguage.tr(), context: context),
       body: ListView.builder(
         shrinkWrap: true,
         itemCount: languages.length,

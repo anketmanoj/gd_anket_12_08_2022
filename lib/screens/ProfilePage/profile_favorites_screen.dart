@@ -3,7 +3,9 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +20,7 @@ class FavoritesPage extends StatelessWidget {
     final Authentication authentication =
         Provider.of<Authentication>(context, listen: false);
     return Scaffold(
-      appBar: AppBarWidget(text: "Favorites", context: context),
+      appBar: AppBarWidget(text: LocaleKeys.favorites.tr(), context: context),
       backgroundColor: Colors.white,
       body: Container(
         height: size.height,
@@ -72,7 +74,7 @@ class FavoritesPage extends StatelessWidget {
                 } else {
                   return Center(
                     child: Text(
-                      "No favorites",
+                      LocaleKeys.nofavorites.tr(),
                       style: TextStyle(
                           fontSize: 20, color: constantColors.mainColor),
                     ),

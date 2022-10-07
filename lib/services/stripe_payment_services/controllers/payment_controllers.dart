@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 // import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:http/http.dart' as http;
 
 class PaymentController extends GetxController {

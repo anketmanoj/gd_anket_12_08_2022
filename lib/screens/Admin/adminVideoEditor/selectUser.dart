@@ -11,8 +11,10 @@ import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
 import 'package:diamon_rose_app/services/user.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -74,9 +76,8 @@ class SelectUserVideoEditor extends StatelessWidget {
           CoolAlert.show(
             context: context,
             type: CoolAlertType.info,
-            title: "Video contains no audio",
-            text:
-                "at the moment, GD can only work on video's that have background audio. Please select a video that has audio to it.",
+            title: LocaleKeys.videocontainsnoaudio.tr(),
+            text: LocaleKeys.onlyVideoWithAudioSupported.tr(),
           );
       }
       // ignore: unawaited_futures

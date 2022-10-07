@@ -1,6 +1,8 @@
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/HelpScreen/tutorialVideos.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
@@ -13,7 +15,7 @@ class HelpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(text: "Help Pages", context: context),
+      appBar: AppBarWidget(text: LocaleKeys.helpscreen.tr(), context: context),
       backgroundColor: constantColors.bioBg,
       body: Padding(
         padding: EdgeInsets.symmetric(

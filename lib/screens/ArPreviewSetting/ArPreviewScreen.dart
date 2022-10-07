@@ -187,7 +187,7 @@ class ArPreviewSetting extends StatelessWidget {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 8.0),
                                 child: Text(
-                                  "Set GD AR usage as",
+                                  LocaleKeys.setgdarusageas.tr(),
                                   style: TextStyle(
                                     color: constantColors.whiteColor,
                                     fontSize: 15,
@@ -229,7 +229,9 @@ class ArPreviewSetting extends StatelessWidget {
                             return Column(
                               children: [
                                 Text(
-                                  "Material GD AR's are only for the Video Editor",
+                                  LocaleKeys
+                                      .materialgdarsareonlyforthevideoeditor
+                                      .tr(),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: constantColors.black,
@@ -318,7 +320,9 @@ class ArPreviewSetting extends StatelessWidget {
                             return Column(
                               children: [
                                 Text(
-                                  "AR View Only can only be used in the AR Viewer to immerse you and the AR in one world!",
+                                  LocaleKeys
+                                      .arviewonlycanonlybeusedinthearviewertoimmerseyouandthearinoneworld
+                                      .tr(),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: constantColors.black,
@@ -371,7 +375,9 @@ class ArPreviewSetting extends StatelessWidget {
                                                   onSubmit: (val) {},
                                                   validator: (val) {
                                                     if (val!.isEmpty) {
-                                                      return "Please Enter a Title";
+                                                      return LocaleKeys
+                                                          .pleaseenteratitle
+                                                          .tr();
                                                     }
                                                     return null;
                                                   },
@@ -389,7 +395,9 @@ class ArPreviewSetting extends StatelessWidget {
                                                     onSubmit: (val) {},
                                                     validator: (val) {
                                                       if (val!.isEmpty) {
-                                                        return "Please Enter a Caption";
+                                                        return LocaleKeys
+                                                            .pleaseenteracaption
+                                                            .tr();
                                                       }
                                                       return null;
                                                     },
@@ -567,7 +575,7 @@ class ArPreviewSetting extends StatelessWidget {
                                               Row(
                                                 children: [
                                                   Text(
-                                                    "Price",
+                                                    LocaleKeys.price.tr(),
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                       fontWeight:
@@ -641,7 +649,7 @@ class ArPreviewSetting extends StatelessWidget {
                                                 child: Row(
                                                   children: [
                                                     Text(
-                                                      "Discount",
+                                                      LocaleKeys.discount.tr(),
                                                       style: TextStyle(
                                                         fontSize: 16,
                                                         fontWeight:
@@ -715,7 +723,8 @@ class ArPreviewSetting extends StatelessWidget {
                                                 padding: const EdgeInsets.only(
                                                     top: 10),
                                                 child: Text(
-                                                  "Discount Period",
+                                                  LocaleKeys.discountperiod
+                                                      .tr(),
                                                   style: TextStyle(
                                                     fontSize: 14,
                                                   ),
@@ -926,9 +935,12 @@ class ArPreviewSetting extends StatelessWidget {
                                                 CoolAlert.show(
                                                   context: context,
                                                   type: CoolAlertType.error,
-                                                  title: "No Selected Genre",
-                                                  text:
-                                                      "Please Select a Genre for your video",
+                                                  title: LocaleKeys
+                                                      .noselectedgenre
+                                                      .tr(),
+                                                  text: LocaleKeys
+                                                      .pleaseselectagenreforyourvideo
+                                                      .tr(),
                                                 );
                                               }
 

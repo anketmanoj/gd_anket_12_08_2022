@@ -18,12 +18,14 @@ import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/ShareWidget.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:matrix_gesture_detector/matrix_gesture_detector.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -179,7 +181,7 @@ class VideoWidget extends StatelessWidget {
                                                   size: 30,
                                                 ),
                                                 label: Text(
-                                                  "Unlock Video",
+                                                  LocaleKeys.unlockvideo.tr(),
                                                   style: TextStyle(
                                                     color: constantColors
                                                         .whiteColor,
@@ -234,7 +236,7 @@ class VideoWidget extends StatelessWidget {
                                                   size: 30,
                                                 ),
                                                 label: Text(
-                                                  "Visit Profile",
+                                                  LocaleKeys.visitprofile.tr(),
                                                   style: TextStyle(
                                                     color: constantColors
                                                         .whiteColor,
@@ -390,7 +392,9 @@ class VideoWidget extends StatelessWidget {
                                                                     Alignment
                                                                         .center,
                                                                 child: Text(
-                                                                  "Visit Profile",
+                                                                  LocaleKeys
+                                                                      .visitprofile
+                                                                      .tr(),
                                                                   style:
                                                                       TextStyle(
                                                                     color: constantColors
@@ -1001,7 +1005,7 @@ class VideoWidget extends StatelessWidget {
                                             children: [
                                               Container(
                                                 child: Text(
-                                                  "Visit Owner",
+                                                  LocaleKeys.visitowner.tr(),
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.bold,
@@ -1015,7 +1019,7 @@ class VideoWidget extends StatelessWidget {
                                       ),
                                     ),
                                     subtitle: Text(
-                                      "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
+                                      "${LocaleKeys.ownedby.tr()} ${snapshot.data!.docs[index]["ownerName"]}",
                                     ),
                                     leading: Container(
                                       height: 40,
@@ -1136,7 +1140,7 @@ class VideoWidget extends StatelessWidget {
                             // paymentController.makePayment(
                             //     amount: "10", currency: "USD"),
                             child: Text(
-                              "Add to Cart",
+                              LocaleKeys.addtocart.tr(),
                               style: TextStyle(
                                 color: constantColors.navButton,
                               ),
@@ -1177,7 +1181,7 @@ class VideoWidget extends StatelessWidget {
                             // paymentController.makePayment(
                             //     amount: "10", currency: "USD"),
                             child: Text(
-                              "Add To My Materials",
+                              LocaleKeys.addtomymaterials.tr(),
                               style: TextStyle(
                                 color: constantColors.navButton,
                               ),
@@ -1299,7 +1303,7 @@ class VideoWidget extends StatelessWidget {
                                               children: [
                                                 Container(
                                                   child: Text(
-                                                    "Visit Owner",
+                                                    LocaleKeys.visitowner.tr(),
                                                     style: TextStyle(
                                                       fontSize: 12,
                                                       fontWeight:
@@ -1314,7 +1318,7 @@ class VideoWidget extends StatelessWidget {
                                         ),
                                       ),
                                       subtitle: Text(
-                                        "Owned by ${snapshot.data!.docs[index]["ownerName"]}",
+                                        "${LocaleKeys.ownedby.tr()} ${snapshot.data!.docs[index]["ownerName"]}",
                                       ),
                                       leading: Container(
                                         height: 40,
@@ -1383,7 +1387,7 @@ class VideoWidget extends StatelessWidget {
                         child: Text(
                           video.videoType == "video"
                               ? "Add to My Inventory"
-                              : "Add to AR View Collection",
+                              : LocaleKeys.addtoarviewcollection.tr(),
                           style: TextStyle(
                             color: constantColors.navButton,
                           ),
@@ -1402,15 +1406,15 @@ class VideoWidget extends StatelessWidget {
 
   Future<dynamic> reportVideoMenu(BuildContext context, Size size) {
     List<String> reportingReasons = [
-      "It's spam",
-      "Nudity or sexual activity",
-      "Hate speech or symbols",
-      "I just dont like it",
-      "Bullying or harassment",
-      "False Information",
-      "Violence or dangerous organizations",
-      "Scam or fraud",
-      "Intellectual property violation"
+      LocaleKeys.itsspam.tr(),
+      LocaleKeys.nudityorsexualactivity.tr(),
+      LocaleKeys.hatespeechorsymbols.tr(),
+      LocaleKeys.ijustdontlikeit.tr(),
+      LocaleKeys.bullyingorharassment.tr(),
+      LocaleKeys.falseinformation.tr(),
+      LocaleKeys.violenceordangerousorganizations.tr(),
+      LocaleKeys.scamorfraud.tr(),
+      LocaleKeys.intellectualpropertyviolation.tr(),
     ];
     return showModalBottomSheet(
       isDismissible: true,
@@ -1445,7 +1449,7 @@ class VideoWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Report Video",
+                    LocaleKeys.reportvideo.tr(),
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -1455,7 +1459,7 @@ class VideoWidget extends StatelessWidget {
               ),
               Divider(),
               Text(
-                "Why are you reporting this post?",
+                LocaleKeys.whyareyoureportingthispost.tr(),
                 style: TextStyle(
                   color: constantColors.bioBg,
                   fontWeight: FontWeight.bold,
@@ -1488,8 +1492,8 @@ class VideoWidget extends StatelessWidget {
                           );
                           Navigator.pop(context);
                           Get.snackbar(
-                            'Video Reported',
-                            'Thank you for letting us know!',
+                            LocaleKeys.videoreported.tr(),
+                            LocaleKeys.thankyouforlettingusknow.tr(),
                             overlayColor: constantColors.navButton,
                             colorText: constantColors.whiteColor,
                             snackPosition: SnackPosition.TOP,

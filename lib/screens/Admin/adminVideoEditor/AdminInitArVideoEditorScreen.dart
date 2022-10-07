@@ -132,7 +132,7 @@ class _AdminArVideoEditorScreenState extends State<AdminArVideoEditorScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Preview",
+                                  LocaleKeys.preview.tr(),
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 20,
@@ -168,7 +168,7 @@ class _AdminArVideoEditorScreenState extends State<AdminArVideoEditorScreen> {
                                     Navigator.pop(context);
                                   },
                                   child: Text(
-                                    "Cancel",
+                                    LocaleKeys.cancel.tr(),
                                   ),
                                 ),
                                 ElevatedButton(
@@ -183,7 +183,7 @@ class _AdminArVideoEditorScreenState extends State<AdminArVideoEditorScreen> {
                                     CoolAlert.show(
                                       context: context,
                                       type: CoolAlertType.loading,
-                                      text: "Uploading Video",
+                                      text: LocaleKeys.uploadingvideo.tr(),
                                       barrierDismissible: false,
                                     );
 
@@ -354,7 +354,8 @@ class _AdminArVideoEditorScreenState extends State<AdminArVideoEditorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(text: "Ar Video Editor", context: context),
+      appBar:
+          AppBarWidget(text: LocaleKeys.arvideoeditor.tr(), context: context),
       backgroundColor: constantColors.navButton.withOpacity(1),
       body: _controller.initialized
           ? SafeArea(
@@ -407,11 +408,11 @@ class _AdminArVideoEditorScreenState extends State<AdminArVideoEditorScreen> {
                                     Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
-                                        children: const [
+                                        children: [
                                           Padding(
                                               padding: EdgeInsets.all(5),
                                               child: Icon(Icons.content_cut)),
-                                          Text('Trim')
+                                          Text(LocaleKeys.trim.tr()),
                                         ]),
                                   ],
                                 ),
@@ -436,7 +437,7 @@ class _AdminArVideoEditorScreenState extends State<AdminArVideoEditorScreen> {
                                 title: ValueListenableBuilder(
                                   valueListenable: _exportingProgress,
                                   builder: (_, double value, __) => Text(
-                                    "Trimming video ${(value * 100).ceil()}%",
+                                    "${LocaleKeys.trimmingvideo.tr()} ${(value * 100).ceil()}%",
                                     style: const TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,

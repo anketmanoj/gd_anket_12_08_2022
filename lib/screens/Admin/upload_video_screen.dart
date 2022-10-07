@@ -571,7 +571,9 @@ class _UploadVideoScreenState extends State<UploadVideoScreen>
                                                         onSubmit: (val) {},
                                                         validator: (val) {
                                                           if (val!.isEmpty) {
-                                                            return "Please Enter a Title";
+                                                            return LocaleKeys
+                                                                .pleaseenteratitle
+                                                                .tr();
                                                           }
                                                           return null;
                                                         },
@@ -591,7 +593,9 @@ class _UploadVideoScreenState extends State<UploadVideoScreen>
                                                           onSubmit: (val) {},
                                                           validator: (val) {
                                                             if (val!.isEmpty) {
-                                                              return "Please Enter a Caption";
+                                                              return LocaleKeys
+                                                                  .pleaseenteracaption
+                                                                  .tr();
                                                             }
                                                             return null;
                                                           },
