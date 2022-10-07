@@ -14,6 +14,7 @@ import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -434,7 +435,7 @@ class _VideoSearchState extends State<VideoSearch> {
                                     title: "Premium Content",
                                     text:
                                         "You cannot unlock this content within the app; please unlock the content on the Glamorous Diastation website and you'll be able to view it on the Glamorous Diastation app or in the web browser",
-                                    confirmBtnText: "Unlock Video",
+                                    confirmBtnText: LocaleKeys.unlockvideo.tr(),
                                     cancelBtnText: "Nevermind",
                                     confirmBtnColor: constantColors.navButton,
                                     showCancelBtn: true,

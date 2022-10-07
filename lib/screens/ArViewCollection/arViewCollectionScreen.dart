@@ -6,7 +6,9 @@ import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/imgseqanimation.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,7 +39,8 @@ class ArViewcollectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: constantColors.whiteColor,
-      appBar: AppBarWidget(text: "AR View Collection", context: context),
+      appBar: AppBarWidget(
+          text: LocaleKeys.arviewcollection.tr(), context: context),
       body: Container(
         padding: const EdgeInsets.all(15),
         child: FutureBuilder<QuerySnapshot>(

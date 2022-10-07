@@ -2,7 +2,9 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/providers/social_media_links_provider.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +36,8 @@ class _SocialMediaLinksState extends State<SocialMediaLinks> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBarWidget(text: "Social Media Links", context: context),
+      appBar: AppBarWidget(
+          text: LocaleKeys.socialmedialinks.tr(), context: context),
       body: Form(
         key: _formKey,
         child: Padding(
