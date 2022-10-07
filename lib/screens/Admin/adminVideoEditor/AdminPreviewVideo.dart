@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:aws_s3_upload/aws_s3_upload.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +12,7 @@ import 'package:diamon_rose_app/providers/adminCreateVideoProvider.dart';
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
 import 'package:diamon_rose_app/providers/homeScreenProvider.dart';
 import 'package:diamon_rose_app/providers/video_editor_provider.dart';
+import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminThumbnailPreview.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
 import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
@@ -18,6 +20,7 @@ import 'package:diamon_rose_app/services/mux/mux_video_stream.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:page_transition/page_transition.dart';
@@ -343,8 +346,18 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                             leading: Container(
                                               height: 50,
                                               width: 50,
-                                              child: Image.file(widget
-                                                  .bgMaterialThumnailFile),
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: Image.memory(
+                                                    Uint8List.fromList(
+                                                      widget
+                                                          .bgMaterialThumnailFile
+                                                          .readAsBytesSync(),
+                                                    ),
+                                                  ).image,
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
                                             ),
                                             title: Text(
                                               "Background",
@@ -377,17 +390,32 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                                 ? Container(
                                                     height: 50,
                                                     width: 50,
-                                                    child: ImageNetworkLoader(
-                                                        imageUrl: selectMaterials[
-                                                                index]
-                                                            .pathsForVideoFrames![0]),
+                                                    decoration: BoxDecoration(
+                                                      image: DecorationImage(
+                                                          image: Image.memory(
+                                                        Uint8List.fromList(
+                                                          selectMaterials[index]
+                                                              .arCutOutFile!
+                                                              .readAsBytesSync(),
+                                                        ),
+                                                      ).image),
+                                                    ),
                                                   )
                                                 : Container(
                                                     height: 50,
                                                     width: 50,
-                                                    child: Image.file(File(
-                                                        selectMaterials[index]
-                                                            .gifFilePath!)),
+                                                    decoration: BoxDecoration(
+                                                      image: DecorationImage(
+                                                        image: Image.memory(
+                                                          Uint8List.fromList(
+                                                            File(selectMaterials[
+                                                                        index]
+                                                                    .gifFilePath!)
+                                                                .readAsBytesSync(),
+                                                          ),
+                                                        ).image,
+                                                      ),
+                                                    ),
                                                   ),
                                             title: Text(
                                               selectMaterials[index]
@@ -420,24 +448,40 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                                 .toString());
                                           },
                                         ),
-                                        leading:
-                                            selectMaterials[index].layerType ==
-                                                    LayerType.AR
-                                                ? Container(
-                                                    height: 50,
-                                                    width: 50,
-                                                    child: ImageNetworkLoader(
-                                                        imageUrl: selectMaterials[
-                                                                index]
-                                                            .pathsForVideoFrames![0]),
-                                                  )
-                                                : Container(
-                                                    height: 50,
-                                                    width: 50,
-                                                    child: Image.file(File(
+                                        leading: selectMaterials[index]
+                                                    .layerType ==
+                                                LayerType.AR
+                                            ? Container(
+                                                height: 50,
+                                                width: 50,
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    image: Image.memory(
+                                                      Uint8List.fromList(
                                                         selectMaterials[index]
-                                                            .gifFilePath!)),
+                                                            .arCutOutFile!
+                                                            .readAsBytesSync(),
+                                                      ),
+                                                    ).image,
                                                   ),
+                                                ),
+                                              )
+                                            : Container(
+                                                height: 50,
+                                                width: 50,
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    image: Image.memory(
+                                                      Uint8List.fromList(
+                                                        File(selectMaterials[
+                                                                    index]
+                                                                .gifFilePath!)
+                                                            .readAsBytesSync(),
+                                                      ),
+                                                    ).image,
+                                                  ),
+                                                ),
+                                              ),
                                         title: Text(
                                           selectMaterials[index].layerType ==
                                                   LayerType.AR
@@ -1120,68 +1164,86 @@ class ImageTitleAndCaption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
       children: [
-        // Flexible widget with video in it
-        Flexible(
-          flex: 1,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-                height: 25.h,
-                child: Image.file(
-                  widget.thumbnailFile,
-                  filterQuality: FilterQuality.low,
-                  fit: BoxFit.cover,
-                )),
-          ),
-        ),
-        Flexible(
-          flex: 2,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Container(
-              height: size.height * 0.25,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    child: ProfileUserDetails(
-                      controller: _videotitleController,
-                      labelText: "Title",
-                      onSubmit: (val) {},
-                      validator: (val) {
-                        if (val!.isEmpty) {
-                          return "Please Enter a Title";
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Container(
-                      child: ProfileUserDetails(
-                        lines: 4,
-                        controller: _videoCaptionController,
-                        labelText: "Caption",
-                        onSubmit: (val) {},
-                        validator: (val) {
-                          if (val!.isEmpty) {
-                            return "Please Enter a Caption";
-                          }
-                          return null;
-                        },
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            // Flexible widget with video in it
+
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        child: ProfileUserDetails(
+                          controller: _videotitleController,
+                          labelText: "Title",
+                          onSubmit: (val) {},
+                          validator: (val) {
+                            if (val!.isEmpty) {
+                              return "Please Enter a Title";
+                            }
+                            return null;
+                          },
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
+            Container(
+              height: 70,
+              width: 20.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                  image: Image.memory(
+                    Uint8List.fromList(widget.thumbnailFile.readAsBytesSync()),
+                    alignment: Alignment.center,
+                  ).image,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Center(
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AdminThumbnailPreview(),
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.visibility),
+                  color: constantColors.whiteColor,
+                ),
+              ),
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Container(
+            child: ProfileUserDetails(
+              lines: 4,
+              controller: _videoCaptionController,
+              labelText: "Caption",
+              onSubmit: (val) {},
+              validator: (val) {
+                if (val!.isEmpty) {
+                  return "Please Enter a Caption";
+                }
+                return null;
+              },
+            ),
           ),
-        )
+        ),
       ],
     );
   }

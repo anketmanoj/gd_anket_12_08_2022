@@ -581,7 +581,7 @@ class VideoEditorController extends ChangeNotifier {
             5) {
           log("duration greater normal than 5s");
           String command =
-              " -i ${vidFilePath} -ss ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt())}  -t ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt() + 5)} -vf scale=-2:480 -r 20/1 -y ${outputPath}";
+              " -i ${vidFilePath} -ss ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt())}  -t ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt() + 5)} -vf scale=-2:360 -r 10 -y ${outputPath}";
           log("command for gif: $command");
           await FFmpegKit.execute(command).then((value) {
             log("done with gif");
@@ -591,7 +591,7 @@ class VideoEditorController extends ChangeNotifier {
           final double duration = double.parse(durationString);
           log("duration i normal $duration");
           String command =
-              " -i ${vidFilePath} -ss ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt())}  -t ${formatTime(duration.toInt())} -vf scale=-2:480 -r 20/1 -y ${outputPath}";
+              " -i ${vidFilePath} -ss ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt())}  -t ${formatTime(duration.toInt())} -vf scale=-2:360 -r 10 -y ${outputPath}";
           log(command);
           await FFmpegKit.execute(command).then((value) {
             log("done with gif");
@@ -612,7 +612,7 @@ class VideoEditorController extends ChangeNotifier {
   /// If this [selectedCoverVal] is `null`, then it return the first frame of this video.
   ///
   /// The [quality] param specifies the quality of the generated cover, from 0 to 100 (([more info](https://pub.dev/packages/video_thumbnail)))
-  Future<String?> _generateCoverFile({int quality = 100}) async {
+  Future<String?> _generateCoverFile({int quality = 20}) async {
     final String coverPath = await thumbnailGifCreator(vidFilePath: file.path);
     log("time is ms : ${selectedCoverVal!.timeMs.toDouble() / 1000}");
     return coverPath;

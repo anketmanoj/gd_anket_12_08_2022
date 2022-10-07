@@ -83,8 +83,6 @@ class _InitAdminVideoEditorScreenState
         _isExporting.value = false;
         if (!mounted) return;
         if (file != null) {
-          _controller.video.dispose();
-
           context.read<VideoEditorProvider>().setBackgroundVideoFile(file);
           context.read<VideoEditorProvider>().setBackgroundVideoController();
           context.read<VideoEditorProvider>().setVideoPlayerController();

@@ -348,6 +348,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
             final List<String> _fullPathsOnline = myAr.imgSeq;
 
+            final File arCutOutFile = await getImage(url: _fullPathsOnline[0]);
+            dev.log("ArCut out ois here  = ${arCutOutFile.path}");
+
             File? audioFile;
             final AudioPlayer? _player = AudioPlayer();
 
@@ -411,6 +414,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                     ownerId: myAr.ownerId,
                     ownerName: myAr.ownerName,
                     selectedMaterial: ValueNotifier<bool>(true),
+                    arCutOutFile: arCutOutFile,
                   ));
                 });
               });
@@ -2004,9 +2008,11 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                     if (file != null) {
                                       dev.log("we're here now");
 
-                                      context
+                                      await context
                                           .read<VideoEditorProvider>()
                                           .setAfterEditorVideoController(file);
+
+                                      dev.log("Done!!!!!");
 
                                       await context
                                           .read<VideoEditorProvider>()

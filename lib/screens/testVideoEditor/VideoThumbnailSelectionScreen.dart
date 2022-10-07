@@ -75,8 +75,6 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
         _isExporting.value = false;
         if (!mounted) return;
         if (videoFileNew != null) {
-          _controller.video.dispose();
-          context.read<VideoEditorProvider>().setFinalVideoFile(videoFileNew);
           Navigator.pushReplacement(
               context,
               PageTransition(

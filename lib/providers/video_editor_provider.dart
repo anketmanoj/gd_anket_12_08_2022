@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
@@ -89,27 +90,30 @@ class VideoEditorProvider extends ChangeNotifier {
   Future<void> setBgMaterialThumnailFile() async {
     final Directory appDocumentDir = await getApplicationDocumentsDirectory();
     final String rawDocumentPath = appDocumentDir.path;
-    final String outputPath = "${rawDocumentPath}/bgThumbnail.gif";
+    final String outputPath = "${rawDocumentPath}/bgThumbnail.jpg";
 
     await FFmpegKit.execute(
-            "-y -i ${_backgroundVideoFile.path} -to 00:00:02 -vf scale=-2:480 -preset ultrafast -r 20/1 ${outputPath}")
+            "-y -i ${_backgroundVideoFile.path} -vf scale=-2:480 -vframes 1 ${outputPath}")
         .then((value) {
-      final coverGif = File(join(rawDocumentPath, "coverGIf.gif"));
-      coverGif.writeAsBytesSync(File(outputPath).readAsBytesSync());
-      _bgMaterialThumnailFile = coverGif;
+      // final coverGif = File(join(rawDocumentPath, "coverGIf.jpg"));
+      // coverGif.writeAsBytesSync(
+      //     Uint8List.fromList(File(outputPath).readAsBytesSync()));
+      // log("done writing file == ${coverGif.path}");
+      _bgMaterialThumnailFile = File(outputPath);
       notifyListeners();
     });
     log("done bg gif");
   }
 
-  void setAfterEditorVideoController(File videoFile) {
+  Future<void> setAfterEditorVideoController(File videoFile) async {
     _afterEditorVideoController = VideoEditorController.file(
       videoFile,
       maxDuration: const Duration(seconds: 60),
       trimStyle: TrimSliderStyle(),
-    )..initialize();
+    );
+    await _afterEditorVideoController.initialize();
 
-    _afterEditorVideoController.video.setLooping(false);
+    await _afterEditorVideoController.video.setLooping(false);
     log("video controller set (After video editor)");
     notifyListeners();
   }

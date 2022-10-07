@@ -341,6 +341,9 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
 
             final List<String> _fullPathsOnline = myAr.imgSeq;
 
+            final File arCutOutFile = await getImage(url: _fullPathsOnline[0]);
+            dev.log("ArCut out ois here  = ${arCutOutFile.path}");
+
             File? audioFile;
             final AudioPlayer? _player = AudioPlayer();
 
@@ -404,6 +407,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                     ownerId: myAr.ownerId,
                     ownerName: myAr.ownerName,
                     selectedMaterial: ValueNotifier<bool>(true),
+                    arCutOutFile: arCutOutFile,
                   ));
                 });
               });
@@ -500,7 +504,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
 
             //! #############################################################
             final String commandForGifSeqFile =
-                '-y -i ${gifFile.path} -filter_complex "fps=30,scale=480:-1" ${gifSeqFolder}${arVal}gifSeq%d.png';
+                '-y -i ${gifFile.path} -filter_complex "fps=30,scale=480:-1" -preset ultrafast  ${gifSeqFolder}${arVal}gifSeq%d.png';
 
             List<String> _fullPathsOffline = [];
 
@@ -1987,9 +1991,11 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                       _exportingProgress.value = value,
                                   onCompleted: (file) async {
                                     if (file != null) {
-                                      context
+                                      await context
                                           .read<VideoEditorProvider>()
                                           .setAfterEditorVideoController(file);
+
+                                      dev.log("Done!!!!!");
 
                                       await context
                                           .read<VideoEditorProvider>()

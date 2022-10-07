@@ -10,6 +10,11 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ja</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>Glamorous Diastation</string>
 	<key>CFBundlePackageType</key>
@@ -35,11 +40,6 @@
 			<key>CFBundleURLName</key>
 			<string></string>
 		</dict>
-	</array>
-	<key>CFBundleLocalizations</key>
-	<array>
-		<string>en</string>
-		<string>ja</string>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>

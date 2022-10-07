@@ -40,6 +40,7 @@ class ARList {
   String? ownerName;
   ValueNotifier<bool>? selectedMaterial = ValueNotifier<bool>(true);
   ValueNotifier<Matrix4>? notifier = ValueNotifier(Matrix4.identity());
+  File? arCutOutFile;
 
   ARList({
     this.arIndex,
@@ -72,5 +73,6 @@ class ARList {
     this.ownerName,
     this.selectedMaterial,
     this.notifier,
+    this.arCutOutFile,
   });
 }
