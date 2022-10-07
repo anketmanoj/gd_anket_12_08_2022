@@ -93,8 +93,6 @@ class _AdminVideothumbnailSelectorState
                     bgFile: context
                         .read<VideoEditorProvider>()
                         .getBackgroundVideoFile,
-                    thumbnailFile:
-                        context.read<VideoEditorProvider>().getCoverGif,
                     videoFile: File(videoFileNew.path),
                     arList: widget.arList,
                   ),
@@ -110,6 +108,7 @@ class _AdminVideothumbnailSelectorState
       onCompleted: (cover) async {
         if (!mounted) return;
         context.read<VideoEditorProvider>().setCoverGif(cover!);
+        log(context.read<VideoEditorProvider>().getCoverGif.path);
         // await _controller.exportVideo(
         //   // preset: VideoExportPreset.medium,
         //   onProgress: (stats, value) => _exportingProgress.value = value,

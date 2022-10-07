@@ -228,7 +228,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   ),
                                                   Container(
                                                     height: 50,
-                                                    child: FlatButton(
+                                                    child: TextButton(
                                                       onPressed: () {
                                                         Navigator.pop(context);
                                                       },
@@ -332,7 +332,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   ),
                                                   Container(
                                                     height: 50,
-                                                    child: FlatButton(
+                                                    child: TextButton(
                                                       onPressed: () {
                                                         Navigator.pop(context);
                                                       },
@@ -914,7 +914,7 @@ class MidProfileStack extends StatelessWidget {
                                             ),
                                             Container(
                                               height: 50,
-                                              child: FlatButton(
+                                              child: TextButton(
                                                 onPressed: () {
                                                   Navigator.pop(context);
                                                 },
@@ -1014,7 +1014,7 @@ class MidProfileStack extends StatelessWidget {
                                             ),
                                             Container(
                                               height: 50,
-                                              child: FlatButton(
+                                              child: TextButton(
                                                 onPressed: () {
                                                   Navigator.pop(context);
                                                 },

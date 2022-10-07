@@ -87,8 +87,6 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
                     bgFile: context
                         .read<VideoEditorProvider>()
                         .getBackgroundVideoFile,
-                    thumbnailFile:
-                        context.read<VideoEditorProvider>().getCoverGif,
                     videoFile: File(videoFileNew.path),
                     arList: widget.arList,
                   ),

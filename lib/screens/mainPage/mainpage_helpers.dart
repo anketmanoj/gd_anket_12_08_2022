@@ -97,7 +97,7 @@ class _LoginOptions extends StatelessWidget {
         color: Colors.black,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: FlatButton(
+      child: TextButton(
         onPressed: function,
         child: Text(
           text,

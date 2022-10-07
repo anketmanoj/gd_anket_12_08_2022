@@ -36,7 +36,6 @@ class AdminPreviewVideoScreen extends StatefulWidget {
   const AdminPreviewVideoScreen(
       {Key? key,
       required this.videoFile,
-      required this.thumbnailFile,
       required this.arList,
       required this.bgFile,
       required this.bgMaterialThumnailFile})
@@ -44,7 +43,7 @@ class AdminPreviewVideoScreen extends StatefulWidget {
 
   final File videoFile;
   final File bgFile;
-  final File thumbnailFile;
+
   final List<ARList> arList;
   final File bgMaterialThumnailFile;
 
@@ -178,11 +177,91 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  ImageTitleAndCaption(
-                    size: size,
-                    widget: widget,
-                    videotitleController: _videotitleController,
-                    videoCaptionController: _videoCaptionController,
+                  Column(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          // Flexible widget with video in it
+
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: Container(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      child: ProfileUserDetails(
+                                        controller: _videotitleController,
+                                        labelText: "Title",
+                                        onSubmit: (val) {},
+                                        validator: (val) {
+                                          if (val!.isEmpty) {
+                                            return LocaleKeys.pleaseenteratitle
+                                                .tr();
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: 70,
+                            width: 20.w,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              image: DecorationImage(
+                                image: Image.file(
+                                  context
+                                      .read<VideoEditorProvider>()
+                                      .getCoverGif,
+                                  alignment: Alignment.center,
+                                ).image,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            child: Center(
+                              child: IconButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          AdminThumbnailPreview(),
+                                    ),
+                                  );
+                                },
+                                icon: Icon(Icons.visibility),
+                                color: constantColors.whiteColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Container(
+                          child: ProfileUserDetails(
+                            lines: 4,
+                            controller: _videoCaptionController,
+                            labelText: "Caption",
+                            onSubmit: (val) {},
+                            validator: (val) {
+                              if (val!.isEmpty) {
+                                return LocaleKeys.pleaseenteracaption.tr();
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
@@ -784,7 +863,9 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                   secretKey:
                                       "qNosurynLH/WHV4iYu8vYWtSxkKqBFav0qbXEvdd",
                                   bucket: "anketvideobucket",
-                                  file: widget.thumbnailFile,
+                                  file: context
+                                      .read<VideoEditorProvider>()
+                                      .getCoverGif,
                                   filename:
                                       "${Timestamp.now().millisecondsSinceEpoch}_bgThumbnailGif.gif",
                                   region: "us-east-1",
@@ -1146,109 +1227,6 @@ class NewDivider extends StatelessWidget {
     return Divider(
       thickness: 2,
       color: constantColors.navButton.withOpacity(0.3),
-    );
-  }
-}
-
-class ImageTitleAndCaption extends StatelessWidget {
-  const ImageTitleAndCaption({
-    Key? key,
-    required this.size,
-    required this.widget,
-    required TextEditingController videotitleController,
-    required TextEditingController videoCaptionController,
-  })  : _videotitleController = videotitleController,
-        _videoCaptionController = videoCaptionController,
-        super(key: key);
-
-  final Size size;
-  final AdminPreviewVideoScreen widget;
-  final TextEditingController _videotitleController;
-  final TextEditingController _videoCaptionController;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // Flexible widget with video in it
-
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        child: ProfileUserDetails(
-                          controller: _videotitleController,
-                          labelText: "Title",
-                          onSubmit: (val) {},
-                          validator: (val) {
-                            if (val!.isEmpty) {
-                              return LocaleKeys.pleaseenteratitle.tr();
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              height: 70,
-              width: 20.w,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: Image.memory(
-                    Uint8List.fromList(widget.thumbnailFile.readAsBytesSync()),
-                    alignment: Alignment.center,
-                  ).image,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: Center(
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AdminThumbnailPreview(),
-                      ),
-                    );
-                  },
-                  icon: Icon(Icons.visibility),
-                  color: constantColors.whiteColor,
-                ),
-              ),
-            ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: Container(
-            child: ProfileUserDetails(
-              lines: 4,
-              controller: _videoCaptionController,
-              labelText: "Caption",
-              onSubmit: (val) {},
-              validator: (val) {
-                if (val!.isEmpty) {
-                  return LocaleKeys.pleaseenteracaption.tr();
-                }
-                return null;
-              },
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

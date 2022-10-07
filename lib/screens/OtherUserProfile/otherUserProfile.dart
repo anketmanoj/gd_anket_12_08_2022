@@ -574,7 +574,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                                     ),
                                                     Container(
                                                       height: 50,
-                                                      child: FlatButton(
+                                                      child: TextButton(
                                                         onPressed: () {
                                                           Navigator.pop(
                                                               context);
@@ -685,7 +685,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                                     ),
                                                     Container(
                                                       height: 50,
-                                                      child: FlatButton(
+                                                      child: TextButton(
                                                         onPressed: () {
                                                           Navigator.pop(
                                                               context);

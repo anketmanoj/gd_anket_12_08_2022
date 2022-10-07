@@ -126,7 +126,7 @@ class ImageUtils extends ChangeNotifier {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       // Cancel button
-                      FlatButton(
+                      TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                           Navigator.of(context).pop();
@@ -140,7 +140,7 @@ class ImageUtils extends ChangeNotifier {
                         ),
                       ),
                       // Upload button
-                      FlatButton(
+                      TextButton(
                         onPressed: () async {
                           // Show uploading image cool alert
                           CoolAlert.show(
