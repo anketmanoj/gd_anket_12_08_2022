@@ -82,17 +82,16 @@ class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
           context.read<VideoEditorProvider>().setBackgroundVideoFile(file);
           context.read<VideoEditorProvider>().setBackgroundVideoController();
           context.read<VideoEditorProvider>().setVideoPlayerController();
+          await Provider.of<ArVideoCreation>(context, listen: false).audioCheck(
+            videoUrl: file.path,
+          );
+          _exportText = "Video success export!";
 
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => CreateVideoScreen(),
               ));
-          await Provider.of<ArVideoCreation>(context, listen: false).audioCheck(
-            videoUrl: file.path,
-          );
-
-          _exportText = "Video success export!";
         } else {
           _exportText = "Error on export video :(";
         }

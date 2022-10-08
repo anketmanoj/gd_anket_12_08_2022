@@ -25,6 +25,7 @@ class VideoEditorProvider extends ChangeNotifier {
   late VideoPlayerController _videoController;
   late File _bgMaterialThumnailFile;
   late File _coverGif;
+  late File _coverImage;
   late File _afterFinalTouchesFrame;
 
   // getters
@@ -40,6 +41,7 @@ class VideoEditorProvider extends ChangeNotifier {
   VideoPlayerController get getVideoPlayerController => _videoController;
   File get getBgMaterialThumnailFile => _bgMaterialThumnailFile;
   File get getCoverGif => _coverGif;
+  File get getCoverImage => _coverImage;
   File get getAfterFinalTouchesFrame => _afterFinalTouchesFrame;
 
   void setPositionFromSlider(double value) {
@@ -76,6 +78,11 @@ class VideoEditorProvider extends ChangeNotifier {
 
   void setCoverGif(File gifFile) {
     _coverGif = gifFile;
+    notifyListeners();
+  }
+
+  void setCoverImage(File imgFile) {
+    _coverImage = imgFile;
     notifyListeners();
   }
 

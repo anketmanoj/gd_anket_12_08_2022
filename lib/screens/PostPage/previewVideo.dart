@@ -182,7 +182,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                       accessKey: "AKIATF76MVYR34JAVB7H",
                       secretKey: "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",
                       bucket: "anketvideobucket",
-                      file: context.read<VideoEditorProvider>().getCoverGif,
+                      file: context.read<VideoEditorProvider>().getCoverImage,
                       filename:
                           "${Timestamp.now().millisecondsSinceEpoch}_bgThumbnailGif.gif",
                       region: "us-east-1",
@@ -313,7 +313,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                 image: Image.file(
                                   context
                                       .read<VideoEditorProvider>()
-                                      .getAfterFinalTouchesFrame,
+                                      .getCoverImage,
                                   alignment: Alignment.center,
                                 ).image,
                                 fit: BoxFit.cover,
@@ -936,7 +936,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                   bucket: "anketvideobucket",
                                   file: context
                                       .read<VideoEditorProvider>()
-                                      .getCoverGif,
+                                      .getCoverImage,
                                   filename:
                                       "${Timestamp.now().millisecondsSinceEpoch}_bgThumbnailGif.gif",
                                   region: "us-east-1",

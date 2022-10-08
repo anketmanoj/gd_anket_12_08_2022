@@ -77,9 +77,6 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
         _isExporting.value = false;
         if (!mounted) return;
         if (videoFileNew != null) {
-          await context
-              .read<VideoEditorProvider>()
-              .setCoverImageFrame(afterFinalTouches: videoFileNew);
           Navigator.pushReplacement(
               context,
               PageTransition(
@@ -102,10 +99,10 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
   Future<void> _exportCover() async {
     _exportingProgress.value = 0;
     _isExporting.value = true;
-    await _controller.extractCover(
+    await _controller.extractCoverImage(
       onCompleted: (cover) async {
         if (!mounted) return;
-        context.read<VideoEditorProvider>().setCoverGif(cover!);
+        context.read<VideoEditorProvider>().setCoverImage(cover);
 
         // ignore: unawaited_futures
 

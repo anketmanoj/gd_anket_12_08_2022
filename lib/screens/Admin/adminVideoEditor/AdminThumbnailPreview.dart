@@ -26,7 +26,7 @@ class AdminThumbnailPreview extends StatelessWidget {
                   Uint8List.fromList(
                     context
                         .read<VideoEditorProvider>()
-                        .getCoverGif
+                        .getCoverImage
                         .readAsBytesSync(),
                   ),
                   alignment: Alignment.center,

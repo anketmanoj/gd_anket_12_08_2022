@@ -618,6 +618,16 @@ class VideoEditorController extends ChangeNotifier {
     return coverPath;
   }
 
+  Future<String?> _generateCoverImage({int quality = 100}) async {
+    return await VideoThumbnail.thumbnailFile(
+      imageFormat: ImageFormat.JPEG,
+      thumbnailPath: (await getTemporaryDirectory()).path,
+      video: file.path,
+      timeMs: selectedCoverVal?.timeMs ?? startTrim.inMilliseconds,
+      quality: quality,
+    );
+  }
+
   /// Export this selected cover, or by default the first one, return an image [File].
   ///
   /// The [onCompleted] param must be set to retun the exported [File] cover
@@ -698,5 +708,75 @@ class VideoEditorController extends ChangeNotifier {
     //   null,
     //   onProgress,
     // );
+  }
+
+  Future<void> extractCoverImage({
+    required void Function(File file) onCompleted,
+    void Function(Object, StackTrace)? onError,
+    String? name,
+    String? outDir,
+    String format = "jpg",
+    double scale = 1.0,
+    int quality = 100,
+    void Function(Statistics)? onProgress,
+    bool isFiltersEnabled = true,
+  }) async {
+    final String tempPath = outDir ?? (await getTemporaryDirectory()).path;
+    // file generated from the thumbnail library or video source
+    final String? coverPath = await _generateCoverImage(quality: quality);
+    if (coverPath == null) {
+      if (onError != null) {
+        onError(
+          Exception('VideoThumbnail library error while exporting the cover'),
+          StackTrace.current,
+        );
+      }
+      return;
+    }
+    name ??= path.basenameWithoutExtension(file.path);
+    final int epoch = DateTime.now().millisecondsSinceEpoch;
+    final String outputPath = "$tempPath/${name}_$epoch.$format";
+
+    // CALCULATE FILTERS
+    final String crop =
+        minCrop >= _min && maxCrop <= _max ? await _getCrop() : "";
+    final String rotation =
+        _rotation >= 360 || _rotation <= 0 ? "" : _getRotation();
+    final String scaleInstruction =
+        scale == 1.0 ? "" : "scale=iw*$scale:ih*$scale";
+
+    // VALIDATE FILTERS
+    final List<String> filters = [crop, scaleInstruction, rotation];
+    filters.removeWhere((item) => item.isEmpty);
+    final String filter = filters.isNotEmpty && isFiltersEnabled
+        ? "-filter:v ${filters.join(",")}"
+        : "";
+    // ignore: unnecessary_string_escapes
+    final String execute = "-i \'$coverPath\' $filter -y $outputPath";
+
+    // PROGRESS CALLBACKS
+    await FFmpegKit.executeAsync(
+      execute,
+      (session) async {
+        final state =
+            FFmpegKitConfig.sessionStateToString(await session.getState());
+        final code = await session.getReturnCode();
+
+        if (code?.isValueSuccess() == true) {
+          onCompleted(File(outputPath));
+        } else {
+          if (onError != null) {
+            onError(
+              Exception(
+                  'FFmpeg process exited with state $state and return code $code.\n${await session.getOutput()}'),
+              StackTrace.current,
+            );
+          }
+          return;
+        }
+      },
+      null,
+      onProgress,
+    );
   }
 }
