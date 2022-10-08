@@ -70,7 +70,7 @@ class _AdminVideothumbnailSelectorState
           builder: (BuildContext context) =>
               CropScreen(controller: _controller)));
 
-  void _exportVideo() async {
+  Future<void> _exportVideo() async {
     _exportingProgress.value = 0;
     _isExporting.value = true;
     // NOTE: To use `-crf 1` and [VideoExportPreset] you need `ffmpeg_kit_flutter_min_gpl` package (with `ffmpeg_kit` only it won't work)
@@ -82,6 +82,9 @@ class _AdminVideothumbnailSelectorState
         if (!mounted) return;
         if (videoFileNew != null) {
           // context.read<VideoEditorProvider>().setFinalVideoFile(videoFileNew);
+          await context
+              .read<VideoEditorProvider>()
+              .setCoverImageFrame(afterFinalTouches: videoFileNew);
 
           Navigator.pushReplacement(
               context,
@@ -315,8 +318,8 @@ class _AdminVideothumbnailSelectorState
                               log("done creating cover, now export video");
                             });
 
-                            Future.delayed(Duration(seconds: 2), () {
-                              _exportVideo();
+                            Future.delayed(Duration(seconds: 2), () async {
+                              await _exportVideo();
                             });
                           } catch (e) {
                             _isExporting.value = false;

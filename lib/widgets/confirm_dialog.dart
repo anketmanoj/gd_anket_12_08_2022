@@ -1,6 +1,6 @@
 import 'package:diamon_rose_app/constants/styles/colors.dart';
 import 'package:diamon_rose_app/constants/styles/style.dart';
-import 'package:diamon_rose_app/share/localizations/l10n/localy.dart';
+
 import 'package:diamon_rose_app/widgets/validate_utils.dart';
 
 import 'package:flutter/material.dart';

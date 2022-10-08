@@ -6,7 +6,6 @@ import 'package:diamon_rose_app/Navigation/page.dart';
 import 'package:diamon_rose_app/constants/constant.dart';
 import 'package:diamon_rose_app/enum/video_source.dart';
 
-import 'package:diamon_rose_app/share/localizations/l10n/localy.dart';
 import 'package:diamon_rose_app/widgets/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;

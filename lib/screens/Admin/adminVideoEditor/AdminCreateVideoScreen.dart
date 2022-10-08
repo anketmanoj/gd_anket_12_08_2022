@@ -934,6 +934,9 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                   value.scale = details.scale *
                                                       _currentScale!;
                                                 });
+
+                                                dev.log(
+                                                    "scale == ${value.scale}");
                                               },
                                               child: Stack(
                                                 children: [

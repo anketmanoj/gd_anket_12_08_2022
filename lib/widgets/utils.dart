@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:diamon_rose_app/constants/styles/colors.dart';
-import 'package:diamon_rose_app/share/localizations/l10n/localy.dart';
+
 import 'package:diamon_rose_app/widgets/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

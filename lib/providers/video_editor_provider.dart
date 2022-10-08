@@ -25,6 +25,7 @@ class VideoEditorProvider extends ChangeNotifier {
   late VideoPlayerController _videoController;
   late File _bgMaterialThumnailFile;
   late File _coverGif;
+  late File _afterFinalTouchesFrame;
 
   // getters
 
@@ -39,6 +40,7 @@ class VideoEditorProvider extends ChangeNotifier {
   VideoPlayerController get getVideoPlayerController => _videoController;
   File get getBgMaterialThumnailFile => _bgMaterialThumnailFile;
   File get getCoverGif => _coverGif;
+  File get getAfterFinalTouchesFrame => _afterFinalTouchesFrame;
 
   void setPositionFromSlider(double value) {
     _positionFromSlider = value;
@@ -103,6 +105,20 @@ class VideoEditorProvider extends ChangeNotifier {
       notifyListeners();
     });
     log("done bg gif");
+  }
+
+  Future<void> setCoverImageFrame({required File afterFinalTouches}) async {
+    final Directory appDocumentDir = await getApplicationDocumentsDirectory();
+    final String rawDocumentPath = appDocumentDir.path;
+    final String outputPath = "${rawDocumentPath}/coverImage.jpg";
+
+    await FFmpegKit.execute(
+            "-y -i ${afterFinalTouches.path} -vf scale=-2:480 -vframes 1 ${outputPath}")
+        .then((value) {
+      _afterFinalTouchesFrame = File(outputPath);
+      notifyListeners();
+    });
+    log("done coverImage complete");
   }
 
   Future<void> setAfterEditorVideoController(File videoFile) async {

@@ -4,7 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:diamon_rose_app/constants/styles/colors.dart';
 import 'package:diamon_rose_app/constants/styles/style.dart';
 import 'package:diamon_rose_app/screens/VideoWorkAll/ar_record/ar_record_view_model.dart';
-import 'package:diamon_rose_app/share/localizations/l10n/localy.dart';
+
 import 'package:diamon_rose_app/widgets/countdown.dart';
 import 'package:diamon_rose_app/widgets/custom_scaffold.dart';
 import 'package:diamon_rose_app/widgets/single_selection_list.dart';

@@ -313,7 +313,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                 image: Image.file(
                                   context
                                       .read<VideoEditorProvider>()
-                                      .getCoverGif,
+                                      .getAfterFinalTouchesFrame,
                                   alignment: Alignment.center,
                                 ).image,
                                 fit: BoxFit.cover,

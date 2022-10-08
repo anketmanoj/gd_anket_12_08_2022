@@ -581,7 +581,7 @@ class VideoEditorController extends ChangeNotifier {
             5) {
           log("duration greater normal than 5s");
           String command =
-              " -i ${vidFilePath} -ss ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt())}  -t ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt() + 4)} -vf \"fps=20,scale=360:-1\" -loop 0 -y ${outputPath}";
+              " -i ${vidFilePath} -ss ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt())}  -t ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt() + 4)} -vf \"fps=25,scale=480:-1\" -loop 0 -y ${outputPath}";
           log("command for gif: $command");
           await FFmpegKit.execute(command).then((value) {
             log("done with gif");
@@ -591,7 +591,7 @@ class VideoEditorController extends ChangeNotifier {
           final double duration = double.parse(durationString);
           log("duration i normal $duration");
           String command =
-              " -i ${vidFilePath} -ss ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt())}  -t ${formatTime(duration.toInt())} -vf \"fps=20,scale=360:-1\" -loop 0 -y ${outputPath}";
+              " -i ${vidFilePath} -ss ${formatTime((selectedCoverVal!.timeMs.toDouble() / 1000).toInt())}  -t ${formatTime(duration.toInt())} -vf \"fps=25,scale=480:-1\" -loop 0 -y ${outputPath}";
           log(command);
           await FFmpegKit.execute(command).then((value) {
             log("done with gif");

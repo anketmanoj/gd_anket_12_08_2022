@@ -942,6 +942,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
                                                 // !Found rotation in degrees here
                                                 dev.log(
+                                                    "scale == ${value.scale}");
+                                                dev.log(
                                                     "rot = ${value.rotation! * 180 / pi}");
                                               },
                                               child: Stack(

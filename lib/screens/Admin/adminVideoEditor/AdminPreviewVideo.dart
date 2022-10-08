@@ -220,7 +220,7 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                 image: Image.file(
                                   context
                                       .read<VideoEditorProvider>()
-                                      .getCoverGif,
+                                      .getAfterFinalTouchesFrame,
                                   alignment: Alignment.center,
                                 ).image,
                                 fit: BoxFit.cover,
