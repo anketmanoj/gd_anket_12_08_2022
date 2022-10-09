@@ -34,6 +34,7 @@ import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/translations/codegen_loader.g.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -60,6 +61,8 @@ List<CameraDescription>? cameras;
 // ignore: avoid_void_async
 void main() async {
   await config();
+
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
   cameras = await availableCameras();
 

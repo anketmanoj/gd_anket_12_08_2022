@@ -18,6 +18,7 @@ import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -44,6 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     init();
+
     super.initState();
   }
 

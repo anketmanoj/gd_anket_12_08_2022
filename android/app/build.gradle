@@ -112,3 +112,5 @@ dependencies {
 configurations.all { 
     exclude group: 'com.google.android.gms', module: 'play-services-safetynet'
 }
+
+apply plugin: 'com.google.firebase.crashlytics'
