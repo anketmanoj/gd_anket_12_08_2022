@@ -220,7 +220,7 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                 image: Image.file(
                                   context
                                       .read<VideoEditorProvider>()
-                                      .getAfterFinalTouchesFrame,
+                                      .getCoverImage,
                                   alignment: Alignment.center,
                                 ).image,
                                 fit: BoxFit.cover,
@@ -865,7 +865,7 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                   bucket: "anketvideobucket",
                                   file: context
                                       .read<VideoEditorProvider>()
-                                      .getCoverGif,
+                                      .getCoverImage,
                                   filename:
                                       "${Timestamp.now().millisecondsSinceEpoch}_bgThumbnailGif.gif",
                                   region: "us-east-1",

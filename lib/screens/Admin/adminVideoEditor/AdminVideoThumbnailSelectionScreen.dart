@@ -82,9 +82,6 @@ class _AdminVideothumbnailSelectorState
         if (!mounted) return;
         if (videoFileNew != null) {
           // context.read<VideoEditorProvider>().setFinalVideoFile(videoFileNew);
-          await context
-              .read<VideoEditorProvider>()
-              .setCoverImageFrame(afterFinalTouches: videoFileNew);
 
           Navigator.pushReplacement(
               context,
@@ -107,11 +104,11 @@ class _AdminVideothumbnailSelectorState
 
   Future<void> _exportCover() async {
     _isExporting.value = true;
-    await _controller.extractCover(
+    await _controller.extractCoverImage(
       onCompleted: (cover) async {
         if (!mounted) return;
-        context.read<VideoEditorProvider>().setCoverGif(cover!);
-        log(context.read<VideoEditorProvider>().getCoverGif.path);
+        context.read<VideoEditorProvider>().setCoverImage(cover);
+        log(context.read<VideoEditorProvider>().getCoverImage.path);
         // await _controller.exportVideo(
         //   // preset: VideoExportPreset.medium,
         //   onProgress: (stats, value) => _exportingProgress.value = value,

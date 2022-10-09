@@ -453,8 +453,7 @@ class VideoEditorController extends ChangeNotifier {
     VideoExportPreset preset = VideoExportPreset.slow,
     bool isFiltersEnabled = true,
   }) async {
-    final String tempPath =
-        outDir ?? (await getApplicationDocumentsDirectory()).path;
+    final String tempPath = outDir ?? (await getTemporaryDirectory()).path;
     final String videoPath = file.path;
     // name ??= path.basenameWithoutExtension(videoPath);
     final int epoch = DateTime.now().millisecondsSinceEpoch;

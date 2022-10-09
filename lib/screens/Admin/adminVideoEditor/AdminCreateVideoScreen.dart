@@ -207,6 +207,8 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
     _videoController =
         context.read<VideoEditorProvider>().getVideoPlayerController;
 
+    _videoController.setLooping(false);
+
     _controller.video.setLooping(false);
 
     setState(() {});
@@ -788,7 +790,6 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
     // print(
     //     "thumbnail position ${_fullLayout.width * _controller.trimPosition - _thumbnailPosition + 0.0}");
     // print("total width ${_fullLayout.width}");
-    // print(_controller.video.value.position);
     return _fullLayout.width * _controller.trimPosition -
         _thumbnailPosition +
         0.0;
@@ -1585,8 +1586,9 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                     controller: _controller);
                                               },
                                               child: SizedBox(
-                                                  width: _fullLayout.width,
-                                                  child: Stack(children: [
+                                                width: _fullLayout.width,
+                                                child: Stack(
+                                                  children: [
                                                     NotificationListener<
                                                         ScrollNotification>(
                                                       child:
@@ -1697,7 +1699,9 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                         },
                                                       ),
                                                     )
-                                                  ])),
+                                                  ],
+                                                ),
+                                              ),
                                             );
                                           }),
                                         )
