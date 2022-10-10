@@ -24,6 +24,7 @@ import 'package:diamon_rose_app/screens/testVideoEditor/testingVideoOutput.dart'
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/img_seq_animator.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/extensions.dart';
@@ -45,7 +46,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:giphy_get/giphy_get.dart';
 import 'package:helpers/helpers/transition.dart';
-import 'package:image_sequence_animator/image_sequence_animator.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
@@ -390,14 +390,16 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                   list.value.add(ARList(
                     arId: myAr.id,
                     arIndex: arVal,
-                    height: (videoContainerKey.globalPaintBounds!.height *
-                            videoHeight) /
-                        1920,
+                    height: ((videoContainerKey.globalPaintBounds!.height *
+                                videoHeight) /
+                            1920) /
+                        1.5,
                     rotation: 0,
                     scale: 1,
-                    width: (videoContainerKey.globalPaintBounds!.width *
-                            videoWidth) /
-                        1080,
+                    width: ((videoContainerKey.globalPaintBounds!.width *
+                                videoWidth) /
+                            1080) /
+                        1.5,
                     xPosition: 0,
                     yPosition: 0,
                     pathsForVideoFrames: _fullPathsOnline,
@@ -1060,6 +1062,12 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                     waitUntilCacheIsComplete:
                                                                         true,
                                                                     fps: 35,
+                                                                    frameHeight:
+                                                                        value
+                                                                            .height!,
+                                                                    frameWidth:
+                                                                        value
+                                                                            .width!,
                                                                     isAutoPlay:
                                                                         false,
                                                                     onPlaying: value.layerType ==
@@ -1193,8 +1201,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                     100),
                                                         left: arVal
                                                             .startingPositon,
-                                                        key: const ValueKey(
-                                                            "item 1"),
+                                                        key: UniqueKey(),
                                                         child: Container(
                                                           height: 50,
                                                           width: arVal.finishedCaching!

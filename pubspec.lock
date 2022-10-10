@@ -175,21 +175,21 @@ packages:
       name: cached_network_image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.2.0"
+    version: "3.2.2"
   cached_network_image_platform_interface:
     dependency: transitive
     description:
       name: cached_network_image_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "2.0.0"
   cached_network_image_web:
     dependency: transitive
     description:
       name: cached_network_image_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   cached_video_player:
     dependency: "direct main"
     description:
@@ -504,14 +504,14 @@ packages:
       name: extended_image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.1.0"
+    version: "6.3.1"
   extended_image_library:
     dependency: transitive
     description:
       name: extended_image_library
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.2.0"
+    version: "3.4.0"
   fake_async:
     dependency: transitive
     description:
@@ -1129,13 +1129,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.6.1"
-  image_sequence_animator:
-    dependency: "direct main"
-    description:
-      name: image_sequence_animator
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
   in_app_purchase:
     dependency: "direct main"
     description:
@@ -2234,5 +2227,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.17.0-0 <3.0.0"
-  flutter: ">=2.10.0"
+  dart: ">=2.18.0 <3.0.0"
+  flutter: ">=3.3.0"

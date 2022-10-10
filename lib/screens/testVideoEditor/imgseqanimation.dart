@@ -11,7 +11,7 @@ import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
-import 'package:image_sequence_animator/image_sequence_animator.dart';
+import 'package:diamon_rose_app/services/img_seq_animator.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:sizer/sizer.dart';
 import 'package:spring_button/spring_button.dart';

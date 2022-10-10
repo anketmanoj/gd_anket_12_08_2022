@@ -954,134 +954,124 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "${LocaleKeys.deleteaccount.tr()}",
                 ),
-                StreamBuilder<DocumentSnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection("admin")
-                        .doc("adminUsers")
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      AdminList adminList = AdminList.fromMap(
-                          snapshot.data!.data() as Map<String, dynamic>);
-
-                      if (adminList.adminList
-                          .contains(context.read<Authentication>().getUserId)) {
-                        return Column(
-                          children: [
-                            ListTile(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  PageTransition(
-                                    child: UploadVideoScreen(),
-                                    type: PageTransitionType.fade,
-                                  ),
-                                );
-                              },
-                              title: Text(
-                                LocaleKeys.adminupload.tr(),
-                                style: TextStyle(
-                                  color: Colors.yellow,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              leading: Icon(
-                                Icons.admin_panel_settings,
-                                color: Colors.yellow,
-                              ),
+                Visibility(
+                  visible: adminUserId
+                      .contains(context.read<Authentication>().getUserId),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: UploadVideoScreen(),
+                              type: PageTransitionType.fade,
                             ),
-                            ListTile(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  PageTransition(
-                                    child: AdminUserPromoScreen(),
-                                    type: PageTransitionType.fade,
-                                  ),
-                                );
-                              },
-                              title: Text(
-                                LocaleKeys.adminUserPromocodes.tr(),
-                                style: TextStyle(
-                                  color: Colors.yellow,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              leading: Icon(
-                                Icons.admin_panel_settings,
-                                color: Colors.yellow,
-                              ),
+                          );
+                        },
+                        title: Text(
+                          LocaleKeys.adminupload.tr(),
+                          style: TextStyle(
+                            color: Colors.yellow,
+                            fontSize: 16,
+                          ),
+                        ),
+                        leading: Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.yellow,
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: AdminUserPromoScreen(),
+                              type: PageTransitionType.fade,
                             ),
-                            ListTile(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  PageTransition(
-                                    child: SelectUserVideoEditor(),
-                                    type: PageTransitionType.fade,
-                                  ),
-                                );
-                              },
-                              title: Text(
-                                LocaleKeys.adminVideoEditor.tr(),
-                                style: TextStyle(
-                                  color: Colors.yellow,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              leading: Icon(
-                                Icons.admin_panel_settings,
-                                color: Colors.yellow,
-                              ),
+                          );
+                        },
+                        title: Text(
+                          LocaleKeys.adminUserPromocodes.tr(),
+                          style: TextStyle(
+                            color: Colors.yellow,
+                            fontSize: 16,
+                          ),
+                        ),
+                        leading: Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.yellow,
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: SelectUserVideoEditor(),
+                              type: PageTransitionType.fade,
                             ),
-                            ListTile(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  PageTransition(
-                                    child: AdminArOptions(),
-                                    type: PageTransitionType.fade,
-                                  ),
-                                );
-                              },
-                              title: Text(
-                                LocaleKeys.adminAROptions.tr(),
-                                style: TextStyle(
-                                  color: Colors.yellow,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              leading: Icon(
-                                Icons.admin_panel_settings,
-                                color: Colors.yellow,
-                              ),
+                          );
+                        },
+                        title: Text(
+                          LocaleKeys.adminVideoEditor.tr(),
+                          style: TextStyle(
+                            color: Colors.yellow,
+                            fontSize: 16,
+                          ),
+                        ),
+                        leading: Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.yellow,
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: AdminArOptions(),
+                              type: PageTransitionType.fade,
                             ),
-                            ListTile(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  PageTransition(
-                                    child: UserDataAdminControl(),
-                                    type: PageTransitionType.fade,
-                                  ),
-                                );
-                              },
-                              title: Text(
-                                LocaleKeys.adminUserControl.tr(),
-                                style: TextStyle(
-                                  color: Colors.yellow,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              leading: Icon(
-                                Icons.admin_panel_settings,
-                                color: Colors.yellow,
-                              ),
+                          );
+                        },
+                        title: Text(
+                          LocaleKeys.adminAROptions.tr(),
+                          style: TextStyle(
+                            color: Colors.yellow,
+                            fontSize: 16,
+                          ),
+                        ),
+                        leading: Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.yellow,
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: UserDataAdminControl(),
+                              type: PageTransitionType.fade,
                             ),
-                          ],
-                        );
-                      }
-                      return SizedBox();
-                    }),
+                          );
+                        },
+                        title: Text(
+                          LocaleKeys.adminUserControl.tr(),
+                          style: TextStyle(
+                            color: Colors.yellow,
+                            fontSize: 16,
+                          ),
+                        ),
+                        leading: Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.yellow,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 ListTile(
                   onTap: () {
                     logOutDialog(context);

@@ -11,7 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:spring_button/spring_button.dart';
-import 'package:image_sequence_animator/image_sequence_animator.dart';
+import 'package:diamon_rose_app/services/img_seq_animator.dart';
 
 class ImgServerTest extends StatefulWidget {
   ImgServerTest({Key? key, this.title}) : super(key: key);

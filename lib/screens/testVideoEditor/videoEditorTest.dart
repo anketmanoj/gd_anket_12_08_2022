@@ -10,7 +10,7 @@
 // import 'package:flutter/services.dart';
 // import 'package:flutter_gif/flutter_gif.dart';
 // import 'package:image_picker/image_picker.dart';
-// import 'package:image_sequence_animator/image_sequence_animator.dart';
+// import 'package:diamon_rose_app/services/img_seq_animator.dart';
 // import 'package:path_provider/path_provider.dart';
 // import 'package:permission_handler/permission_handler.dart';
 

@@ -697,7 +697,8 @@ PreferredSizeWidget AppBarWidget(
     {required String text,
     required BuildContext context,
     bool? goBack,
-    List<Widget>? actions}) {
+    List<Widget>? actions,
+    Widget? leadingWidget}) {
   final Size size = MediaQuery.of(context).size;
   return AppBar(
     automaticallyImplyLeading: goBack ?? true,
@@ -708,6 +709,7 @@ PreferredSizeWidget AppBarWidget(
         bottomLeft: Radius.circular(80),
       ),
     ),
+    leading: leadingWidget,
     centerTitle: true,
     actions: actions,
     title: Text(

@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:diamon_rose_app/services/img_seq_animator.dart';
 import 'package:flutter/material.dart';
-import 'package:image_sequence_animator/image_sequence_animator.dart';
 import 'package:just_audio/just_audio.dart';
 
 enum LayerType {

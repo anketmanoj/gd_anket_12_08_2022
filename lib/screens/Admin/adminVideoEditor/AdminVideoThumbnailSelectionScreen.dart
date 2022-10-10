@@ -19,6 +19,7 @@ import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:helpers/helpers/transition.dart';
 import 'package:page_transition/page_transition.dart';
@@ -161,8 +162,20 @@ class _AdminVideothumbnailSelectorState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          AppBarWidget(text: LocaleKeys.finaltouches.tr(), context: context),
+      appBar: AppBarWidget(
+        text: LocaleKeys.finaltouches.tr(),
+        context: context,
+        leadingWidget: IconButton(
+          onPressed: () async {
+            log("clicked");
+            await DefaultCacheManager().emptyCache();
+            Get.back();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+          ),
+        ),
+      ),
       backgroundColor: constantColors.navButton,
       body: _controller.initialized
           ? SafeArea(
@@ -314,6 +327,8 @@ class _AdminVideothumbnailSelectorState
                             await _exportCover().then((value) {
                               log("done creating cover, now export video");
                             });
+
+                            await DefaultCacheManager().emptyCache();
 
                             Future.delayed(Duration(seconds: 2), () async {
                               await _exportVideo();
