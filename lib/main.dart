@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:isolate';
 
@@ -60,25 +61,29 @@ List<CameraDescription>? cameras;
 
 // ignore: avoid_void_async
 void main() async {
-  await config();
+  await runZonedGuarded(() async {
+    await config();
 
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
-  cameras = await availableCameras();
+    cameras = await availableCameras();
 
-  runApp(Provider<AppleSignInAvailable>.value(
-    value: appleSignInAvailable,
-    child: EasyLocalization(
-      supportedLocales: [Locale('en'), Locale('ja')],
-      path:
-          'assets/translations', // <-- change the path of the translation files
-      fallbackLocale: Locale('ja'),
-      saveLocale: true,
-      assetLoader: CodegenLoader(),
+    runApp(Provider<AppleSignInAvailable>.value(
+      value: appleSignInAvailable,
+      child: EasyLocalization(
+        supportedLocales: [Locale('en'), Locale('ja')],
+        path:
+            'assets/translations', // <-- change the path of the translation files
+        fallbackLocale: Locale('ja'),
+        saveLocale: true,
+        assetLoader: CodegenLoader(),
 
-      child: MyApp(),
-    ),
-  ));
+        child: MyApp(),
+      ),
+    ));
+  },
+      (error, stack) =>
+          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true));
 }
 
 // Future createIsolate(int currentLen) async {

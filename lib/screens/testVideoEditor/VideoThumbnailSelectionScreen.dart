@@ -99,10 +99,10 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
   Future<void> _exportCover() async {
     _exportingProgress.value = 0;
     _isExporting.value = true;
-    await _controller.extractCoverImage(
+    await _controller.extractCover(
       onCompleted: (cover) async {
         if (!mounted) return;
-        context.read<VideoEditorProvider>().setCoverImage(cover);
+        context.read<VideoEditorProvider>().setCoverGif(cover!);
 
         // ignore: unawaited_futures
 
