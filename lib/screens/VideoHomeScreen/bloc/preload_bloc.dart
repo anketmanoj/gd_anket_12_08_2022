@@ -35,13 +35,16 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
         log("${e.filterOption} Anket chosen");
         switch (e.filterOption) {
           case HomeScreenOptions.Free:
+            yield state.copyWith(focusedIndex: 0);
             state.urls.clear();
             await ApiService.loadFreeOnly();
+            log("Loaded new");
             final List<Video> _urls = await ApiService.getVideos();
             state.urls.addAll(
                 _urls.where((element) => element.isFree == true).toList());
 
             log("state length in free == ${state.urls.length}");
+            log("focused index == ${state.focusedIndex} ||");
 
             /// Initialize 1st video
             await _initializeControllerAtIndex(0);
@@ -53,7 +56,10 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
             await _initializeControllerAtIndex(1);
 
             yield state.copyWith(
-                filterOption: e.filterOption, isLoading: false);
+              filterOption: e.filterOption,
+              isLoading: false,
+              focusedIndex: 0,
+            );
 
             break;
           case HomeScreenOptions.Paid:

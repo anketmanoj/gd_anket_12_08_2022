@@ -13,14 +13,17 @@ import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
 import 'package:diamon_rose_app/providers/homeScreenProvider.dart';
 import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminThumbnailPreview.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
 import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
+import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/services/mux/mux_video_stream.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
@@ -914,6 +917,14 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                               await DefaultCacheManager().emptyCache();
 
                               if (result == true) {
+                                BlocProvider.of<PreloadBloc>(context,
+                                        listen: false)
+                                    .add(PreloadEvent.filterBetweenFreePaid(
+                                        HomeScreenOptions.Free));
+
+                                BlocProvider.of<PreloadBloc>(context,
+                                        listen: false)
+                                    .add(PreloadEvent.onVideoIndexChanged(0));
                                 log("works!!@!!");
 
                                 widget.arList.forEach((arVal) {
