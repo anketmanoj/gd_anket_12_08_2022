@@ -423,12 +423,17 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
             }
 
             _controllerSeekTo(0);
+            // setState(() {});
+
             Navigator.pop(context);
             Navigator.pop(context);
+
+            arIndexVal.value += 1;
+
+            dev.log("list AR ${arIndexVal.value} | index counter == $arVal");
             setState(() {
               loading = false;
             });
-            print("folder name $folderName");
 
             //! #############################################################
           });
@@ -589,6 +594,9 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                 }
               });
               _controllerSeekTo(0);
+              effectIndexVal.value += 1;
+              dev.log(
+                  "list effect = ${effectIndexVal.value} || index counter == $arVal");
               Navigator.pop(context);
               // Navigator.pop(context);
 
@@ -839,6 +847,10 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                 list.value.last.layerType == LayerType.AR
                     ? indexCounter.value = indexCounter.value + 2
                     : indexCounter.value = indexCounter.value + 1;
+              }
+
+              if (indexCounter.value <= 0) {
+                indexCounter.value = 1;
               }
 
               final File gifFile = await getImage(
@@ -1783,38 +1795,119 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                 "Delete ${selected!.layerType == LayerType.Effect ? 'Effect' : 'AR'}?",
                             showCancelBtn: true,
                             onConfirmBtnTap: () async {
-                              if (selected!.layerType == LayerType.AR) {
-                                final indexVal = list.value.indexWhere(
-                                    (element) =>
-                                        element.arIndex! == selected!.arIndex!);
+                              dev.log(
+                                  "start indexcounter == ${indexCounter.value}");
 
-                                for (int i = indexVal + 1;
-                                    i < list.value.length;
-                                    i++) {
-                                  // "list index $i goes from arIndex of ${list.value[i].arIndex} to ${list.value[i].arIndex! - 2}"
-                                  list.value[i].arIndex =
-                                      list.value[i].arIndex! - 2;
+                              final indexVal = list.value.indexWhere(
+                                  (element) =>
+                                      element.arIndex! == selected!.arIndex!);
+
+                              dev.log(
+                                  "selected arindex = ${selected!.arIndex} | || ar type == ${selected!.layerType} || index val; = $indexVal ");
+                              // if (selected!.layerType == LayerType.AR) {
+                              //   final indexVal = list.value.indexWhere(
+                              //       (element) =>
+                              //           element.arIndex! == selected!.arIndex!);
+
+                              //   final int lastAtIndex = indexCounter.value;
+
+                              //   for (int i = indexVal + 1;
+                              //       i < lastAtIndex;
+                              //       i++) {
+                              //     // "list index $i goes from arIndex of ${list.value[i].arIndex} to ${list.value[i].arIndex! - 2}"
+                              //     list.value[i].arIndex =
+                              //         list.value[i].arIndex! - 2;
+                              //   }
+                              // } else {
+                              // final indexVal = list.value.indexWhere(
+                              //     (element) =>
+                              //         element.arIndex! == selected!.arIndex!);
+
+                              //   final int lastAtIndex = indexCounter.value;
+
+                              //   for (int i = indexVal; i < lastAtIndex; i++) {
+                              //     // "list index $i goes from arIndex of ${list.value[i].arIndex} to ${list.value[i].arIndex! - 1}"
+                              //     list.value[i].arIndex =
+                              //         list.value[i].arIndex! - 1;
+                              //   }
+                              // }
+
+                              // await deleteFile(selected!.pathsForVideoFrames!);
+
+                              // Future.delayed(Duration(seconds: 2));
+
+                              for (final ARList element in list.value) {
+                                if (selected!.arIndex! > element.arIndex!) {
+                                  dev.log(
+                                      "arIndex == ${element.arIndex!} || ar type == ${element.layerType} ignore this");
                                 }
-                              } else {
-                                final indexVal = list.value.indexWhere(
-                                    (element) =>
-                                        element.arIndex! == selected!.arIndex!);
 
-                                for (int i = indexVal + 1;
-                                    i < list.value.length;
-                                    i++) {
-                                  // "list index $i goes from arIndex of ${list.value[i].arIndex} to ${list.value[i].arIndex! - 1}"
-                                  list.value[i].arIndex =
-                                      list.value[i].arIndex! - 1;
+                                if (selected!.arIndex! < element.arIndex!) {
+                                  switch (selected!.layerType!) {
+                                    case LayerType.AR:
+                                      dev.log(
+                                          "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === move - 2 places (before moving)");
+                                      element.arIndex = element.arIndex! - 2;
+                                      dev.log(
+                                          "arIndex == ${element.arIndex! - 2} || ar type == ${element.layerType} === moved (after moving)");
+
+                                      break;
+                                    case LayerType.Effect:
+                                      dev.log(
+                                          "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === move - 1 place (before moving)");
+                                      element.arIndex = element.arIndex! - 1;
+                                      dev.log(
+                                          "arIndex == ${element.arIndex! - 1} || ar type == ${element.layerType} === moved (after moving)");
+
+                                      break;
+                                  }
+                                }
+
+                                if (selected!.arIndex! == element.arIndex) {
+                                  dev.log(
+                                      "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === remove this");
+                                  dev.log(
+                                      "len before removing == ${list.value.length}");
+
+                                  // list.value.remove(selected);
+                                  dev.log(
+                                      "len after removing == ${list.value.length - 1}");
                                 }
                               }
 
-                              await deleteFile(selected!.pathsForVideoFrames!);
+                              switch (selected!.layerType!) {
+                                case LayerType.AR:
+                                  dev.log(
+                                      "AR INDEX BEFORE = ${arIndexVal.value}");
+                                  indexCounter.value = indexCounter.value - 2;
+                                  arIndexVal.value -= 1;
+                                  dev.log("AR INDEX NOW = ${arIndexVal.value}");
+                                  break;
+                                case LayerType.Effect:
+                                  dev.log(
+                                      "EFFECT INDEX BEFORE = ${effectIndexVal.value}");
+                                  indexCounter.value = indexCounter.value - 1;
+                                  effectIndexVal.value -= 1;
+                                  await deleteFile(
+                                      selected!.pathsForVideoFrames!);
+                                  dev.log(
+                                      "EFFECT INDEX NOW = ${effectIndexVal.value}");
+                                  break;
+                              }
 
                               setState(() {
+                                // selected!.layerType == LayerType.AR
+                                //     ? indexCounter.value =
+                                //         indexCounter.value - 2
+                                //     : indexCounter.value =
+                                //         indexCounter.value - 1;
                                 list.value.remove(selected);
+
                                 _controllerSeekTo(0);
                               });
+
+                              dev.log(
+                                  "end indexcounter == ${indexCounter.value}");
 
                               Navigator.pop(context);
                             },
@@ -2614,6 +2707,10 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                     indexCounter.value + 2
                                                 : indexCounter.value =
                                                     indexCounter.value + 1;
+                                          }
+
+                                          if (indexCounter.value <= 0) {
+                                            indexCounter.value = 1;
                                           }
 
                                           await runFFmpegCommand(

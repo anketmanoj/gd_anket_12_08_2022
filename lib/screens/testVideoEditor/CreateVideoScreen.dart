@@ -847,7 +847,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                     : indexCounter.value = indexCounter.value + 1;
               }
 
-              if (indexCounter.value == 0) {
+              if (indexCounter.value <= 0) {
                 indexCounter.value = 1;
               }
 
