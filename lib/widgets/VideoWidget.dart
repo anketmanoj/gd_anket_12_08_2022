@@ -90,6 +90,13 @@ class VideoWidget extends StatelessWidget {
                     if (visiblePercentage == 100) {
                       log("${video.videotitle} played");
 
+                      context.read<FirebaseOperations>().updatePostView(
+                            videoId: video.id,
+                            useruidVal:
+                                context.read<Authentication>().getUserId,
+                            videoVal: video,
+                          );
+
                       controller.play();
                       if (video.isPaid &&
                           !video.boughtBy.contains(

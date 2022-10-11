@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:diamon_rose_app/screens/HelpScreen/tutorialVideos.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateMessage.dart';
@@ -45,7 +46,7 @@ class _RecommendedVideoPageState extends State<RecommendedVideoPage>
   Widget build(BuildContext context) {
     return BlocBuilder<PreloadBloc, PreloadState>(
       builder: (context, state) {
-        if (state.isLoading == true) {
+        if (state.isLoading) {
           return Container(
             height: 100.h,
             width: 100.w,
@@ -64,6 +65,35 @@ class _RecommendedVideoPageState extends State<RecommendedVideoPage>
                 Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: CircularProgressIndicator()),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  LocaleKeys.inTheMeantime.tr(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: constantColors.whiteColor,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            child: TutorialVideoScreen(),
+                            type: PageTransitionType.fade));
+                  },
+                  child: Container(
+                    height: 30.h,
+                    width: 70.w,
+                    // color: constantColors.whiteColor,
+                    child: Image.asset("assets/images/tipsntricks.png"),
+                  ),
+                ),
               ],
             ),
           );

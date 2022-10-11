@@ -1032,6 +1032,7 @@ class FirebaseOperations with ChangeNotifier {
         'totalBilled': 0,
         'verifiedUser': isverified,
         "videoType": "video",
+        'views': 0,
       }).then((value) {
         arIdsVal.forEach((arUidVal) async {
           await FirebaseFirestore.instance
@@ -1077,7 +1078,7 @@ class FirebaseOperations with ChangeNotifier {
                       .set({
                     "alpha": arSnapshot.data()!['alpha'],
                     "audioFile": arSnapshot.data()!['audioFile'],
-                    "hideItem": arSnapshot.data()!['hideItem'],
+                    "hideItem": false,
                     "audioFlag": arSnapshot.data()!['audioFlag'],
                     "gif": arSnapshot.data()!['gif'],
                     "id": "${arSnapshot.data()!['id']}${id}",
@@ -1121,7 +1122,7 @@ class FirebaseOperations with ChangeNotifier {
                       .set({
                     "gif": arSnapshot.data()!['gif'],
                     "layerType": arSnapshot.data()!['layerType'],
-                    "hideItem": arSnapshot.data()!['hideItem'],
+                    "hideItem": false,
                     "timestamp": arSnapshot.data()!['timestamp'],
                     "id": "${arSnapshot.data()!['id']}${id}",
                     "ownerId": arSnapshot.data()!['ownerId'],
@@ -1158,7 +1159,7 @@ class FirebaseOperations with ChangeNotifier {
                       .doc("${arUidVal}${id}")
                       .set({
                     "id": "${arSnapshot.data()!['id']}${id}",
-                    "hideItem": arSnapshot.data()!['hideItem'],
+                    "hideItem": false,
                     "gif": arSnapshot.data()!['gif'],
                     "main": arSnapshot.data()!['main'],
                     'layerType': 'Background',
@@ -1369,6 +1370,7 @@ class FirebaseOperations with ChangeNotifier {
         'totalBilled': 0,
         'verifiedUser': isverified,
         "videoType": "video",
+        'views': 0,
       }).then((value) {
         arIdsVal.forEach((arUidVal) async {
           await FirebaseFirestore.instance
@@ -1673,6 +1675,7 @@ class FirebaseOperations with ChangeNotifier {
         'totalBilled': 0,
         'verifiedUser': isverified,
         'videoType': 'arView',
+        'views': 0,
       }).then((value) async {
         await addArToCollection(
           ownerName: initUserName,
@@ -3263,6 +3266,7 @@ class FirebaseOperations with ChangeNotifier {
       'totalBilled': 0,
       'verifiedUser': isverifiedVal,
       "videoType": "video",
+      'views': 0,
     }).then((value) async {
       log("now moving materials");
 

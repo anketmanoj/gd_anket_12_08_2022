@@ -42,6 +42,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:giphy_get/giphy_get.dart';
@@ -390,16 +391,14 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                   list.value.add(ARList(
                     arId: myAr.id,
                     arIndex: arVal,
-                    height: ((videoContainerKey.globalPaintBounds!.height *
-                                videoHeight) /
-                            1920) /
-                        1.5,
+                    height: (videoContainerKey.globalPaintBounds!.height *
+                            videoHeight) /
+                        1920,
                     rotation: 0,
                     scale: 1,
-                    width: ((videoContainerKey.globalPaintBounds!.width *
-                                videoWidth) /
-                            1080) /
-                        1.5,
+                    width: (videoContainerKey.globalPaintBounds!.width *
+                            videoWidth) /
+                        1080,
                     xPosition: 0,
                     yPosition: 0,
                     pathsForVideoFrames: _fullPathsOnline,
@@ -1237,10 +1236,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                     arVal.layerType ==
                                                                         LayerType
                                                                             .AR
-                                                                ? Image.network(
-                                                                    arVal.pathsForVideoFrames![
-                                                                        0],
-                                                                  )
+                                                                ? Image.file(arVal
+                                                                    .arCutOutFile!)
                                                                 : arVal.layerType ==
                                                                         LayerType
                                                                             .Effect
@@ -1764,6 +1761,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                           //   await deleteFile(arVal.pathsForVideoFrames!);
                           // }
                         }
+                        await DefaultCacheManager().emptyCache();
                         Navigator.pop(context);
                       },
                     ),

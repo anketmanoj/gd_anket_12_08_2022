@@ -10,6 +10,7 @@ import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:diamon_rose_app/services/img_seq_animator.dart';
 import 'package:just_audio/just_audio.dart';
@@ -269,7 +270,8 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
           ),
         ],
         leading: IconButton(
-          onPressed: () {
+          onPressed: () async {
+            await DefaultCacheManager().emptyCache();
             imageSequenceAnimator!.dispose();
             _player!.dispose();
             controller!.dispose();
@@ -386,7 +388,7 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                                                   key: Key("online"),
                                                   isAutoPlay: true,
                                                   isOnline: true,
-                                                  fps: 30,
+                                                  fps: 35,
                                                   waitUntilCacheIsComplete:
                                                       true,
                                                   fullPaths: widget.MyAR.imgSeq,

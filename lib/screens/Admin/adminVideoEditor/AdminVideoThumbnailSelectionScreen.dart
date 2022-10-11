@@ -168,7 +168,7 @@ class _AdminVideothumbnailSelectorState
         leadingWidget: IconButton(
           onPressed: () async {
             log("clicked");
-            await DefaultCacheManager().emptyCache();
+
             Get.back();
           },
           icon: Icon(
@@ -327,8 +327,6 @@ class _AdminVideothumbnailSelectorState
                             await _exportCover().then((value) {
                               log("done creating cover, now export video");
                             });
-
-                            await DefaultCacheManager().emptyCache();
 
                             Future.delayed(Duration(seconds: 2), () async {
                               await _exportVideo();

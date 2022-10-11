@@ -21,6 +21,7 @@ import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:intl/intl.dart';
@@ -58,7 +59,7 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
   TextEditingController _videoCaptionController = TextEditingController();
   TextEditingController _contentPrice = TextEditingController();
 
-  String? _setContentPrice;
+  ValueNotifier<String> _setContentPrice = ValueNotifier<String>("");
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isFree = true;
   bool _isSubscription = false;
@@ -74,7 +75,7 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
 
   TextEditingController _contentDiscount = TextEditingController();
 
-  String _setContentDiscount = "";
+  ValueNotifier<String> _setContentDiscount = ValueNotifier<String>("");
 
   // Function to pick date
   Future<void> _selectEndDate(BuildContext context) async {
@@ -657,9 +658,7 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                       },
                                       controller: _contentPrice,
                                       onChanged: (value) {
-                                        setState(() {
-                                          _setContentPrice = value;
-                                        });
+                                        _setContentPrice.value = value;
                                       },
                                       keyboardType: TextInputType.number,
                                       decoration: InputDecoration(
@@ -728,9 +727,7 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                         },
                                         controller: _contentDiscount,
                                         onChanged: (value) {
-                                          setState(() {
-                                            _setContentDiscount = value;
-                                          });
+                                          _setContentDiscount.value = value;
                                         },
                                         keyboardType: TextInputType.number,
                                         decoration: InputDecoration(
@@ -867,7 +864,7 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                       .read<VideoEditorProvider>()
                                       .getCoverImage,
                                   filename:
-                                      "${Timestamp.now().millisecondsSinceEpoch}_bgThumbnailGif.gif",
+                                      "${Timestamp.now().millisecondsSinceEpoch}_bgThumbnailGif.jpg",
                                   region: "us-east-1",
                                   destDir:
                                       "${Timestamp.now().millisecondsSinceEpoch}");
@@ -914,6 +911,7 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                   );
 
                               log("done uploading");
+                              await DefaultCacheManager().emptyCache();
 
                               if (result == true) {
                                 log("works!!@!!");

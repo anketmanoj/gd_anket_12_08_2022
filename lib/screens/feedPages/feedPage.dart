@@ -30,6 +30,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
@@ -118,6 +119,8 @@ class _FeedPageState extends State<FeedPage> {
         print(
             'initUserData completed, user data is now ready to be used || ${Provider.of<FirebaseOperations>(context, listen: false).fcmToken}');
       });
+
+      await DefaultCacheManager().emptyCache();
     });
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       DynamicLinkService.retrieveDynamicLink(context);

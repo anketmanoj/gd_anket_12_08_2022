@@ -447,6 +447,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
               if (_cacheStartDateTime == null)
                 _cacheStartDateTime = DateTime.now();
               _currentCachedOnlineFrame = CachedNetworkImage(
+                // key: UniqueKey(),
                 memCacheWidth: (widget.frameWidth).toInt(),
                 memCacheHeight: (widget.frameHeight).toInt(),
                 maxHeightDiskCache: (widget.frameHeight).toInt(),
@@ -469,7 +470,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
                   else
                     return Container();
                 },
-                color: Colors.red,
+                color: Colors.transparent,
                 fit: widget.fit,
               );
             }
@@ -484,7 +485,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
               if (_previousFrame < _frameCount) {
                 log("here now anket dev");
                 _currentDisplayedOnlineFrame = CachedNetworkImage(
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  // key: UniqueKey(),
                   memCacheWidth: (widget.frameWidth).toInt(),
                   memCacheHeight: (widget.frameHeight).toInt(),
                   maxHeightDiskCache: (widget.frameHeight).toInt(),
@@ -495,6 +496,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
                   fadeOutDuration: const Duration(milliseconds: 0),
                   fadeInDuration: const Duration(milliseconds: 0),
                   fit: widget.fit,
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
                 );
               }
             }

@@ -22,7 +22,7 @@ import 'package:get/get.dart' hide Trans;
 import 'package:helpers/helpers/transition.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class VideothumbnailSelector extends StatefulWidget {
   const VideothumbnailSelector({Key? key, required this.arList})
@@ -99,10 +99,10 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
   Future<void> _exportCover() async {
     _exportingProgress.value = 0;
     _isExporting.value = true;
-    await _controller.extractCover(
+    await _controller.extractCoverImage(
       onCompleted: (cover) async {
         if (!mounted) return;
-        context.read<VideoEditorProvider>().setCoverGif(cover!);
+        context.read<VideoEditorProvider>().setCoverImage(cover);
 
         // ignore: unawaited_futures
 
@@ -124,8 +124,20 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          AppBarWidget(text: LocaleKeys.finaltouches.tr(), context: context),
+      appBar: AppBarWidget(
+        text: LocaleKeys.finaltouches.tr(),
+        context: context,
+        leadingWidget: IconButton(
+          onPressed: () async {
+            log("clicked");
+            // await DefaultCacheManager().emptyCache();
+            Get.back();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+          ),
+        ),
+      ),
       backgroundColor: constantColors.navButton,
       body: _controller.initialized
           ? SafeArea(
