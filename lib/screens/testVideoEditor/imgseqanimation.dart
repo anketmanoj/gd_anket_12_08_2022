@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:diamon_rose_app/main.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
@@ -94,20 +95,21 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
   }
 
   @override
-  void dispose() {
-    imageSequenceAnimator!.dispose();
-    _player!.dispose();
-    controller!.dispose();
+  void dispose() async {
+    await _player!.dispose();
+    await controller!.dispose();
+    // imageSequenceAnimator!.stop();
+    // imageSequenceAnimator!.dispose();
+    log("disposed");
 
     super.dispose();
-    log("disposed");
   }
 
   Future<void> _init() async {
     if (widget.MyAR.audioFlag == true) {
       try {
         await _player!.setUrl(widget.MyAR.audioFile);
-        _player!.pause();
+        await _player!.pause();
       } catch (e) {
         log("Audio error == ${e.toString()}");
       }
@@ -272,11 +274,12 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
         leading: IconButton(
           onPressed: () async {
             await DefaultCacheManager().emptyCache();
-            imageSequenceAnimator!.dispose();
-            _player!.dispose();
-            controller!.dispose();
-            super.dispose();
-            log("disposed");
+
+            // imageSequenceAnimator!.dispose();
+            // _player!.dispose();
+            // controller!.dispose();
+            // super.dispose();
+            // log("disposed");
             Navigator.pop(context);
           },
           icon: Icon(Icons.arrow_back_ios),
@@ -385,14 +388,15 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                                                   0,
                                                   "png",
                                                   30,
-                                                  key: Key("online"),
+                                                  key: Key(
+                                                      "online+${widget.MyAR.id}"),
                                                   isAutoPlay: true,
                                                   isOnline: true,
-                                                  fps: 35,
+                                                  fps: 28,
                                                   waitUntilCacheIsComplete:
                                                       true,
-                                                  frameHeight: 1366,
-                                                  frameWidth: 768,
+                                                  frameHeight: 16 * 25,
+                                                  frameWidth: 9 * 25,
                                                   fullPaths: widget.MyAR.imgSeq,
                                                   cacheProgressIndicatorBuilder:
                                                       (context, progress) {
