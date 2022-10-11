@@ -11,6 +11,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/CreateVideoScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/CropVideo/InitCropVideoScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/video_editor.dart';
@@ -194,10 +195,12 @@ class _ArVideoEditorScreenState extends State<ArVideoEditorScreen> {
                                             startingFileName: fileName,
                                             endingFileName: "videoFile.mp4");
 
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) => FeedPage(
+                                                  pageIndexValue: 3,
+                                                )));
                                     Get.dialog(
                                       ValueListenableBuilder<int>(
                                           valueListenable: count,

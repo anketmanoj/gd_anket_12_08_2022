@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -63,6 +64,20 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
         ),
       ),
     );
+
+    // await FFprobeKit.execute(
+    //         "-v error -show_streams -print_format json -i ${myAr.imgSeq[0]}")
+    //     .then((value) {
+    //   value.getOutput().then((imageDetails) {
+    //     final Map<String, dynamic> json = jsonDecode(imageDetails!);
+
+    //     final int videoWidth = json['streams'][0]['width'];
+    //     final int videoHeight = json['streams'][0]['height'];
+
+    //     log("height == $videoHeight || width == $videoWidth");
+    //   });
+
+    // });
   }
 
   @override
@@ -831,6 +846,7 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                                             isEqualTo: "myItems")
                                         .where("layerType", isEqualTo: "AR")
                                         .where("usage", isEqualTo: "Material")
+                                        .orderBy("timestamp", descending: true)
                                         .snapshots(),
                                     builder: (context, snapshot) {
                                       if (snapshot.hasData) {

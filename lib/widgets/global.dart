@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:developer';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
@@ -27,6 +28,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
@@ -996,7 +998,10 @@ Future<void> deleteFile(List<String> fullPathsForFiles) async {
     try {
       // ignore: avoid_slow_async_io
       if (await file.exists()) {
-        await file.delete();
+        log("removeing from cni and dcm");
+        await CachedNetworkImage.evictFromCache(file.path);
+        await DefaultCacheManager().removeFile(file.path);
+        log("done from cni and dcm");
       }
       // ignore: avoid_catches_without_on_clauses
     } catch (e) {

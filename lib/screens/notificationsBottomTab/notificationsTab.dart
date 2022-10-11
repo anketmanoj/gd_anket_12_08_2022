@@ -33,22 +33,22 @@ class _NotificationsTabState extends State<NotificationsTab> {
               indicatorColor: constantColors.bioBg,
               tabs: [
                 Tab(
+                  text: LocaleKeys.gdar.tr(),
+                ),
+                Tab(
                   text: LocaleKeys.chats.tr(),
                 ),
                 Tab(
                   text: LocaleKeys.notifications.tr(),
-                ),
-                Tab(
-                  text: LocaleKeys.gdar.tr(),
                 ),
               ],
             ),
           ),
           body: TabBarView(
             children: [
+              GDARNotificationScreen(),
               ChatScreen(),
               NotificationScreen(),
-              GDARNotificationScreen(),
             ],
           ),
         ));

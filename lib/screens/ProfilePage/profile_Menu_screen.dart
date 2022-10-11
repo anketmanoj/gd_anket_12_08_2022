@@ -34,6 +34,7 @@ import 'package:diamon_rose_app/screens/PurchaseHistory/purchaseHistroy.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/blockedAccounts/blockedAccountsScreen.dart';
 import 'package:diamon_rose_app/screens/closeAccount/closeAccountScreen.dart';
+import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage_helpers.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/demo.dart';
@@ -769,6 +770,20 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   leadingIcon: Icons.block_outlined,
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.blockedaccounts.tr(),
+                ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {
+                    BlocProvider.of<PreloadBloc>(context, listen: false).add(
+                        PreloadEvent.filterBetweenFreePaid(
+                            HomeScreenOptions.Free));
+
+                    BlocProvider.of<PreloadBloc>(context, listen: false)
+                        .add(PreloadEvent.onVideoIndexChanged(0));
+                  },
+                  leadingIcon: Icons.block_outlined,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Go to desired page",
                 ),
 
                 Divider(

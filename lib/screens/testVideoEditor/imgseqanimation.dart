@@ -391,6 +391,8 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                                                   fps: 35,
                                                   waitUntilCacheIsComplete:
                                                       true,
+                                                  frameHeight: 1366,
+                                                  frameWidth: 768,
                                                   fullPaths: widget.MyAR.imgSeq,
                                                   cacheProgressIndicatorBuilder:
                                                       (context, progress) {

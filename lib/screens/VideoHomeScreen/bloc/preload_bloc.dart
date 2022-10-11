@@ -115,6 +115,8 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
         final List<Video> _urls = await ApiService.getVideos();
         state.urls.addAll(_urls);
 
+        log("statelen = ${state.urls.length}");
+
         /// Initialize 1st video
         await _initializeControllerAtIndex(0);
 
@@ -199,7 +201,10 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
   }
 
   Future _initializeControllerAtIndex(int index) async {
+    log("Check this?");
     if (state.urls.length > index && index >= 0) {
+      log("Now initalizing");
+
       /// Create new controller
       final VideoPlayerController _controller =
           VideoPlayerController.network(state.urls[index].videourl);

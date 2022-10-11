@@ -63,6 +63,7 @@ class GDARNotificationScreen extends StatelessWidget {
                       .getUserId)
                   .collection("MyCollection")
                   .where("usage", isEqualTo: "Pending")
+                  .orderBy("timestamp", descending: true)
                   .snapshots(),
               builder: (context, snaps) {
                 if (snaps.connectionState == ConnectionState.waiting) {

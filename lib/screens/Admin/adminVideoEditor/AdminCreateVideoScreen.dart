@@ -386,14 +386,16 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                   list.value.add(ARList(
                     arId: myAr.id,
                     arIndex: arVal,
-                    height: (videoContainerKey.globalPaintBounds!.height *
-                            videoHeight) /
-                        1920,
+                    height: ((videoContainerKey.globalPaintBounds!.height *
+                                videoHeight) /
+                            1920) /
+                        1.3,
                     rotation: 0,
                     scale: 1,
-                    width: (videoContainerKey.globalPaintBounds!.width *
-                            videoWidth) /
-                        1080,
+                    width: ((videoContainerKey.globalPaintBounds!.width *
+                                videoWidth) /
+                            1080) /
+                        1.3,
                     xPosition: 0,
                     yPosition: 0,
                     pathsForVideoFrames: _fullPathsOnline,
@@ -1172,6 +1174,9 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                             children:
                                                 arListValFull.map((arVal) {
                                               return InkWell(
+                                                onDoubleTap: () {
+                                                  selected = arVal;
+                                                },
                                                 onTap: () {
                                                   if (arVal.audioFlag == true)
                                                     showAlertDialog(

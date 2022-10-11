@@ -101,7 +101,7 @@ class _RecommendedVideoPageState extends State<RecommendedVideoPage>
 
         switch (state.filterOption) {
           case HomeScreenOptions.Free:
-            log("We're here in Free! !!! Anket");
+            log("We're here in Free! !!! ANKEKKEEETTTT");
             return PageView.builder(
               itemCount: state.urls.length,
               scrollDirection: Axis.vertical,
@@ -126,7 +126,7 @@ class _RecommendedVideoPageState extends State<RecommendedVideoPage>
               },
             );
           case HomeScreenOptions.Paid:
-            log("We're here in Paid! Anket");
+            log("We're here in Paid!");
 
             return PageView.builder(
               itemCount: state.urls.length,
@@ -152,7 +152,7 @@ class _RecommendedVideoPageState extends State<RecommendedVideoPage>
               },
             );
           case HomeScreenOptions.Both:
-            log("We're here in Both! anket");
+            log("We're here in Both!");
 
             return PageView.builder(
               itemCount: state.urls.length,

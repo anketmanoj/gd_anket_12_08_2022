@@ -315,6 +315,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     required MyArCollection myAr,
   }) async {
     if (await Permission.storage.request().isGranted) {
+      dev.log("AR INDEX == $arVal");
       // ignore: unawaited_futures
       CoolAlert.show(
         context: context,
@@ -391,14 +392,16 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                   list.value.add(ARList(
                     arId: myAr.id,
                     arIndex: arVal,
-                    height: (videoContainerKey.globalPaintBounds!.height *
-                            videoHeight) /
-                        1920,
+                    height: ((videoContainerKey.globalPaintBounds!.height *
+                                videoHeight) /
+                            1920) /
+                        1.3,
                     rotation: 0,
                     scale: 1,
-                    width: (videoContainerKey.globalPaintBounds!.width *
-                            videoWidth) /
-                        1080,
+                    width: ((videoContainerKey.globalPaintBounds!.width *
+                                videoWidth) /
+                            1080) /
+                        1.3,
                     xPosition: 0,
                     yPosition: 0,
                     pathsForVideoFrames: _fullPathsOnline,
@@ -426,12 +429,17 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             }
 
             _controllerSeekTo(0);
+
             Navigator.pop(context);
             Navigator.pop(context);
-            setState(() {
-              loading = false;
-            });
-            print("folder name $folderName");
+
+            arIndexVal.value += 1;
+
+            dev.log("list AR ${arIndexVal.value}");
+            // setState(() {
+            //   loading = false;
+            // });
+            // print("folder name $folderName");
 
             //! #############################################################
           });
@@ -485,7 +493,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
         text: "Loading Effect",
       );
       // Form matte file
-      final Directory appDocument = await getApplicationDocumentsDirectory();
+      final Directory appDocument = await getTemporaryDirectory();
       final String rawDocument = appDocument.path;
       final String gifSeqFolder = "${rawDocument}/";
 
@@ -516,7 +524,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             final String commandForGifSeqFile =
                 '-y -i ${gifFile.path} -filter_complex "fps=30,scale=480:-1"  -preset ultrafast  ${gifSeqFolder}${arVal}gifSeq%d.png';
 
-            List<String> _fullPathsOffline = [];
+            final List<String> _fullPathsOffline = [];
 
             try {
               await FFmpegKit.execute(commandForGifSeqFile).then((rc) async {
@@ -554,14 +562,16 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                         arId: arId,
                         fromFirebase: fromFirebase,
                         arIndex: arVal,
-                        height: (videoContainerKey.globalPaintBounds!.height *
-                                videoHeight) /
-                            1920,
+                        height: ((videoContainerKey.globalPaintBounds!.height *
+                                    videoHeight) /
+                                1920) /
+                            1.3,
                         rotation: 0,
                         scale: 1,
-                        width: (videoContainerKey.globalPaintBounds!.width *
-                                videoWidth) /
-                            1080,
+                        width: ((videoContainerKey.globalPaintBounds!.width *
+                                    videoWidth) /
+                                1080) /
+                            1.3,
                         xPosition: 0,
                         yPosition: 0,
                         pathsForVideoFrames: _fullPathsOffline,
@@ -590,13 +600,11 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 }
               });
               _controllerSeekTo(0);
+              effectIndexVal.value += 1;
+              dev.log("list effect = ${effectIndexVal.value}");
               Navigator.pop(context);
               // Navigator.pop(context);
 
-              setState(() {
-                loading = false;
-              });
-              print("folder name $folderName");
             } catch (e) {
               Navigator.pop(context);
               CoolAlert.show(
@@ -829,12 +837,6 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 barrierDismissible: false,
                 text: "Connecting Giphy ");
             dev.log("here");
-            setState(() {
-              effectIndexVal.value = list.value
-                      .where((element) => element.layerType == LayerType.Effect)
-                      .length +
-                  1;
-            });
 
             if (effectIndexVal.value <= 10) {
               if (list.value.isNotEmpty) {
@@ -852,9 +854,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 arVal: indexCounter.value,
                 gifFile: File(gifFile.path),
                 fromFirebase: false,
-              ).then((value) {
-                setState(() {});
-              });
+              );
             } else {
               CoolAlert.show(
                 context: context,
@@ -1179,6 +1179,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                             children:
                                                 arListValFull.map((arVal) {
                                               return InkWell(
+                                                onDoubleTap: () {
+                                                  dev.log("this");
+                                                  selected = arVal;
+                                                },
                                                 onTap: () {
                                                   if (arVal.audioFlag == true)
                                                     showAlertDialog(
@@ -1244,7 +1248,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                     ? Image
                                                                         .file(
                                                                         File(arVal
-                                                                            .pathsForVideoFrames![2]),
+                                                                            .pathsForVideoFrames![1]),
                                                                       )
                                                                     : Center(
                                                                         child:
@@ -1742,6 +1746,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                         size: 25,
                       ),
                       onPressed: () async {
+                        await DefaultCacheManager().emptyCache();
                         if (list.value.isNotEmpty) {
                           _exportingProgress.dispose();
                           _isExporting.dispose();
@@ -1761,7 +1766,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                           //   await deleteFile(arVal.pathsForVideoFrames!);
                           // }
                         }
-                        await DefaultCacheManager().emptyCache();
+
                         Navigator.pop(context);
                       },
                     ),
@@ -1780,38 +1785,85 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                 "Delete ${selected!.layerType == LayerType.Effect ? 'Effect' : 'AR'}?",
                             showCancelBtn: true,
                             onConfirmBtnTap: () async {
-                              if (selected!.layerType == LayerType.AR) {
-                                final indexVal = list.value.indexWhere(
-                                    (element) =>
-                                        element.arIndex! == selected!.arIndex!);
+                              dev.log(
+                                  "start indexcounter == ${indexCounter.value}");
 
-                                for (int i = indexVal + 1;
-                                    i < list.value.length;
-                                    i++) {
-                                  // "list index $i goes from arIndex of ${list.value[i].arIndex} to ${list.value[i].arIndex! - 2}"
-                                  list.value[i].arIndex =
-                                      list.value[i].arIndex! - 2;
+                              final indexVal = list.value.indexWhere(
+                                  (element) =>
+                                      element.arIndex! == selected!.arIndex!);
+
+                              dev.log(
+                                  "selected arindex = ${selected!.arIndex} | || ar type == ${selected!.layerType} || index val; = $indexVal ");
+                              // if (selected!.layerType == LayerType.AR) {
+                              //   final indexVal = list.value.indexWhere(
+                              //       (element) =>
+                              //           element.arIndex! == selected!.arIndex!);
+
+                              //   final int lastAtIndex = indexCounter.value;
+
+                              //   for (int i = indexVal + 1;
+                              //       i < lastAtIndex;
+                              //       i++) {
+                              //     // "list index $i goes from arIndex of ${list.value[i].arIndex} to ${list.value[i].arIndex! - 2}"
+                              //     list.value[i].arIndex =
+                              //         list.value[i].arIndex! - 2;
+                              //   }
+                              // } else {
+                              // final indexVal = list.value.indexWhere(
+                              //     (element) =>
+                              //         element.arIndex! == selected!.arIndex!);
+
+                              //   final int lastAtIndex = indexCounter.value;
+
+                              //   for (int i = indexVal; i < lastAtIndex; i++) {
+                              //     // "list index $i goes from arIndex of ${list.value[i].arIndex} to ${list.value[i].arIndex! - 1}"
+                              //     list.value[i].arIndex =
+                              //         list.value[i].arIndex! - 1;
+                              //   }
+                              // }
+
+                              // setState(() {
+                              //   selected!.layerType == LayerType.AR
+                              //       ? indexCounter.value =
+                              //           indexCounter.value - 2
+                              //       : indexCounter.value =
+                              //           indexCounter.value - 1;
+                              //   list.value.remove(selected);
+
+                              //   _controllerSeekTo(0);
+                              // });
+
+                              // await deleteFile(selected!.pathsForVideoFrames!);
+
+                              // Future.delayed(Duration(seconds: 2));
+
+                              list.value.forEach((element) {
+                                if (selected!.arIndex! > element.arIndex!) {
+                                  dev.log(
+                                      "arIndex == ${element.arIndex!} || ar type == ${element.layerType} ignore this");
                                 }
-                              } else {
-                                final indexVal = list.value.indexWhere(
-                                    (element) =>
-                                        element.arIndex! == selected!.arIndex!);
-
-                                for (int i = indexVal + 1;
-                                    i < list.value.length;
-                                    i++) {
-                                  // "list index $i goes from arIndex of ${list.value[i].arIndex} to ${list.value[i].arIndex! - 1}"
-                                  list.value[i].arIndex =
-                                      list.value[i].arIndex! - 1;
+                                if (selected!.arIndex! == element.arIndex) {
+                                  dev.log(
+                                      "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === remove this");
                                 }
-                              }
+                                if (selected!.arIndex! < element.arIndex!) {
+                                  switch (selected!.layerType!) {
+                                    case LayerType.AR:
+                                      dev.log(
+                                          "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === move - 2 places");
 
-                              await deleteFile(selected!.pathsForVideoFrames!);
+                                      break;
+                                    case LayerType.Effect:
+                                      dev.log(
+                                          "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === move - 1 place");
 
-                              setState(() {
-                                list.value.remove(selected);
-                                _controllerSeekTo(0);
+                                      break;
+                                  }
+                                }
                               });
+
+                              dev.log(
+                                  "end indexcounter == ${indexCounter.value}");
 
                               Navigator.pop(context);
                             },
@@ -2513,7 +2565,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     return showBottomSheet(
         context: context,
         builder: (context) {
-          return ValueListenableBuilder(
+          return ValueListenableBuilder<int>(
               valueListenable: arIndexVal,
               builder: (context, arIndex, _) {
                 return Container(
@@ -2626,17 +2678,6 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                             arVal: indexCounter.value,
                                             myAr: myArCollection,
                                           );
-
-                                          setState(() {
-                                            arIndexVal.value = list.value
-                                                .where((element) =>
-                                                    element.layerType ==
-                                                    LayerType.AR)
-                                                .length;
-                                          });
-
-                                          dev.log(
-                                              "list AR ${arIndexVal.value}");
                                         } else {
                                           CoolAlert.show(
                                             context: context,
