@@ -1822,44 +1822,57 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                               //   }
                               // }
 
-                              // setState(() {
-                              //   selected!.layerType == LayerType.AR
-                              //       ? indexCounter.value =
-                              //           indexCounter.value - 2
-                              //       : indexCounter.value =
-                              //           indexCounter.value - 1;
-                              //   list.value.remove(selected);
-
-                              //   _controllerSeekTo(0);
-                              // });
-
                               // await deleteFile(selected!.pathsForVideoFrames!);
 
                               // Future.delayed(Duration(seconds: 2));
 
-                              list.value.forEach((element) {
+                              for (final ARList element in list.value) {
                                 if (selected!.arIndex! > element.arIndex!) {
                                   dev.log(
                                       "arIndex == ${element.arIndex!} || ar type == ${element.layerType} ignore this");
                                 }
-                                if (selected!.arIndex! == element.arIndex) {
-                                  dev.log(
-                                      "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === remove this");
-                                }
+
                                 if (selected!.arIndex! < element.arIndex!) {
                                   switch (selected!.layerType!) {
                                     case LayerType.AR:
                                       dev.log(
-                                          "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === move - 2 places");
+                                          "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === move - 2 places (before moving)");
+                                      element.arIndex = element.arIndex! - 2;
+                                      dev.log(
+                                          "arIndex == ${element.arIndex! - 2} || ar type == ${element.layerType} === moved (after moving)");
 
                                       break;
                                     case LayerType.Effect:
                                       dev.log(
-                                          "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === move - 1 place");
+                                          "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === move - 1 place (before moving)");
+                                      element.arIndex = element.arIndex! - 1;
+                                      dev.log(
+                                          "arIndex == ${element.arIndex! - 1} || ar type == ${element.layerType} === moved (after moving)");
 
                                       break;
                                   }
                                 }
+
+                                if (selected!.arIndex! == element.arIndex) {
+                                  dev.log(
+                                      "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === remove this");
+                                  dev.log(
+                                      "len before removing == ${list.value.length}");
+                                  // list.value.remove(selected);
+                                  dev.log(
+                                      "len after removing == ${list.value.length - 1}");
+                                }
+                              }
+
+                              setState(() {
+                                selected!.layerType == LayerType.AR
+                                    ? indexCounter.value =
+                                        indexCounter.value - 2
+                                    : indexCounter.value =
+                                        indexCounter.value - 1;
+                                list.value.remove(selected);
+
+                                _controllerSeekTo(0);
                               });
 
                               dev.log(
