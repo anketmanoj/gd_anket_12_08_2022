@@ -429,13 +429,14 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             }
 
             _controllerSeekTo(0);
+            // setState(() {});
 
             Navigator.pop(context);
             Navigator.pop(context);
 
             arIndexVal.value += 1;
 
-            dev.log("list AR ${arIndexVal.value}");
+            dev.log("list AR ${arIndexVal.value} | index counter == $arVal");
             // setState(() {
             //   loading = false;
             // });
@@ -601,7 +602,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               });
               _controllerSeekTo(0);
               effectIndexVal.value += 1;
-              dev.log("list effect = ${effectIndexVal.value}");
+              dev.log(
+                  "list effect = ${effectIndexVal.value} || index counter == $arVal");
               Navigator.pop(context);
               // Navigator.pop(context);
 
@@ -845,11 +847,14 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                     : indexCounter.value = indexCounter.value + 1;
               }
 
+              if (indexCounter.value == 0) {
+                indexCounter.value = 1;
+              }
+
               final File gifFile = await getImage(
                   url: "https://i.giphy.com/media/${gif.id}/giphy.gif");
               Get.back();
 
-              dev.log("File path == ${gifFile.path}");
               await runGifFFmpegCommand(
                 arVal: indexCounter.value,
                 gifFile: File(gifFile.path),
@@ -1858,18 +1863,37 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                       "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === remove this");
                                   dev.log(
                                       "len before removing == ${list.value.length}");
+
                                   // list.value.remove(selected);
                                   dev.log(
                                       "len after removing == ${list.value.length - 1}");
                                 }
                               }
 
+                              switch (selected!.layerType!) {
+                                case LayerType.AR:
+                                  dev.log(
+                                      "AR INDEX BEFORE = ${arIndexVal.value}");
+                                  indexCounter.value = indexCounter.value - 2;
+                                  arIndexVal.value -= 1;
+                                  dev.log("AR INDEX NOW = ${arIndexVal.value}");
+                                  break;
+                                case LayerType.Effect:
+                                  dev.log(
+                                      "EFFECT INDEX BEFORE = ${effectIndexVal.value}");
+                                  indexCounter.value = indexCounter.value - 1;
+                                  effectIndexVal.value -= 1;
+                                  dev.log(
+                                      "EFFECT INDEX NOW = ${effectIndexVal.value}");
+                                  break;
+                              }
+
                               setState(() {
-                                selected!.layerType == LayerType.AR
-                                    ? indexCounter.value =
-                                        indexCounter.value - 2
-                                    : indexCounter.value =
-                                        indexCounter.value - 1;
+                                // selected!.layerType == LayerType.AR
+                                //     ? indexCounter.value =
+                                //         indexCounter.value - 2
+                                //     : indexCounter.value =
+                                //         indexCounter.value - 1;
                                 list.value.remove(selected);
 
                                 _controllerSeekTo(0);
@@ -2685,6 +2709,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                     indexCounter.value + 2
                                                 : indexCounter.value =
                                                     indexCounter.value + 1;
+                                          }
+
+                                          if (indexCounter.value <= 0) {
+                                            indexCounter.value = 1;
                                           }
 
                                           await runFFmpegCommand(
