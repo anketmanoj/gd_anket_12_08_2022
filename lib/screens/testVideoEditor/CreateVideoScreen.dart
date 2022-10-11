@@ -1883,6 +1883,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                       "EFFECT INDEX BEFORE = ${effectIndexVal.value}");
                                   indexCounter.value = indexCounter.value - 1;
                                   effectIndexVal.value -= 1;
+                                  await deleteFile(
+                                      selected!.pathsForVideoFrames!);
                                   dev.log(
                                       "EFFECT INDEX NOW = ${effectIndexVal.value}");
                                   break;

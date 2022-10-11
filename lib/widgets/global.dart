@@ -1001,6 +1001,7 @@ Future<void> deleteFile(List<String> fullPathsForFiles) async {
         log("removeing from cni and dcm");
         await CachedNetworkImage.evictFromCache(file.path);
         await DefaultCacheManager().removeFile(file.path);
+        await file.delete(recursive: true);
         log("done from cni and dcm");
       }
       // ignore: avoid_catches_without_on_clauses
