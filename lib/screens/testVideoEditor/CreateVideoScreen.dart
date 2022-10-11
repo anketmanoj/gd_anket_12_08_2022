@@ -2639,6 +2639,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                   .collection("MyCollection")
                                   .where("layerType", isEqualTo: "AR")
                                   .where("usage", isEqualTo: "Material")
+                                  .orderBy("timestamp", descending: true)
                                   .get(),
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
