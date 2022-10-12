@@ -771,20 +771,20 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.blockedaccounts.tr(),
                 ),
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () {
-                    BlocProvider.of<PreloadBloc>(context, listen: false).add(
-                        PreloadEvent.filterBetweenFreePaid(
-                            HomeScreenOptions.Free));
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () {
+                //     BlocProvider.of<PreloadBloc>(context, listen: false).add(
+                //         PreloadEvent.filterBetweenFreePaid(
+                //             HomeScreenOptions.Free));
 
-                    BlocProvider.of<PreloadBloc>(context, listen: false)
-                        .add(PreloadEvent.onVideoIndexChanged(0));
-                  },
-                  leadingIcon: Icons.block_outlined,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: "Go to desired page",
-                ),
+                //     BlocProvider.of<PreloadBloc>(context, listen: false)
+                //         .add(PreloadEvent.onVideoIndexChanged(0));
+                //   },
+                //   leadingIcon: Icons.block_outlined,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "Go to desired page",
+                // ),
 
                 Divider(
                   color: Colors.white,

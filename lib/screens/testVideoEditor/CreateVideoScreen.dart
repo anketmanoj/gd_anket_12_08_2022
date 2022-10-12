@@ -26,6 +26,7 @@ import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/img_seq_animator.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
+import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/extensions.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
@@ -52,6 +53,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
@@ -437,6 +439,79 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             arIndexVal.value += 1;
 
             dev.log("list AR ${arIndexVal.value} | index counter == $arVal");
+
+            final bool showMessage =
+                SharedPreferencesHelper.getBool("dontShowMessage");
+
+            if (showMessage == false) {
+              final ValueNotifier<bool> dontShowMessage =
+                  ValueNotifier<bool>(false);
+              await Get.dialog(
+                SimpleDialog(
+                  children: [
+                    Container(
+                      width: 100.w,
+                      child: Text(
+                        "AR Quality in the Video Editor may seem low resolution.\nThis is to be able to process multiple layers together.\nPlease go to the next page to see the actual quality",
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    ValueListenableBuilder<bool>(
+                        valueListenable: dontShowMessage,
+                        builder: (context, messageOpt, _) {
+                          return ListTile(
+                            title: Text("Dont show message again"),
+                            trailing: Checkbox(
+                              value: dontShowMessage.value,
+                              onChanged: (v) {
+                                dontShowMessage.value = !dontShowMessage.value;
+                              },
+                            ),
+                          );
+                        }),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              constantColors.navButton),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          SharedPreferencesHelper.setBool(
+                              "dontShowMessage", dontShowMessage.value);
+                          Get.back();
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.check,
+                              color: Colors.white,
+                            ),
+                            Text("Understood!"),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
             // setState(() {
             //   loading = false;
             // });
@@ -1462,7 +1537,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                 ],
                                               ),
                                             ),
-                                          )
+                                          ),
                                         ],
                                       );
 
