@@ -44,6 +44,7 @@ import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
 import 'package:diamon_rose_app/services/dbService.dart';
 import 'package:diamon_rose_app/services/dynamic_link_service.dart';
+import 'package:diamon_rose_app/services/fcm_notification_Service.dart';
 import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/services/video.dart';
@@ -82,6 +83,9 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
   bool profileDrop = false;
   bool subscriptionDrop = false;
   final GlobalKey webViewKey = GlobalKey();
+
+  final FCMNotificationService _fcmNotificationService =
+      FCMNotificationService();
 
   void onApplePayResult(paymentResult) {
     debugPrint(paymentResult);
@@ -773,13 +777,14 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 ),
                 // ListTileOption(
                 //   constantColors: constantColors,
-                //   onTap: () {
-                //     BlocProvider.of<PreloadBloc>(context, listen: false).add(
-                //         PreloadEvent.filterBetweenFreePaid(
-                //             HomeScreenOptions.Free));
+                //   onTap: () async {
+                //     await _fcmNotificationService.sendNotificationToUser(
+                //         to: "chTy8m8os0L4jloohWoYPe:APA91bFT5Ocnf0p-lBtL_cUurN0xLc5-g6rs_GyvEDxYQBSYonhUASBWa7CXExj0CK131Rfs-0T-0UYasLFGFRKNCDyCg0wjG61UnxAVJrBnFGgqlMoB0lMKbjXNlRVMiVuUomF3kmOk", //To change once set up
+                //         title: "TESSSTTTT has a new post!",
+                //         body: "");
 
-                //     BlocProvider.of<PreloadBloc>(context, listen: false)
-                //         .add(PreloadEvent.onVideoIndexChanged(0));
+                //     log("notifications ent");
+                //     // chTy8m8os0L4jloohWoYPe:APA91bFT5Ocnf0p-lBtL_cUurN0xLc5-g6rs_GyvEDxYQBSYonhUASBWa7CXExj0CK131Rfs-0T-0UYasLFGFRKNCDyCg0wjG61UnxAVJrBnFGgqlMoB0lMKbjXNlRVMiVuUomF3kmOk
                 //   },
                 //   leadingIcon: Icons.block_outlined,
                 //   trailingIcon: Icons.arrow_forward_ios,

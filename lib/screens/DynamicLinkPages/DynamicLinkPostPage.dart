@@ -858,6 +858,29 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                           color: Colors.white,
                                         ),
                                       ),
+                                      subtitle: (snapshot.data!.docs[index]
+                                                      .data()
+                                                  as Map<String, dynamic>)
+                                              .containsKey("usage")
+                                          ? Row(
+                                              children: [
+                                                TextButton.icon(
+                                                  onPressed: () {},
+                                                  icon: Icon(
+                                                    Icons.arrow_forward,
+                                                    color: constantColors.bioBg,
+                                                  ),
+                                                  label: Text(
+                                                    "As ${snapshot.data!.docs[index]['usage']}",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : null,
                                     )
                                   : ListTile(
                                       tileColor: constantColors.bioBg,
@@ -1148,6 +1171,28 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                         color: Colors.white,
                                       ),
                                     ),
+                                    subtitle: (snapshot.data!.docs[index].data()
+                                                as Map<String, dynamic>)
+                                            .containsKey("usage")
+                                        ? Row(
+                                            children: [
+                                              TextButton.icon(
+                                                onPressed: () {},
+                                                icon: Icon(
+                                                  Icons.arrow_forward,
+                                                  color: constantColors.bioBg,
+                                                ),
+                                                label: Text(
+                                                  "As ${snapshot.data!.docs[index]['usage']}",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : null,
                                   )
                                 : ListTile(
                                     tileColor: constantColors.bioBg,

@@ -373,11 +373,6 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                                             // log("rotation == ${value.rotation! * 3.14 / 180}");
                                           },
                                           child: InkWell(
-                                            onLongPress: () {
-                                              setState(() {
-                                                list.remove(value);
-                                              });
-                                            },
                                             child: Container(
                                                 height: value.height,
                                                 width: value.width,
@@ -395,8 +390,6 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                                                   fps: 28,
                                                   waitUntilCacheIsComplete:
                                                       true,
-                                                  frameHeight: 16 * 25,
-                                                  frameWidth: 9 * 25,
                                                   fullPaths: widget.MyAR.imgSeq,
                                                   cacheProgressIndicatorBuilder:
                                                       (context, progress) {

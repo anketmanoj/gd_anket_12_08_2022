@@ -1,6 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
+import 'package:sizer/sizer.dart';
+
 class SharedPreferencesHelper {
   static late SharedPreferences prefs;
 
@@ -42,5 +44,21 @@ class SharedPreferencesHelper {
 
   static clearSharedPrefs() async {
     await prefs.clear();
+  }
+
+  static setDyValue(String key, double value) async {
+    await prefs.setDouble(key, value);
+  }
+
+  static getDyValue(String key) {
+    return prefs.getDouble(key) ?? 10.h;
+  }
+
+  static setDxValue(String key, double value) async {
+    await prefs.setDouble(key, value);
+  }
+
+  static getDxValue(String key) {
+    return prefs.getDouble(key) ?? 2.w;
   }
 }

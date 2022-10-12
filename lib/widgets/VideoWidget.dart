@@ -70,7 +70,11 @@ class VideoWidget extends StatelessWidget {
       onMatrixUpdate: (m, tm, sm, rm) {
         notifier.value = m;
 
-        // var angle = MatrixGestureDetector.decomposeToValues(m).rotation;
+        final translation =
+            MatrixGestureDetector.decomposeToValues(m).translation;
+
+        log("dy = ${translation.distance} | dx = ${translation.distance}");
+        log("starting val y = ${10.h} | x = ${2.w}");
 
         // var degrees = angle * 180 / math.pi;
 
@@ -977,6 +981,28 @@ class VideoWidget extends StatelessWidget {
                                         color: Colors.white,
                                       ),
                                     ),
+                                    subtitle: (snapshot.data!.docs[index].data()
+                                                as Map<String, dynamic>)
+                                            .containsKey("usage")
+                                        ? Row(
+                                            children: [
+                                              TextButton.icon(
+                                                onPressed: () {},
+                                                icon: Icon(
+                                                  Icons.arrow_forward,
+                                                  color: constantColors.bioBg,
+                                                ),
+                                                label: Text(
+                                                  "As ${snapshot.data!.docs[index]['usage']}",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : null,
                                   )
                                 : ListTile(
                                     tileColor: constantColors.bioBg,
@@ -1276,6 +1302,29 @@ class VideoWidget extends StatelessWidget {
                                           color: Colors.white,
                                         ),
                                       ),
+                                      subtitle: (snapshot.data!.docs[index]
+                                                      .data()
+                                                  as Map<String, dynamic>)
+                                              .containsKey("usage")
+                                          ? Row(
+                                              children: [
+                                                TextButton.icon(
+                                                  onPressed: () {},
+                                                  icon: Icon(
+                                                    Icons.arrow_forward,
+                                                    color: constantColors.bioBg,
+                                                  ),
+                                                  label: Text(
+                                                    "As ${snapshot.data!.docs[index]['usage']}",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : null,
                                     )
                                   : ListTile(
                                       tileColor: constantColors.bioBg,
