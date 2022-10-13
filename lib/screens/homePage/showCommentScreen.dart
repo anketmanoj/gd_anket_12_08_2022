@@ -292,6 +292,7 @@ class _ShowCommentsPageState extends State<ShowCommentsPage> {
                         onPressed: () async {
                           await firebaseOperations
                               .addComment(
+                            videoOwnerId: widget.postOwnerId!,
                             ownerFcmToken: widget.ownerFcmToken!,
                             userUid: authentication.getUserId,
                             postId: widget.postId,

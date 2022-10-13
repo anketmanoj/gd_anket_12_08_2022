@@ -686,6 +686,7 @@ class VideoWidget extends StatelessWidget {
                                             onPressed: () async {
                                               await firebaseOperations
                                                   .likePost(
+                                                videoOwnerId: video.useruid,
                                                 sendToUserToken:
                                                     video.ownerFcmToken!,
                                                 likerUsername:

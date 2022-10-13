@@ -332,6 +332,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
             print("isHeartAnimation: $isHeartAnimation");
             await firebaseOperations
                 .likePost(
+              videoOwnerId: widget.video.useruid,
               sendToUserToken: widget.video.ownerFcmToken!,
               likerUsername: firebaseOperations.initUserName,
               postUid: widget.video.id,
@@ -1409,6 +1410,7 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                 onPressed: () async {
                                   await firebaseOperations
                                       .likePost(
+                                    videoOwnerId: widget.video.useruid,
                                     sendToUserToken:
                                         widget.video.ownerFcmToken!,
                                     likerUsername:

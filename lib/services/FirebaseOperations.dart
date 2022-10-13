@@ -534,7 +534,7 @@ class FirebaseOperations with ChangeNotifier {
             .get()
             .then((followingUser) async {
           await _fcmNotificationService.sendNotificationToUser(
-              to: postUser['fcmToken']!, //To change once set up
+              to: postUser['token']!, //To change once set up
               title:
                   "${followingUser['username']} ${LocaleKeys.unfollowedYou.tr()}",
               body: "");
@@ -1768,6 +1768,7 @@ class FirebaseOperations with ChangeNotifier {
     required BuildContext context,
     required String sendToUserToken,
     required String likerUsername,
+    required String videoOwnerId,
   }) {
     return FirebaseFirestore.instance
         .collection("posts")
@@ -1782,10 +1783,16 @@ class FirebaseOperations with ChangeNotifier {
       'useremail': initUserEmail,
       'time': Timestamp.now(),
     }).then((value) async {
-      await _fcmNotificationService.sendNotificationToUser(
-          to: sendToUserToken, //To change once set up
-          title: "$initUserName ${LocaleKeys.likedYourPost.tr()}",
-          body: "");
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(videoOwnerId)
+          .get()
+          .then((owner) async {
+        await _fcmNotificationService.sendNotificationToUser(
+            to: owner['token'], //To change once set up
+            title: "$initUserName ${LocaleKeys.likedYourPost.tr()}",
+            body: "");
+      });
     });
   }
 
@@ -1809,6 +1816,7 @@ class FirebaseOperations with ChangeNotifier {
     required String comment,
     required BuildContext context,
     required String ownerFcmToken,
+    required String videoOwnerId,
   }) async {
     final String commentId = nanoid().toString();
     await FirebaseFirestore.instance
@@ -1825,11 +1833,17 @@ class FirebaseOperations with ChangeNotifier {
       'useremail': initUserEmail,
       'time': Timestamp.now(),
     }).then((value) async {
-      await _fcmNotificationService.sendNotificationToUser(
-        to: ownerFcmToken,
-        title: "$initUserName ${LocaleKeys.commented.tr()}",
-        body: comment,
-      );
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(videoOwnerId)
+          .get()
+          .then((owner) async {
+        await _fcmNotificationService.sendNotificationToUser(
+          to: owner['token'],
+          title: "$initUserName ${LocaleKeys.commented.tr()}",
+          body: comment,
+        );
+      });
 
       log("fcm token of owner == $ownerFcmToken");
     });

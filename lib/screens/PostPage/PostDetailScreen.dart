@@ -738,6 +738,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                             onPressed: () async {
                                               await firebaseOperations
                                                   .likePost(
+                                                videoOwnerId: video!.useruid,
                                                 sendToUserToken:
                                                     video!.ownerFcmToken!,
                                                 likerUsername:

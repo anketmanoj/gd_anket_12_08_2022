@@ -663,6 +663,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                           onPressed: () async {
                                             await firebaseOperations
                                                 .likePost(
+                                              videoOwnerId: video!.useruid,
                                               sendToUserToken:
                                                   video!.ownerFcmToken!,
                                               likerUsername: firebaseOperations
