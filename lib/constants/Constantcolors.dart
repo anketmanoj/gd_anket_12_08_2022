@@ -77,12 +77,17 @@ extension StringExtension on String {
 
 // ignore: must_be_immutable
 class ExpandableText extends StatefulWidget {
-  ExpandableText({required this.text, required this.textStyle, Key? key})
+  ExpandableText(
+      {required this.text,
+      required this.textStyle,
+      Key? key,
+      this.maxHeight = 50})
       : super(key: key);
 
   final String text;
   final TextStyle textStyle;
   bool isExpanded = false;
+  double maxHeight;
 
   @override
   _ExpandableTextState createState() => _ExpandableTextState();
@@ -99,7 +104,7 @@ class _ExpandableTextState extends State<ExpandableText>
             child: ConstrainedBox(
                 constraints: widget.isExpanded
                     ? const BoxConstraints()
-                    : const BoxConstraints(maxHeight: 50.0),
+                    : BoxConstraints(maxHeight: widget.maxHeight),
                 child: Text(
                   widget.text,
                   textAlign: TextAlign.justify,

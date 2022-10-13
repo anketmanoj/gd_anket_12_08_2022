@@ -2,7 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -103,7 +105,7 @@ class ShowLikesPage extends StatelessWidget {
                               : MaterialButton(
                                   onPressed: () {},
                                   color: constantColors.blueColor,
-                                  child: Text("Follow",
+                                  child: Text(LocaleKeys.follow.tr(),
                                       style: TextStyle(
                                         color: constantColors.whiteColor,
                                         fontWeight: FontWeight.bold,

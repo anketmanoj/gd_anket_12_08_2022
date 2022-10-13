@@ -967,17 +967,15 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                       width: 80,
                                       child: InkWell(
                                         onTap: () {
-                                          // Navigator.push(
-                                          //     context,
-                                          //     PageTransition(
-                                          //         child:
-                                          //             PostDetailsScreen(
-                                          //           videoId: snapshot
-                                          //               .data!
-                                          //               .docs[index]["videoId"],
-                                          //         ),
-                                          //         type: PageTransitionType
-                                          //             .fade));
+                                          Navigator.push(
+                                              context,
+                                              PageTransition(
+                                                  child: PostDetailsScreen(
+                                                    videoId: snapshot.data!
+                                                        .docs[index]["videoId"],
+                                                  ),
+                                                  type:
+                                                      PageTransitionType.fade));
                                         },
                                         child: Container(
                                           height: 50,
@@ -1398,7 +1396,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         //     amount: "10", currency: "USD"),
                         child: Text(
                           video!.videoType == "video"
-                              ? "Add to My Inventory"
+                              ? LocaleKeys.addToMyInventory.tr()
                               : LocaleKeys.addtoarviewcollection.tr(),
                           style: TextStyle(
                             color: constantColors.navButton,

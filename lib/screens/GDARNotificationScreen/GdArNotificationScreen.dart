@@ -290,7 +290,7 @@ class GDARNotificationScreen extends StatelessWidget {
                                   );
                                 },
                                 icon: Icon(Icons.delete_forever),
-                                label: Text("Delete Selected"),
+                                label: Text(LocaleKeys.deleteSelected.tr()),
                               ),
                             ],
                           ),

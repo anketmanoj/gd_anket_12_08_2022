@@ -9,13 +9,16 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
 import 'package:diamon_rose_app/screens/PostPage/previewVideo.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/services/ArViewOnlyServerResponse.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:intl/intl.dart';
@@ -178,25 +181,6 @@ class ArPreviewSetting extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: Column(
                       children: [
-                        Container(
-                          color: constantColors.navButton,
-                          height: 35,
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Text(
-                                  LocaleKeys.setgdarusageas.tr(),
-                                  style: TextStyle(
-                                    color: constantColors.whiteColor,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                         Padding(
                           padding: const EdgeInsets.only(top: 10),
                           child: ToggleSwitch(
@@ -206,7 +190,7 @@ class ArPreviewSetting extends StatelessWidget {
                               constantColors.navButton,
                               constantColors.navButton,
                             ],
-                            labels: ['Material', 'AR View Only'],
+                            labels: ['Save in My Materials', 'Post AR Video '],
                             animate: true,
                             onToggle: (index) {
                               if (index == 0) {
@@ -319,14 +303,12 @@ class ArPreviewSetting extends StatelessWidget {
                           case "AR View Only":
                             return Column(
                               children: [
-                                Text(
-                                  LocaleKeys
-                                      .arviewonlycanonlybeusedinthearviewertoimmerseyouandthearinoneworld
-                                      .tr(),
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: constantColors.black,
-                                  ),
+                                ExpandableText(
+                                  maxHeight: 20,
+                                  text:
+                                      "Posting as AR video submits this AR as a video which users can get for free or purchase directly from you. Additionally, they'll be able to use this AR with their camera feed in the AR View collection",
+                                  textStyle:
+                                      TextStyle(color: constantColors.black),
                                 ),
                                 NewDivider(constantColors: constantColors),
                                 Row(
@@ -796,7 +778,7 @@ class ArPreviewSetting extends StatelessWidget {
                                           padding: const EdgeInsets.only(
                                               top: 30, bottom: 30),
                                           child: SubmitButton(
-                                            text: "Submit as AR View Only",
+                                            text: "Post AR Video",
                                             function: () async {
                                               if (_formKey.currentState!
                                                       .validate() &&
@@ -943,6 +925,20 @@ class ArPreviewSetting extends StatelessWidget {
                                                       .tr(),
                                                 );
                                               }
+
+                                              BlocProvider.of<PreloadBloc>(
+                                                      context,
+                                                      listen: false)
+                                                  .add(PreloadEvent
+                                                      .filterBetweenFreePaid(
+                                                          HomeScreenOptions
+                                                              .Free));
+
+                                              BlocProvider.of<PreloadBloc>(
+                                                      context,
+                                                      listen: false)
+                                                  .add(PreloadEvent
+                                                      .onVideoIndexChanged(0));
 
                                               // }
                                               // await firebaseOperations

@@ -107,7 +107,9 @@ class HomeScreenProvider with ChangeNotifier {
                                     children: [
                                       ListTile(
                                         leading: Icon(Icons.money_off_outlined),
-                                        title: Text("Only show Free content"),
+                                        title: Text(
+                                          LocaleKeys.onlyshowFreeContent.tr(),
+                                        ),
                                         trailing: Switch(
                                             activeColor:
                                                 constantColors.navButton,
@@ -152,7 +154,9 @@ class HomeScreenProvider with ChangeNotifier {
                                       ),
                                       ListTile(
                                         leading: Icon(Icons.attach_money),
-                                        title: Text("Only show Paid content"),
+                                        title: Text(
+                                          LocaleKeys.onlyShowPaidContent.tr(),
+                                        ),
                                         trailing: Switch(
                                             activeColor:
                                                 constantColors.navButton,
@@ -198,7 +202,8 @@ class HomeScreenProvider with ChangeNotifier {
                                       ListTile(
                                         leading: Icon(Icons.people_alt),
                                         title: Text(
-                                            "Show both (Paid & Free) content"),
+                                          LocaleKeys.showBothTypes.tr(),
+                                        ),
                                         trailing: Switch(
                                             activeColor:
                                                 constantColors.navButton,

@@ -1201,17 +1201,15 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                       width: 80,
                                       child: InkWell(
                                         onTap: () {
-                                          // Navigator.push(
-                                          //     context,
-                                          //     PageTransition(
-                                          //         child:
-                                          //             PostDetailsScreen(
-                                          //           videoId: snapshot
-                                          //               .data!
-                                          //               .docs[index]["videoId"],
-                                          //         ),
-                                          //         type: PageTransitionType
-                                          //             .fade));
+                                          Navigator.push(
+                                              context,
+                                              PageTransition(
+                                                  child: PostDetailsScreen(
+                                                    videoId: snapshot.data!
+                                                        .docs[index]["videoId"],
+                                                  ),
+                                                  type:
+                                                      PageTransitionType.fade));
                                         },
                                         child: Container(
                                           height: 50,

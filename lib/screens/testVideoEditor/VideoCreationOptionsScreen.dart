@@ -121,7 +121,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                         type: PageTransitionType.fade));
               },
               icon: Icon(Icons.info_outline_rounded),
-              label: Text("Tutorials")),
+              label: Text(LocaleKeys.tutorials.tr())),
         ),
         Positioned(
           top: 0,

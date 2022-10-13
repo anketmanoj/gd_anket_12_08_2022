@@ -7,7 +7,9 @@ import 'package:diamon_rose_app/screens/PostPage/editPreviewVideo.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/draftVideos.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -185,7 +187,7 @@ class USerDraftVideoScreen extends StatelessWidget {
                                   );
                                 },
                                 icon: Icon(Icons.delete_forever),
-                                label: Text("Delete Selected"),
+                                label: Text(LocaleKeys.deleteSelected.tr()),
                               ),
                             ],
                           ),

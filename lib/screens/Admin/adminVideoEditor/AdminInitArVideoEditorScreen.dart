@@ -211,7 +211,8 @@ class _AdminArVideoEditorScreenState extends State<AdminArVideoEditorScreen> {
                                                   .black
                                                   .withOpacity(0.7),
                                               title: Text(
-                                                "AR is being created!",
+                                                LocaleKeys.aRIsBeingCreated
+                                                    .tr(),
                                                 style: TextStyle(
                                                   color:
                                                       constantColors.whiteColor,
@@ -222,7 +223,9 @@ class _AdminArVideoEditorScreenState extends State<AdminArVideoEditorScreen> {
                                                   padding:
                                                       const EdgeInsets.all(10),
                                                   child: Text(
-                                                    "It may take some time depending on the length of the video\n\nYou'll be given constant updates on the progress of your AR creation as pop ups on Glamorous Diastation!\n\nIn the meanwhile, please feel free to roam around the app and you'll be notified once the AR is completed!",
+                                                    LocaleKeys
+                                                        .mayTakeTimeDependingOnVideo
+                                                        .tr(),
                                                     style: TextStyle(
                                                       color: constantColors
                                                           .whiteColor,
@@ -269,7 +272,10 @@ class _AdminArVideoEditorScreenState extends State<AdminArVideoEditorScreen> {
                                                           Icons.check,
                                                           color: Colors.white,
                                                         ),
-                                                        Text("Understood!"),
+                                                        Text(
+                                                          LocaleKeys.understood
+                                                              .tr(),
+                                                        ),
                                                       ],
                                                     ),
                                                   ),

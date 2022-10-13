@@ -190,7 +190,7 @@ ViewMenuWebApp(
                                           ),
                                           onPressed: () => Get.back(),
                                           child: Text(
-                                            "Understood!",
+                                            LocaleKeys.understood.tr(),
                                             style: TextStyle(fontSize: 12),
                                           ),
                                         ),

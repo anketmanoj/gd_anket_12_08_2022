@@ -74,24 +74,30 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
     ));
     _init();
 
+    log("usage is == ${widget.MyAR.usage}");
+
     log("added 1st to AR List ${widget.MyAR.imgSeq.length}");
     super.initState();
 
-    controller = CameraController(
-      cameras![0],
-      ResolutionPreset.low,
-      imageFormatGroup: ImageFormatGroup.yuv420,
-    );
-    controller!.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      controller!.startImageStream(
-        (CameraImage image) {},
+    if (widget.MyAR.usage != "Material") {
+      controller = CameraController(
+        cameras![0],
+        ResolutionPreset.low,
+        imageFormatGroup: ImageFormatGroup.yuv420,
       );
+      controller!.initialize().then((_) {
+        if (!mounted) {
+          return;
+        }
+        controller!.startImageStream(
+          (CameraImage image) {},
+        );
 
-      setState(() {});
-    });
+        setState(() {
+          showCamera = true;
+        });
+      });
+    }
   }
 
   @override
@@ -157,6 +163,12 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
     Icons.fast_rewind,
     Icons.loop,
     Icons.low_priority,
+  ];
+
+  List<IconData> iconsMaterialList = [
+    Icons.play_arrow,
+    Icons.pause,
+    Icons.stop,
   ];
 
   @override
@@ -255,22 +267,31 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
         );
       },
     ];
+    final List<void Function()> functionMaterialList = [
+      () {
+        // setState(() {
+        imageSequenceAnimator!.play();
+        if (widget.MyAR.audioFlag == true) _player!.play();
+        // });
+      },
+      () {
+        // setState(() {
+        if (imageSequenceAnimator!.isPlaying) {
+          if (widget.MyAR.audioFlag == true) _player!.pause();
+          imageSequenceAnimator!.pause();
+        }
+        // });
+      },
+      () {
+        imageSequenceAnimator!.stop();
+        if (widget.MyAR.audioFlag == true) _player!.stop();
+      },
+    ];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: constantColors.navButton,
-        title: Text("Ar Viewer"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.camera_alt_outlined),
-            onPressed: () {
-              setState(() {
-                backgroundText = "Hide Camera Feed";
-                showCamera = !showCamera;
-              });
-              // Navigator.pop(context);
-            },
-          ),
-        ],
+        title: Text(
+            widget.MyAR.usage != "Material" ? "Ar Viewer" : "Material Viewer"),
         leading: IconButton(
           onPressed: () async {
             await DefaultCacheManager().emptyCache();
@@ -431,38 +452,45 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
               child: Column(
                 children: [
                   Container(
-                      height: 60,
-                      child: ListView.separated(
-                        separatorBuilder: (context, index) => SizedBox(
-                          height: 10,
-                        ),
-                        scrollDirection: Axis.horizontal,
-                        physics: BouncingScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: iconsList.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(3.0),
-                            child: InkWell(
-                              onTap: functionList[index],
-                              child: Container(
-                                width: 100.w / 8,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: constantColors.bioBg,
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Icon(
-                                  iconsList[index],
+                    height: 60,
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) => SizedBox(
+                        height: 10,
+                      ),
+                      scrollDirection: Axis.horizontal,
+                      physics: BouncingScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: widget.MyAR.usage != "Material"
+                          ? iconsList.length
+                          : iconsMaterialList.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: InkWell(
+                            onTap: widget.MyAR.usage != "Material"
+                                ? functionList[index]
+                                : functionMaterialList[index],
+                            child: Container(
+                              width: 100.w / 8,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
                                   color: constantColors.bioBg,
+                                  width: 1,
                                 ),
                               ),
+                              child: Icon(
+                                widget.MyAR.usage != "Material"
+                                    ? iconsList[index]
+                                    : iconsMaterialList[index],
+                                color: constantColors.bioBg,
+                              ),
                             ),
-                          );
-                        },
-                      )),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                   Row(
                     children: [
                       Expanded(

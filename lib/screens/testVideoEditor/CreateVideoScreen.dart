@@ -431,7 +431,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             }
 
             _controllerSeekTo(0);
-            // setState(() {});
+            setState(() {});
 
             Navigator.pop(context);
             Navigator.pop(context);
@@ -502,7 +502,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                               Icons.check,
                               color: Colors.white,
                             ),
-                            Text("Understood!"),
+                            Text(
+                              LocaleKeys.understood.tr(),
+                            ),
                           ],
                         ),
                       ),
@@ -680,6 +682,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               dev.log(
                   "list effect = ${effectIndexVal.value} || index counter == $arVal");
               Navigator.pop(context);
+              setState(() {});
               // Navigator.pop(context);
 
             } catch (e) {
@@ -925,6 +928,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               if (indexCounter.value <= 0) {
                 indexCounter.value = 1;
               }
+
+              dev.log("index value before in gif == ${indexCounter.value}");
 
               final File gifFile = await getImage(
                   url: "https://i.giphy.com/media/${gif.id}/giphy.gif");
@@ -1838,9 +1843,11 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                               await deleteFile([element.gifFilePath!]);
                             }
                             await deleteFile(element.pathsForVideoFrames!);
-                            element.arState!.dispose();
-                            if (element.audioFlag == true)
-                              element.audioPlayer!.dispose();
+                            if (element.arState != null) {
+                              element.arState!.dispose();
+                              if (element.audioFlag == true)
+                                element.audioPlayer!.dispose();
+                            }
                           }
                           // for (ARList arVal in list.value) {
                           //   await deleteFile(arVal.pathsForVideoFrames!);
@@ -1951,17 +1958,24 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                       "AR INDEX BEFORE = ${arIndexVal.value}");
                                   indexCounter.value = indexCounter.value - 2;
                                   arIndexVal.value -= 1;
-                                  dev.log("AR INDEX NOW = ${arIndexVal.value}");
+                                  dev.log(
+                                      "AR INDEX NOW = ${arIndexVal.value} | indexCounter.value = ${indexCounter.value}");
                                   break;
                                 case LayerType.Effect:
                                   dev.log(
                                       "EFFECT INDEX BEFORE = ${effectIndexVal.value}");
-                                  indexCounter.value = indexCounter.value - 1;
+                                  if (list.value.first.layerType ==
+                                          LayerType.AR &&
+                                      list.value.last == selected) {
+                                    indexCounter.value = indexCounter.value - 2;
+                                  } else {
+                                    indexCounter.value = indexCounter.value - 1;
+                                  }
                                   effectIndexVal.value -= 1;
                                   await deleteFile(
                                       selected!.pathsForVideoFrames!);
                                   dev.log(
-                                      "EFFECT INDEX NOW = ${effectIndexVal.value}");
+                                      "EFFECT INDEX NOW = ${effectIndexVal.value} | indexCounter.value = ${indexCounter.value}");
                                   break;
                               }
 

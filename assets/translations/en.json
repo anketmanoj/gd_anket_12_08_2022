@@ -259,7 +259,6 @@
   "createVideo": "Create Video",
   "myMaterials": "My Materials",
   "arOptions": "AR Options",
-
   "createVideoOption": "Create Video Options",
   "newVideo": "New Video",
   "drafts": "Drafts",
@@ -271,10 +270,37 @@
   "camera": "Camera",
 
   "recommended": "Recommended",
-
   "block": "Block",
   "share": "Share",
   "reportUser": "Report",
+  "inTheMeantime": "In the meantime, we've made some tutorials on how to maximize your experience on Glamorous Diastation!",
 
-  "inTheMeantime": "In the meantime, we've made some tutorials on how to maximize your experience on Glamorous Diastation!"
+  "Comment": "Comment",
+  "onlyshowFreeContent": "Only show free content",
+  "onlyShowPaidContent": "Only show paid content",
+  "showBothTypes": "Show both (Paid & Free) content",
+  "tutorials": "Tutorials",
+  "deleteSelected": "Delete Selected",
+  "follow": "Follow",
+  "unfollow": "Unfollow",
+  "yourWebsite": "Your Website",
+  "youtubeChannel": "Youtube Channel",
+  "instagramID": "Instagram ID",
+  "twitterID": "Twitter ID",
+  "collectCarats": "Collect Carats",
+  "carats": "Carats",
+  "menu": "Menu",
+  "addToMyInventory": "Add to My Inventory",
+  "aRIsBeingCreated": "AR is being created!",
+  "mayTakeTimeDependingOnVideo": "It may take some time depending on the length of the video",
+  "constantUpdatesGivem": "You'll be given constant updates on the progress of your AR creation as pop ups on Glamorous Diastation!",
+  "feelFree": "In the meanwhile, please feel free to roam around the app and you'll be notified once the AR is completed!",
+  "understood": "Understood!",
+  "newMessageFrom": "New message from",
+  "hasANewPost": "has a new post!",
+  "followsYou": "Follows You",
+  "unfollowedYou": "unfollowed you",
+  "likedYourPost": "liked your post",
+  "commented": "Commented",
+  "purchaseHistory": "Purchase History"
 }

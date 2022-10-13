@@ -263,5 +263,33 @@ abstract class  LocaleKeys {
   static const share = 'share';
   static const reportUser = 'reportUser';
   static const inTheMeantime = 'inTheMeantime';
+  static const Comment = 'Comment';
+  static const onlyshowFreeContent = 'onlyshowFreeContent';
+  static const onlyShowPaidContent = 'onlyShowPaidContent';
+  static const showBothTypes = 'showBothTypes';
+  static const tutorials = 'tutorials';
+  static const deleteSelected = 'deleteSelected';
+  static const follow = 'follow';
+  static const unfollow = 'unfollow';
+  static const yourWebsite = 'yourWebsite';
+  static const youtubeChannel = 'youtubeChannel';
+  static const instagramID = 'instagramID';
+  static const twitterID = 'twitterID';
+  static const collectCarats = 'collectCarats';
+  static const carats = 'carats';
+  static const menu = 'menu';
+  static const addToMyInventory = 'addToMyInventory';
+  static const aRIsBeingCreated = 'aRIsBeingCreated';
+  static const mayTakeTimeDependingOnVideo = 'mayTakeTimeDependingOnVideo';
+  static const constantUpdatesGiven = 'constantUpdatesGiven';
+  static const feelFree = 'feelFree';
+  static const understood = 'understood';
+  static const newMessageFrom = 'newMessageFrom';
+  static const hasANewPost = 'hasANewPost';
+  static const followsYou = 'followsYou';
+  static const unfollowedYou = 'unfollowedYou';
+  static const likedYourPost = 'likedYourPost';
+  static const commented = 'commented';
+  static const purchaseHistory = 'purchaseHistory';
 
 }

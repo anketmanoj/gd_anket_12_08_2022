@@ -483,7 +483,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
               _colorChanged = false;
               _previousFrame = _animationController!.value.floor();
               if (_previousFrame < _frameCount) {
-                log("here now anket dev");
+                log("here now anket dev this one");
                 _currentDisplayedOnlineFrame = CachedNetworkImage(
                   // key: UniqueKey(),
                   memCacheWidth: (widget.frameWidth).toInt(),
@@ -493,8 +493,8 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
                   imageUrl: _getDirectory(),
                   color: color,
                   useOldImageOnUrlChange: _isCacheComplete,
-                  fadeOutDuration: const Duration(milliseconds: 0),
-                  fadeInDuration: const Duration(milliseconds: 0),
+                  fadeOutDuration: const Duration(seconds: 1),
+                  fadeInDuration: const Duration(seconds: 1),
                   fit: widget.fit,
                   errorWidget: (context, url, error) => const Icon(Icons.error),
                 );

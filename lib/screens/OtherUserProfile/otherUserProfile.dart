@@ -325,6 +325,12 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                 .doc(auth.getUserId)
                                 .snapshots(),
                             builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
                               if (snapshot.data!.exists) {
                                 return Padding(
                                   padding: const EdgeInsets.only(right: 20),
@@ -350,7 +356,6 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                     },
                                     child: Container(
                                       height: 35,
-                                      width: 100,
                                       decoration: BoxDecoration(
                                         image: DecorationImage(
                                             image: Image.asset(
@@ -368,7 +373,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                             color: Colors.white,
                                           ),
                                           Text(
-                                            "Unfollow",
+                                            LocaleKeys.unfollow.tr(),
                                             style: TextStyle(
                                               fontSize: 16,
                                               color: Colors.white,
@@ -466,7 +471,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                             color: Colors.white,
                                           ),
                                           Text(
-                                            "Follow",
+                                            LocaleKeys.follow.tr(),
                                             style: TextStyle(
                                               fontSize: 16,
                                               color: Colors.white,

@@ -53,7 +53,7 @@ class _SocialMediaLinksState extends State<SocialMediaLinks> {
                     onSubmit: socialMediaLinks.setUrl(url: _urlController.text),
                     controller: _urlController,
                     showHintText: "Start with http:// or https://",
-                    labelText: "Your Website",
+                    labelText: LocaleKeys.yourWebsite.tr(),
                     validator: (value) {
                       if (value!.isNotEmpty) {
                         String pattern =
@@ -81,7 +81,7 @@ class _SocialMediaLinksState extends State<SocialMediaLinks> {
                     onSubmit: socialMediaLinks.setYoutubeUrl(
                         youtubeUrl: _youtubeController.text),
                     controller: _youtubeController,
-                    labelText: "Youtube Channel",
+                    labelText: LocaleKeys.youtubeChannel.tr(),
                   ),
                 ),
                 Padding(
@@ -103,7 +103,7 @@ class _SocialMediaLinksState extends State<SocialMediaLinks> {
                     onSubmit: socialMediaLinks.setInstagramUrl(
                         instagramUrl: _instagramController.text),
                     controller: _instagramController,
-                    labelText: "Instagram Id",
+                    labelText: LocaleKeys.instagramID.tr(),
                   ),
                 ),
                 Padding(
@@ -116,7 +116,7 @@ class _SocialMediaLinksState extends State<SocialMediaLinks> {
                     onSubmit: socialMediaLinks.setTwitterUrl(
                         twitterUrl: _twitterController.text),
                     controller: _twitterController,
-                    labelText: "Twitter Id",
+                    labelText: LocaleKeys.twitterID.tr(),
                   ),
                 ),
                 const SizedBox(

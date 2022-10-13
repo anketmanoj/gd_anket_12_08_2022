@@ -1271,7 +1271,8 @@ class _VideoPostItemState extends State<VideoPostItem> {
                                             //     amount: "10", currency: "USD"),
                                             child: Text(
                                               widget.video.videoType == "video"
-                                                  ? "Add to My Inventory"
+                                                  ? LocaleKeys.addToMyInventory
+                                                      .tr()
                                                   : LocaleKeys
                                                       .addtoarviewcollection
                                                       .tr(),

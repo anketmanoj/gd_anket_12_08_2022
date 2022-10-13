@@ -101,8 +101,8 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                 ],
                 labels: [
                   LocaleKeys.myitems.tr(),
-                  LocaleKeys.standard.tr(),
-                  LocaleKeys.diamond.tr(),
+                  LocaleKeys.free.tr(),
+                  LocaleKeys.premium.tr(),
                 ],
                 onToggle: (index) {
                   switch (index) {

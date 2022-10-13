@@ -497,7 +497,7 @@ class FirebaseOperations with ChangeNotifier {
     }).whenComplete(() async {
       await _fcmNotificationService.sendNotificationToUser(
           to: otherUserToken, //To change once set up
-          title: "$followingUserName follows you",
+          title: "$followingUserName ${LocaleKeys.followsYou.tr()}",
           body: "");
     });
   }
@@ -534,7 +534,8 @@ class FirebaseOperations with ChangeNotifier {
             .then((followingUser) async {
           await _fcmNotificationService.sendNotificationToUser(
               to: postUser['fcmToken']!, //To change once set up
-              title: "${followingUser['username']} unfollowed you",
+              title:
+                  "${followingUser['username']} ${LocaleKeys.unfollowedYou.tr()}",
               body: "");
         });
       });
@@ -1750,6 +1751,7 @@ class FirebaseOperations with ChangeNotifier {
       }).then((value) {
         Navigator.pop(ctx);
         log("Done posting");
+
         arIdsVal = [];
         notifyListeners();
       });
@@ -1781,7 +1783,7 @@ class FirebaseOperations with ChangeNotifier {
     }).then((value) async {
       await _fcmNotificationService.sendNotificationToUser(
           to: sendToUserToken, //To change once set up
-          title: "$initUserName liked your post",
+          title: "$initUserName ${LocaleKeys.likedYourPost.tr()}",
           body: "");
     });
   }
@@ -1824,7 +1826,7 @@ class FirebaseOperations with ChangeNotifier {
     }).then((value) async {
       await _fcmNotificationService.sendNotificationToUser(
         to: ownerFcmToken,
-        title: "$initUserName commented",
+        title: "$initUserName ${LocaleKeys.commented.tr()}",
         body: comment,
       );
     });
@@ -3155,7 +3157,7 @@ class FirebaseOperations with ChangeNotifier {
 
               await _fcmNotificationService.sendNotificationToUser(
                   to: notifyUser.token, //To change once set up
-                  title: "$initUserName has a new post!",
+                  title: "$initUserName ${LocaleKeys.hasANewPost.tr()}",
                   body: "");
             }));
   }

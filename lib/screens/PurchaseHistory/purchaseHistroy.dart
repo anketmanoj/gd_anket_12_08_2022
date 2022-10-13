@@ -44,7 +44,7 @@ class PurchaseHistoryScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: constantColors.whiteColor,
       appBar:
-          AppBarWidget(text: LocaleKeys.diamondhistroy.tr(), context: context),
+          AppBarWidget(text: LocaleKeys.purchaseHistory.tr(), context: context),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection("users")

@@ -187,7 +187,7 @@ class _PrivateMessageState extends State<PrivateMessage> {
                                         to:
                                             otherDeviceToken!, //To change once set up
                                         title:
-                                            "New message from ${Provider.of<FirebaseOperations>(context, listen: false).getInitUserName}",
+                                            "${LocaleKeys.newMessageFrom.tr()} ${Provider.of<FirebaseOperations>(context, listen: false).getInitUserName}",
                                         body: "")
                                     .whenComplete(() {
                                   print("notification sent");
@@ -242,7 +242,7 @@ class _PrivateMessageState extends State<PrivateMessage> {
                                               to:
                                                   otherDeviceToken!, //To change once set up
                                               title:
-                                                  "New message from ${Provider.of<FirebaseOperations>(context, listen: false).getInitUserName}",
+                                                  "${LocaleKeys.newMessageFrom.tr()} ${Provider.of<FirebaseOperations>(context, listen: false).getInitUserName}",
                                               body: messageController.text)
                                           .whenComplete(() {
                                         print("notification sent");
