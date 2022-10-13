@@ -2258,6 +2258,7 @@ class FirebaseOperations with ChangeNotifier {
       });
     });
 
+    videoItem.timestamp = Timestamp.now();
     await FirebaseFirestore.instance
         .collection("users")
         .doc(Provider.of<Authentication>(ctx, listen: false).getUserId)
@@ -2292,7 +2293,7 @@ class FirebaseOperations with ChangeNotifier {
                     "imgSeq": arSnapshot.data()['imgSeq'],
                     "layerType": arSnapshot.data()['layerType'],
                     "main": arSnapshot.data()['main'],
-                    "timestamp": arSnapshot.data()['timestamp'],
+                    "timestamp": Timestamp.now(),
                     "valueType": arSnapshot.data()['valueType'],
                     "ownerId": arSnapshot.data()['ownerId'],
                     "ownerName": arSnapshot.data()['ownerName'],
@@ -2321,7 +2322,7 @@ class FirebaseOperations with ChangeNotifier {
                   "imgSeq": arSnapshot.data()['imgSeq'],
                   "layerType": arSnapshot.data()['layerType'],
                   "main": arSnapshot.data()['main'],
-                  "timestamp": arSnapshot.data()['timestamp'],
+                  "timestamp": Timestamp.now(),
                   "valueType": arSnapshot.data()['valueType'],
                   "ownerId": arSnapshot.data()['ownerId'],
                   "ownerName": arSnapshot.data()['ownerName'],
@@ -2347,7 +2348,7 @@ class FirebaseOperations with ChangeNotifier {
                       .set({
                     "gif": arSnapshot.data()['gif'],
                     "layerType": arSnapshot.data()['layerType'],
-                    "timestamp": arSnapshot.data()['timestamp'],
+                    "timestamp": Timestamp.now(),
                     "id": arSnapshot.data()['id'],
                     "valueType": isFree ? "free" : "paid",
                     "itemType": "material",
@@ -2371,7 +2372,7 @@ class FirebaseOperations with ChangeNotifier {
                     .set({
                   "gif": arSnapshot.data()['gif'],
                   "layerType": arSnapshot.data()['layerType'],
-                  "timestamp": arSnapshot.data()['timestamp'],
+                  "timestamp": Timestamp.now(),
                   "id": arSnapshot.data()['id'],
                   "valueType": isFree ? "free" : "paid",
                   "itemType": "material",
@@ -2399,7 +2400,7 @@ class FirebaseOperations with ChangeNotifier {
                     "main": arSnapshot.data()['main'],
                     "gif": arSnapshot.data()['gif'],
                     "layerType": arSnapshot.data()['layerType'],
-                    "timestamp": arSnapshot.data()['timestamp'],
+                    "timestamp": Timestamp.now(),
                     "id": arSnapshot.data()['id'],
                     "valueType": isFree ? "free" : "paid",
                     "itemType": "material",
@@ -2424,7 +2425,7 @@ class FirebaseOperations with ChangeNotifier {
                   "main": arSnapshot.data()['main'],
                   "gif": arSnapshot.data()['gif'],
                   "layerType": arSnapshot.data()['layerType'],
-                  "timestamp": arSnapshot.data()['timestamp'],
+                  "timestamp": Timestamp.now(),
                   "id": arSnapshot.data()['id'],
                   "valueType": isFree ? "free" : "paid",
                   "itemType": "material",
