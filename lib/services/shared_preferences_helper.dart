@@ -51,7 +51,7 @@ class SharedPreferencesHelper {
   }
 
   static getDyValue(String key) {
-    return prefs.getDouble(key) ?? 10.h;
+    return prefs.getDouble(key) ?? 0;
   }
 
   static setDxValue(String key, double value) async {
@@ -59,6 +59,6 @@ class SharedPreferencesHelper {
   }
 
   static getDxValue(String key) {
-    return prefs.getDouble(key) ?? 2.w;
+    return prefs.getDouble(key) ?? 0;
   }
 }

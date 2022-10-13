@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/screens/HelpScreen/tutorialVideos.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
+import 'package:diamon_rose_app/screens/ProfilePage/ArViewerScreen.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateMessage.dart';
 import 'package:diamon_rose_app/screens/homePage/showCommentScreen.dart';
 import 'package:diamon_rose_app/screens/homePage/showLikeScreen.dart';
@@ -48,11 +49,23 @@ class VideoWidget extends StatelessWidget {
   final VideoPlayerController controller;
   final Video video;
   final HomeScreenOptions homeScreenOptions;
-  final ValueNotifier<Matrix4> notifier = ValueNotifier(Matrix4.identity());
+
+  Offset? _initPos;
+  Offset? _currentPos = Offset(0, 0);
+  ContainerList tipsNTricksContainer = ContainerList(
+    gifSelected: "assets/images/tipsntricks.png",
+    height: 150,
+    width: 150,
+    rotation: 0,
+    scale: 1,
+    xPosition: 0,
+    yPosition: 0,
+  );
+
+  Size screen = Size(400, 500);
 
   @override
   Widget build(BuildContext context) {
-    log("This sense?");
     final Size size = MediaQuery.of(context).size;
     final FirebaseOperations firebaseOperations =
         Provider.of<FirebaseOperations>(context, listen: false);
@@ -64,491 +77,157 @@ class VideoWidget extends StatelessWidget {
           useruidVal: context.read<Authentication>().getUserId,
           videoVal: video,
         );
-    return MatrixGestureDetector(
-      shouldRotate: false,
-      shouldScale: false,
-      onMatrixUpdate: (m, tm, sm, rm) {
-        notifier.value = m;
+    return Stack(
+      children: [
+        VisibilityDetector(
+          key:
+              Key('${video.videotitle} + ${video.caption} + ${DateTime.now()}'),
+          onVisibilityChanged: (visibilityInfo) {
+            var visiblePercentage = visibilityInfo.visibleFraction * 100;
+            if (visiblePercentage == 100) {
+              log("${video.videotitle} played");
 
-        final translation =
-            MatrixGestureDetector.decomposeToValues(m).translation;
+              context.read<FirebaseOperations>().updatePostView(
+                    videoId: video.id,
+                    useruidVal: context.read<Authentication>().getUserId,
+                    videoVal: video,
+                  );
 
-        log("dy = ${translation.distance} | dx = ${translation.distance}");
-        log("starting val y = ${10.h} | x = ${2.w}");
-
-        // var degrees = angle * 180 / math.pi;
-
-        // log("degrees == $degrees");
-      },
-      child: AnimatedBuilder(
-          animation: notifier,
-          builder: (ctx, child) {
-            return Stack(
-              children: [
-                VisibilityDetector(
-                  key: Key(
-                      '${video.videotitle} + ${video.caption} + ${DateTime.now()}'),
-                  onVisibilityChanged: (visibilityInfo) {
-                    var visiblePercentage =
-                        visibilityInfo.visibleFraction * 100;
-                    if (visiblePercentage == 100) {
-                      log("${video.videotitle} played");
-
-                      context.read<FirebaseOperations>().updatePostView(
-                            videoId: video.id,
-                            useruidVal:
-                                context.read<Authentication>().getUserId,
-                            videoVal: video,
-                          );
-
-                      controller.play();
-                      if (video.isPaid &&
-                          !video.boughtBy.contains(
-                              context.read<Authentication>().getUserId)) {
-                        controller.pause();
-                      }
-                    } else {
-                      log("${video.videotitle} paused");
-                      controller.pause();
-                    }
-                  },
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Stack(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                controller.value.isPlaying
-                                    ? controller.pause()
-                                    : controller.play();
-                              },
-                              child: VideoPlayer(
-                                controller,
-                              ),
-                            ),
-                            Visibility(
-                              visible: !video.boughtBy.contains(context
-                                      .read<Authentication>()
-                                      .getUserId) &&
-                                  video.isPaid,
-                              child: Positioned(
-                                child: Center(
-                                  child: BlurryContainer.expand(
-                                    blur: 8,
-                                    elevation: 0,
-                                    color: Colors.transparent,
-                                    padding: const EdgeInsets.all(8),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(20)),
-                                    child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 45),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              height: 40.h,
-                                              width: 100.w,
-                                              child: ImageNetworkLoader(
-                                                imageUrl: video.thumbnailurl,
-                                                fit: BoxFit.contain,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 20,
-                                            ),
-                                            Container(
-                                              height: size.height * 0.07,
-                                              width: size.width,
-                                              child: ElevatedButton.icon(
-                                                onPressed: () async {
-                                                  viewMaterials(context, size);
-                                                },
-                                                style: ButtonStyle(
-                                                  foregroundColor:
-                                                      MaterialStateProperty.all<
-                                                          Color>(Colors.black),
-                                                  backgroundColor:
-                                                      MaterialStateProperty.all<
-                                                              Color>(
-                                                          constantColors.black),
-                                                  shape:
-                                                      MaterialStateProperty.all<
-                                                          RoundedRectangleBorder>(
-                                                    RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20),
-                                                    ),
-                                                  ),
-                                                ),
-                                                icon: Icon(
-                                                  Icons.lock_open,
-                                                  color:
-                                                      constantColors.whiteColor,
-                                                  size: 30,
-                                                ),
-                                                label: Text(
-                                                  LocaleKeys.unlockvideo.tr(),
-                                                  style: TextStyle(
-                                                    color: constantColors
-                                                        .whiteColor,
-                                                    fontSize: 18,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 20,
-                                            ),
-                                            Container(
-                                              height: size.height * 0.07,
-                                              width: size.width,
-                                              child: ElevatedButton.icon(
-                                                onPressed: () {
-                                                  try {
-                                                    firebaseOperations
-                                                        .goToUserProfile(
-                                                            userUid:
-                                                                video.useruid,
-                                                            context: context);
-                                                  } catch (e) {
-                                                    log("error == $e");
-                                                  }
-                                                },
-                                                style: ButtonStyle(
-                                                  foregroundColor:
-                                                      MaterialStateProperty.all<
-                                                              Color>(
-                                                          constantColors
-                                                              .navButton),
-                                                  backgroundColor:
-                                                      MaterialStateProperty.all<
-                                                              Color>(
-                                                          constantColors
-                                                              .navButton),
-                                                  shape:
-                                                      MaterialStateProperty.all<
-                                                          RoundedRectangleBorder>(
-                                                    RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20),
-                                                    ),
-                                                  ),
-                                                ),
-                                                icon: Icon(
-                                                  Icons.person,
-                                                  color:
-                                                      constantColors.whiteColor,
-                                                  size: 30,
-                                                ),
-                                                label: Text(
-                                                  LocaleKeys.visitprofile.tr(),
-                                                  style: TextStyle(
-                                                    color: constantColors
-                                                        .whiteColor,
-                                                    fontSize: 18,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              left: 5,
-                              child: Container(
-                                padding: EdgeInsets.all(5),
-                                width: size.width,
+              controller.play();
+              if (video.isPaid &&
+                  !video.boughtBy
+                      .contains(context.read<Authentication>().getUserId)) {
+                controller.pause();
+              }
+            } else {
+              log("${video.videotitle} paused");
+              controller.pause();
+            }
+          },
+          child: Column(
+            children: [
+              Expanded(
+                child: Stack(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        controller.value.isPlaying
+                            ? controller.pause()
+                            : controller.play();
+                      },
+                      child: VideoPlayer(
+                        controller,
+                      ),
+                    ),
+                    Visibility(
+                      visible: !video.boughtBy.contains(
+                              context.read<Authentication>().getUserId) &&
+                          video.isPaid,
+                      child: Positioned(
+                        child: Center(
+                          child: BlurryContainer.expand(
+                            blur: 8,
+                            elevation: 0,
+                            color: Colors.transparent,
+                            padding: const EdgeInsets.all(8),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
+                            child: Center(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 45),
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    InkWell(
-                                      onTap: () {
-                                        controller.pause();
-                                        firebaseOperations.goToUserProfile(
-                                            userUid: video.useruid,
-                                            context: context);
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            height: 40,
-                                            width: 40,
-                                            decoration: BoxDecoration(
+                                    Container(
+                                      height: 40.h,
+                                      width: 100.w,
+                                      child: ImageNetworkLoader(
+                                        imageUrl: video.thumbnailurl,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Container(
+                                      height: size.height * 0.07,
+                                      width: size.width,
+                                      child: ElevatedButton.icon(
+                                        onPressed: () async {
+                                          viewMaterials(context, size);
+                                        },
+                                        style: ButtonStyle(
+                                          foregroundColor:
+                                              MaterialStateProperty.all<Color>(
+                                                  Colors.black),
+                                          backgroundColor:
+                                              MaterialStateProperty.all<Color>(
+                                                  constantColors.black),
+                                          shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                            RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(30),
-                                              image: DecorationImage(
-                                                image: Image.network(
-                                                        video.userimage)
-                                                    .image,
-                                                fit: BoxFit.cover,
-                                              ),
+                                                  BorderRadius.circular(20),
                                             ),
                                           ),
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(left: 8),
-                                            child: Row(
-                                              children: [
-                                                Stack(
-                                                  children: <Widget>[
-                                                    // Stroked text as border.
-                                                    Text(
-                                                      video.username,
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        foreground: Paint()
-                                                          ..style =
-                                                              PaintingStyle
-                                                                  .stroke
-                                                          ..strokeWidth = 3
-                                                          ..color =
-                                                              Colors.black,
-                                                      ),
-                                                    ),
-                                                    // Solid text as fill.
-                                                    Text(
-                                                      video.username,
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Visibility(
-                                                  visible: video.verifiedUser ??
-                                                      false,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8.0),
-                                                    child: VerifiedMark(),
-                                                  ),
-                                                ),
-                                                StreamBuilder<DocumentSnapshot>(
-                                                    stream: FirebaseFirestore
-                                                        .instance
-                                                        .collection("users")
-                                                        .doc(video.useruid)
-                                                        .collection("followers")
-                                                        .doc(context
-                                                            .read<
-                                                                Authentication>()
-                                                            .getUserId)
-                                                        .snapshots(),
-                                                    builder:
-                                                        (context, snapshot) {
-                                                      if (snapshot
-                                                              .connectionState ==
-                                                          ConnectionState
-                                                              .waiting) {
-                                                        return Center(
-                                                          child:
-                                                              CircularProgressIndicator(),
-                                                        );
-                                                      }
-                                                      if (snapshot
-                                                          .data!.exists) {
-                                                        return SizedBox();
-                                                      } else {
-                                                        return Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  right: 20),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    left: 8.0),
-                                                            child: InkWell(
-                                                              onTap: () {
-                                                                firebaseOperations
-                                                                    .goToUserProfile(
-                                                                        userUid:
-                                                                            video
-                                                                                .useruid,
-                                                                        context:
-                                                                            context);
-                                                              },
-                                                              child: Container(
-                                                                width: 25.w,
-                                                                height: 4.h,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  border: Border
-                                                                      .all(
-                                                                    color: constantColors
-                                                                        .bioBg,
-                                                                    width: 1,
-                                                                  ),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10),
-                                                                ),
-                                                                alignment:
-                                                                    Alignment
-                                                                        .center,
-                                                                child: Text(
-                                                                  LocaleKeys
-                                                                      .visitprofile
-                                                                      .tr(),
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: constantColors
-                                                                        .bioBg,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        );
-                                                      }
-                                                    }),
-                                              ],
-                                            ),
+                                        ),
+                                        icon: Icon(
+                                          Icons.lock_open,
+                                          color: constantColors.whiteColor,
+                                          size: 30,
+                                        ),
+                                        label: Text(
+                                          LocaleKeys.unlockvideo.tr(),
+                                          style: TextStyle(
+                                            color: constantColors.whiteColor,
+                                            fontSize: 18,
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                        left: 10,
-                                        top: 5,
-                                        right: 30,
-                                      ),
-                                      child: Stack(
-                                        children: <Widget>[
-                                          // Stroked text as border.
-                                          Text(
-                                            video.videotitle,
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              foreground: Paint()
-                                                ..style = PaintingStyle.stroke
-                                                ..strokeWidth = 3
-                                                ..color = Colors.black,
-                                            ),
-                                          ),
-                                          // Solid text as fill.
-                                          Text(
-                                            video.videotitle,
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                        left: 10,
-                                        top: 5,
-                                        right: 15.w,
-                                      ),
-                                      child: Stack(
-                                        children: <Widget>[
-                                          // Stroked text as border.
-                                          Text(
-                                            video.caption,
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              foreground: Paint()
-                                                ..style = PaintingStyle.stroke
-                                                ..strokeWidth = 3
-                                                ..color = Colors.black,
-                                            ),
-                                          ),
-                                          // Solid text as fill.
-                                          Text(
-                                            video.caption,
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Visibility(
-                                      visible: (video.timestamp)
-                                          .toDate()
-                                          .isAfter(DateTime.now()
-                                              .add(Duration(days: -3))),
-                                      replacement: Padding(
-                                        padding:
-                                            EdgeInsets.only(left: 10, top: 5),
-                                        child: Stack(
-                                          children: <Widget>[
-                                            // Stroked text as border.
-                                            Text(
-                                              (video.timestamp)
-                                                  .toDate()
-                                                  .toString()
-                                                  .substring(0, 10),
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                foreground: Paint()
-                                                  ..style = PaintingStyle.stroke
-                                                  ..strokeWidth = 3
-                                                  ..color = Colors.black,
-                                              ),
-                                            ),
-                                            // Solid text as fill.
-                                            Text(
-                                              (video.timestamp)
-                                                  .toDate()
-                                                  .toString()
-                                                  .substring(0, 10),
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
                                         ),
                                       ),
-                                      child: Padding(
-                                        padding:
-                                            EdgeInsets.only(left: 10, top: 5),
-                                        child: Stack(
-                                          children: <Widget>[
-                                            // Stroked text as border.
-                                            Text(
-                                              timeago.format(
-                                                  (video.timestamp).toDate()),
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                foreground: Paint()
-                                                  ..style = PaintingStyle.stroke
-                                                  ..strokeWidth = 3
-                                                  ..color = Colors.black,
-                                              ),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Container(
+                                      height: size.height * 0.07,
+                                      width: size.width,
+                                      child: ElevatedButton.icon(
+                                        onPressed: () {
+                                          try {
+                                            firebaseOperations.goToUserProfile(
+                                                userUid: video.useruid,
+                                                context: context);
+                                          } catch (e) {
+                                            log("error == $e");
+                                          }
+                                        },
+                                        style: ButtonStyle(
+                                          foregroundColor:
+                                              MaterialStateProperty.all<Color>(
+                                                  constantColors.navButton),
+                                          backgroundColor:
+                                              MaterialStateProperty.all<Color>(
+                                                  constantColors.navButton),
+                                          shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                            RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
                                             ),
-                                            // Solid text as fill.
-                                            Text(
-                                              timeago.format(
-                                                  (video.timestamp).toDate()),
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
+                                          ),
+                                        ),
+                                        icon: Icon(
+                                          Icons.person,
+                                          color: constantColors.whiteColor,
+                                          size: 30,
+                                        ),
+                                        label: Text(
+                                          LocaleKeys.visitprofile.tr(),
+                                          style: TextStyle(
+                                            color: constantColors.whiteColor,
+                                            fontSize: 18,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -556,359 +235,701 @@ class VideoWidget extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Positioned(
-                              right: 10,
-                              bottom: 10,
-                              child: SpeedDial(
-                                backgroundColor: constantColors.navButton,
-                                childrenButtonSize:
-                                    Size(size.width * 0.2, size.height * 0.08),
-                                childPadding: EdgeInsets.all(10),
-                                overlayOpacity: 0,
-                                // animatedIcon: AnimatedIcons.menu_close,
-                                spacing: size.height * 0.001,
-                                animatedIcon: AnimatedIcons.menu_close,
-                                closeManually: false,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      left: 5,
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        width: size.width,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                controller.pause();
+                                firebaseOperations.goToUserProfile(
+                                    userUid: video.useruid, context: context);
+                              },
+                              child: Row(
                                 children: [
-                                  SpeedDialChild(
-                                    child: Icon(
-                                      Icons.report_gmailerrorred,
+                                  Container(
+                                    height: 40,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30),
+                                      image: DecorationImage(
+                                        image: Image.network(video.userimage)
+                                            .image,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
-                                    onTap: () {
-                                      reportVideoMenu(context, size);
-                                    },
                                   ),
-                                  SpeedDialChild(
-                                    // visible: video.isPaid,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: constantColors.whiteColor,
-                                        image: DecorationImage(
-                                          fit: BoxFit.fitHeight,
-                                          image: AssetImage(
-                                            "assets/icons/cat_icon.png",
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8),
+                                    child: Row(
+                                      children: [
+                                        Stack(
+                                          children: <Widget>[
+                                            // Stroked text as border.
+                                            Text(
+                                              video.username,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                foreground: Paint()
+                                                  ..style = PaintingStyle.stroke
+                                                  ..strokeWidth = 3
+                                                  ..color = Colors.black,
+                                              ),
+                                            ),
+                                            // Solid text as fill.
+                                            Text(
+                                              video.username,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Visibility(
+                                          visible: video.verifiedUser ?? false,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 8.0),
+                                            child: VerifiedMark(),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                    onTap: () => video.isFree
-                                        ? freeMaterialsBottomSheet(
-                                            context, size, firebaseOperations)
-                                        : viewMaterials(context, size),
-                                  ),
-                                  SpeedDialChild(
-                                    child: Icon(
-                                      FontAwesomeIcons.shareAlt,
-                                    ),
-                                    onTap: () async {
-                                      var generatedLink =
-                                          await DynamicLinkService
-                                              .createDynamicLink(video.id,
-                                                  short: true);
-                                      final String message =
-                                          generatedLink.toString();
-
-                                      bool canShareVal = false;
-
-                                      if (video.isPaid) {
-                                        if (video.boughtBy.contains(context
-                                            .read<Authentication>()
-                                            .getUserId)) {
-                                          canShareVal = true;
-                                        }
-                                        if (video.useruid ==
-                                            context
-                                                .read<Authentication>()
-                                                .getUserId) {
-                                          canShareVal == true;
-                                        }
-                                      } else {
-                                        canShareVal = true;
-                                      }
-
-                                      Get.bottomSheet(
-                                        ShareWidget(
-                                          msg: message,
-                                          urlPath: video.videourl,
-                                          videoOwnerName: video.username,
-                                          canShareToSocialMedia: canShareVal,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  SpeedDialChild(
-                                    child: Icon(
-                                      FontAwesomeIcons.paperPlane,
-                                    ),
-                                    onTap: () async {
-                                      await Provider.of<FirebaseOperations>(
-                                              context,
-                                              listen: false)
-                                          .messageUser(
-                                              messagingUid: video.useruid,
-                                              messagingDocId:
-                                                  Provider.of<Authentication>(
-                                                          context,
-                                                          listen: false)
-                                                      .getUserId,
-                                              messagingData: {
-                                                'username': Provider.of<
-                                                            FirebaseOperations>(
-                                                        context,
-                                                        listen: false)
-                                                    .getInitUserName,
-                                                'userimage': Provider.of<
-                                                            FirebaseOperations>(
-                                                        context,
-                                                        listen: false)
-                                                    .getInitUserImage,
-                                                'useremail': Provider.of<
-                                                            FirebaseOperations>(
-                                                        context,
-                                                        listen: false)
-                                                    .getInitUserEmail,
-                                                'useruid':
-                                                    Provider.of<Authentication>(
-                                                            context,
-                                                            listen: false)
-                                                        .getUserId,
-                                                'time': Timestamp.now(),
-                                              },
-                                              messengerUid:
-                                                  Provider.of<Authentication>(
-                                                          context,
-                                                          listen: false)
-                                                      .getUserId,
-                                              messengerDocId: video.useruid,
-                                              messengerData: {
-                                                'username': video.username,
-                                                'userimage': video.userimage,
-                                                'useremail':
-                                                    'test - remove later',
-                                                'useruid': video.useruid,
-                                                'time': Timestamp.now(),
-                                              })
-                                          .whenComplete(() async {
-                                        await FirebaseFirestore.instance
-                                            .collection("users")
-                                            .doc(video.useruid)
-                                            .get()
-                                            .then((value) {
-                                          if (value.exists) {
-                                            try {
-                                              UserModel user =
-                                                  UserModel.fromMap(
-                                                      value.data()!);
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PrivateMessage(
-                                                    documentSnapshot: value,
-                                                  ),
-                                                ),
-                                              );
-                                            } catch (e) {
-                                              print(e.toString());
-                                            }
-                                          }
-                                        });
-                                      });
-                                    },
-                                  ),
-                                  SpeedDialChild(
-                                      child: StreamBuilder<DocumentSnapshot>(
-                                          stream: FirebaseFirestore.instance
-                                              .collection("posts")
-                                              .doc(video.id)
-                                              .collection("likes")
-                                              .doc(authentication.getUserId)
-                                              .snapshots(),
-                                          builder: (context, snapshot) {
-                                            if (snapshot.hasData) {
+                                        StreamBuilder<DocumentSnapshot>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection("users")
+                                                .doc(video.useruid)
+                                                .collection("followers")
+                                                .doc(context
+                                                    .read<Authentication>()
+                                                    .getUserId)
+                                                .snapshots(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                );
+                                              }
                                               if (snapshot.data!.exists) {
-                                                return IconButton(
-                                                  onPressed: () {
-                                                    firebaseOperations
-                                                        .deleteLikePost(
-                                                            postUid: video.id,
-                                                            userUid:
-                                                                authentication
-                                                                    .getUserId,
-                                                            context: context);
-                                                  },
-                                                  icon: Icon(
-                                                    Icons.favorite,
-                                                    color: Colors.red,
+                                                return SizedBox();
+                                              } else {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 20),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 8.0),
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        firebaseOperations
+                                                            .goToUserProfile(
+                                                                userUid: video
+                                                                    .useruid,
+                                                                context:
+                                                                    context);
+                                                      },
+                                                      child: Container(
+                                                        width: 25.w,
+                                                        height: 4.h,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          border: Border.all(
+                                                            color:
+                                                                constantColors
+                                                                    .bioBg,
+                                                            width: 1,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: Text(
+                                                          LocaleKeys
+                                                              .visitprofile
+                                                              .tr(),
+                                                          style: TextStyle(
+                                                            color:
+                                                                constantColors
+                                                                    .bioBg,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
                                                 );
-                                              } else {
-                                                return IconButton(
-                                                    onPressed: () async {
-                                                      await firebaseOperations
-                                                          .likePost(
-                                                        sendToUserToken: video
-                                                            .ownerFcmToken!,
-                                                        likerUsername:
-                                                            firebaseOperations
-                                                                .initUserName,
-                                                        postUid: video.id,
-                                                        userUid: authentication
-                                                            .getUserId,
-                                                        context: context,
-                                                      )
-                                                          .then((value) {
-                                                        firebaseOperations
-                                                            .addLikeNotification(
-                                                          postId: video.id,
-                                                          userUid:
-                                                              authentication
-                                                                  .getUserId,
-                                                          context: context,
-                                                          videoOwnerUid:
-                                                              video.useruid,
-                                                        );
-                                                      });
-                                                    },
-                                                    icon: Icon(
-                                                      Icons.favorite_border,
-                                                      color: Colors.red,
-                                                    ));
                                               }
-                                            } else {
-                                              return Icon(
-                                                Icons.favorite_border,
-                                                color: Colors.red,
-                                              );
-                                            }
-                                          }),
-                                      onLongPress: () {
-                                        Navigator.push(
-                                            context,
-                                            PageTransition(
-                                                child: ShowLikesPage(
-                                                  postId: video.id,
-                                                ),
-                                                type: PageTransitionType.fade));
-                                      }),
-                                  SpeedDialChild(
-                                    child: Icon(
-                                      FontAwesomeIcons.comment,
+                                            }),
+                                      ],
                                     ),
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          PageTransition(
-                                              child: ShowCommentsPage(
-                                                ownerFcmToken:
-                                                    video.ownerFcmToken,
-                                                postOwnerId: video.useruid,
-                                                postId: video.id,
-                                              ),
-                                              type: PageTransitionType.fade));
-                                    },
-                                  ),
-                                  SpeedDialChild(
-                                    child: StreamBuilder<DocumentSnapshot>(
-                                        stream: FirebaseFirestore.instance
-                                            .collection("users")
-                                            .doc(Provider.of<Authentication>(
-                                                    context,
-                                                    listen: false)
-                                                .getUserId)
-                                            .collection("favorites")
-                                            .doc(video.id)
-                                            .snapshots(),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.waiting) {
-                                            return Center(
-                                                child:
-                                                    CircularProgressIndicator());
-                                          } else {
-                                            if (snapshot.data!.exists) {
-                                              return IconButton(
-                                                onPressed: () async {
-                                                  await firebaseOperations
-                                                      .removeFromFavs(
-                                                          video: video,
-                                                          context: context);
-                                                },
-                                                icon: Icon(
-                                                  FontAwesomeIcons.solidStar,
-                                                  color: Colors.black,
-                                                ),
-                                              );
-                                            } else {
-                                              return IconButton(
-                                                onPressed: () async {
-                                                  await firebaseOperations
-                                                      .addToFavs(
-                                                          video: video,
-                                                          context: context);
-                                                },
-                                                icon: Icon(
-                                                  FontAwesomeIcons.star,
-                                                  color: Colors.black,
-                                                ),
-                                              );
-                                            }
-                                          }
-                                        }),
-                                  ),
-                                  SpeedDialChild(
-                                    child: Container(
-                                      height: 90,
-                                      width: 90,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(40),
-                                        image: DecorationImage(
-                                          image: Image.network(video.userimage)
-                                              .image,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      firebaseOperations.goToUserProfile(
-                                          userUid: video.useruid,
-                                          context: context);
-                                    },
                                   ),
                                 ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                left: 10,
+                                top: 5,
+                                right: 30,
+                              ),
+                              child: Stack(
+                                children: <Widget>[
+                                  // Stroked text as border.
+                                  Text(
+                                    video.videotitle,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      foreground: Paint()
+                                        ..style = PaintingStyle.stroke
+                                        ..strokeWidth = 3
+                                        ..color = Colors.black,
+                                    ),
+                                  ),
+                                  // Solid text as fill.
+                                  Text(
+                                    video.videotitle,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                left: 10,
+                                top: 5,
+                                right: 15.w,
+                              ),
+                              child: Stack(
+                                children: <Widget>[
+                                  // Stroked text as border.
+                                  Text(
+                                    video.caption,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      foreground: Paint()
+                                        ..style = PaintingStyle.stroke
+                                        ..strokeWidth = 3
+                                        ..color = Colors.black,
+                                    ),
+                                  ),
+                                  // Solid text as fill.
+                                  Text(
+                                    video.caption,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Visibility(
+                              visible: (video.timestamp).toDate().isAfter(
+                                  DateTime.now().add(Duration(days: -3))),
+                              replacement: Padding(
+                                padding: EdgeInsets.only(left: 10, top: 5),
+                                child: Stack(
+                                  children: <Widget>[
+                                    // Stroked text as border.
+                                    Text(
+                                      (video.timestamp)
+                                          .toDate()
+                                          .toString()
+                                          .substring(0, 10),
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        foreground: Paint()
+                                          ..style = PaintingStyle.stroke
+                                          ..strokeWidth = 3
+                                          ..color = Colors.black,
+                                      ),
+                                    ),
+                                    // Solid text as fill.
+                                    Text(
+                                      (video.timestamp)
+                                          .toDate()
+                                          .toString()
+                                          .substring(0, 10),
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 10, top: 5),
+                                child: Stack(
+                                  children: <Widget>[
+                                    // Stroked text as border.
+                                    Text(
+                                      timeago
+                                          .format((video.timestamp).toDate()),
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        foreground: Paint()
+                                          ..style = PaintingStyle.stroke
+                                          ..strokeWidth = 3
+                                          ..color = Colors.black,
+                                      ),
+                                    ),
+                                    // Solid text as fill.
+                                    Text(
+                                      timeago
+                                          .format((video.timestamp).toDate()),
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    Positioned(
+                      right: 10,
+                      bottom: 10,
+                      child: SpeedDial(
+                        backgroundColor: constantColors.navButton,
+                        childrenButtonSize:
+                            Size(size.width * 0.2, size.height * 0.08),
+                        childPadding: EdgeInsets.all(10),
+                        overlayOpacity: 0,
+                        // animatedIcon: AnimatedIcons.menu_close,
+                        spacing: size.height * 0.001,
+                        animatedIcon: AnimatedIcons.menu_close,
+                        closeManually: false,
+                        children: [
+                          SpeedDialChild(
+                            child: Icon(
+                              Icons.report_gmailerrorred,
+                            ),
+                            onTap: () {
+                              reportVideoMenu(context, size);
+                            },
+                          ),
+                          SpeedDialChild(
+                            // visible: video.isPaid,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: constantColors.whiteColor,
+                                image: DecorationImage(
+                                  fit: BoxFit.fitHeight,
+                                  image: AssetImage(
+                                    "assets/icons/cat_icon.png",
+                                  ),
+                                ),
+                              ),
+                            ),
+                            onTap: () => video.isFree
+                                ? freeMaterialsBottomSheet(
+                                    context, size, firebaseOperations)
+                                : viewMaterials(context, size),
+                          ),
+                          SpeedDialChild(
+                            child: Icon(
+                              FontAwesomeIcons.shareAlt,
+                            ),
+                            onTap: () async {
+                              var generatedLink =
+                                  await DynamicLinkService.createDynamicLink(
+                                      video.id,
+                                      short: true);
+                              final String message = generatedLink.toString();
+
+                              bool canShareVal = false;
+
+                              if (video.isPaid) {
+                                if (video.boughtBy.contains(
+                                    context.read<Authentication>().getUserId)) {
+                                  canShareVal = true;
+                                }
+                                if (video.useruid ==
+                                    context.read<Authentication>().getUserId) {
+                                  canShareVal == true;
+                                }
+                              } else {
+                                canShareVal = true;
+                              }
+
+                              Get.bottomSheet(
+                                ShareWidget(
+                                  msg: message,
+                                  urlPath: video.videourl,
+                                  videoOwnerName: video.username,
+                                  canShareToSocialMedia: canShareVal,
+                                ),
+                              );
+                            },
+                          ),
+                          SpeedDialChild(
+                            child: Icon(
+                              FontAwesomeIcons.paperPlane,
+                            ),
+                            onTap: () async {
+                              await Provider.of<FirebaseOperations>(context,
+                                      listen: false)
+                                  .messageUser(
+                                      messagingUid: video.useruid,
+                                      messagingDocId:
+                                          Provider.of<Authentication>(context,
+                                                  listen: false)
+                                              .getUserId,
+                                      messagingData: {
+                                        'username':
+                                            Provider.of<FirebaseOperations>(
+                                                    context,
+                                                    listen: false)
+                                                .getInitUserName,
+                                        'userimage':
+                                            Provider.of<FirebaseOperations>(
+                                                    context,
+                                                    listen: false)
+                                                .getInitUserImage,
+                                        'useremail':
+                                            Provider.of<FirebaseOperations>(
+                                                    context,
+                                                    listen: false)
+                                                .getInitUserEmail,
+                                        'useruid': Provider.of<Authentication>(
+                                                context,
+                                                listen: false)
+                                            .getUserId,
+                                        'time': Timestamp.now(),
+                                      },
+                                      messengerUid: Provider.of<Authentication>(
+                                              context,
+                                              listen: false)
+                                          .getUserId,
+                                      messengerDocId: video.useruid,
+                                      messengerData: {
+                                        'username': video.username,
+                                        'userimage': video.userimage,
+                                        'useremail': 'test - remove later',
+                                        'useruid': video.useruid,
+                                        'time': Timestamp.now(),
+                                      })
+                                  .whenComplete(() async {
+                                await FirebaseFirestore.instance
+                                    .collection("users")
+                                    .doc(video.useruid)
+                                    .get()
+                                    .then((value) {
+                                  if (value.exists) {
+                                    try {
+                                      UserModel user =
+                                          UserModel.fromMap(value.data()!);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PrivateMessage(
+                                            documentSnapshot: value,
+                                          ),
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      print(e.toString());
+                                    }
+                                  }
+                                });
+                              });
+                            },
+                          ),
+                          SpeedDialChild(
+                              child: StreamBuilder<DocumentSnapshot>(
+                                  stream: FirebaseFirestore.instance
+                                      .collection("posts")
+                                      .doc(video.id)
+                                      .collection("likes")
+                                      .doc(authentication.getUserId)
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      if (snapshot.data!.exists) {
+                                        return IconButton(
+                                          onPressed: () {
+                                            firebaseOperations.deleteLikePost(
+                                                postUid: video.id,
+                                                userUid:
+                                                    authentication.getUserId,
+                                                context: context);
+                                          },
+                                          icon: Icon(
+                                            Icons.favorite,
+                                            color: Colors.red,
+                                          ),
+                                        );
+                                      } else {
+                                        return IconButton(
+                                            onPressed: () async {
+                                              await firebaseOperations
+                                                  .likePost(
+                                                sendToUserToken:
+                                                    video.ownerFcmToken!,
+                                                likerUsername:
+                                                    firebaseOperations
+                                                        .initUserName,
+                                                postUid: video.id,
+                                                userUid:
+                                                    authentication.getUserId,
+                                                context: context,
+                                              )
+                                                  .then((value) {
+                                                firebaseOperations
+                                                    .addLikeNotification(
+                                                  postId: video.id,
+                                                  userUid:
+                                                      authentication.getUserId,
+                                                  context: context,
+                                                  videoOwnerUid: video.useruid,
+                                                );
+                                              });
+                                            },
+                                            icon: Icon(
+                                              Icons.favorite_border,
+                                              color: Colors.red,
+                                            ));
+                                      }
+                                    } else {
+                                      return Icon(
+                                        Icons.favorite_border,
+                                        color: Colors.red,
+                                      );
+                                    }
+                                  }),
+                              onLongPress: () {
+                                Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        child: ShowLikesPage(
+                                          postId: video.id,
+                                        ),
+                                        type: PageTransitionType.fade));
+                              }),
+                          SpeedDialChild(
+                            child: Icon(
+                              FontAwesomeIcons.comment,
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  PageTransition(
+                                      child: ShowCommentsPage(
+                                        ownerFcmToken: video.ownerFcmToken,
+                                        postOwnerId: video.useruid,
+                                        postId: video.id,
+                                      ),
+                                      type: PageTransitionType.fade));
+                            },
+                          ),
+                          SpeedDialChild(
+                            child: StreamBuilder<DocumentSnapshot>(
+                                stream: FirebaseFirestore.instance
+                                    .collection("users")
+                                    .doc(Provider.of<Authentication>(context,
+                                            listen: false)
+                                        .getUserId)
+                                    .collection("favorites")
+                                    .doc(video.id)
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Center(
+                                        child: CircularProgressIndicator());
+                                  } else {
+                                    if (snapshot.data!.exists) {
+                                      return IconButton(
+                                        onPressed: () async {
+                                          await firebaseOperations
+                                              .removeFromFavs(
+                                                  video: video,
+                                                  context: context);
+                                        },
+                                        icon: Icon(
+                                          FontAwesomeIcons.solidStar,
+                                          color: Colors.black,
+                                        ),
+                                      );
+                                    } else {
+                                      return IconButton(
+                                        onPressed: () async {
+                                          await firebaseOperations.addToFavs(
+                                              video: video, context: context);
+                                        },
+                                        icon: Icon(
+                                          FontAwesomeIcons.star,
+                                          color: Colors.black,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                }),
+                          ),
+                          SpeedDialChild(
+                            child: Container(
+                              height: 90,
+                              width: 90,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(40),
+                                image: DecorationImage(
+                                  image: Image.network(video.userimage).image,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              firebaseOperations.goToUserProfile(
+                                  userUid: video.useruid, context: context);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                SharedPreferencesHelper.getBool("hideTutorial") == false
-                    ? Positioned(
-                        top: 10.h,
-                        left: 2.w,
-                        child: Container(
-                            transform: notifier.value,
-                            height: 150,
-                            width: 150,
-                            child: InkWell(
-                                onTap: () {
-                                  controller.pause();
-                                  Navigator.push(
-                                      context,
-                                      PageTransition(
-                                          child: TutorialVideoScreen(),
-                                          type: PageTransitionType.fade));
-                                },
-                                child: Image.asset(
-                                    "assets/images/tipsntricks.png"))),
-                      )
-                    : SizedBox(),
-              ],
-            );
-          }),
+              ),
+            ],
+          ),
+        ),
+        SharedPreferencesHelper.getBool("hideTutorial") == false
+            ? StatefulBuilder(builder: (context, innerState) {
+                return Padding(
+                  padding: EdgeInsets.only(top: 10.h),
+                  child: Container(
+                    height: 70.h,
+                    alignment: Alignment.bottomCenter,
+                    width: double.infinity,
+                    child: Stack(
+                      children: [
+                        GestureDetector(
+                          onScaleStart: (details) {
+                            if (tipsNTricksContainer == null) return;
+                            _initPos = details.focalPoint;
+
+                            _currentPos = Offset(
+                                SharedPreferencesHelper.getDxValue("dxVal") /
+                                    screen.width,
+                                SharedPreferencesHelper.getDxValue("dyVal") /
+                                    screen.height);
+
+                            log("starting");
+                          },
+                          onScaleUpdate: (details) {
+                            if (tipsNTricksContainer == null) return;
+                            final delta = details.focalPoint - _initPos!;
+                            final left =
+                                (delta.dx / screen.width) + _currentPos!.dx;
+                            final top =
+                                (delta.dy / screen.height) + _currentPos!.dy;
+
+                            innerState(() {
+                              tipsNTricksContainer.xPosition =
+                                  Offset(left, top).dx;
+                              tipsNTricksContainer.yPosition =
+                                  Offset(left, top).dy;
+                            });
+
+                            // tipsNTricksContainer.value.xPosition =
+                            //     Offset(left, top).dx;
+                            // tipsNTricksContainer.value.yPosition =
+                            //     Offset(left, top).dy;
+
+                            SharedPreferencesHelper.setDxValue("dxVal",
+                                tipsNTricksContainer.xPosition! * screen.width);
+                            SharedPreferencesHelper.setDyValue(
+                                "dyVal",
+                                tipsNTricksContainer.yPosition! *
+                                    screen.height);
+                            // print(
+                            //     "x value = ${left * MediaQuery.of(context).size.width}");
+                            // print(
+                            //     " y value = ${top * MediaQuery.of(context).size.height}");
+                          },
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                left:
+                                    SharedPreferencesHelper.getDxValue("dxVal"),
+                                top:
+                                    SharedPreferencesHelper.getDyValue("dyVal"),
+                                child: Transform.scale(
+                                  scale: 1,
+                                  child: Transform.rotate(
+                                    angle: tipsNTricksContainer.rotation!,
+                                    child: Container(
+                                      height: tipsNTricksContainer.height,
+                                      width: tipsNTricksContainer.width,
+                                      child: FittedBox(
+                                        fit: BoxFit.fill,
+                                        child: Listener(
+                                          onPointerDown: (details) {
+                                            // if (_inAction) return;
+                                            // _inAction = true;
+                                            // _activeItem = val;
+                                            _initPos = details.position;
+                                            _currentPos = Offset(
+                                                tipsNTricksContainer.xPosition!,
+                                                tipsNTricksContainer
+                                                    .yPosition!);
+                                          },
+                                          onPointerUp: (details) {
+                                            // _inAction = false;
+                                          },
+                                          child: InkWell(
+                                            onTap: () {
+                                              controller.pause();
+                                              Navigator.push(
+                                                  context,
+                                                  PageTransition(
+                                                      child:
+                                                          TutorialVideoScreen(),
+                                                      type: PageTransitionType
+                                                          .fade));
+                                            },
+                                            child: Image.asset(
+                                              "assets/images/tipsntricks.png",
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              })
+            : SizedBox(),
+      ],
     );
   }
 
