@@ -1829,6 +1829,8 @@ class FirebaseOperations with ChangeNotifier {
         title: "$initUserName ${LocaleKeys.commented.tr()}",
         body: comment,
       );
+
+      log("fcm token of owner == $ownerFcmToken");
     });
   }
 
