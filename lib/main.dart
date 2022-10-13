@@ -31,6 +31,7 @@ import 'package:diamon_rose_app/screens/splashscreen/splashscreen.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/portraitMixin.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/translations/codegen_loader.g.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -193,11 +194,12 @@ void getVideosTask(SendPort mySendPort) async {
   }
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget with PortraitModeMixin {
   MyApp({Key? key}) : super(key: key);
   final NavigationService _navigationService = getIt<NavigationService>();
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final ConstantColors constantColors = ConstantColors();
     return MultiBlocProvider(
       providers: [
