@@ -26,6 +26,7 @@ import 'package:diamon_rose_app/screens/ProfilePage/PostRecommendation.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/buyCaratScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/changeLanguageScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/profile_favorites_screen.dart';
+import 'package:diamon_rose_app/screens/ProfilePage/shoppingCartScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/social_media_screen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/update_email_screen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/update_password_screen.dart';
@@ -488,14 +489,23 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   return ListTileOption(
                     constantColors: constantColors,
                     onTap: () {
-                      final String cartUrl =
-                          "https://gdfe-ac584.firebaseapp.com/#/cartcarats/${_auth.getUserId}/${carats.getCarats}";
-                      // "https://gdfe-ac584.firebaseapp.com/#/cart/${_auth.getUserId}";
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                            child: CartScreenCarats(
+                              useruid: _auth.getUserId,
+                              caratValue: carats.getCarats,
+                            ),
+                            type: PageTransitionType.rightToLeft),
+                      );
+                      // final String cartUrl =
+                      //     "https://gdfe-ac584.firebaseapp.com/#/cartcarats/${_auth.getUserId}/${carats.getCarats}";
+                      // // "https://gdfe-ac584.firebaseapp.com/#/cart/${_auth.getUserId}";
 
-                      log(cartUrl);
+                      // log(cartUrl);
 
-                      ViewPaidVideoWeb(context, cartUrl, _auth,
-                          _firebaseOperation, carats.getCarats, _caratProvider);
+                      // ViewPaidVideoWeb(context, cartUrl, _auth,
+                      //     _firebaseOperation, carats.getCarats, _caratProvider);
 
                       // CoolAlert.show(
                       //   context: context,
