@@ -2257,6 +2257,7 @@ class FirebaseOperations with ChangeNotifier {
         }
       });
     });
+
     await FirebaseFirestore.instance
         .collection("users")
         .doc(Provider.of<Authentication>(ctx, listen: false).getUserId)

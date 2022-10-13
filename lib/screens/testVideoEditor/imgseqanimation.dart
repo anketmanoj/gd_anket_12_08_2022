@@ -103,7 +103,7 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
   @override
   void dispose() async {
     await _player!.dispose();
-    await controller!.dispose();
+    if (widget.MyAR.usage != "Material") await controller!.dispose();
     // imageSequenceAnimator!.stop();
     // imageSequenceAnimator!.dispose();
     log("disposed");
@@ -290,6 +290,30 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: constantColors.navButton,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Get.dialog(
+                SimpleDialog(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        "Glamorous Diastation is meant to be used with a stable internet connection.\n\nPlease ensure your internet connection is stable for the best possible experience!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: constantColors.navButton,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+            icon: Icon(Icons.info_outline),
+          ),
+        ],
         title: Text(
             widget.MyAR.usage != "Material" ? "Ar Viewer" : "Material Viewer"),
         leading: IconButton(
@@ -415,7 +439,9 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                                                   cacheProgressIndicatorBuilder:
                                                       (context, progress) {
                                                     return CircularProgressIndicator(
-                                                      value: progress,
+                                                      value: progress != null
+                                                          ? progress
+                                                          : 1,
                                                       backgroundColor: color1,
                                                     );
                                                   },

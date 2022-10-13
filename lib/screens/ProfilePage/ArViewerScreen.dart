@@ -45,7 +45,7 @@ class _ArViewerPageState extends State<ArViewerPage> {
   bool showCamera = false;
   Size? screen;
   late String selectedGif;
-  bool isLoading = true;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -63,19 +63,19 @@ class _ArViewerPageState extends State<ArViewerPage> {
     dev.log("starting x = ${list[0].xPosition!}");
 
     super.initState();
-    controller = CameraController(cameras![0], ResolutionPreset.max);
-    controller!.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      controller!.startImageStream(
-        (CameraImage image) {},
-      );
+    // controller = CameraController(cameras![0], ResolutionPreset.max);
+    // controller!.initialize().then((_) {
+    //   if (!mounted) {
+    //     return;
+    //   }
+    //   controller!.startImageStream(
+    //     (CameraImage image) {},
+    //   );
 
-      setState(() {
-        isLoading = false;
-      });
-    });
+    //   setState(() {
+    //     isLoading = false;
+    //   });
+    // });
   }
 
   @override
@@ -89,40 +89,21 @@ class _ArViewerPageState extends State<ArViewerPage> {
     final appBar2 = AppBar(
       title: const Text('Effect Viewer'),
       backgroundColor: constantColors.black,
-      actions: [
-        IconButton(
-          icon: Icon(
-              showCamera ? FontAwesomeIcons.eyeSlash : Icons.remove_red_eye),
-          onPressed: () {
-            setState(() {
-              showCamera = !showCamera;
-            });
-          },
-        ),
-      ],
     );
     return Scaffold(
       appBar: appBar2,
-      backgroundColor: Colors.yellow,
+      backgroundColor: Colors.black,
       body: isLoading == false
           ? Stack(
               children: [
-                showCamera
-                    ? SizedBox(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
-                        child: CameraPreview(
-                          controller!,
-                        ),
-                      )
-                    : SizedBox(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
-                        child: Image.asset(
-                          "assets/arViewer/bg.png",
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: Image.asset(
+                    "assets/arViewer/bg.png",
+                    fit: BoxFit.cover,
+                  ),
+                ),
                 Container(
                   height: MediaQuery.of(context).size.height -
                       appBar2.preferredSize.height -

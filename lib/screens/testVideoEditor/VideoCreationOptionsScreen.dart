@@ -7,6 +7,7 @@ import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/HelpScreen/tutorialVideos.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/MyCollectionHome.dart';
+import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/MyCollectionMiddleNav.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/InitVideoEditorScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/initArVideoEditorScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/userDraftVideos.dart';
@@ -146,7 +147,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute<void>(
                             builder: (BuildContext context) =>
-                                MyCollectionHome()));
+                                MyCollectionMiddleNav()));
                   },
                   icon: Icons.collections_sharp,
                   text: LocaleKeys.myMaterials.tr(),

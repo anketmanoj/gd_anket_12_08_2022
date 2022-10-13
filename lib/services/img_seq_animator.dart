@@ -493,8 +493,8 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
                   imageUrl: _getDirectory(),
                   color: color,
                   useOldImageOnUrlChange: _isCacheComplete,
-                  fadeOutDuration: const Duration(seconds: 1),
-                  fadeInDuration: const Duration(seconds: 1),
+                  fadeOutDuration: const Duration(milliseconds: 1),
+                  fadeInDuration: const Duration(milliseconds: 1),
                   fit: widget.fit,
                   errorWidget: (context, url, error) => const Icon(Icons.error),
                 );
