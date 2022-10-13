@@ -11,6 +11,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart' hide Trans;
@@ -50,6 +51,8 @@ config() async {
   // getIt.registerSingleton<FeedViewModel>(FeedViewModel());
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FlutterAppBadger.updateBadgeCount(1);
+
     print('Got a message whilst in the foreground!');
     print('Message data: ${message.data}');
 
@@ -84,5 +87,7 @@ _defineGetxControllers() {
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  FlutterAppBadger.updateBadgeCount(1);
+
   print("Handling a background message: ${message.messageId}");
 }

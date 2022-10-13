@@ -820,6 +820,16 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                   .orderBy("timestamp", descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return SliverPadding(
+                    padding: EdgeInsets.all(4),
+                    sliver: SliverToBoxAdapter(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  );
+                }
                 return SliverPadding(
                   padding: const EdgeInsets.all(4),
                   sliver: SliverGrid(

@@ -28,6 +28,7 @@ import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:nanoid/nanoid.dart';
 import 'package:path_provider/path_provider.dart';
@@ -2043,6 +2044,7 @@ class FirebaseOperations with ChangeNotifier {
     required String userUid,
     required String notificationId,
   }) {
+    FlutterAppBadger.removeBadge();
     return FirebaseFirestore.instance
         .collection("users")
         .doc(userUid)

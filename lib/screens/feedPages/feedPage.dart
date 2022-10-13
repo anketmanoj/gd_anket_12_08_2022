@@ -25,6 +25,9 @@ import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/dynamic_link_service.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
+import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +39,7 @@ import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
 
 class FeedPage extends StatefulWidget {
   FeedPage({Key? key, this.pageIndexValue = 0}) : super(key: key);
@@ -129,6 +133,84 @@ class _FeedPageState extends State<FeedPage> {
     super.initState();
   }
 
+  showConnectionMsg() async {
+    final bool showMessage =
+        SharedPreferencesHelper.getBool("dontShowInternetWarning");
+
+    if (showMessage == false) {
+      final ValueNotifier<bool> dontShowMessage = ValueNotifier<bool>(false);
+      await Get.dialog(
+        SimpleDialog(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Text(
+                "Glamorous Diastation is meant to be used with a stable internet connection.\n\nPlease ensure your internet connection is stable for the best possible experience!",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: constantColors.navButton,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            ValueListenableBuilder<bool>(
+                valueListenable: dontShowMessage,
+                builder: (context, messageOpt, _) {
+                  return ListTile(
+                    title: Text("Dont show message again"),
+                    trailing: Checkbox(
+                      value: dontShowMessage.value,
+                      onChanged: (v) {
+                        dontShowMessage.value = !dontShowMessage.value;
+                      },
+                    ),
+                  );
+                }),
+            SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      constantColors.navButton),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+                onPressed: () {
+                  SharedPreferencesHelper.setBool(
+                      "dontShowInternetWarning", dontShowMessage.value);
+                  Get.back();
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.check,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      LocaleKeys.understood.tr(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final HomeScreenProvider homeScreenProvider =
@@ -166,6 +248,10 @@ class _FeedPageState extends State<FeedPage> {
                       homeScreenProvider.setHomeScreen(true);
                     } else {
                       homeScreenProvider.setHomeScreen(false);
+                    }
+
+                    if (pageIndex.value == 2) {
+                      showConnectionMsg();
                     }
                   },
                   children: [

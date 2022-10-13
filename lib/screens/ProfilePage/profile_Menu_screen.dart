@@ -775,21 +775,21 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.blockedaccounts.tr(),
                 ),
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () {
-                    // await _fcmNotificationService.sendNotificationToUser(
-                    //     to: "chTy8m8os0L4jloohWoYPe:APA91bFT5Ocnf0p-lBtL_cUurN0xLc5-g6rs_GyvEDxYQBSYonhUASBWa7CXExj0CK131Rfs-0T-0UYasLFGFRKNCDyCg0wjG61UnxAVJrBnFGgqlMoB0lMKbjXNlRVMiVuUomF3kmOk", //To change once set up
-                    //     title: "TESSSTTTT has a new post!",
-                    //     body: "");
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () {
+                //     // await _fcmNotificationService.sendNotificationToUser(
+                //     //     to: "chTy8m8os0L4jloohWoYPe:APA91bFT5Ocnf0p-lBtL_cUurN0xLc5-g6rs_GyvEDxYQBSYonhUASBWa7CXExj0CK131Rfs-0T-0UYasLFGFRKNCDyCg0wjG61UnxAVJrBnFGgqlMoB0lMKbjXNlRVMiVuUomF3kmOk", //To change once set up
+                //     //     title: "TESSSTTTT has a new post!",
+                //     //     body: "");
 
-                    // log("notifications ent");
-                    // chTy8m8os0L4jloohWoYPe:APA91bFT5Ocnf0p-lBtL_cUurN0xLc5-g6rs_GyvEDxYQBSYonhUASBWa7CXExj0CK131Rfs-0T-0UYasLFGFRKNCDyCg0wjG61UnxAVJrBnFGgqlMoB0lMKbjXNlRVMiVuUomF3kmOk
-                  },
-                  leadingIcon: Icons.block_outlined,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: "Go to desired page",
-                ),
+                //     // log("notifications ent");
+                //     // chTy8m8os0L4jloohWoYPe:APA91bFT5Ocnf0p-lBtL_cUurN0xLc5-g6rs_GyvEDxYQBSYonhUASBWa7CXExj0CK131Rfs-0T-0UYasLFGFRKNCDyCg0wjG61UnxAVJrBnFGgqlMoB0lMKbjXNlRVMiVuUomF3kmOk
+                //   },
+                //   leadingIcon: Icons.block_outlined,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "Go to desired page",
+                // ),
 
                 Divider(
                   color: Colors.white,
