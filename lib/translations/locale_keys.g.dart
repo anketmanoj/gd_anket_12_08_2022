@@ -291,5 +291,8 @@ abstract class  LocaleKeys {
   static const likedYourPost = 'likedYourPost';
   static const commented = 'commented';
   static const purchaseHistory = 'purchaseHistory';
+  static const requiresStableConnection = 'requiresStableConnection';
+  static const ensureStableConnection = 'ensureStableConnection';
+  static const materialViewer = 'materialViewer';
 
 }

@@ -8,7 +8,9 @@ import 'package:diamon_rose_app/main.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/VideoCreationOptionsScreen.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
+import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -299,7 +301,7 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: Text(
-                        "Glamorous Diastation is meant to be used with a stable internet connection.\n\nPlease ensure your internet connection is stable for the best possible experience!",
+                        "${LocaleKeys.requiresStableConnection.tr()}\n\n${LocaleKeys.ensureStableConnection.tr()}",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: constantColors.navButton,

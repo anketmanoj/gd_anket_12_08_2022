@@ -790,34 +790,47 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 ),
                 Consumer<MainPageHelpers>(builder: (context, hideShow, _) {
                   return ListTile(
-                      onTap: () {
+                    onTap: () {
+                      hideShow.setHideTutorial(
+                          !SharedPreferencesHelper.getBool("hideTutorial"));
+
+                      log("hide from shared == ${SharedPreferencesHelper.getBool("hideTutorial")}");
+
+                      if (SharedPreferencesHelper.getBool("hideTutorial") ==
+                          false) {
+                        SharedPreferencesHelper.setDxValue("dxVal", 0);
+                        SharedPreferencesHelper.setDyValue("dyVal", 0);
+                      }
+                    },
+                    title: Text(
+                      SharedPreferencesHelper.getBool("hideTutorial")
+                          ? LocaleKeys.hideTutorial.tr()
+                          : LocaleKeys.showTutorial.tr(),
+                      style: TextStyle(
+                        color: constantColors.whiteColor,
+                        fontSize: 16,
+                      ),
+                    ),
+                    leading: Icon(
+                      hideShow.getHideTutorial
+                          ? Icons.visibility_off
+                          : Icons.remove_red_eye_outlined,
+                      color: constantColors.whiteColor,
+                    ),
+                    trailing: Switch(
+                      value: hideShow.getHideTutorial,
+                      onChanged: (val) {
                         hideShow.setHideTutorial(
                             !SharedPreferencesHelper.getBool("hideTutorial"));
 
-                        log("hide from shared == ${SharedPreferencesHelper.getBool("hideTutorial")}");
+                        if (SharedPreferencesHelper.getBool("hideTutorial") ==
+                            false) {
+                          SharedPreferencesHelper.setDxValue("dxVal", 0);
+                          SharedPreferencesHelper.setDyValue("dyVal", 0);
+                        }
                       },
-                      title: Text(
-                        SharedPreferencesHelper.getBool("hideTutorial")
-                            ? LocaleKeys.hideTutorial.tr()
-                            : LocaleKeys.showTutorial.tr(),
-                        style: TextStyle(
-                          color: constantColors.whiteColor,
-                          fontSize: 16,
-                        ),
-                      ),
-                      leading: Icon(
-                        hideShow.getHideTutorial
-                            ? Icons.visibility_off
-                            : Icons.remove_red_eye_outlined,
-                        color: constantColors.whiteColor,
-                      ),
-                      trailing: Switch(
-                          value: hideShow.getHideTutorial,
-                          onChanged: (val) {
-                            hideShow.setHideTutorial(
-                                !SharedPreferencesHelper.getBool(
-                                    "hideTutorial"));
-                          }));
+                    ),
+                  );
                 }),
                 ListTileOption(
                   constantColors: constantColors,

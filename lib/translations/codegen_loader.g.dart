@@ -307,7 +307,10 @@ class CodegenLoader extends AssetLoader{
   "unfollowedYou": "はフォローを外しました",
   "likedYourPost": "はあなたのポストにいいねをしました",
   "commented": "はコメントしました",
-  "purchaseHistory": "購入履歴"
+  "purchaseHistory": "購入履歴",
+  "requiresStableConnection": "Glamorous Diastationをご利用の際は、安定したインターネット接続が重要です。",
+  "ensureStableConnection": "可能な限り最高のパフォーマンスを経験できるように、インターネット接続環境が安定していることを確認してください。",
+  "materialViewer": "Material Viewer"
 };
 static const Map<String,dynamic> en = {
   "signup": "Sign up",
@@ -602,7 +605,10 @@ static const Map<String,dynamic> en = {
   "unfollowedYou": "unfollowed you",
   "likedYourPost": "liked your post",
   "commented": "Commented",
-  "purchaseHistory": "Purchase History"
+  "purchaseHistory": "Purchase History",
+  "requiresStableConnection": "Glamorous Diastation is meant to be used with a stable internet connection.",
+  "ensureStableConnection": "Please ensure your internet connection is stable for the best possible experience!",
+  "materialViewer": "Material Viewer"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"ja": ja, "en": en};
 }

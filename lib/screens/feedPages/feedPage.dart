@@ -145,7 +145,7 @@ class _FeedPageState extends State<FeedPage> {
             Padding(
               padding: const EdgeInsets.all(10),
               child: Text(
-                "Glamorous Diastation is meant to be used with a stable internet connection.\n\nPlease ensure your internet connection is stable for the best possible experience!",
+                "${LocaleKeys.requiresStableConnection.tr()}\n\n${LocaleKeys.ensureStableConnection.tr()}",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: constantColors.navButton,

@@ -303,5 +303,8 @@
   "likedYourPost": "はあなたのポストにいいねをしました",
   "commented": "はコメントしました",
 
-  "purchaseHistory": "購入履歴"
+  "purchaseHistory": "購入履歴",
+  "requiresStableConnection": "Glamorous Diastationをご利用の際は、安定したインターネット接続が重要です。",
+  "ensureStableConnection": "可能な限り最高のパフォーマンスを経験できるように、インターネット接続環境が安定していることを確認してください。",
+  "materialViewer": "Material Viewer"
 }
