@@ -765,7 +765,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                         alignment: Alignment.center,
                         width: size.width * 0.4,
                         child: Text(
-                          LocaleKeys.free.tr(),
+                          "Free",
                           style: TextStyle(
                             color: constantColors.whiteColor,
                           ),
@@ -791,7 +791,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                         alignment: Alignment.center,
                         width: size.width * 0.4,
                         child: Text(
-                          LocaleKeys.premium.tr(),
+                          "Premium",
                           style: TextStyle(
                             color: constantColors.whiteColor,
                           ),

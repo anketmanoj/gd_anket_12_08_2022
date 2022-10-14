@@ -40,7 +40,7 @@ class FCMNotificationService {
       final dynamic data = json.encode({
         'to': to,
         'priority': 'high',
-        'notification': {'title': title, 'body': body, 'badge': 1},
+        'notification': {'title': title, 'body': body},
         'content_available': true,
       });
 

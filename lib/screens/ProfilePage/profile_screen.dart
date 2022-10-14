@@ -406,7 +406,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         alignment: Alignment.center,
                         width: size.width * 0.4,
                         child: Text(
-                          LocaleKeys.free.tr(),
+                          "Free",
                           style: TextStyle(
                             color: constantColors.whiteColor,
                           ),
@@ -432,7 +432,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         alignment: Alignment.center,
                         width: size.width * 0.4,
                         child: Text(
-                          LocaleKeys.premium.tr(),
+                          "Premium",
                           style: TextStyle(
                             color: constantColors.whiteColor,
                           ),

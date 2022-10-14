@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ArViewerScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/backgroundVideoViewer.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/imgseqanimation.dart';
+import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
@@ -34,11 +38,20 @@ class MyCollectionMiddleNav extends StatelessWidget {
   }
 
   ValueNotifier<String> _materialValue = ValueNotifier<String>("AR");
+  ValueNotifier<bool> deleteItems = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: constantColors.bioBg,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: constantColors.redColor,
+        foregroundColor: constantColors.whiteColor,
+        child: Icon(Icons.delete_outlined),
+        onPressed: () {
+          deleteItems.value = !deleteItems.value;
+        },
+      ),
       appBar: AppBarWidget(text: LocaleKeys.myMaterials.tr(), context: context),
       body: Padding(
         padding: const EdgeInsets.all(15),
@@ -73,10 +86,13 @@ class MyCollectionMiddleNav extends StatelessWidget {
                 },
               ),
             ),
-            ValueListenableBuilder<String>(
-              valueListenable: _materialValue,
-              builder: (context, value, _) {
-                switch (value) {
+            AnimatedBuilder(
+              animation: Listenable.merge([
+                _materialValue,
+                deleteItems,
+              ]),
+              builder: (context, _) {
+                switch (_materialValue.value) {
                   case "AR":
                     return Expanded(
                       child: Container(
@@ -125,6 +141,57 @@ class MyCollectionMiddleNav extends StatelessWidget {
                                         runARCommand(myAr: myAr);
                                       },
                                       child: GridTile(
+                                        header: deleteItems.value == true
+                                            ? InkWell(
+                                                onTap: () {
+                                                  log("locale == ${Get.locale}");
+                                                  CoolAlert.show(
+                                                      context: context,
+                                                      type: CoolAlertType.info,
+                                                      title: "Delete Item?",
+                                                      text:
+                                                          "Are you sure you want to delete this?",
+                                                      onConfirmBtnTap:
+                                                          () async {
+                                                        await context
+                                                            .read<
+                                                                FirebaseOperations>()
+                                                            .deleteItemFromMyCollection(
+                                                              arID: arSnap.id,
+                                                              useruid: context
+                                                                  .read<
+                                                                      Authentication>()
+                                                                  .getUserId,
+                                                            );
+
+                                                        Navigator.pop(context);
+                                                      });
+                                                },
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    Container(
+                                                      padding:
+                                                          EdgeInsets.all(5),
+                                                      decoration: BoxDecoration(
+                                                        color: constantColors
+                                                            .redColor,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15),
+                                                      ),
+                                                      child: Text(
+                                                        "Delete",
+                                                        style: TextStyle(
+                                                            color: constantColors
+                                                                .whiteColor),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            : null,
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(30),
@@ -200,6 +267,56 @@ class MyCollectionMiddleNav extends StatelessWidget {
                                         );
                                       },
                                       child: GridTile(
+                                        header: deleteItems.value == true
+                                            ? InkWell(
+                                                onTap: () {
+                                                  CoolAlert.show(
+                                                      context: context,
+                                                      type: CoolAlertType.info,
+                                                      title: "Delete Item?",
+                                                      text:
+                                                          "Are you sure you want to delete this?",
+                                                      onConfirmBtnTap:
+                                                          () async {
+                                                        await context
+                                                            .read<
+                                                                FirebaseOperations>()
+                                                            .deleteItemFromMyCollection(
+                                                              arID: arSnap.id,
+                                                              useruid: context
+                                                                  .read<
+                                                                      Authentication>()
+                                                                  .getUserId,
+                                                            );
+
+                                                        Navigator.pop(context);
+                                                      });
+                                                },
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    Container(
+                                                      padding:
+                                                          EdgeInsets.all(5),
+                                                      decoration: BoxDecoration(
+                                                        color: constantColors
+                                                            .redColor,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15),
+                                                      ),
+                                                      child: Text(
+                                                        "Delete",
+                                                        style: TextStyle(
+                                                            color: constantColors
+                                                                .whiteColor),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            : null,
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(30),
@@ -275,6 +392,57 @@ class MyCollectionMiddleNav extends StatelessWidget {
                                         );
                                       },
                                       child: GridTile(
+                                        header: deleteItems.value == true
+                                            ? InkWell(
+                                                onTap: () {
+                                                  log("locale == ${Get.locale}");
+                                                  CoolAlert.show(
+                                                      context: context,
+                                                      type: CoolAlertType.info,
+                                                      title: "Delete Item?",
+                                                      text:
+                                                          "Are you sure you want to delete this?",
+                                                      onConfirmBtnTap:
+                                                          () async {
+                                                        await context
+                                                            .read<
+                                                                FirebaseOperations>()
+                                                            .deleteItemFromMyCollection(
+                                                              arID: arSnap.id,
+                                                              useruid: context
+                                                                  .read<
+                                                                      Authentication>()
+                                                                  .getUserId,
+                                                            );
+
+                                                        Navigator.pop(context);
+                                                      });
+                                                },
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    Container(
+                                                      padding:
+                                                          EdgeInsets.all(5),
+                                                      decoration: BoxDecoration(
+                                                        color: constantColors
+                                                            .redColor,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15),
+                                                      ),
+                                                      child: Text(
+                                                        "Delete",
+                                                        style: TextStyle(
+                                                            color: constantColors
+                                                                .whiteColor),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            : null,
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(30),

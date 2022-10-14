@@ -21,6 +21,7 @@ import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/OptionsWidget.dart';
 import 'package:diamon_rose_app/widgets/ShareWidget.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:diamon_rose_app/widgets/readMoreWidget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -515,23 +516,32 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                               padding: const EdgeInsets.only(left: 10, top: 5),
                               child: Stack(
                                 children: <Widget>[
-                                  // Stroked text as border.
-                                  Text(
+                                  ReadMoreText(
                                     video!.caption,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      foreground: Paint()
-                                        ..style = PaintingStyle.stroke
-                                        ..strokeWidth = 3
-                                        ..color = Colors.black,
+                                    trimLines: 2,
+                                    colorClickableText:
+                                        constantColors.navButton,
+                                    trimMode: TrimMode.Line,
+                                    moreStyle: TextStyle(
+                                      shadows: outlinedText(
+                                        strokeColor: constantColors.whiteColor,
+                                      ),
+                                      color: constantColors.mainColor,
                                     ),
-                                  ),
-                                  // Solid text as fill.
-                                  Text(
-                                    video!.caption,
+                                    lessStyle: TextStyle(
+                                      shadows: outlinedText(
+                                        strokeColor: constantColors.whiteColor,
+                                      ),
+                                      color: constantColors.mainColor,
+                                    ),
+                                    trimCollapsedText: 'Show more',
+                                    trimExpandedText: 'Show less',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
+                                      shadows: outlinedText(
+                                        strokeColor: constantColors.black,
+                                      ),
                                     ),
                                   ),
                                 ],

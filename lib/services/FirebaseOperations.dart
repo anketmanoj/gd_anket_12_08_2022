@@ -2816,7 +2816,8 @@ class FirebaseOperations with ChangeNotifier {
 
     var response = await http.post(
       Uri.parse(
-        "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api3v3/background_separation2/",
+        "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api3v4/background_separation2v4/",
+        // "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api3v3/background_separation2/",
         // "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api3v2/background_separation2/",
         // "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api3/background_separation2/",
       ),
@@ -2830,7 +2831,8 @@ class FirebaseOperations with ChangeNotifier {
           "registrationId": registrationId,
           "ownerName": ownerName,
           "endDuration": endDuration,
-          "s3_dir_name": "${fileStarting}/"
+          "s3_dir_name": "${fileStarting}/",
+          "language": Get.locale.toString(),
         },
       ),
     );
@@ -3313,5 +3315,15 @@ class FirebaseOperations with ChangeNotifier {
       await FirebaseFirestore.instance.collection("drafts").doc(id).delete();
       log("deleted from drafts");
     });
+  }
+
+  Future<void> deleteItemFromMyCollection(
+      {required String arID, required String useruid}) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(useruid)
+        .collection("MyCollection")
+        .doc(arID)
+        .delete();
   }
 }
