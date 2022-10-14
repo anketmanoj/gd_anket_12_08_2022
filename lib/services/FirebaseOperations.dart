@@ -919,6 +919,7 @@ class FirebaseOperations with ChangeNotifier {
           'main': uploadedAWS_BgFile!,
           'layerType': 'Background',
           'timestamp': Timestamp.now(),
+          'hideItem': false,
           'valueType': "myItems",
           "ownerId": userUid,
           "ownerName": initUserName,

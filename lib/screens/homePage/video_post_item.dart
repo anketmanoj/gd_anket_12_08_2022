@@ -28,7 +28,7 @@ import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:diamon_rose_app/widgets/readMoreWidget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_paypal/flutter_paypal.dart';
+// import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 // import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -1788,157 +1788,157 @@ class _VideoPostItemState extends State<VideoPostItem> {
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.of(ctxIn).push(
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) => UsePaypal(
-                                      sandboxMode: true,
-                                      clientId:
-                                          "AQPBczENirTxAJg6rfuzf6H6r7Me5iq0I5Du1Rq3_Arxz0GjNRqc8JtXvcjhyb6QKkClVMGPmSNhqh89",
-                                      secretKey:
-                                          "ECzrtj1IyGtTwcyMEnHeB8BGJHOoPckUYQztDIXK9Be-pbwJV3sTRfBNL7TCRIC1nqH-W-98j8zxocZM",
-                                      returnURL:
-                                          "https://samplesite.com/return",
-                                      cancelURL:
-                                          "https://samplesite.com/cancel",
-                                      transactions: [
-                                        {
-                                          "amount": {
-                                            "total":
-                                                "${widget.video.price * (1 - widget.video.discountAmount / 100)}",
-                                            "currency": "USD",
-                                            "details": {
-                                              "subtotal":
-                                                  "${widget.video.price * (1 - widget.video.discountAmount / 100)}",
-                                              "shipping": '0',
-                                              "shipping_discount": 0
-                                            }
-                                          },
-                                          "description":
-                                              "Total amount for the materials and package from ${widget.video.username}",
-                                          // "payment_options": {
-                                          //   "allowed_payment_method":
-                                          //       "INSTANT_FUNDING_SOURCE"
-                                          // },
-                                          "item_list": {
-                                            "items": [
-                                              {
-                                                "name":
-                                                    "${widget.video.videotitle} | ${widget.video.username}",
-                                                "quantity": 1,
-                                                "price":
-                                                    "${widget.video.price * (1 - widget.video.discountAmount / 100)}",
-                                                "currency": "USD"
-                                              }
-                                            ],
+                        // Padding(
+                        //   padding: const EdgeInsets.only(top: 10),
+                        //   child: InkWell(
+                        //     onTap: () {
+                        //       Navigator.of(ctxIn).push(
+                        //         MaterialPageRoute(
+                        //           builder: (BuildContext context) => UsePaypal(
+                        //               sandboxMode: true,
+                        //               clientId:
+                        //                   "AQPBczENirTxAJg6rfuzf6H6r7Me5iq0I5Du1Rq3_Arxz0GjNRqc8JtXvcjhyb6QKkClVMGPmSNhqh89",
+                        //               secretKey:
+                        //                   "ECzrtj1IyGtTwcyMEnHeB8BGJHOoPckUYQztDIXK9Be-pbwJV3sTRfBNL7TCRIC1nqH-W-98j8zxocZM",
+                        //               returnURL:
+                        //                   "https://samplesite.com/return",
+                        //               cancelURL:
+                        //                   "https://samplesite.com/cancel",
+                        //               transactions: [
+                        //                 {
+                        //                   "amount": {
+                        //                     "total":
+                        //                         "${widget.video.price * (1 - widget.video.discountAmount / 100)}",
+                        //                     "currency": "USD",
+                        //                     "details": {
+                        //                       "subtotal":
+                        //                           "${widget.video.price * (1 - widget.video.discountAmount / 100)}",
+                        //                       "shipping": '0',
+                        //                       "shipping_discount": 0
+                        //                     }
+                        //                   },
+                        //                   "description":
+                        //                       "Total amount for the materials and package from ${widget.video.username}",
+                        //                   // "payment_options": {
+                        //                   //   "allowed_payment_method":
+                        //                   //       "INSTANT_FUNDING_SOURCE"
+                        //                   // },
+                        //                   "item_list": {
+                        //                     "items": [
+                        //                       {
+                        //                         "name":
+                        //                             "${widget.video.videotitle} | ${widget.video.username}",
+                        //                         "quantity": 1,
+                        //                         "price":
+                        //                             "${widget.video.price * (1 - widget.video.discountAmount / 100)}",
+                        //                         "currency": "USD"
+                        //                       }
+                        //                     ],
 
-                                            // // shipping address is not required though
-                                            // "shipping_address": {
-                                            //   "recipient_name": "Jane Foster",
-                                            //   "line1": "Travis County",
-                                            //   "line2": "",
-                                            //   "city": "Austin",
-                                            //   "country_code": "US",
-                                            //   "postal_code": "73301",
-                                            //   "phone": "+00000000",
-                                            //   "state": "Texas"
-                                            // },
-                                          }
-                                        }
-                                      ],
-                                      note:
-                                          "Contact us for any questions on your order.",
-                                      onSuccess: (Map params) async {
-                                        if (params['status'] == "success") {
-                                          Get.snackbar(
-                                            'Payment Successful!',
-                                            'Payment via paypal was successful, the items have been added to your Collection',
-                                            overlayColor:
-                                                constantColors.navButton,
-                                            colorText:
-                                                constantColors.whiteColor,
-                                            snackPosition: SnackPosition.TOP,
-                                            forwardAnimationCurve:
-                                                Curves.elasticInOut,
-                                            reverseAnimationCurve:
-                                                Curves.easeOut,
-                                          );
+                        //                     // // shipping address is not required though
+                        //                     // "shipping_address": {
+                        //                     //   "recipient_name": "Jane Foster",
+                        //                     //   "line1": "Travis County",
+                        //                     //   "line2": "",
+                        //                     //   "city": "Austin",
+                        //                     //   "country_code": "US",
+                        //                     //   "postal_code": "73301",
+                        //                     //   "phone": "+00000000",
+                        //                     //   "state": "Texas"
+                        //                     // },
+                        //                   }
+                        //                 }
+                        //               ],
+                        //               note:
+                        //                   "Contact us for any questions on your order.",
+                        //               onSuccess: (Map params) async {
+                        //                 if (params['status'] == "success") {
+                        //                   Get.snackbar(
+                        //                     'Payment Successful!',
+                        //                     'Payment via paypal was successful, the items have been added to your Collection',
+                        //                     overlayColor:
+                        //                         constantColors.navButton,
+                        //                     colorText:
+                        //                         constantColors.whiteColor,
+                        //                     snackPosition: SnackPosition.TOP,
+                        //                     forwardAnimationCurve:
+                        //                         Curves.elasticInOut,
+                        //                     reverseAnimationCurve:
+                        //                         Curves.easeOut,
+                        //                   );
 
-                                          await firebaseOperations
-                                              .addToMyCollection(
-                                            videoOwnerId: widget.video.useruid,
-                                            amount: int.parse((double.parse(
-                                                        "${widget.video.price * (1 - widget.video.discountAmount / 100) * 100}") /
-                                                    100)
-                                                .toStringAsFixed(0)),
-                                            videoItem: widget.video,
-                                            isFree: widget.video.isFree,
-                                            ctx: ctxIn,
-                                            videoId: widget.video.id,
-                                          );
-                                        }
-                                      },
-                                      onError: (error) {
-                                        showTopSnackBar(
-                                          ctxIn,
-                                          CustomSnackBar.error(
-                                            message: "Payment Unsuccessful",
-                                          ),
-                                        );
+                        //                   await firebaseOperations
+                        //                       .addToMyCollection(
+                        //                     videoOwnerId: widget.video.useruid,
+                        //                     amount: int.parse((double.parse(
+                        //                                 "${widget.video.price * (1 - widget.video.discountAmount / 100) * 100}") /
+                        //                             100)
+                        //                         .toStringAsFixed(0)),
+                        //                     videoItem: widget.video,
+                        //                     isFree: widget.video.isFree,
+                        //                     ctx: ctxIn,
+                        //                     videoId: widget.video.id,
+                        //                   );
+                        //                 }
+                        //               },
+                        //               onError: (error) {
+                        //                 showTopSnackBar(
+                        //                   ctxIn,
+                        //                   CustomSnackBar.error(
+                        //                     message: "Payment Unsuccessful",
+                        //                   ),
+                        //                 );
 
-                                        CoolAlert.show(
-                                          context: ctxIn,
-                                          type: CoolAlertType.error,
-                                          text:
-                                              "Error using your paypal account to make the payment",
-                                          barrierDismissible: false,
-                                        );
-                                      },
-                                      onCancel: (params) {
-                                        showTopSnackBar(
-                                          ctxIn,
-                                          CustomSnackBar.info(
-                                            message: "Payment Cancelled",
-                                          ),
-                                        );
+                        //                 CoolAlert.show(
+                        //                   context: ctxIn,
+                        //                   type: CoolAlertType.error,
+                        //                   text:
+                        //                       "Error using your paypal account to make the payment",
+                        //                   barrierDismissible: false,
+                        //                 );
+                        //               },
+                        //               onCancel: (params) {
+                        //                 showTopSnackBar(
+                        //                   ctxIn,
+                        //                   CustomSnackBar.info(
+                        //                     message: "Payment Cancelled",
+                        //                   ),
+                        //                 );
 
-                                        CoolAlert.show(
-                                          context: ctxIn,
-                                          type: CoolAlertType.info,
-                                          text: "Payment has been cancelled",
-                                          barrierDismissible: false,
-                                        );
-                                      }),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: constantColors.navButton,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.paypal,
-                                    color: constantColors.whiteColor,
-                                  ),
-                                  Text(
-                                    "Paypal",
-                                    style: TextStyle(
-                                        color: constantColors.whiteColor),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                        //                 CoolAlert.show(
+                        //                   context: ctxIn,
+                        //                   type: CoolAlertType.info,
+                        //                   text: "Payment has been cancelled",
+                        //                   barrierDismissible: false,
+                        //                 );
+                        //               }),
+                        //         ),
+                        //       );
+                        //     },
+                        //     child: Container(
+                        //       height: 50,
+                        //       decoration: BoxDecoration(
+                        //         color: constantColors.navButton,
+                        //         borderRadius: BorderRadius.circular(20),
+                        //       ),
+                        //       child: Row(
+                        //         mainAxisAlignment: MainAxisAlignment.center,
+                        //         crossAxisAlignment: CrossAxisAlignment.center,
+                        //         children: [
+                        //           Icon(
+                        //             Icons.paypal,
+                        //             color: constantColors.whiteColor,
+                        //           ),
+                        //           Text(
+                        //             "Paypal",
+                        //             style: TextStyle(
+                        //                 color: constantColors.whiteColor),
+                        //           ),
+                        //         ],
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   )

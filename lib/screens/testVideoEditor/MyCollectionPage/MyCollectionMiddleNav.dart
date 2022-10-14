@@ -245,6 +245,7 @@ class MyCollectionMiddleNav extends StatelessWidget {
                                     .getUserId)
                                 .collection("MyCollection")
                                 .where("layerType", isEqualTo: "Background")
+                                .orderBy("timestamp", descending: true)
                                 .snapshots(),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
@@ -370,6 +371,7 @@ class MyCollectionMiddleNav extends StatelessWidget {
                                     .getUserId)
                                 .collection("MyCollection")
                                 .where("layerType", isEqualTo: "Effect")
+                                .orderBy("timestamp", descending: true)
                                 .snapshots(),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {

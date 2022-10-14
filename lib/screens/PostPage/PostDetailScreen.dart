@@ -1104,46 +1104,57 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                   )
                         : Container(),
                     video!.isPaid
-                        ? ElevatedButton(
-                            style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.white),
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  constantColors.bioBg),
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                        ? !video!.boughtBy.contains(
+                                context.read<Authentication>().getUserId)
+                            ? ElevatedButton(
+                                style: ButtonStyle(
+                                  foregroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.white),
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          constantColors.bioBg),
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            onPressed: () async {
-                              // Beamer.of(context).beamToNamed('/success');
-                              // *Change to add to cart
-                              // await selectPaymentOptionsSheet(
-                              //   ctx: context,
-                              // );
-                              await Provider.of<FirebaseOperations>(context,
-                                      listen: false)
-                                  .addToCart(
-                                canPop: false,
-                                useruid:
-                                    context.read<Authentication>().getUserId,
-                                videoItem: video!,
-                                isFree: video!.isFree,
-                                ctx: context,
-                                videoId: video!.id,
-                              );
-                            },
-                            // paymentController.makePayment(
-                            //     amount: "10", currency: "USD"),
-                            child: Text(
-                              LocaleKeys.addtocart.tr(),
-                              style: TextStyle(
-                                color: constantColors.navButton,
-                              ),
-                            ),
-                          )
+                                onPressed: () async {
+                                  // Beamer.of(context).beamToNamed('/success');
+                                  // *Change to add to cart
+                                  // await selectPaymentOptionsSheet(
+                                  //   ctx: context,
+                                  // );
+                                  await Provider.of<FirebaseOperations>(context,
+                                          listen: false)
+                                      .addToCart(
+                                    canPop: false,
+                                    useruid: context
+                                        .read<Authentication>()
+                                        .getUserId,
+                                    videoItem: video!,
+                                    isFree: video!.isFree,
+                                    ctx: context,
+                                    videoId: video!.id,
+                                  );
+                                },
+                                // paymentController.makePayment(
+                                //     amount: "10", currency: "USD"),
+                                child: Text(
+                                  LocaleKeys.addtocart.tr(),
+                                  style: TextStyle(
+                                    color: constantColors.navButton,
+                                  ),
+                                ),
+                              )
+                            : Text(
+                                "Already Purchased Content",
+                                style: TextStyle(
+                                  color: constantColors.whiteColor,
+                                ),
+                              )
                         : ElevatedButton(
                             style: ButtonStyle(
                               foregroundColor: MaterialStateProperty.all<Color>(
@@ -1369,52 +1380,62 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 Divider(
                   color: constantColors.whiteColor,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.white),
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              constantColors.bioBg),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                Visibility(
+                  visible: !video!.boughtBy
+                      .contains(context.read<Authentication>().getUserId),
+                  replacement: Text(
+                    "Already Purchased Content",
+                    style: TextStyle(
+                      color: constantColors.whiteColor,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            foregroundColor:
+                                MaterialStateProperty.all<Color>(Colors.white),
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                constantColors.bioBg),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                          ),
+                          onPressed: () async {
+                            // ignore: unawaited_futures
+                            CoolAlert.show(
+                              context: context,
+                              type: CoolAlertType.loading,
+                              text: "Saving to your collection",
+                              barrierDismissible: false,
+                            );
+                            await firebaseOperations.addToMyCollection(
+                              videoOwnerId: video!.useruid,
+                              videoItem: video!,
+                              isFree: video!.isFree,
+                              ctx: context,
+                              videoId: video!.id,
+                            );
+                          },
+                          // paymentController.makePayment(
+                          //     amount: "10", currency: "USD"),
+                          child: Text(
+                            video!.videoType == "video"
+                                ? LocaleKeys.addToMyInventory.tr()
+                                : LocaleKeys.addtoarviewcollection.tr(),
+                            style: TextStyle(
+                              color: constantColors.navButton,
                             ),
                           ),
                         ),
-                        onPressed: () async {
-                          // ignore: unawaited_futures
-                          CoolAlert.show(
-                            context: context,
-                            type: CoolAlertType.loading,
-                            text: "Saving to your collection",
-                            barrierDismissible: false,
-                          );
-                          await firebaseOperations.addToMyCollection(
-                            videoOwnerId: video!.useruid,
-                            videoItem: video!,
-                            isFree: video!.isFree,
-                            ctx: context,
-                            videoId: video!.id,
-                          );
-                        },
-                        // paymentController.makePayment(
-                        //     amount: "10", currency: "USD"),
-                        child: Text(
-                          video!.videoType == "video"
-                              ? LocaleKeys.addToMyInventory.tr()
-                              : LocaleKeys.addtoarviewcollection.tr(),
-                          style: TextStyle(
-                            color: constantColors.navButton,
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],

@@ -50,7 +50,6 @@ import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
-import 'package:diamon_rose_app/widgets/apple_pay.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
@@ -64,7 +63,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pay/pay.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
@@ -87,10 +85,6 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
 
   final FCMNotificationService _fcmNotificationService =
       FCMNotificationService();
-
-  void onApplePayResult(paymentResult) {
-    debugPrint(paymentResult);
-  }
 
   InAppWebViewController? webViewController;
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
@@ -116,16 +110,6 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
     final CaratProvider _caratProvider =
         Provider.of<CaratProvider>(context, listen: false);
 
-    final ApplePayButton applePayButton = ApplePayButton(
-      paymentConfigurationAsset: 'default_payment_profile_apple.json',
-      paymentItems: [
-        PaymentItem(
-            amount: "10.00",
-            label: "This is the label",
-            type: PaymentItemType.total),
-      ],
-      onPaymentResult: onApplePayResult,
-    );
     return SafeArea(
       top: false,
       bottom: Platform.isIOS ? false : true,
@@ -1166,331 +1150,331 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
   }
 
   // ignore: type_annotate_public_apis, always_declare_return_types
-  ViewPaidVideoWeb(
-      BuildContext context,
-      String cartUrl,
-      Authentication auth,
-      FirebaseOperations firebaseOperations,
-      int carats,
-      CaratProvider caratProvider) async {
-    // ignore: unawaited_futures
-    showModalBottomSheet(
-      context: context,
-      isDismissible: false,
-      isScrollControlled: true,
-      enableDrag: false,
-      builder: (context) {
-        return SafeArea(
-          bottom: Platform.isAndroid ? true : false,
-          child: Container(
-            height: 95.h,
-            width: 100.w,
-            decoration: BoxDecoration(
-              color: constantColors.black,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 20, 0, 10),
-                  child: Row(
-                    children: [
-                      InkWell(
-                        onTap: Get.back,
-                        child: Text(
-                          LocaleKeys.done.tr(),
-                          style: TextStyle(
-                            color: constantColors.bioBg,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: InAppWebView(
-                    key: webViewKey,
-                    onUpdateVisitedHistory: (controller, uri, _) async {
-                      if (uri!.toString().contains("success")) {
-                        log("success!");
-                        // Payment succesful, now iterate through each video and AddtoMycollection
-                        double totalPrice = 0;
-                        await FirebaseFirestore.instance
-                            .collection("users")
-                            .doc(auth.getUserId)
-                            .collection("cart")
-                            .get()
-                            .then((cartDocs) {
-                          cartDocs.docs.forEach((cartVideos) async {
-                            final Video videoModel =
-                                Video.fromJson(cartVideos.data());
+  // ViewPaidVideoWeb(
+  //     BuildContext context,
+  //     String cartUrl,
+  //     Authentication auth,
+  //     FirebaseOperations firebaseOperations,
+  //     int carats,
+  //     CaratProvider caratProvider) async {
+  //   // ignore: unawaited_futures
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isDismissible: false,
+  //     isScrollControlled: true,
+  //     enableDrag: false,
+  //     builder: (context) {
+  //       return SafeArea(
+  //         bottom: Platform.isAndroid ? true : false,
+  //         child: Container(
+  //           height: 95.h,
+  //           width: 100.w,
+  //           decoration: BoxDecoration(
+  //             color: constantColors.black,
+  //             borderRadius: BorderRadius.only(
+  //               topLeft: Radius.circular(20),
+  //               topRight: Radius.circular(20),
+  //             ),
+  //           ),
+  //           child: Column(
+  //             children: [
+  //               Padding(
+  //                 padding: const EdgeInsets.fromLTRB(15, 20, 0, 10),
+  //                 child: Row(
+  //                   children: [
+  //                     InkWell(
+  //                       onTap: Get.back,
+  //                       child: Text(
+  //                         LocaleKeys.done.tr(),
+  //                         style: TextStyle(
+  //                           color: constantColors.bioBg,
+  //                           fontSize: 16,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               Expanded(
+  //                 child: InAppWebView(
+  //                   key: webViewKey,
+  //                   onUpdateVisitedHistory: (controller, uri, _) async {
+  //                     if (uri!.toString().contains("success")) {
+  //                       log("success!");
+  //                       // Payment succesful, now iterate through each video and AddtoMycollection
+  //                       double totalPrice = 0;
+  //                       await FirebaseFirestore.instance
+  //                           .collection("users")
+  //                           .doc(auth.getUserId)
+  //                           .collection("cart")
+  //                           .get()
+  //                           .then((cartDocs) {
+  //                         cartDocs.docs.forEach((cartVideos) async {
+  //                           final Video videoModel =
+  //                               Video.fromJson(cartVideos.data());
 
-                            log("old timestamp == ${videoModel.timestamp.toDate()}");
+  //                           log("old timestamp == ${videoModel.timestamp.toDate()}");
 
-                            videoModel.timestamp = Timestamp.now();
+  //                           videoModel.timestamp = Timestamp.now();
 
-                            log("new timestamp == ${videoModel.timestamp.toDate()}");
+  //                           log("new timestamp == ${videoModel.timestamp.toDate()}");
 
-                            totalPrice += cartVideos['price'] *
-                                (1 - cartVideos['discountamount'] / 100);
-                            log("Total price  = $totalPrice");
-                            log("here ${videoModel.timestamp}");
-                            log("amount transfered == ${(double.parse("${cartVideos['price'] * (1 - cartVideos['discountamount'] / 100) * 100}") / 100).toStringAsFixed(0)}");
-                            try {
-                              await firebaseOperations
-                                  .addToMyCollectionFromCart(
-                                auth: auth,
-                                videoOwnerId: videoModel.useruid,
-                                amount: int.parse((double.parse(
-                                            "${videoModel.price * (1 - videoModel.discountAmount / 100) * 100}") /
-                                        100)
-                                    .toStringAsFixed(0)),
-                                videoItem: videoModel,
-                                isFree: videoModel.isFree,
-                                videoId: videoModel.id,
-                              );
+  //                           totalPrice += cartVideos['price'] *
+  //                               (1 - cartVideos['discountamount'] / 100);
+  //                           log("Total price  = $totalPrice");
+  //                           log("here ${videoModel.timestamp}");
+  //                           log("amount transfered == ${(double.parse("${cartVideos['price'] * (1 - cartVideos['discountamount'] / 100) * 100}") / 100).toStringAsFixed(0)}");
+  //                           try {
+  //                             await firebaseOperations
+  //                                 .addToMyCollectionFromCart(
+  //                               auth: auth,
+  //                               videoOwnerId: videoModel.useruid,
+  //                               amount: int.parse((double.parse(
+  //                                           "${videoModel.price * (1 - videoModel.discountAmount / 100) * 100}") /
+  //                                       100)
+  //                                   .toStringAsFixed(0)),
+  //                               videoItem: videoModel,
+  //                               isFree: videoModel.isFree,
+  //                               videoId: videoModel.id,
+  //                             );
 
-                              log("success added to cart!");
-                            } catch (e) {
-                              log("error saving cart to my collection ${e.toString()}");
-                            }
+  //                             log("success added to cart!");
+  //                           } catch (e) {
+  //                             log("error saving cart to my collection ${e.toString()}");
+  //                           }
 
-                            try {
-                              final int remainingCarats =
-                                  carats - totalPrice.toInt();
+  //                           try {
+  //                             final int remainingCarats =
+  //                                 carats - totalPrice.toInt();
 
-                              log("started ${carats} | using ${totalPrice} | remaining ${remainingCarats}");
-                              caratProvider.setCarats(remainingCarats);
-                              log("cartprovider value ${caratProvider.getCarats}");
-                              await firebaseOperations.updateCaratsOfUser(
-                                  userid: auth.getUserId,
-                                  caratValue: remainingCarats);
-                            } catch (e) {
-                              log("error updating users carat amount");
-                            }
+  //                             log("started ${carats} | using ${totalPrice} | remaining ${remainingCarats}");
+  //                             caratProvider.setCarats(remainingCarats);
+  //                             log("cartprovider value ${caratProvider.getCarats}");
+  //                             await firebaseOperations.updateCaratsOfUser(
+  //                                 userid: auth.getUserId,
+  //                                 caratValue: remainingCarats);
+  //                           } catch (e) {
+  //                             log("error updating users carat amount");
+  //                           }
 
-                            try {
-                              await FirebaseFirestore.instance
-                                  .collection("users")
-                                  .doc(auth.getUserId)
-                                  .collection("cart")
-                                  .doc(cartVideos.id)
-                                  .delete();
+  //                           try {
+  //                             await FirebaseFirestore.instance
+  //                                 .collection("users")
+  //                                 .doc(auth.getUserId)
+  //                                 .collection("cart")
+  //                                 .doc(cartVideos.id)
+  //                                 .delete();
 
-                              log("deleted");
-                            } catch (e) {
-                              log("error deleting cart  ${e.toString()}");
-                            }
-                          });
-                        }).whenComplete(() {
-                          log("done");
-                          // Get.back();
-                          Get.back();
-                        });
-                        Get.snackbar(
-                          'Purchase Sucessful 🎉',
-                          'All video purchased have been added to your purchase history',
-                          overlayColor: constantColors.navButton,
-                          colorText: constantColors.whiteColor,
-                          snackPosition: SnackPosition.TOP,
-                          forwardAnimationCurve: Curves.elasticInOut,
-                          reverseAnimationCurve: Curves.easeOut,
-                        );
+  //                             log("deleted");
+  //                           } catch (e) {
+  //                             log("error deleting cart  ${e.toString()}");
+  //                           }
+  //                         });
+  //                       }).whenComplete(() {
+  //                         log("done");
+  //                         // Get.back();
+  //                         Get.back();
+  //                       });
+  //                       Get.snackbar(
+  //                         'Purchase Sucessful 🎉',
+  //                         'All video purchased have been added to your purchase history',
+  //                         overlayColor: constantColors.navButton,
+  //                         colorText: constantColors.whiteColor,
+  //                         snackPosition: SnackPosition.TOP,
+  //                         forwardAnimationCurve: Curves.elasticInOut,
+  //                         reverseAnimationCurve: Curves.easeOut,
+  //                       );
 
-                        // ignore: unawaited_futures, cascade_invocations
-                        Get.dialog(
-                          SimpleDialog(
-                            backgroundColor: constantColors.whiteColor,
-                            title: Text(
-                              "Your purchase was successfully completed.",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: constantColors.black,
-                              ),
-                            ),
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Text(
-                                  "You can enjoy the purchased contents from your purchase history. Please enjoy!",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: constantColors.black),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(10),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        style: ButtonStyle(
-                                          foregroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                                  Colors.white),
-                                          backgroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                                  constantColors.navButton),
-                                          shape: MaterialStateProperty.all<
-                                              RoundedRectangleBorder>(
-                                            RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                        ),
-                                        onPressed: () => Get.back(),
-                                        child: Text(
-                                          LocaleKeys.understood.tr(),
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        style: ButtonStyle(
-                                          foregroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                                  Colors.white),
-                                          backgroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                                  constantColors.navButton),
-                                          shape: MaterialStateProperty.all<
-                                              RoundedRectangleBorder>(
-                                            RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Get.back();
-                                          Get.to(PurchaseHistoryScreen());
-                                        },
-                                        child: Text(
-                                          "View Items",
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          barrierDismissible: false,
-                        );
+  //                       // ignore: unawaited_futures, cascade_invocations
+  //                       Get.dialog(
+  //                         SimpleDialog(
+  //                           backgroundColor: constantColors.whiteColor,
+  //                           title: Text(
+  //                             "Your purchase was successfully completed.",
+  //                             textAlign: TextAlign.center,
+  //                             style: TextStyle(
+  //                               color: constantColors.black,
+  //                             ),
+  //                           ),
+  //                           children: [
+  //                             Padding(
+  //                               padding: const EdgeInsets.all(10),
+  //                               child: Text(
+  //                                 "You can enjoy the purchased contents from your purchase history. Please enjoy!",
+  //                                 textAlign: TextAlign.center,
+  //                                 style: TextStyle(color: constantColors.black),
+  //                               ),
+  //                             ),
+  //                             Padding(
+  //                               padding: EdgeInsets.all(10),
+  //                               child: Row(
+  //                                 children: [
+  //                                   Expanded(
+  //                                     child: ElevatedButton(
+  //                                       style: ButtonStyle(
+  //                                         foregroundColor:
+  //                                             MaterialStateProperty.all<Color>(
+  //                                                 Colors.white),
+  //                                         backgroundColor:
+  //                                             MaterialStateProperty.all<Color>(
+  //                                                 constantColors.navButton),
+  //                                         shape: MaterialStateProperty.all<
+  //                                             RoundedRectangleBorder>(
+  //                                           RoundedRectangleBorder(
+  //                                             borderRadius:
+  //                                                 BorderRadius.circular(20),
+  //                                           ),
+  //                                         ),
+  //                                       ),
+  //                                       onPressed: () => Get.back(),
+  //                                       child: Text(
+  //                                         LocaleKeys.understood.tr(),
+  //                                         style: TextStyle(fontSize: 12),
+  //                                       ),
+  //                                     ),
+  //                                   ),
+  //                                   SizedBox(
+  //                                     width: 10,
+  //                                   ),
+  //                                   Expanded(
+  //                                     child: ElevatedButton(
+  //                                       style: ButtonStyle(
+  //                                         foregroundColor:
+  //                                             MaterialStateProperty.all<Color>(
+  //                                                 Colors.white),
+  //                                         backgroundColor:
+  //                                             MaterialStateProperty.all<Color>(
+  //                                                 constantColors.navButton),
+  //                                         shape: MaterialStateProperty.all<
+  //                                             RoundedRectangleBorder>(
+  //                                           RoundedRectangleBorder(
+  //                                             borderRadius:
+  //                                                 BorderRadius.circular(20),
+  //                                           ),
+  //                                         ),
+  //                                       ),
+  //                                       onPressed: () {
+  //                                         Get.back();
+  //                                         Get.to(PurchaseHistoryScreen());
+  //                                       },
+  //                                       child: Text(
+  //                                         "View Items",
+  //                                       ),
+  //                                     ),
+  //                                   ),
+  //                                 ],
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                         barrierDismissible: false,
+  //                       );
 
-                        //  await Provider.of<FirebaseOperations>(context,
-                        //           listen: false)
-                        //       .addToMyCollection(
-                        //     videoOwnerId: video.useruid,
-                        //     amount: int.parse((double.parse(
-                        //                 "${video.price * (1 - video.discountAmount / 100) * 100}") /
-                        //             100)
-                        //         .toStringAsFixed(0)),
-                        //     videoItem: video,
-                        //     isFree: video.isFree,
-                        //     ctx: context,
-                        //     videoId: video.id,
-                        //   );
+  //                       //  await Provider.of<FirebaseOperations>(context,
+  //                       //           listen: false)
+  //                       //       .addToMyCollection(
+  //                       //     videoOwnerId: video.useruid,
+  //                       //     amount: int.parse((double.parse(
+  //                       //                 "${video.price * (1 - video.discountAmount / 100) * 100}") /
+  //                       //             100)
+  //                       //         .toStringAsFixed(0)),
+  //                       //     videoItem: video,
+  //                       //     isFree: video.isFree,
+  //                       //     ctx: context,
+  //                       //     videoId: video.id,
+  //                       //   );
 
-                        // log("amount transfered == ${(double.parse("${video.price * (1 - video.discountAmount / 100) * 100}") / 100).toStringAsFixed(0)}");
+  //                       // log("amount transfered == ${(double.parse("${video.price * (1 - video.discountAmount / 100) * 100}") / 100).toStringAsFixed(0)}");
 
-                      } else if (uri.toString().contains("cancel")) {
-                        Get.back();
-                        Get.back();
-                        Get.snackbar(
-                          'Video Cart Error',
-                          'Error adding video to cart',
-                          overlayColor: constantColors.navButton,
-                          colorText: constantColors.whiteColor,
-                          snackPosition: SnackPosition.TOP,
-                          forwardAnimationCurve: Curves.elasticInOut,
-                          reverseAnimationCurve: Curves.easeOut,
-                        );
-                      } else if (uri.toString().contains("applePay")) {
-                        log(uri.toString() + "this");
-                        final String totalPrice =
-                            uri.toString().split("/").last;
-                        Get.back();
-                        Get.back();
-                        log("price == $totalPrice");
-                        Get.bottomSheet(ApplePayWidget(
-                          totalPrice: totalPrice,
-                        ));
-                      }
-                    },
-                    initialUrlRequest: URLRequest(
-                      url: Uri.parse(cartUrl),
-                    ),
-                    initialUserScripts: UnmodifiableListView<UserScript>([]),
-                    initialOptions: options,
-                    onWebViewCreated: (controller) {
-                      webViewController = controller;
-                    },
-                    onLoadStart: (controller, url) {
-                      setState(() {
-                        urlController.text = this.url;
-                      });
-                    },
-                    androidOnPermissionRequest:
-                        (controller, origin, resources) async {
-                      return PermissionRequestResponse(
-                          resources: resources,
-                          action: PermissionRequestResponseAction.GRANT);
-                    },
-                    shouldOverrideUrlLoading:
-                        (controller, navigationAction) async {
-                      var uri = navigationAction.request.url!;
+  //                     } else if (uri.toString().contains("cancel")) {
+  //                       Get.back();
+  //                       Get.back();
+  //                       Get.snackbar(
+  //                         'Video Cart Error',
+  //                         'Error adding video to cart',
+  //                         overlayColor: constantColors.navButton,
+  //                         colorText: constantColors.whiteColor,
+  //                         snackPosition: SnackPosition.TOP,
+  //                         forwardAnimationCurve: Curves.elasticInOut,
+  //                         reverseAnimationCurve: Curves.easeOut,
+  //                       );
+  //                     } else if (uri.toString().contains("applePay")) {
+  //                       log(uri.toString() + "this");
+  //                       final String totalPrice =
+  //                           uri.toString().split("/").last;
+  //                       Get.back();
+  //                       Get.back();
+  //                       log("price == $totalPrice");
+  //                       Get.bottomSheet(ApplePayWidget(
+  //                         totalPrice: totalPrice,
+  //                       ));
+  //                     }
+  //                   },
+  //                   initialUrlRequest: URLRequest(
+  //                     url: Uri.parse(cartUrl),
+  //                   ),
+  //                   initialUserScripts: UnmodifiableListView<UserScript>([]),
+  //                   initialOptions: options,
+  //                   onWebViewCreated: (controller) {
+  //                     webViewController = controller;
+  //                   },
+  //                   onLoadStart: (controller, url) {
+  //                     setState(() {
+  //                       urlController.text = this.url;
+  //                     });
+  //                   },
+  //                   androidOnPermissionRequest:
+  //                       (controller, origin, resources) async {
+  //                     return PermissionRequestResponse(
+  //                         resources: resources,
+  //                         action: PermissionRequestResponseAction.GRANT);
+  //                   },
+  //                   shouldOverrideUrlLoading:
+  //                       (controller, navigationAction) async {
+  //                     var uri = navigationAction.request.url!;
 
-                      if (![
-                        "http",
-                        "https",
-                        "file",
-                        "chrome",
-                        "data",
-                        "javascript",
-                        "about"
-                      ].contains(uri.scheme)) {
-                        if (await canLaunch(cartUrl)) {
-                          // Launch the App
-                          await launch(
-                            cartUrl,
-                          );
-                          // and cancel the request
-                          return NavigationActionPolicy.CANCEL;
-                        }
-                      }
+  //                     if (![
+  //                       "http",
+  //                       "https",
+  //                       "file",
+  //                       "chrome",
+  //                       "data",
+  //                       "javascript",
+  //                       "about"
+  //                     ].contains(uri.scheme)) {
+  //                       if (await canLaunch(cartUrl)) {
+  //                         // Launch the App
+  //                         await launch(
+  //                           cartUrl,
+  //                         );
+  //                         // and cancel the request
+  //                         return NavigationActionPolicy.CANCEL;
+  //                       }
+  //                     }
 
-                      return NavigationActionPolicy.ALLOW;
-                    },
-                    onLoadStop: (controller, url) async {
-                      setState(() {
-                        this.url = url.toString();
-                        urlController.text = this.url;
-                      });
-                    },
-                    onLoadError: (controller, url, code, message) {},
-                    onProgressChanged: (controller, progress) {
-                      if (progress == 100) {}
-                      setState(() {
-                        this.progress = progress / 100;
-                        urlController.text = this.url;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+  //                     return NavigationActionPolicy.ALLOW;
+  //                   },
+  //                   onLoadStop: (controller, url) async {
+  //                     setState(() {
+  //                       this.url = url.toString();
+  //                       urlController.text = this.url;
+  //                     });
+  //                   },
+  //                   onLoadError: (controller, url, code, message) {},
+  //                   onProgressChanged: (controller, progress) {
+  //                     if (progress == 100) {}
+  //                     setState(() {
+  //                       this.progress = progress / 100;
+  //                       urlController.text = this.url;
+  //                     });
+  //                   },
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 }

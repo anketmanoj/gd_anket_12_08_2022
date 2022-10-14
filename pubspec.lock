@@ -837,13 +837,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.6"
-  flutter_paypal:
-    dependency: "direct main"
-    description:
-      name: flutter_paypal
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.8"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -1031,13 +1024,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.13.5"
-  http_auth:
-    dependency: transitive
-    description:
-      name: http_auth
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   http_client_helper:
     dependency: transitive
     description:
@@ -1486,34 +1472,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.7"
-  pay:
-    dependency: "direct main"
-    description:
-      name: pay
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.10"
-  pay_android:
-    dependency: transitive
-    description:
-      name: pay_android
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.7"
-  pay_ios:
-    dependency: transitive
-    description:
-      name: pay_ios
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.7"
-  pay_platform_interface:
-    dependency: transitive
-    description:
-      name: pay_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   pedantic:
     dependency: "direct dev"
     description:
@@ -2170,34 +2128,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.0"
-  webview_flutter:
-    dependency: transitive
-    description:
-      name: webview_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.8.0"
-  webview_flutter_android:
-    dependency: transitive
-    description:
-      name: webview_flutter_android
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.8.14"
-  webview_flutter_platform_interface:
-    dependency: transitive
-    description:
-      name: webview_flutter_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.9.1"
-  webview_flutter_wkwebview:
-    dependency: transitive
-    description:
-      name: webview_flutter_wkwebview
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.7.5"
   widget_circular_animator:
     dependency: "direct main"
     description:

@@ -273,28 +273,15 @@ class VideoWidget extends StatelessWidget {
                                     padding: const EdgeInsets.only(left: 8),
                                     child: Row(
                                       children: [
-                                        Stack(
-                                          children: <Widget>[
-                                            // Stroked text as border.
-                                            Text(
-                                              video.username,
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                foreground: Paint()
-                                                  ..style = PaintingStyle.stroke
-                                                  ..strokeWidth = 3
-                                                  ..color = Colors.black,
-                                              ),
+                                        Text(
+                                          video.username,
+                                          style: TextStyle(
+                                            shadows: outlinedText(
+                                              strokeColor: constantColors.black,
                                             ),
-                                            // Solid text as fill.
-                                            Text(
-                                              video.username,
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
+                                            fontSize: 14,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                         Visibility(
                                           visible: video.verifiedUser ?? false,
@@ -386,28 +373,15 @@ class VideoWidget extends StatelessWidget {
                                 top: 5,
                                 right: 30,
                               ),
-                              child: Stack(
-                                children: <Widget>[
-                                  // Stroked text as border.
-                                  Text(
-                                    video.videotitle,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      foreground: Paint()
-                                        ..style = PaintingStyle.stroke
-                                        ..strokeWidth = 3
-                                        ..color = Colors.black,
-                                    ),
+                              child: Text(
+                                video.videotitle,
+                                style: TextStyle(
+                                  shadows: outlinedText(
+                                    strokeColor: constantColors.black,
                                   ),
-                                  // Solid text as fill.
-                                  Text(
-                                    video.videotitle,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                             Padding(
@@ -458,26 +432,16 @@ class VideoWidget extends StatelessWidget {
                                 child: Stack(
                                   children: <Widget>[
                                     // Stroked text as border.
+
                                     Text(
                                       (video.timestamp)
                                           .toDate()
                                           .toString()
                                           .substring(0, 10),
                                       style: TextStyle(
-                                        fontSize: 10,
-                                        foreground: Paint()
-                                          ..style = PaintingStyle.stroke
-                                          ..strokeWidth = 3
-                                          ..color = Colors.black,
-                                      ),
-                                    ),
-                                    // Solid text as fill.
-                                    Text(
-                                      (video.timestamp)
-                                          .toDate()
-                                          .toString()
-                                          .substring(0, 10),
-                                      style: TextStyle(
+                                        shadows: outlinedText(
+                                          strokeColor: constantColors.black,
+                                        ),
                                         fontSize: 10,
                                         color: Colors.white,
                                       ),
@@ -1311,7 +1275,23 @@ class VideoWidget extends StatelessWidget {
                           .where("hideItem", isEqualTo: false)
                           .snapshots(),
                       builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
                         if (snapshot.hasData) {
+                          if (snapshot.data!.docs.isEmpty) {
+                            return Center(
+                              child: Text(
+                                "The owner of this post has not set any items for sale!",
+                                style:
+                                    TextStyle(color: constantColors.whiteColor),
+                              ),
+                            );
+                          }
+
                           return ListView.builder(
                             itemCount: snapshot.data!.docs.length,
                             itemBuilder: (context, index) {
@@ -1425,11 +1405,11 @@ class VideoWidget extends StatelessWidget {
                                     );
                             },
                           );
-                        } else {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
                         }
+
+                        return Center(
+                          child: Text("No Items for Sale"),
+                        );
                       }),
                 ),
                 Divider(
