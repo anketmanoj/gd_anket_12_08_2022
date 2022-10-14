@@ -44,15 +44,26 @@ class MyCollectionMiddleNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: constantColors.bioBg,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: constantColors.redColor,
-        foregroundColor: constantColors.whiteColor,
-        child: Icon(Icons.delete_outlined),
-        onPressed: () {
-          deleteItems.value = !deleteItems.value;
-        },
+      appBar: AppBarWidget(
+        text: LocaleKeys.myMaterials.tr(),
+        context: context,
+        actions: [
+          ValueListenableBuilder<bool>(
+              valueListenable: deleteItems,
+              builder: (_, deleteVal, __) {
+                return IconButton(
+                  onPressed: () {
+                    deleteItems.value = !deleteItems.value;
+                  },
+                  icon: Icon(
+                    deleteVal == true
+                        ? Icons.delete_forever_outlined
+                        : Icons.delete_outlined,
+                  ),
+                );
+              })
+        ],
       ),
-      appBar: AppBarWidget(text: LocaleKeys.myMaterials.tr(), context: context),
       body: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
@@ -144,7 +155,6 @@ class MyCollectionMiddleNav extends StatelessWidget {
                                         header: deleteItems.value == true
                                             ? InkWell(
                                                 onTap: () {
-                                                  log("locale == ${Get.locale}");
                                                   CoolAlert.show(
                                                       context: context,
                                                       type: CoolAlertType.info,
