@@ -663,6 +663,8 @@ Future<void> deleteFile(List<String> fullPathsForFiles) async {
         await DefaultCacheManager().removeFile(file.path);
         await file.delete(recursive: true);
         log("done from cni and dcm");
+      } else {
+        log("############ doesnt exist ${file.path}");
       }
       // ignore: avoid_catches_without_on_clauses
     } catch (e) {

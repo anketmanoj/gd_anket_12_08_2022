@@ -771,7 +771,19 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 ),
                 // ListTileOption(
                 //   constantColors: constantColors,
-                //   onTap: () {
+                //   onTap: () async {
+                //     final String imageUrl =
+                //         "https://firebasestorage.googleapis.com/v0/b/gdfe-ac584.appspot.com/o/test%2FScreen%20Shot%202022-10-14%20at%204.28.34%20PM.png?alt=media&token=6eda9498-a5ff-4fae-912c-e1a9fce57ccc";
+
+                //     await FirebaseFirestore.instance
+                //         .collection("posts")
+                //         .doc("vDpyF4d29hZ2YeMwyAeX6")
+                //         .update({
+                //       "thumbnailurl": imageUrl,
+                //     });
+
+                //     log("done!");
+
                 //     // await _fcmNotificationService.sendNotificationToUser(
                 //     //     to: "chTy8m8os0L4jloohWoYPe:APA91bFT5Ocnf0p-lBtL_cUurN0xLc5-g6rs_GyvEDxYQBSYonhUASBWa7CXExj0CK131Rfs-0T-0UYasLFGFRKNCDyCg0wjG61UnxAVJrBnFGgqlMoB0lMKbjXNlRVMiVuUomF3kmOk", //To change once set up
                 //     //     title: "TESSSTTTT has a new post!",
@@ -981,124 +993,124 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "${LocaleKeys.deleteaccount.tr()}",
                 ),
-                // Visibility(
-                //   visible: adminUserId
-                //       .contains(context.read<Authentication>().getUserId),
-                //   child: Column(
-                //     children: [
-                //       ListTile(
-                //         onTap: () {
-                //           Navigator.push(
-                //             context,
-                //             PageTransition(
-                //               child: UploadVideoScreen(),
-                //               type: PageTransitionType.fade,
-                //             ),
-                //           );
-                //         },
-                //         title: Text(
-                //           LocaleKeys.adminupload.tr(),
-                //           style: TextStyle(
-                //             color: Colors.yellow,
-                //             fontSize: 16,
-                //           ),
-                //         ),
-                //         leading: Icon(
-                //           Icons.admin_panel_settings,
-                //           color: Colors.yellow,
-                //         ),
-                //       ),
-                //       ListTile(
-                //         onTap: () {
-                //           Navigator.push(
-                //             context,
-                //             PageTransition(
-                //               child: AdminUserPromoScreen(),
-                //               type: PageTransitionType.fade,
-                //             ),
-                //           );
-                //         },
-                //         title: Text(
-                //           LocaleKeys.adminUserPromocodes.tr(),
-                //           style: TextStyle(
-                //             color: Colors.yellow,
-                //             fontSize: 16,
-                //           ),
-                //         ),
-                //         leading: Icon(
-                //           Icons.admin_panel_settings,
-                //           color: Colors.yellow,
-                //         ),
-                //       ),
-                //       ListTile(
-                //         onTap: () {
-                //           Navigator.push(
-                //             context,
-                //             PageTransition(
-                //               child: SelectUserVideoEditor(),
-                //               type: PageTransitionType.fade,
-                //             ),
-                //           );
-                //         },
-                //         title: Text(
-                //           LocaleKeys.adminVideoEditor.tr(),
-                //           style: TextStyle(
-                //             color: Colors.yellow,
-                //             fontSize: 16,
-                //           ),
-                //         ),
-                //         leading: Icon(
-                //           Icons.admin_panel_settings,
-                //           color: Colors.yellow,
-                //         ),
-                //       ),
-                //       ListTile(
-                //         onTap: () {
-                //           Navigator.push(
-                //             context,
-                //             PageTransition(
-                //               child: AdminArOptions(),
-                //               type: PageTransitionType.fade,
-                //             ),
-                //           );
-                //         },
-                //         title: Text(
-                //           LocaleKeys.adminAROptions.tr(),
-                //           style: TextStyle(
-                //             color: Colors.yellow,
-                //             fontSize: 16,
-                //           ),
-                //         ),
-                //         leading: Icon(
-                //           Icons.admin_panel_settings,
-                //           color: Colors.yellow,
-                //         ),
-                //       ),
-                //       ListTile(
-                //         onTap: () {
-                //           Navigator.push(
-                //             context,
-                //             PageTransition(
-                //               child: UserDataAdminControl(),
-                //               type: PageTransitionType.fade,
-                //             ),
-                //           );
-                //         },
-                //         title: Text(
-                //           LocaleKeys.adminUserControl.tr(),
-                //           style: TextStyle(
-                //             color: Colors.yellow,
-                //             fontSize: 16,
-                //           ),
-                //         ),
-                //         leading: Icon(
-                //           Icons.admin_panel_settings,
-                //           color: Colors.yellow,
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
+                Visibility(
+                  visible: adminUserId
+                      .contains(context.read<Authentication>().getUserId),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: UploadVideoScreen(),
+                              type: PageTransitionType.fade,
+                            ),
+                          );
+                        },
+                        title: Text(
+                          LocaleKeys.adminupload.tr(),
+                          style: TextStyle(
+                            color: Colors.yellow,
+                            fontSize: 16,
+                          ),
+                        ),
+                        leading: Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.yellow,
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: AdminUserPromoScreen(),
+                              type: PageTransitionType.fade,
+                            ),
+                          );
+                        },
+                        title: Text(
+                          LocaleKeys.adminUserPromocodes.tr(),
+                          style: TextStyle(
+                            color: Colors.yellow,
+                            fontSize: 16,
+                          ),
+                        ),
+                        leading: Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.yellow,
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: SelectUserVideoEditor(),
+                              type: PageTransitionType.fade,
+                            ),
+                          );
+                        },
+                        title: Text(
+                          LocaleKeys.adminVideoEditor.tr(),
+                          style: TextStyle(
+                            color: Colors.yellow,
+                            fontSize: 16,
+                          ),
+                        ),
+                        leading: Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.yellow,
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: AdminArOptions(),
+                              type: PageTransitionType.fade,
+                            ),
+                          );
+                        },
+                        title: Text(
+                          LocaleKeys.adminAROptions.tr(),
+                          style: TextStyle(
+                            color: Colors.yellow,
+                            fontSize: 16,
+                          ),
+                        ),
+                        leading: Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.yellow,
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: UserDataAdminControl(),
+                              type: PageTransitionType.fade,
+                            ),
+                          );
+                        },
+                        title: Text(
+                          LocaleKeys.adminUserControl.tr(),
+                          style: TextStyle(
+                            color: Colors.yellow,
+                            fontSize: 16,
+                          ),
+                        ),
+                        leading: Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.yellow,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 ListTile(
                   onTap: () {
                     logOutDialog(context);

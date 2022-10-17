@@ -237,8 +237,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       for (ARList arElement in list.value) {
         if (_controller.video.value.position.inMicroseconds <= 0 &&
             list.value.isNotEmpty) {
-          if (arElement.finishedCaching!.value == true)
+          if (arElement.finishedCaching!.value == true &&
+              arElement.arState != null) {
             arElement.arState!.skip(0);
+          }
           if (arElement.audioFlag == true)
             arElement.audioPlayer!.seek(Duration(milliseconds: 0));
         }
@@ -268,7 +270,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             arElement.startingPositon! >= bgDuration &&
             (arElement.startingPositon! + arElement.endingPosition! <=
                 bgDuration)) {
-          if (arElement.finishedCaching!.value == true) {
+          if (arElement.finishedCaching!.value == true &&
+              arElement.arState != null) {
             arElement.arState!.pause();
             arElement.arState!.skip(bgDuration);
           }
@@ -431,6 +434,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             }
 
             _controllerSeekTo(0);
+            if (!mounted) return;
             setState(() {});
 
             Navigator.pop(context);
@@ -575,6 +579,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       final String rawDocument = appDocument.path;
       final String gifSeqFolder = "${rawDocument}/";
 
+      final String timeNow = Timestamp.now().millisecondsSinceEpoch.toString();
+
       setState(() {
         folderName = gifSeqFolder;
       });
@@ -600,7 +606,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
             //! #############################################################
             final String commandForGifSeqFile =
-                '-y -i ${gifFile.path} -filter_complex "fps=30,scale=480:-1"  -preset ultrafast  ${gifSeqFolder}${arVal}gifSeq%d.png';
+                '-y -i ${gifFile.path} -filter_complex "fps=30,scale=480:-1"  -preset ultrafast  ${gifSeqFolder}${arVal}${timeNow}gifSeq%d.png';
 
             final List<String> _fullPathsOffline = [];
 
@@ -609,7 +615,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 for (int i = 0;
                     i < (double.parse(setDuration).floor() * 30);
                     i++) {
-                  _fullPathsOffline.add("${gifSeqFolder}${arVal}gifSeq$i.png");
+                  _fullPathsOffline
+                      .add("${gifSeqFolder}${arVal}${timeNow}gifSeq$i.png");
                 }
               });
 
@@ -622,9 +629,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               final containerKey = GlobalKey();
 
               await FFmpegKit.execute(
-                      "-i ${gifFile.path} -crf 30 -preset ultrafast -filter_complex \"[0:v] split [a][b]; [a] palettegen=reserve_transparent=on [p]; [b][p] paletteuse\" -y ${gifSeqFolder}gifFile${arVal}.gif")
+                      "-i ${gifFile.path} -crf 30 -preset ultrafast -filter_complex \"[0:v] split [a][b]; [a] palettegen=reserve_transparent=on [p]; [b][p] paletteuse\" -y ${gifSeqFolder}gifFile${timeNow}${arVal}.gif")
                   .then((vv) async {
-                print("gif is here ${gifSeqFolder}gifFile${arVal}.gif");
+                print(
+                    "gif is here ${gifSeqFolder}gifFile${timeNow}${arVal}.gif");
                 try {
                   await FFprobeKit.execute(
                           "-v error -show_streams -print_format json -i ${_fullPathsOffline[0]}")
@@ -642,13 +650,13 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                         arIndex: arVal,
                         height: ((videoContainerKey.globalPaintBounds!.height *
                                     videoHeight) /
-                                1920) /
+                                960) /
                             1.3,
                         rotation: 0,
                         scale: 1,
                         width: ((videoContainerKey.globalPaintBounds!.width *
                                     videoWidth) /
-                                1080) /
+                                540) /
                             1.3,
                         xPosition: 0,
                         yPosition: 0,
@@ -659,7 +667,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                         showAr: ValueNotifier(false),
                         audioPlayer: _player,
                         layerType: LayerType.Effect,
-                        gifFilePath: "${gifSeqFolder}gifFile${arVal}.gif",
+                        gifFilePath:
+                            "${gifSeqFolder}gifFile${timeNow}${arVal}.gif",
                         arKey: containerKey,
                         finishedCaching: ValueNotifier(true),
                         ownerId: ownerId ??
@@ -682,7 +691,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               dev.log(
                   "list effect = ${effectIndexVal.value} || index counter == $arVal");
               Navigator.pop(context);
-              setState(() {});
+
               // Navigator.pop(context);
 
             } catch (e) {
@@ -940,6 +949,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 gifFile: File(gifFile.path),
                 fromFirebase: false,
               );
+
+              Future.delayed(Duration(seconds: 2), () => setState(() {}));
             } else {
               CoolAlert.show(
                 context: context,
