@@ -631,8 +631,6 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               await FFmpegKit.execute(
                       "-i ${gifFile.path} -crf 30 -preset ultrafast -filter_complex \"[0:v] split [a][b]; [a] palettegen=reserve_transparent=on [p]; [b][p] paletteuse\" -y ${gifSeqFolder}gifFile${timeNow}${arVal}.gif")
                   .then((vv) async {
-                print(
-                    "gif is here ${gifSeqFolder}gifFile${timeNow}${arVal}.gif");
                 try {
                   await FFprobeKit.execute(
                           "-v error -show_streams -print_format json -i ${_fullPathsOffline[0]}")
