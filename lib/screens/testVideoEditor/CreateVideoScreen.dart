@@ -1277,7 +1277,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                               return InkWell(
                                                 onDoubleTap: () {
                                                   dev.log("this");
-                                                  selected = arVal;
+                                                  setState(() {
+                                                    selected = arVal;
+                                                  });
                                                 },
                                                 onTap: () {
                                                   if (arVal.audioFlag == true)

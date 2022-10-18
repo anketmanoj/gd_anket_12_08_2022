@@ -212,7 +212,7 @@
   "scamorfraud": "詐欺・欺瞞",
   "intellectualpropertyviolation": "知的財産権の侵害",
   "fetchingposts": "投稿を読み込み中",
-  "visitprofile": "プロフィールページへ",
+  "visitprofile": "Profile",
   "doneFollowAnyoneYet": "まだ誰もフォローしていません。 ユーザーをフォローしたら更新して下さい。又はおすすめタブをチェックしてください。",
   "refresh": "更新",
   "onlyshowfreecontent": "無料コンテンツのみを表示",
@@ -245,7 +245,7 @@
   "adminVideoEditor": "アドミンビデオエディター",
   "adminAROptions": "アドミン ARオプション",
   "adminUserControl": "アドミンユーザーコントロール",
-  "changeLanguage": "言語を変更する",
+  "changeLanguage": "言語設定",
 
   "free": "無料",
   "premium": "プレミアム",
@@ -273,7 +273,7 @@
   "block": "ブロック",
   "share": "シェア",
   "reportUser": "報告書",
-  "inTheMeantime": "そこで、Glamorous Diastationを最大限に活用するためのチュートリアルをご用意しました。",
+  "inTheMeantime": "待っている間、Glamorous Diastationのチュートリアルをチェック！",
 
   "Comment": "コメント",
   "onlyshowFreeContent": "無料コンテンツのみを表示",
