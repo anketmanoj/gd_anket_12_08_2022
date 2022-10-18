@@ -575,7 +575,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
         text: "Loading Effect",
       );
       // Form matte file
-      final Directory appDocument = await getTemporaryDirectory();
+      final Directory appDocument = await getApplicationDocumentsDirectory();
       final String rawDocument = appDocument.path;
       final String gifSeqFolder = "${rawDocument}/";
 
@@ -606,7 +606,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
             //! #############################################################
             final String commandForGifSeqFile =
-                '-y -i ${gifFile.path} -filter_complex "fps=30,scale=480:-1"  -preset ultrafast  ${gifSeqFolder}${arVal}${timeNow}gifSeq%d.png';
+                '-y -i ${gifFile.path} -filter_complex "fps=30,scale=360:-1"  -preset ultrafast  ${gifSeqFolder}${arVal}${timeNow}gifSeq%d.png';
 
             final List<String> _fullPathsOffline = [];
 
@@ -1977,7 +1977,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                       "EFFECT INDEX BEFORE = ${effectIndexVal.value}");
                                   if (list.value.first.layerType ==
                                           LayerType.AR &&
-                                      list.value.last == selected) {
+                                      list.value.last == selected &&
+                                      list.value.length == 2) {
                                     indexCounter.value = indexCounter.value - 2;
                                   } else {
                                     indexCounter.value = indexCounter.value - 1;
