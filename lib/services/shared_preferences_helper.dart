@@ -30,6 +30,10 @@ class SharedPreferencesHelper {
     await prefs.setStringList(key, value);
   }
 
+  static setRecommendedOptions(String key, List<String> value) async {
+    await prefs.setStringList(key, value);
+  }
+
   static String getString(String key) {
     return prefs.getString(key) ?? "";
   }
@@ -40,6 +44,10 @@ class SharedPreferencesHelper {
 
   static List<String> getListString(String key) {
     return prefs.getStringList(key) ?? [""];
+  }
+
+  static List<String> getRecommendedOptions(String key) {
+    return prefs.getStringList(key) ?? [];
   }
 
   static clearSharedPrefs() async {

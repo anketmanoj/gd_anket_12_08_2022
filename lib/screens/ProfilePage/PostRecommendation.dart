@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/recommendedProvider.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
@@ -5,6 +8,7 @@ import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,51 +25,20 @@ class PostRecommendationScreen extends StatefulWidget {
 class _PostRecommendationScreenState extends State<PostRecommendationScreen> {
   ConstantColors constantColors = ConstantColors();
 
-  // set selected recommendation list of strings to shared preference
-  Future<void> _setSelectedRecommendationListToSharedPrefs(
-      List<String> selectedRecommendationList) async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = 'selected_recommendations';
-    final value = selectedRecommendationList;
-    await prefs.setStringList(key, value);
-  }
+  @override
+  void initState() {
+    super.initState();
 
-  List<String> _defaultRecommendedOptions = [
-    LocaleKeys.musician.tr(),
-    LocaleKeys.performers.tr(),
-    LocaleKeys.dance.tr(),
-    LocaleKeys.cosplayers.tr(),
-    LocaleKeys.movie.tr(),
-    LocaleKeys.actor.tr(),
-    LocaleKeys.fashion.tr(),
-    LocaleKeys.landscape.tr(),
-    LocaleKeys.sports.tr(),
-    LocaleKeys.animals.tr(),
-    LocaleKeys.space.tr(),
-    LocaleKeys.art.tr(),
-    LocaleKeys.mystery.tr(),
-    LocaleKeys.airplane.tr(),
-    LocaleKeys.games.tr(),
-    LocaleKeys.food.tr(),
-    LocaleKeys.romance.tr(),
-    LocaleKeys.sexy.tr(),
-    LocaleKeys.sciencefiction.tr(),
-    LocaleKeys.car.tr(),
-    LocaleKeys.jobs.tr(),
-    LocaleKeys.anime.tr(),
-    LocaleKeys.ship.tr(),
-    LocaleKeys.railroads.tr(),
-    LocaleKeys.building.tr(),
-    LocaleKeys.health.tr(),
-    LocaleKeys.science.tr(),
-    LocaleKeys.natural.tr(),
-    LocaleKeys.machine.tr(),
-    LocaleKeys.trip.tr(),
-    LocaleKeys.travel.tr(),
-    LocaleKeys.fantasy.tr(),
-    LocaleKeys.funny.tr(),
-    LocaleKeys.beauty.tr(),
-  ];
+    if (SharedPreferencesHelper.getRecommendedOptions("selected_options")
+        .isNotEmpty) {
+      selectedOptions =
+          SharedPreferencesHelper.getRecommendedOptions("selected_options");
+
+      selectedOptions.forEach((element) {
+        _recommendedOptions.remove(element);
+      });
+    }
+  }
 
   List<String?> _recommendedOptions = [
     LocaleKeys.musician.tr(),
@@ -103,6 +76,8 @@ class _PostRecommendationScreenState extends State<PostRecommendationScreen> {
     LocaleKeys.funny.tr(),
     LocaleKeys.beauty.tr(),
   ];
+
+  List<String> selectedOptions = [];
 
   @override
   Widget build(BuildContext context) {
@@ -144,169 +119,115 @@ class _PostRecommendationScreenState extends State<PostRecommendationScreen> {
                   ),
                 ),
                 Container(
-                  child: Column(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    LocaleKeys.chooseContents.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Text(
-                          LocaleKeys.chooseContents.tr(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            LocaleKeys.onlytengenres.tr(),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 25),
-                          child: Container(
-                            height: size.height,
-                            child: MultiSelectChipField<String?>(
-                              headerColor: constantColors.mainColor,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              selectedChipColor:
-                                  constantColors.black.withOpacity(0.4),
-                              selectedTextStyle: TextStyle(
-                                color: constantColors.whiteColor,
-                              ),
-                              showHeader: false,
-                              scroll: false,
-                              items: _recommendedOptions.map((e) {
-                                return MultiSelectItem("$e", "$e");
-                              }).toList(),
-                              onTap: (values) {
-                                if (values.length == 0) {
-                                  _setSelectedRecommendationListToSharedPrefs(
-                                      _defaultRecommendedOptions);
-                                } else if (values.length > 10) {
-                                  // show snackbar error
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(
-                                              "You can only choose up to 10 genres")));
-                                } else {
-                                  _setSelectedRecommendationListToSharedPrefs(
-                                      values.map((e) => "$e").toList());
-                                }
-                              },
-                            ),
-                          ),
+                      Text(
+                        LocaleKeys.onlytengenres.tr(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
                         ),
                       ),
                     ],
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 25),
+                  child: Wrap(
+                    children: List<Widget>.generate(
+                      _recommendedOptions.length,
+                      (int idx) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 5),
+                          child: ChoiceChip(
+                            backgroundColor: constantColors.whiteColor,
+                            label: Text(_recommendedOptions[idx]!),
+                            onSelected: (bool selected) {
+                              if (selectedOptions.length <= 10) {
+                                setState(() {
+                                  selectedOptions
+                                      .add(_recommendedOptions[idx]!);
+                                  _recommendedOptions.removeAt(idx);
+                                });
+                              } else {
+                                Get.dialog(
+                                  SimpleDialog(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Text(
+                                          "Max choices reached (10 Recommendations)",
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
+                            selected: false,
+                          ),
+                        );
+                      },
+                    ).toList(),
+                  ),
+                ),
+                Divider(),
+                Wrap(
+                  children: List<Widget>.generate(
+                    selectedOptions.length,
+                    (int idx) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 5),
+                        child: ChoiceChip(
+                          backgroundColor: constantColors.whiteColor,
+                          label: Text(selectedOptions[idx]),
+                          onSelected: (bool selected) {
+                            setState(() {
+                              _recommendedOptions.add(selectedOptions[idx]);
+                              selectedOptions.removeAt(idx);
+                            });
+                          },
+                          selected: true,
+                        ),
+                      );
+                    },
+                  ).toList(),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                SubmitButton(
+                  function: () {
+                    SharedPreferencesHelper.setRecommendedOptions(
+                        "selected_options", selectedOptions);
+
+                    CoolAlert.show(
+                      context: context,
+                      type: CoolAlertType.confirm,
+                      title: "Genres Selected!",
+                    );
+                  },
+                ),
               ],
             ),
           ),
         ),
-        // child: Stack(
-        //   children: [
-        //     Positioned(
-        //       top: size.height * 0.08,
-        //       left: 10,
-        //       child: IconButton(
-        //         onPressed: () => Navigator.pop(context),
-        //         icon: Icon(
-        //           Icons.arrow_back_ios,
-        //           color: Colors.white,
-        //         ),
-        //       ),
-        //     ),
-        //     Positioned(
-        //       top: size.height * 0.15,
-        //       left: 10,
-        //       right: 10,
-        //       bottom: 5,
-        //       child: Container(
-        //         child: Column(
-        //           children: [
-        //             Container(
-        //               padding: EdgeInsets.symmetric(horizontal: 20),
-        //               child: Text(
-        //                 "Choose what kind of contents you would like to see in your \"recommended\" page",
-        //                 textAlign: TextAlign.center,
-        //                 style: TextStyle(
-        //                   fontSize: 20,
-        //                   color: Colors.white,
-        //                   fontWeight: FontWeight.bold,
-        //                 ),
-        //               ),
-        //             ),
-        //             Padding(
-        //               padding: const EdgeInsets.only(top: 20),
-        //               child: Container(
-        //                 padding: EdgeInsets.symmetric(horizontal: 20),
-        //                 child: Text(
-        //                   "You can choose up to 10 genres",
-        //                   textAlign: TextAlign.center,
-        //                   style: TextStyle(
-        //                     fontSize: 16,
-        //                     color: Colors.white,
-        //                   ),
-        //                 ),
-        //               ),
-        //             ),
-        //             Padding(
-        //               padding: const EdgeInsets.only(top: 25),
-        //               child: Container(
-        //                 height: size.height * 0.6,
-        //                 child: MultiSelectChipField<String?>(
-        //                   headerColor: constantColors.mainColor,
-        //                   decoration: BoxDecoration(
-        //                     borderRadius: BorderRadius.circular(20),
-        //                   ),
-        //                   selectedChipColor:
-        //                       constantColors.black.withOpacity(0.4),
-        //                   selectedTextStyle: TextStyle(
-        //                     color: constantColors.whiteColor,
-        //                   ),
-        //                   showHeader: false,
-        //                   scroll: false,
-        //                   items: _recommendedOptions.map((e) {
-        //                     return MultiSelectItem("$e", "$e");
-        //                   }).toList(),
-        //                   onTap: (values) {
-        //                     if (values.length == 0) {
-        //                       _setSelectedRecommendationListToSharedPrefs(
-        //                           _defaultRecommendedOptions);
-        //                     } else if (values.length > 10) {
-        //                       // show snackbar error
-        //                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //                           content: Text(
-        //                               "You can only choose up to 10 genres")));
-        //                     } else {
-        //                       _setSelectedRecommendationListToSharedPrefs(
-        //                           values.map((e) => "$e").toList());
-        //                     }
-        //                   },
-        //                 ),
-        //               ),
-        //             ),
-        //           ],
-        //         ),
-        //       ),
-        //     ),
-        //   ],
-        // ),
       ),
     );
   }
