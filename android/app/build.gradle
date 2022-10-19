@@ -38,7 +38,7 @@ android {
         checkReleaseBuilds false //<- add this line
     }
 
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -57,7 +57,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.diamant.jp.gd_anket"
         minSdkVersion 26
-        targetSdkVersion 30
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -107,7 +107,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation "androidx.multidex:multidex:2.0.0"
-    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
+    compile 'com.facebook.android:facebook-android-sdk:latest.release'
+    
 }
 
 configurations.all { 

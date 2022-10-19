@@ -72,10 +72,12 @@ void main() async {
     runApp(Provider<AppleSignInAvailable>.value(
       value: appleSignInAvailable,
       child: EasyLocalization(
+        startLocale: Locale('en'),
         supportedLocales: [Locale('en'), Locale('ja')],
         path:
             'assets/translations', // <-- change the path of the translation files
         fallbackLocale: Locale('en'),
+
         saveLocale: true,
         assetLoader: CodegenLoader(),
 

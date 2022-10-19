@@ -575,7 +575,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
         text: "Loading Effect",
       );
       // Form matte file
-      final Directory appDocument = await getApplicationDocumentsDirectory();
+      final Directory appDocument = await getTemporaryDirectory();
       final String rawDocument = appDocument.path;
       final String gifSeqFolder = "${rawDocument}/";
 
@@ -2447,7 +2447,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
     final String commandToExecute = "-v error -y -i ${bgVideoPath}" +
         ffmpegArCommand +
-        " -crf 30 -preset ultrafast ${outputPath}";
+        " -crf ${Platform.isIOS ? '30' : '40'} -preset ultrafast ${outputPath}";
 
     print("command : $commandToExecute");
 
