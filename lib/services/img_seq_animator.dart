@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 
@@ -425,8 +426,8 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
             _colorChanged = false;
             _previousFrame = _animationController!.value.floor();
             if (_previousFrame < _frameCount)
-              _currentOfflineFrame = Image.asset(
-                _getDirectory(),
+              _currentOfflineFrame = Image.file(
+                File(_getDirectory()),
                 color: color,
                 gaplessPlayback: true,
                 fit: widget.fit,
