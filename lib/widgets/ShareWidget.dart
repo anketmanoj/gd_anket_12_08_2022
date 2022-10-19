@@ -6,6 +6,7 @@ import 'package:diamon_rose_app/services/ShareButtons.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:dio/dio.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
@@ -59,9 +60,8 @@ class _ShareWidgetState extends State<ShareWidget> {
   }
 
   Future<void> getImage({required String url}) async {
-    final PermissionStatus req =
-        await Permission.manageExternalStorage.request();
-    await Permission.storage.request();
+    final PermissionStatus req = await Permission.storage.request();
+
     log("req == ${req}");
 
     if (req.isGranted) {
@@ -88,9 +88,13 @@ class _ShareWidgetState extends State<ShareWidget> {
       gdLogoFile.writeAsBytesSync(response.buffer.asUint8List());
 
       final String command =
-          "-i ${file.path} -i ${gdLogoFile.path} -filter_complex \"[1]colorchannelmixer=aa=1,scale=iw*0.1:-1[a];[0:v][a]overlay=x=(main_w-overlay_w):y=(main_h-overlay_h)/(main_h-overlay_h),drawtext=text='@${widget.videoOwnerName}':x=w*0.65:y=(h*0.115):fontsize=40:fontcolor=white:fix_bounds=True:borderw=2:bordercolor=black;[0:a]volume=1.0[a1]\" -map ''[a1]'' -crf 30 -preset ultrafast -y -c:v libx264 ${appDir.path}/shareVideo.mp4";
+          "-i ${file.path} -i ${gdLogoFile.path} -filter_complex \"[1]colorchannelmixer=aa=1,scale=iw*0.1:-1[a];[0:v][a]overlay=x=(main_w-overlay_w):y=(main_h-overlay_h)/(main_h-overlay_h)${Platform.isIOS ? ",drawtext=text='@${widget.videoOwnerName}':x=w*0.65:y=(h*0.115):fontsize=40:fontcolor=white:fix_bounds=True:borderw=2:bordercolor=black" : ""};[0:a]volume=1.0[a1]\" -map ''[a1]'' -crf 30 -preset ultrafast -y -c:v libx264 ${appDir.path}/shareVideo.mp4";
 
-      await FFmpegKit.execute(command);
+      await FFmpegKit.execute(command).then((value) async {
+        final String? output = await value.getOutput();
+
+        log("output is ${output}");
+      });
 
       setState(() {
         videoFile = File("${appDir.path}/shareVideo.mp4");
