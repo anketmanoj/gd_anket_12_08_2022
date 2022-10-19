@@ -125,11 +125,10 @@ class DynamicLinkService {
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: 'https://diamantrosegd.page.link',
       link: Uri.parse('https://gd.diamantrose.com/?post_id=$id'),
-
-      // androidParameters: AndroidParameters(
-      //   packageName: 'ke.co.rufw91.mared',
-      //   minimumVersion: 1,
-      // ),
+      androidParameters: AndroidParameters(
+        packageName: 'com.diamant.jp.gd_anket',
+        minimumVersion: 1,
+      ),
       iosParameters: IOSParameters(
         bundleId: 'com.diamant.jp.diamond-app',
         minimumVersion: '1',
@@ -156,11 +155,10 @@ class DynamicLinkService {
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: 'https://diamantrosegd.page.link',
       link: Uri.parse('https://gd.diamantrose.com/?user_id=$id'),
-
-      // androidParameters: AndroidParameters(
-      //   packageName: 'ke.co.rufw91.mared',
-      //   minimumVersion: 1,
-      // ),
+      androidParameters: AndroidParameters(
+        packageName: 'com.diamant.jp.gd_anket',
+        minimumVersion: 1,
+      ),
       iosParameters: IOSParameters(
         bundleId: 'com.diamant.jp.diamond-app',
         minimumVersion: '1',

@@ -69,7 +69,6 @@ dependencies:
   flutter_easyloading: ^3.0.3
   flutter_facebook_auth: 4.1.1
   flutter_gif: ^0.0.4
-  flutter_inappwebview: ^5.4.3+7
   flutter_local_notifications: 9.4.0
   flutter_localizations:
     sdk: flutter
@@ -113,7 +112,7 @@ dependencies:
   package_info_plus: ^1.0.6
   page_transition: ^2.0.5
   path_provider: ^2.0.5
-  permission_handler: 9.2.0
+  permission_handler: ^10.1.0
   photo_view: ^0.14.0
   pin_code_fields: ^7.3.0
   pinput: ^2.2.0
@@ -140,7 +139,7 @@ dependencies:
   url_launcher: ^6.0.20
   uuid: ^3.0.4
   video_player: ^2.2.6
-  video_thumbnail: ^0.5.0
+  video_thumbnail: ^0.5.3
   visibility_detector: ^0.2.2
   widget_circular_animator: ^1.0.0
 

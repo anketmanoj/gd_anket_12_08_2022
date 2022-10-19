@@ -565,7 +565,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     String? ownerId,
     String? ownerName,
   }) async {
-    if (await Permission.storage.request().isGranted) {
+    final PermissionStatus req = await Permission.storage.request();
+    dev.log("req == ${req}");
+
+    if (req.isGranted) {
       dev.log("Owner id == $ownerId | OwnerName == $ownerName");
       // ignore: unawaited_futures
       CoolAlert.show(
@@ -706,7 +709,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       } catch (e) {
         print("FFmpeg gif Error ==== ${e.toString()}");
       }
-    } else if (await Permission.storage.request().isDenied) {
+    } else if (await Permission.storage.request().isPermanentlyDenied) {
       await openAppSettings();
     }
   }

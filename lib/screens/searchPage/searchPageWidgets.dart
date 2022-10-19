@@ -18,7 +18,6 @@ import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
@@ -216,159 +215,12 @@ class VideoSearch extends StatefulWidget {
 class _VideoSearchState extends State<VideoSearch> {
   final ConstantColors constantColors = ConstantColors();
   final GlobalKey webViewKey = GlobalKey();
-  InAppWebViewController? webViewController;
-  InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
-      crossPlatform: InAppWebViewOptions(
-          useShouldOverrideUrlLoading: true,
-          mediaPlaybackRequiresUserGesture: false),
-      android: AndroidInAppWebViewOptions(
-        useHybridComposition: true,
-      ),
-      ios: IOSInAppWebViewOptions(
-        allowsInlineMediaPlayback: true,
-      ));
 
   double progress = 0;
   final urlController = TextEditingController();
   String url = "";
 
   // ignore: type_annotate_public_apis, always_declare_return_types
-  ViewPaidVideoWeb(BuildContext context, Video video, String videoUrl) async {
-    // ignore: unawaited_futures
-    showModalBottomSheet(
-      context: context,
-      isDismissible: false,
-      isScrollControlled: true,
-      enableDrag: false,
-      builder: (context) {
-        return Container(
-          height: 95.h,
-          width: 100.w,
-          decoration: BoxDecoration(
-            color: constantColors.black,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(15, 20, 0, 10),
-                child: Row(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        LocaleKeys.done.tr(),
-                        style: TextStyle(
-                          color: constantColors.bioBg,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: InAppWebView(
-                  key: webViewKey,
-                  onUpdateVisitedHistory: (controller, uri, _) async {
-                    if (uri!.toString().contains("success")) {
-                      await Provider.of<FirebaseOperations>(context,
-                              listen: false)
-                          .addToCart(
-                        useruid: context.read<Authentication>().getUserId,
-                        videoItem: video,
-                        isFree: video.isFree,
-                        ctx: context,
-                        videoId: video.id,
-                      );
-
-                      // log("amount transfered == ${(double.parse("${video.price * (1 - video.discountAmount / 100) * 100}") / 100).toStringAsFixed(0)}");
-
-                    } else if (uri.toString().contains("cancel")) {
-                      Navigator.pop(context);
-                      Get.snackbar(
-                        'Video Cart Error',
-                        'Error adding video to cart',
-                        overlayColor: constantColors.navButton,
-                        colorText: constantColors.whiteColor,
-                        snackPosition: SnackPosition.TOP,
-                        forwardAnimationCurve: Curves.elasticInOut,
-                        reverseAnimationCurve: Curves.easeOut,
-                      );
-                    }
-                  },
-                  initialUrlRequest: URLRequest(
-                    url: Uri.parse(videoUrl),
-                  ),
-                  initialUserScripts: UnmodifiableListView<UserScript>([]),
-                  initialOptions: options,
-                  onWebViewCreated: (controller) {
-                    webViewController = controller;
-                  },
-                  onLoadStart: (controller, url) {
-                    setState(() {
-                      urlController.text = this.url;
-                    });
-                  },
-                  androidOnPermissionRequest:
-                      (controller, origin, resources) async {
-                    return PermissionRequestResponse(
-                        resources: resources,
-                        action: PermissionRequestResponseAction.GRANT);
-                  },
-                  shouldOverrideUrlLoading:
-                      (controller, navigationAction) async {
-                    var uri = navigationAction.request.url!;
-
-                    if (![
-                      "http",
-                      "https",
-                      "file",
-                      "chrome",
-                      "data",
-                      "javascript",
-                      "about"
-                    ].contains(uri.scheme)) {
-                      if (await canLaunch(videoUrl)) {
-                        // Launch the App
-                        await launch(
-                          videoUrl,
-                        );
-                        // and cancel the request
-                        return NavigationActionPolicy.CANCEL;
-                      }
-                    }
-
-                    return NavigationActionPolicy.ALLOW;
-                  },
-                  onLoadStop: (controller, url) async {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onLoadError: (controller, url, code, message) {},
-                  onProgressChanged: (controller, progress) {
-                    if (progress == 100) {}
-                    setState(() {
-                      this.progress = progress / 100;
-                      urlController.text = this.url;
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -408,62 +260,15 @@ class _VideoSearchState extends State<VideoSearch> {
                           videoSnap.data()! as Map<String, dynamic>);
 
                       return InkWell(
-                        onTap: video.isPaid == true
-                            ? () {
-                                if (video.isPaid == true &&
-                                        video.boughtBy.contains(context
-                                            .read<Authentication>()
-                                            .getUserId) ||
-                                    video.useruid ==
-                                        Provider.of<Authentication>(context,
-                                                listen: false)
-                                            .getUserId) {
-                                  log("paid already");
-                                  Navigator.push(
-                                      context,
-                                      PageTransition(
-                                          child: PostDetailsScreen(
-                                            videoId: video.id,
-                                          ),
-                                          type: PageTransitionType.fade));
-                                } else {
-                                  final String videoUrl =
-                                      "https://gdfe-ac584.web.app/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
-                                  // "https://gdfe-ac584.web.app/#/video/0ReK4oZIhGdbuYxBiUG5J/sjhbjhs";
-                                  CoolAlert.show(
-                                    context: context,
-                                    type: CoolAlertType.info,
-                                    title: "Premium Content",
-                                    text:
-                                        "You cannot unlock this content within the app; please unlock the content on the Glamorous Diastation website and you'll be able to view it on the Glamorous Diastation app or in the web browser",
-                                    confirmBtnText: LocaleKeys.unlockvideo.tr(),
-                                    cancelBtnText: "Nevermind",
-                                    confirmBtnColor: constantColors.navButton,
-                                    showCancelBtn: true,
-                                    onCancelBtnTap: () {
-                                      Navigator.pop(context);
-                                    },
-                                    onConfirmBtnTap: () => ViewPaidVideoWeb(
-                                        context, video, videoUrl),
-                                    confirmBtnTextStyle: TextStyle(
-                                      fontSize: 14,
-                                      color: constantColors.whiteColor,
-                                    ),
-                                    cancelBtnTextStyle: TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  );
-                                }
-                              }
-                            : () {
-                                Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        child: PostDetailsScreen(
-                                          videoId: video.id,
-                                        ),
-                                        type: PageTransitionType.fade));
-                              },
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  child: PostDetailsScreen(
+                                    videoId: video.id,
+                                  ),
+                                  type: PageTransitionType.fade));
+                        },
                         child: video.isFree
                             ? GridTile(
                                 child: ClipRRect(

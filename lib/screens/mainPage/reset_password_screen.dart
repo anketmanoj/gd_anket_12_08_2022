@@ -37,7 +37,7 @@ class ResetPassword extends StatelessWidget {
                     height: MediaQuery.of(context).size.height * 0.05,
                   ),
                   Text(
-                    'Enter your email address and we will send you a link to reset your password',
+                    'Enter your email address and we will send you a link to reset your password\n\nPlease check the spam folder once submitted!',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 15,

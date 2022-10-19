@@ -484,7 +484,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
               _colorChanged = false;
               _previousFrame = _animationController!.value.floor();
               if (_previousFrame < _frameCount) {
-                log("here now anket dev this one");
+                log("here now anket dev this onesss");
                 _currentDisplayedOnlineFrame = CachedNetworkImage(
                   // key: UniqueKey(),
                   memCacheWidth: (widget.frameWidth).toInt(),
