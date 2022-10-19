@@ -30,6 +30,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:matrix_gesture_detector/matrix_gesture_detector.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
@@ -548,15 +549,56 @@ class VideoWidget extends StatelessWidget {
                               } else {
                                 canShareVal = true;
                               }
-
-                              Get.bottomSheet(
-                                ShareWidget(
-                                  msg: message,
-                                  urlPath: video.videourl,
-                                  videoOwnerName: video.username,
-                                  canShareToSocialMedia: canShareVal,
-                                ),
-                              );
+                              if (await Permission.storage
+                                  .request()
+                                  .isGranted) {
+                                await Get.bottomSheet(
+                                  ShareWidget(
+                                    msg: message,
+                                    urlPath: video.videourl,
+                                    videoOwnerName: video.username,
+                                    canShareToSocialMedia: canShareVal,
+                                  ),
+                                );
+                              } else {
+                                await Get.dialog(
+                                  SimpleDialog(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "Device permissions required",
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              "Permissions are required to store the videos on your device so you can share the videos on various other social media platforms!",
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            SubmitButton(
+                                              text: "Open Settings",
+                                              function: () async {
+                                                await openAppSettings();
+                                              },
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
                             },
                           ),
                           SpeedDialChild(

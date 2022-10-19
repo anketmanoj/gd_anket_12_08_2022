@@ -60,50 +60,42 @@ class _ShareWidgetState extends State<ShareWidget> {
   }
 
   Future<void> getImage({required String url}) async {
-    final PermissionStatus req = await Permission.storage.request();
+    /// Get Image from server
+    final Response res = await Dio().get<List<int>>(
+      url,
+      options: Options(
+        responseType: ResponseType.bytes,
+      ),
+    );
 
-    log("req == ${req}");
+    /// Get App local storage
+    final Directory appDir = await getApplicationDocumentsDirectory();
 
-    if (req.isGranted) {
-      /// Get Image from server
-      final Response res = await Dio().get<List<int>>(
-        url,
-        options: Options(
-          responseType: ResponseType.bytes,
-        ),
-      );
+    /// Generate Image Name
+    final String imageName = url.split('/').last;
 
-      /// Get App local storage
-      final Directory appDir = await getApplicationDocumentsDirectory();
+    /// Create Empty File in app dir & fill with new image
+    final File file = File(join(appDir.path, imageName));
+    file.writeAsBytesSync(res.data as List<int>);
 
-      /// Generate Image Name
-      final String imageName = url.split('/').last;
+    final response = await rootBundle.load('assets/images/GDlogo.png');
+    final gdLogoFile = File(join(appDir.path, "GDlogo.png"));
+    gdLogoFile.writeAsBytesSync(response.buffer.asUint8List());
 
-      /// Create Empty File in app dir & fill with new image
-      final File file = File(join(appDir.path, imageName));
-      file.writeAsBytesSync(res.data as List<int>);
+    final String command =
+        "-i ${file.path} -i ${gdLogoFile.path} -filter_complex \"[1]colorchannelmixer=aa=1,scale=iw*0.1:-1[a];[0:v][a]overlay=x=(main_w-overlay_w):y=(main_h-overlay_h)/(main_h-overlay_h)${Platform.isIOS ? ",drawtext=text='@${widget.videoOwnerName.trim()}':x=w*0.65:y=(h*0.115):fontsize=40:fontcolor=white:fix_bounds=True:borderw=2:bordercolor=black" : ""};[0:a]volume=1.0[a1]\" -map ''[a1]'' -crf 30 -preset ultrafast -y -c:v libx264 ${appDir.path}/shareVideo.mp4";
 
-      final response = await rootBundle.load('assets/images/GDlogo.png');
-      final gdLogoFile = File(join(appDir.path, "GDlogo.png"));
-      gdLogoFile.writeAsBytesSync(response.buffer.asUint8List());
+    await FFmpegKit.execute(command).then((value) async {
+      final String? output = await value.getOutput();
 
-      final String command =
-          "-i ${file.path} -i ${gdLogoFile.path} -filter_complex \"[1]colorchannelmixer=aa=1,scale=iw*0.1:-1[a];[0:v][a]overlay=x=(main_w-overlay_w):y=(main_h-overlay_h)/(main_h-overlay_h)${Platform.isIOS ? ",drawtext=text='@${widget.videoOwnerName}':x=w*0.65:y=(h*0.115):fontsize=40:fontcolor=white:fix_bounds=True:borderw=2:bordercolor=black" : ""};[0:a]volume=1.0[a1]\" -map ''[a1]'' -crf 30 -preset ultrafast -y -c:v libx264 ${appDir.path}/shareVideo.mp4";
+      log("output is ${output}");
+    });
 
-      await FFmpegKit.execute(command).then((value) async {
-        final String? output = await value.getOutput();
+    setState(() {
+      videoFile = File("${appDir.path}/shareVideo.mp4");
+    });
 
-        log("output is ${output}");
-      });
-
-      setState(() {
-        videoFile = File("${appDir.path}/shareVideo.mp4");
-      });
-
-      log("video Url = ${videoFile!.path}");
-    } else {
-      await openAppSettings();
-    }
+    log("video Url = ${videoFile!.path}");
   }
 
   @override
