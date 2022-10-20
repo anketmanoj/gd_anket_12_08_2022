@@ -435,10 +435,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
             _controllerSeekTo(0);
             if (!mounted) return;
-            setState(() {});
 
-            Navigator.pop(context);
-            Navigator.pop(context);
+            Get.back();
+            Get.back();
+            setState(() {});
 
             arIndexVal.value += 1;
 
@@ -691,7 +691,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               effectIndexVal.value += 1;
               dev.log(
                   "list effect = ${effectIndexVal.value} || index counter == $arVal");
-              Navigator.pop(context);
+              Get.back();
 
               // Navigator.pop(context);
 
@@ -1878,6 +1878,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                         size: 25,
                       ),
                       onPressed: () {
+                        _controllerSeekTo(0);
                         if (selected != null) {
                           CoolAlert.show(
                             context: context,
@@ -1994,16 +1995,18 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                   break;
                               }
 
-                              setState(() {
-                                // selected!.layerType == LayerType.AR
-                                //     ? indexCounter.value =
-                                //         indexCounter.value - 2
-                                //     : indexCounter.value =
-                                //         indexCounter.value - 1;
-                                list.value.remove(selected);
+                              // setState(() {
+                              // selected!.layerType == LayerType.AR
+                              //     ? indexCounter.value =
+                              //         indexCounter.value - 2
+                              //     : indexCounter.value =
+                              //         indexCounter.value - 1;
 
-                                _controllerSeekTo(0);
-                              });
+                              // _controllerSeekTo(0);
+                              // });
+                              list.value.remove(selected);
+                              selected = null;
+                              setState(() {});
 
                               dev.log(
                                   "end indexcounter == ${indexCounter.value}");
