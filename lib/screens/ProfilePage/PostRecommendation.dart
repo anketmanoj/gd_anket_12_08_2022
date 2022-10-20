@@ -5,6 +5,7 @@ import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/recommendedProvider.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
+import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
@@ -220,27 +221,40 @@ class _PostRecommendationScreenState extends State<PostRecommendationScreen> {
                     SharedPreferencesHelper.setRecommendedOptions(
                         "selected_options", selectedOptions);
 
-                    BlocProvider.of<PreloadBloc>(context, listen: false)
-                        .add(PreloadEvent.setLoading(true));
+                    if (selectedOptions.isEmpty) {
+                      log("no selected genres");
+                      BlocProvider.of<PreloadBloc>(context, listen: false).add(
+                          PreloadEvent.filterBetweenFreePaid(
+                              HomeScreenOptions.Free));
 
-                    BlocProvider.of<PreloadBloc>(context, listen: false).add(
-                        PreloadEvent.updatePostsByUserGenre(selectedOptions));
+                      BlocProvider.of<PreloadBloc>(context, listen: false)
+                          .add(PreloadEvent.onVideoIndexChanged(0));
+                    } else {
+                      log("has selected genres");
+                      BlocProvider.of<PreloadBloc>(context, listen: false)
+                          .add(PreloadEvent.setLoading(true));
+
+                      BlocProvider.of<PreloadBloc>(context, listen: false).add(
+                          PreloadEvent.updatePostsByUserGenre(selectedOptions));
+                    }
 
                     // BlocProvider.of<PreloadBloc>(context, listen: false)
                     //     .add(PreloadEvent.onVideoIndexChanged(0));
                     log("updated based on genre!");
 
-                    // CoolAlert.show(
-                    //   context: context,
-                    //   type: CoolAlertType.confirm,
-                    //   title: "Genres Selected!",
-                    // );
-                    Navigator.pushReplacement(
-                      context,
-                      PageTransition(
-                          child: FeedPage(),
-                          type: PageTransitionType.leftToRight),
+                    CoolAlert.show(
+                      context: context,
+                      type: CoolAlertType.confirm,
+                      title: "Genres Selected!",
+                      text:
+                          "Your recommended tab has been updated based on the genres you've selected!",
                     );
+                    // Navigator.pushReplacement(
+                    //   context,
+                    //   PageTransition(
+                    //       child: FeedPage(),
+                    //       type: PageTransitionType.leftToRight),
+                    // );
                   },
                 ),
               ],
