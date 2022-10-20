@@ -4,6 +4,7 @@ part of 'preload_bloc.dart';
 class PreloadState with _$PreloadState {
   factory PreloadState({
     required List<Video> urls,
+    required List<String> userGenre,
     required Map<int, VideoPlayerController> controllers,
     required int focusedIndex,
     required int reloadCounter,
@@ -17,6 +18,7 @@ class PreloadState with _$PreloadState {
         reloadCounter: 0,
         isLoading: true,
         urls: [],
+        userGenre: [],
         controllers: {},
         filterOption: HomeScreenOptions.Free,
         isLoadingFilter: false,

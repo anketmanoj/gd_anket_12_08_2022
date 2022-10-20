@@ -140,7 +140,6 @@ class AdminArPreviewSetting extends StatelessWidget {
     LocaleKeys.science.tr(),
     LocaleKeys.natural.tr(),
     LocaleKeys.machine.tr(),
-    LocaleKeys.trip.tr(),
     LocaleKeys.travel.tr(),
     LocaleKeys.fantasy.tr(),
     LocaleKeys.funny.tr(),

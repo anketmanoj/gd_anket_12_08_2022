@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +12,69 @@ import 'package:provider/provider.dart';
 class ApiService extends ChangeNotifier {
   static final List<Video> _videos = [];
   static final List<Video> _following_videos = [];
+  static final List<Video> genreVideos = [];
+
+  static Future<List<Video>> loadBasedOnUserGenre(
+      List<String> userGenres) async {
+    log("genre video list len == ${genreVideos.length}");
+    if (userGenres.isNotEmpty) {
+      await FirebaseFirestore.instance
+          .collection("posts")
+          .where("genre", arrayContainsAny: userGenres)
+          .where("ispaid", isEqualTo: false)
+          .orderBy("timestamp", descending: true)
+          .get()
+          .then((value) {
+        log("total genre videos added = ${value.docs.length}");
+        value.docs.forEach((element) {
+          if (element.data().containsKey("views") &&
+              element.data().containsKey("totalBilled") &&
+              element.data().containsKey("verifiedUser")) {
+            Video video = Video(
+              id: element['id'] as String,
+              useruid: element['useruid'] as String,
+              videourl: element['videourl'] as String,
+              caption: element['caption'] as String,
+              isPaid: element['ispaid'] as bool,
+              price: element['price'] as double,
+              discountAmount:
+                  double.parse(element['discountamount'].toString()),
+              startDiscountDate: element['startdiscountdate'] as Timestamp,
+              endDiscountDate: element['enddiscountdate'] as Timestamp,
+              isSubscription: element['issubscription'] as bool,
+              contentAvailability: element['contentavailability'] as String,
+              isFree: element['isfree'] as bool,
+              username: element['username'] as String,
+              userimage: element['userimage'] as String,
+              videotitle: element['videotitle'].toString(),
+              videoType: element['videoType'] as String,
+              timestamp: element['timestamp'] as Timestamp,
+              thumbnailurl: element['thumbnailurl'].toString(),
+              ownerFcmToken: element['ownerFcmToken'] as String?,
+              genre: element['genre'] as List<dynamic>,
+              boughtBy: element['boughtBy'] as List<dynamic>,
+              totalBilled: element['totalBilled'] as int?,
+              verifiedUser: element['verifiedUser'] as bool?,
+              views: element['views'],
+            );
+            log("HEEEERRRRREEEEEEE GENRREEEEE to list");
+            var contain =
+                genreVideos.where((element) => element.id == video.id);
+            if (contain.isEmpty) {
+              genreVideos.add(video);
+            }
+            // //value not exists
+            // else {}
+            // //value exists
+          }
+        });
+      });
+
+      log("inserting all to videos");
+      log("genre videos len = ${genreVideos.length}");
+    }
+    return genreVideos;
+  }
 
   static load() async {
     _videos.clear();
@@ -107,6 +171,7 @@ class ApiService extends ChangeNotifier {
   }
 
   static loadNextFreeOnly() async {
+    log("video last == ${_videos.last.timestamp}");
     await FirebaseFirestore.instance
         .collection("posts")
         .orderBy("timestamp", descending: true)

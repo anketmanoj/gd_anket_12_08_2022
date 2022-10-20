@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
@@ -25,6 +26,53 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
     PreloadEvent event,
   ) async* {
     yield* event.map(
+      updatePostsByUserGenre: (e) async* {
+        // state.urls.clear();
+        final List<Video> _urls =
+            await ApiService.loadBasedOnUserGenre(e.userGenre);
+        log("Loaded genre vids ${_urls.length}");
+        // final List<Video> _urls = await ApiService.getVideos();
+        // _urls.forEach((url) {
+        //   if (!state.urls.contains(url)) {
+        //     state.urls.insert(0, url);
+        //   }
+        // });
+
+        for (Video video in _urls) {
+          var contain = state.urls.where((element) => element.id == video.id);
+          if (contain.isEmpty) {
+            state.urls.insert(0, video);
+          }
+          // //value not exists
+          // else {}
+        }
+        // state.urls.insertAll(0, _urls);
+
+        // state.urls
+        //     .addAll(_urls.where((element) => element.isFree == true).toList());
+
+        // state.urls.where((element) => element.isFree == true).toList();
+
+        // state.urls.shuffle();
+
+        log("state length in free this one == ${state.urls.length}");
+        log("focused index == ${state.focusedIndex} ||");
+
+        /// Initialize 1st video
+        await _initializeControllerAtIndex(0);
+
+        /// Play 1st video
+        _playControllerAtIndex(0);
+
+        /// Initialize 2nd video
+        await _initializeControllerAtIndex(1);
+
+        yield state.copyWith(
+          urls: state.urls,
+          isLoading: false,
+          focusedIndex: 0,
+        );
+      },
       setLoadingForFilter: (e) async* {
         yield state.copyWith(isLoadingFilter: e.loadingVal);
       },

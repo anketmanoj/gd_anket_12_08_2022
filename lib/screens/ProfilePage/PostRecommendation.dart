@@ -3,13 +3,17 @@ import 'dart:developer';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/recommendedProvider.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
+import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
@@ -157,7 +161,7 @@ class _PostRecommendationScreenState extends State<PostRecommendationScreen> {
                             backgroundColor: constantColors.whiteColor,
                             label: Text(_recommendedOptions[idx]!),
                             onSelected: (bool selected) {
-                              if (selectedOptions.length <= 10) {
+                              if (selectedOptions.length <= 9) {
                                 setState(() {
                                   selectedOptions
                                       .add(_recommendedOptions[idx]!);
@@ -216,10 +220,26 @@ class _PostRecommendationScreenState extends State<PostRecommendationScreen> {
                     SharedPreferencesHelper.setRecommendedOptions(
                         "selected_options", selectedOptions);
 
-                    CoolAlert.show(
-                      context: context,
-                      type: CoolAlertType.confirm,
-                      title: "Genres Selected!",
+                    BlocProvider.of<PreloadBloc>(context, listen: false)
+                        .add(PreloadEvent.setLoading(true));
+
+                    BlocProvider.of<PreloadBloc>(context, listen: false).add(
+                        PreloadEvent.updatePostsByUserGenre(selectedOptions));
+
+                    // BlocProvider.of<PreloadBloc>(context, listen: false)
+                    //     .add(PreloadEvent.onVideoIndexChanged(0));
+                    log("updated based on genre!");
+
+                    // CoolAlert.show(
+                    //   context: context,
+                    //   type: CoolAlertType.confirm,
+                    //   title: "Genres Selected!",
+                    // );
+                    Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                          child: FeedPage(),
+                          type: PageTransitionType.leftToRight),
                     );
                   },
                 ),

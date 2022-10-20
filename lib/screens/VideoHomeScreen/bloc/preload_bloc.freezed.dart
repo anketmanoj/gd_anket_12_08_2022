@@ -50,6 +50,12 @@ class _$PreloadEventTearOff {
       loadingVal,
     );
   }
+
+  _UpdatePostsByUserGenre updatePostsByUserGenre(List<String> userGenre) {
+    return _UpdatePostsByUserGenre(
+      userGenre,
+    );
+  }
 }
 
 /// @nodoc
@@ -66,6 +72,7 @@ mixin _$PreloadEvent {
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
     required TResult Function(bool loadingVal) setLoadingForFilter,
+    required TResult Function(List<String> userGenre) updatePostsByUserGenre,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -76,6 +83,7 @@ mixin _$PreloadEvent {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -86,6 +94,7 @@ mixin _$PreloadEvent {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -98,6 +107,8 @@ mixin _$PreloadEvent {
     required TResult Function(_FilterBetweenFreePaid value)
         filterBetweenFreePaid,
     required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
+    required TResult Function(_UpdatePostsByUserGenre value)
+        updatePostsByUserGenre,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -108,6 +119,7 @@ mixin _$PreloadEvent {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -118,6 +130,7 @@ mixin _$PreloadEvent {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -187,6 +200,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
     required TResult Function(bool loadingVal) setLoadingForFilter,
+    required TResult Function(List<String> userGenre) updatePostsByUserGenre,
   }) {
     return getVideosFromApi();
   }
@@ -200,6 +214,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
   }) {
     return getVideosFromApi?.call();
   }
@@ -213,6 +228,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
     required TResult orElse(),
   }) {
     if (getVideosFromApi != null) {
@@ -231,6 +247,8 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     required TResult Function(_FilterBetweenFreePaid value)
         filterBetweenFreePaid,
     required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
+    required TResult Function(_UpdatePostsByUserGenre value)
+        updatePostsByUserGenre,
   }) {
     return getVideosFromApi(this);
   }
@@ -244,6 +262,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
   }) {
     return getVideosFromApi?.call(this);
   }
@@ -257,6 +276,7 @@ class _$_GetVideosFromApi implements _GetVideosFromApi {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
     required TResult orElse(),
   }) {
     if (getVideosFromApi != null) {
@@ -341,6 +361,7 @@ class _$_SetLoading implements _SetLoading {
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
     required TResult Function(bool loadingVal) setLoadingForFilter,
+    required TResult Function(List<String> userGenre) updatePostsByUserGenre,
   }) {
     return setLoading(isLoading);
   }
@@ -354,6 +375,7 @@ class _$_SetLoading implements _SetLoading {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
   }) {
     return setLoading?.call(isLoading);
   }
@@ -367,6 +389,7 @@ class _$_SetLoading implements _SetLoading {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
     required TResult orElse(),
   }) {
     if (setLoading != null) {
@@ -385,6 +408,8 @@ class _$_SetLoading implements _SetLoading {
     required TResult Function(_FilterBetweenFreePaid value)
         filterBetweenFreePaid,
     required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
+    required TResult Function(_UpdatePostsByUserGenre value)
+        updatePostsByUserGenre,
   }) {
     return setLoading(this);
   }
@@ -398,6 +423,7 @@ class _$_SetLoading implements _SetLoading {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
   }) {
     return setLoading?.call(this);
   }
@@ -411,6 +437,7 @@ class _$_SetLoading implements _SetLoading {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
     required TResult orElse(),
   }) {
     if (setLoading != null) {
@@ -500,6 +527,7 @@ class _$_UpdateUrls implements _UpdateUrls {
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
     required TResult Function(bool loadingVal) setLoadingForFilter,
+    required TResult Function(List<String> userGenre) updatePostsByUserGenre,
   }) {
     return updateUrls(urls);
   }
@@ -513,6 +541,7 @@ class _$_UpdateUrls implements _UpdateUrls {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
   }) {
     return updateUrls?.call(urls);
   }
@@ -526,6 +555,7 @@ class _$_UpdateUrls implements _UpdateUrls {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
     required TResult orElse(),
   }) {
     if (updateUrls != null) {
@@ -544,6 +574,8 @@ class _$_UpdateUrls implements _UpdateUrls {
     required TResult Function(_FilterBetweenFreePaid value)
         filterBetweenFreePaid,
     required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
+    required TResult Function(_UpdatePostsByUserGenre value)
+        updatePostsByUserGenre,
   }) {
     return updateUrls(this);
   }
@@ -557,6 +589,7 @@ class _$_UpdateUrls implements _UpdateUrls {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
   }) {
     return updateUrls?.call(this);
   }
@@ -570,6 +603,7 @@ class _$_UpdateUrls implements _UpdateUrls {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
     required TResult orElse(),
   }) {
     if (updateUrls != null) {
@@ -660,6 +694,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
     required TResult Function(bool loadingVal) setLoadingForFilter,
+    required TResult Function(List<String> userGenre) updatePostsByUserGenre,
   }) {
     return onVideoIndexChanged(index);
   }
@@ -673,6 +708,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
   }) {
     return onVideoIndexChanged?.call(index);
   }
@@ -686,6 +722,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
     required TResult orElse(),
   }) {
     if (onVideoIndexChanged != null) {
@@ -704,6 +741,8 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
     required TResult Function(_FilterBetweenFreePaid value)
         filterBetweenFreePaid,
     required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
+    required TResult Function(_UpdatePostsByUserGenre value)
+        updatePostsByUserGenre,
   }) {
     return onVideoIndexChanged(this);
   }
@@ -717,6 +756,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
   }) {
     return onVideoIndexChanged?.call(this);
   }
@@ -730,6 +770,7 @@ class _$_OnVideoIndexChanged implements _OnVideoIndexChanged {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
     required TResult orElse(),
   }) {
     if (onVideoIndexChanged != null) {
@@ -821,6 +862,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
     required TResult Function(bool loadingVal) setLoadingForFilter,
+    required TResult Function(List<String> userGenre) updatePostsByUserGenre,
   }) {
     return filterBetweenFreePaid(filterOption);
   }
@@ -834,6 +876,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
   }) {
     return filterBetweenFreePaid?.call(filterOption);
   }
@@ -847,6 +890,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
     required TResult orElse(),
   }) {
     if (filterBetweenFreePaid != null) {
@@ -865,6 +909,8 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
     required TResult Function(_FilterBetweenFreePaid value)
         filterBetweenFreePaid,
     required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
+    required TResult Function(_UpdatePostsByUserGenre value)
+        updatePostsByUserGenre,
   }) {
     return filterBetweenFreePaid(this);
   }
@@ -878,6 +924,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
   }) {
     return filterBetweenFreePaid?.call(this);
   }
@@ -891,6 +938,7 @@ class _$_FilterBetweenFreePaid implements _FilterBetweenFreePaid {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
     required TResult orElse(),
   }) {
     if (filterBetweenFreePaid != null) {
@@ -983,6 +1031,7 @@ class _$_SetLoadingForFilter implements _SetLoadingForFilter {
     required TResult Function(HomeScreenOptions filterOption)
         filterBetweenFreePaid,
     required TResult Function(bool loadingVal) setLoadingForFilter,
+    required TResult Function(List<String> userGenre) updatePostsByUserGenre,
   }) {
     return setLoadingForFilter(loadingVal);
   }
@@ -996,6 +1045,7 @@ class _$_SetLoadingForFilter implements _SetLoadingForFilter {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
   }) {
     return setLoadingForFilter?.call(loadingVal);
   }
@@ -1009,6 +1059,7 @@ class _$_SetLoadingForFilter implements _SetLoadingForFilter {
     TResult Function(int index)? onVideoIndexChanged,
     TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
     TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
     required TResult orElse(),
   }) {
     if (setLoadingForFilter != null) {
@@ -1027,6 +1078,8 @@ class _$_SetLoadingForFilter implements _SetLoadingForFilter {
     required TResult Function(_FilterBetweenFreePaid value)
         filterBetweenFreePaid,
     required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
+    required TResult Function(_UpdatePostsByUserGenre value)
+        updatePostsByUserGenre,
   }) {
     return setLoadingForFilter(this);
   }
@@ -1040,6 +1093,7 @@ class _$_SetLoadingForFilter implements _SetLoadingForFilter {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
   }) {
     return setLoadingForFilter?.call(this);
   }
@@ -1053,6 +1107,7 @@ class _$_SetLoadingForFilter implements _SetLoadingForFilter {
     TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
     TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
     TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
     required TResult orElse(),
   }) {
     if (setLoadingForFilter != null) {
@@ -1072,11 +1127,181 @@ abstract class _SetLoadingForFilter implements PreloadEvent {
 }
 
 /// @nodoc
+abstract class _$UpdatePostsByUserGenreCopyWith<$Res> {
+  factory _$UpdatePostsByUserGenreCopyWith(_UpdatePostsByUserGenre value,
+          $Res Function(_UpdatePostsByUserGenre) then) =
+      __$UpdatePostsByUserGenreCopyWithImpl<$Res>;
+  $Res call({List<String> userGenre});
+}
+
+/// @nodoc
+class __$UpdatePostsByUserGenreCopyWithImpl<$Res>
+    extends _$PreloadEventCopyWithImpl<$Res>
+    implements _$UpdatePostsByUserGenreCopyWith<$Res> {
+  __$UpdatePostsByUserGenreCopyWithImpl(_UpdatePostsByUserGenre _value,
+      $Res Function(_UpdatePostsByUserGenre) _then)
+      : super(_value, (v) => _then(v as _UpdatePostsByUserGenre));
+
+  @override
+  _UpdatePostsByUserGenre get _value => super._value as _UpdatePostsByUserGenre;
+
+  @override
+  $Res call({
+    Object? userGenre = freezed,
+  }) {
+    return _then(_UpdatePostsByUserGenre(
+      userGenre == freezed
+          ? _value.userGenre
+          : userGenre // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_UpdatePostsByUserGenre implements _UpdatePostsByUserGenre {
+  const _$_UpdatePostsByUserGenre(this.userGenre);
+
+  @override
+  final List<String> userGenre;
+
+  @override
+  String toString() {
+    return 'PreloadEvent.updatePostsByUserGenre(userGenre: $userGenre)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _UpdatePostsByUserGenre &&
+            const DeepCollectionEquality().equals(other.userGenre, userGenre));
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(userGenre));
+
+  @JsonKey(ignore: true)
+  @override
+  _$UpdatePostsByUserGenreCopyWith<_UpdatePostsByUserGenre> get copyWith =>
+      __$UpdatePostsByUserGenreCopyWithImpl<_UpdatePostsByUserGenre>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() getVideosFromApi,
+    required TResult Function(bool isLoading) setLoading,
+    required TResult Function(List<Video> urls) updateUrls,
+    required TResult Function(int index) onVideoIndexChanged,
+    required TResult Function(HomeScreenOptions filterOption)
+        filterBetweenFreePaid,
+    required TResult Function(bool loadingVal) setLoadingForFilter,
+    required TResult Function(List<String> userGenre) updatePostsByUserGenre,
+  }) {
+    return updatePostsByUserGenre(userGenre);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function()? getVideosFromApi,
+    TResult Function(bool isLoading)? setLoading,
+    TResult Function(List<Video> urls)? updateUrls,
+    TResult Function(int index)? onVideoIndexChanged,
+    TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
+  }) {
+    return updatePostsByUserGenre?.call(userGenre);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? getVideosFromApi,
+    TResult Function(bool isLoading)? setLoading,
+    TResult Function(List<Video> urls)? updateUrls,
+    TResult Function(int index)? onVideoIndexChanged,
+    TResult Function(HomeScreenOptions filterOption)? filterBetweenFreePaid,
+    TResult Function(bool loadingVal)? setLoadingForFilter,
+    TResult Function(List<String> userGenre)? updatePostsByUserGenre,
+    required TResult orElse(),
+  }) {
+    if (updatePostsByUserGenre != null) {
+      return updatePostsByUserGenre(userGenre);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_GetVideosFromApi value) getVideosFromApi,
+    required TResult Function(_SetLoading value) setLoading,
+    required TResult Function(_UpdateUrls value) updateUrls,
+    required TResult Function(_OnVideoIndexChanged value) onVideoIndexChanged,
+    required TResult Function(_FilterBetweenFreePaid value)
+        filterBetweenFreePaid,
+    required TResult Function(_SetLoadingForFilter value) setLoadingForFilter,
+    required TResult Function(_UpdatePostsByUserGenre value)
+        updatePostsByUserGenre,
+  }) {
+    return updatePostsByUserGenre(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(_GetVideosFromApi value)? getVideosFromApi,
+    TResult Function(_SetLoading value)? setLoading,
+    TResult Function(_UpdateUrls value)? updateUrls,
+    TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
+    TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
+  }) {
+    return updatePostsByUserGenre?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_GetVideosFromApi value)? getVideosFromApi,
+    TResult Function(_SetLoading value)? setLoading,
+    TResult Function(_UpdateUrls value)? updateUrls,
+    TResult Function(_OnVideoIndexChanged value)? onVideoIndexChanged,
+    TResult Function(_FilterBetweenFreePaid value)? filterBetweenFreePaid,
+    TResult Function(_SetLoadingForFilter value)? setLoadingForFilter,
+    TResult Function(_UpdatePostsByUserGenre value)? updatePostsByUserGenre,
+    required TResult orElse(),
+  }) {
+    if (updatePostsByUserGenre != null) {
+      return updatePostsByUserGenre(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _UpdatePostsByUserGenre implements PreloadEvent {
+  const factory _UpdatePostsByUserGenre(List<String> userGenre) =
+      _$_UpdatePostsByUserGenre;
+
+  List<String> get userGenre;
+  @JsonKey(ignore: true)
+  _$UpdatePostsByUserGenreCopyWith<_UpdatePostsByUserGenre> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 class _$PreloadStateTearOff {
   const _$PreloadStateTearOff();
 
   _PreloadState call(
       {required List<Video> urls,
+      required List<String> userGenre,
       required Map<int, VideoPlayerController> controllers,
       required int focusedIndex,
       required int reloadCounter,
@@ -1085,6 +1310,7 @@ class _$PreloadStateTearOff {
       required bool isLoadingFilter}) {
     return _PreloadState(
       urls: urls,
+      userGenre: userGenre,
       controllers: controllers,
       focusedIndex: focusedIndex,
       reloadCounter: reloadCounter,
@@ -1101,6 +1327,7 @@ const $PreloadState = _$PreloadStateTearOff();
 /// @nodoc
 mixin _$PreloadState {
   List<Video> get urls => throw _privateConstructorUsedError;
+  List<String> get userGenre => throw _privateConstructorUsedError;
   Map<int, VideoPlayerController> get controllers =>
       throw _privateConstructorUsedError;
   int get focusedIndex => throw _privateConstructorUsedError;
@@ -1121,6 +1348,7 @@ abstract class $PreloadStateCopyWith<$Res> {
       _$PreloadStateCopyWithImpl<$Res>;
   $Res call(
       {List<Video> urls,
+      List<String> userGenre,
       Map<int, VideoPlayerController> controllers,
       int focusedIndex,
       int reloadCounter,
@@ -1140,6 +1368,7 @@ class _$PreloadStateCopyWithImpl<$Res> implements $PreloadStateCopyWith<$Res> {
   @override
   $Res call({
     Object? urls = freezed,
+    Object? userGenre = freezed,
     Object? controllers = freezed,
     Object? focusedIndex = freezed,
     Object? reloadCounter = freezed,
@@ -1152,6 +1381,10 @@ class _$PreloadStateCopyWithImpl<$Res> implements $PreloadStateCopyWith<$Res> {
           ? _value.urls
           : urls // ignore: cast_nullable_to_non_nullable
               as List<Video>,
+      userGenre: userGenre == freezed
+          ? _value.userGenre
+          : userGenre // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       controllers: controllers == freezed
           ? _value.controllers
           : controllers // ignore: cast_nullable_to_non_nullable
@@ -1189,6 +1422,7 @@ abstract class _$PreloadStateCopyWith<$Res>
   @override
   $Res call(
       {List<Video> urls,
+      List<String> userGenre,
       Map<int, VideoPlayerController> controllers,
       int focusedIndex,
       int reloadCounter,
@@ -1210,6 +1444,7 @@ class __$PreloadStateCopyWithImpl<$Res> extends _$PreloadStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? urls = freezed,
+    Object? userGenre = freezed,
     Object? controllers = freezed,
     Object? focusedIndex = freezed,
     Object? reloadCounter = freezed,
@@ -1222,6 +1457,10 @@ class __$PreloadStateCopyWithImpl<$Res> extends _$PreloadStateCopyWithImpl<$Res>
           ? _value.urls
           : urls // ignore: cast_nullable_to_non_nullable
               as List<Video>,
+      userGenre: userGenre == freezed
+          ? _value.userGenre
+          : userGenre // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       controllers: controllers == freezed
           ? _value.controllers
           : controllers // ignore: cast_nullable_to_non_nullable
@@ -1255,6 +1494,7 @@ class __$PreloadStateCopyWithImpl<$Res> extends _$PreloadStateCopyWithImpl<$Res>
 class _$_PreloadState implements _PreloadState {
   _$_PreloadState(
       {required this.urls,
+      required this.userGenre,
       required this.controllers,
       required this.focusedIndex,
       required this.reloadCounter,
@@ -1264,6 +1504,8 @@ class _$_PreloadState implements _PreloadState {
 
   @override
   final List<Video> urls;
+  @override
+  final List<String> userGenre;
   @override
   final Map<int, VideoPlayerController> controllers;
   @override
@@ -1279,7 +1521,7 @@ class _$_PreloadState implements _PreloadState {
 
   @override
   String toString() {
-    return 'PreloadState(urls: $urls, controllers: $controllers, focusedIndex: $focusedIndex, reloadCounter: $reloadCounter, isLoading: $isLoading, filterOption: $filterOption, isLoadingFilter: $isLoadingFilter)';
+    return 'PreloadState(urls: $urls, userGenre: $userGenre, controllers: $controllers, focusedIndex: $focusedIndex, reloadCounter: $reloadCounter, isLoading: $isLoading, filterOption: $filterOption, isLoadingFilter: $isLoadingFilter)';
   }
 
   @override
@@ -1288,6 +1530,7 @@ class _$_PreloadState implements _PreloadState {
         (other.runtimeType == runtimeType &&
             other is _PreloadState &&
             const DeepCollectionEquality().equals(other.urls, urls) &&
+            const DeepCollectionEquality().equals(other.userGenre, userGenre) &&
             const DeepCollectionEquality()
                 .equals(other.controllers, controllers) &&
             (identical(other.focusedIndex, focusedIndex) ||
@@ -1306,6 +1549,7 @@ class _$_PreloadState implements _PreloadState {
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(urls),
+      const DeepCollectionEquality().hash(userGenre),
       const DeepCollectionEquality().hash(controllers),
       focusedIndex,
       reloadCounter,
@@ -1322,6 +1566,7 @@ class _$_PreloadState implements _PreloadState {
 abstract class _PreloadState implements PreloadState {
   factory _PreloadState(
       {required List<Video> urls,
+      required List<String> userGenre,
       required Map<int, VideoPlayerController> controllers,
       required int focusedIndex,
       required int reloadCounter,
@@ -1331,6 +1576,8 @@ abstract class _PreloadState implements PreloadState {
 
   @override
   List<Video> get urls;
+  @override
+  List<String> get userGenre;
   @override
   Map<int, VideoPlayerController> get controllers;
   @override

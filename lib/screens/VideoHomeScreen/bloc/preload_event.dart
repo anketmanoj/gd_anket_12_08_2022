@@ -12,4 +12,6 @@ class PreloadEvent with _$PreloadEvent {
       HomeScreenOptions filterOption) = _FilterBetweenFreePaid;
   const factory PreloadEvent.setLoadingForFilter(bool loadingVal) =
       _SetLoadingForFilter;
+  const factory PreloadEvent.updatePostsByUserGenre(List<String> userGenre) =
+      _UpdatePostsByUserGenre;
 }
