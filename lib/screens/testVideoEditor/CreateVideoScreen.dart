@@ -1975,7 +1975,11 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                 case LayerType.AR:
                                   dev.log(
                                       "AR INDEX BEFORE = ${arIndexVal.value}");
-                                  indexCounter.value = indexCounter.value - 2;
+                                  if (list.value.last == selected) {
+                                    indexCounter.value = indexCounter.value - 1;
+                                  } else {
+                                    indexCounter.value = indexCounter.value - 2;
+                                  }
                                   arIndexVal.value -= 1;
                                   dev.log(
                                       "AR INDEX NOW = ${arIndexVal.value} | indexCounter.value = ${indexCounter.value}");
