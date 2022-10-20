@@ -25,6 +25,9 @@ class TutorialVideoScreen extends StatelessWidget {
     YoutubeTutorials(
         youtubeUrl: "https://youtu.be/eXSBx5twVuU",
         title: "How to use the Video Editor"),
+    YoutubeTutorials(
+        youtubeUrl: "https://youtu.be/hTX2uNm9tCA",
+        title: "How to Purchase & Use Carats"),
   ];
 
   @override

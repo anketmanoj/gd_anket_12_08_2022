@@ -59,7 +59,8 @@ class GDARNotificationScreen extends StatelessWidget {
             body: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection("users")
-                  .doc("JrSVhuyKNcWUUPvXEJx6VtLvFut1")
+                  .doc(Provider.of<Authentication>(context, listen: false)
+                      .getUserId)
                   .collection("MyCollection")
                   .where("usage", isEqualTo: "Pending")
                   .orderBy("timestamp", descending: true)
