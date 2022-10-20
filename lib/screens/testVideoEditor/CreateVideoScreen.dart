@@ -427,22 +427,22 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                     selectedMaterial: ValueNotifier<bool>(true),
                     arCutOutFile: arCutOutFile,
                   ));
+
+                  _controllerSeekTo(0);
+                  if (!mounted) return;
+
+                  arIndexVal.value += 1;
+
+                  dev.log(
+                      "list AR ${arIndexVal.value} | index counter == $arVal");
+                  Get.back();
+                  Get.back();
+                  setState(() {});
                 });
               });
             } catch (e) {
               print("error running ffprobe on image == ${e.toString()}");
             }
-
-            _controllerSeekTo(0);
-            if (!mounted) return;
-
-            Get.back();
-            Get.back();
-            setState(() {});
-
-            arIndexVal.value += 1;
-
-            dev.log("list AR ${arIndexVal.value} | index counter == $arVal");
 
             final bool showMessage =
                 SharedPreferencesHelper.getBool("dontShowMessage");
@@ -681,17 +681,23 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                 .initUserName,
                         selectedMaterial: ValueNotifier<bool>(true),
                       ));
+
+                      _controllerSeekTo(0);
+
+                      if (!mounted) return;
+
+                      effectIndexVal.value += 1;
+                      dev.log(
+                          "list effect = ${effectIndexVal.value} || index counter == $arVal");
+                      Get.back();
+                      // Get.back();
+                      setState(() {});
                     });
                   });
                 } catch (e) {
                   print("error running ffprobe on image == ${e.toString()}");
                 }
               });
-              _controllerSeekTo(0);
-              effectIndexVal.value += 1;
-              dev.log(
-                  "list effect = ${effectIndexVal.value} || index counter == $arVal");
-              Get.back();
 
               // Navigator.pop(context);
 
@@ -950,8 +956,6 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 gifFile: File(gifFile.path),
                 fromFirebase: false,
               );
-
-              Future.delayed(Duration(seconds: 2), () => setState(() {}));
             } else {
               CoolAlert.show(
                 context: context,
