@@ -59,8 +59,7 @@ class GDARNotificationScreen extends StatelessWidget {
             body: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection("users")
-                  .doc(Provider.of<Authentication>(context, listen: false)
-                      .getUserId)
+                  .doc("JrSVhuyKNcWUUPvXEJx6VtLvFut1")
                   .collection("MyCollection")
                   .where("usage", isEqualTo: "Pending")
                   .orderBy("timestamp", descending: true)
@@ -78,225 +77,237 @@ class GDARNotificationScreen extends StatelessWidget {
                   );
                 }
 
-                return Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Column(
-                    children: [
-                      ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: snaps.data!.docs.length,
-                        itemBuilder: (ctx, index) {
-                          final ArPendingModel arPendingModel =
-                              ArPendingModel.fromMap(snaps.data!.docs[index]
-                                  .data() as Map<String, dynamic>);
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Column(
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: snaps.data!.docs.length,
+                          itemBuilder: (ctx, index) {
+                            final ArPendingModel arPendingModel =
+                                ArPendingModel.fromMap(snaps.data!.docs[index]
+                                    .data() as Map<String, dynamic>);
 
-                          return Slidable(
-                            enabled: snaps.data!.docs[index]['main'] != null
-                                ? true
-                                : false,
-                            endActionPane: ActionPane(
-                              motion: ScrollMotion(),
+                            return Slidable(
+                              enabled: snaps.data!.docs[index]['main'] != null
+                                  ? true
+                                  : false,
+                              endActionPane: ActionPane(
+                                motion: ScrollMotion(),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (_) {
+                                      CoolAlert.show(
+                                        context: context,
+                                        type: CoolAlertType.info,
+                                        title: "Delete this AR?",
+                                        text:
+                                            "Are you sure you want to delete this AR?",
+                                        onConfirmBtnTap: () async {
+                                          await FirebaseFirestore.instance
+                                              .collection("users")
+                                              .doc(Provider.of<Authentication>(
+                                                      context,
+                                                      listen: false)
+                                                  .getUserId)
+                                              .collection("MyCollection")
+                                              .doc(arPendingModel.id)
+                                              .delete();
+
+                                          Navigator.pop(context);
+                                        },
+                                      );
+                                    },
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.delete_forever,
+                                    label: 'Delete',
+                                  ),
+                                ],
+                              ),
+                              child: AnimatedBuilder(
+                                  animation: Listenable.merge([
+                                    arPendingModel.deletethis,
+                                  ]),
+                                  builder: (context, _) {
+                                    return ListTile(
+                                      onTap: () async {
+                                        if (snaps.data!.docs[index]['main'] ==
+                                            null) {
+                                          // ignore: unawaited_futures
+                                          CoolAlert.show(
+                                            context: context,
+                                            type: CoolAlertType.info,
+                                            title:
+                                                LocaleKeys.gdarprocessing.tr(),
+                                            text: LocaleKeys
+                                                .yourgdarisbeingprocessedyouwillbenotifiedonceitsdone
+                                                .tr(),
+                                          );
+                                        } else {
+                                          await FirebaseFirestore.instance
+                                              .collection("users")
+                                              .doc(Provider.of<Authentication>(
+                                                      context,
+                                                      listen: false)
+                                                  .getUserId)
+                                              .collection("MyCollection")
+                                              .doc(arPendingModel.id)
+                                              .get()
+                                              .then((arVal) {
+                                            MyArCollection arDoc =
+                                                MyArCollection.fromJson(
+                                                    arVal.data()!);
+
+                                            Navigator.push(
+                                                context,
+                                                PageTransition(
+                                                    child: ArPreviewSetting(
+                                                      gifUrl: arDoc.gif,
+                                                      ownerName:
+                                                          arDoc.ownerName,
+                                                      audioFlag:
+                                                          arDoc.audioFlag ==
+                                                                  true
+                                                              ? 1
+                                                              : 0,
+                                                      alphaUrl: arDoc.alpha,
+                                                      audioUrl: arDoc.audioFile,
+                                                      imgSeqList: arDoc.imgSeq,
+                                                      arIdVal: arDoc.id,
+                                                      inputUrl: arDoc.main,
+                                                      userUid: arDoc.ownerId,
+                                                      endDuration:
+                                                          parseDuration(arDoc
+                                                              .endDuration!),
+                                                    ),
+                                                    type: PageTransitionType
+                                                        .fade));
+                                          });
+                                        }
+                                      },
+                                      title:
+                                          Text("${arPendingModel.ownerName}"),
+                                      leading: Container(
+                                        height: 50,
+                                        width: 50,
+                                        child: ImageNetworkLoader(
+                                            imageUrl: arPendingModel.gif),
+                                      ),
+                                      trailing: snaps.data!.docs[index]
+                                                      ['main'] !=
+                                                  null &&
+                                              selectDelete.value == true
+                                          ? Switch(
+                                              value: arPendingModel
+                                                  .deletethis!.value,
+                                              onChanged: (v) {
+                                                if (postIdsToDelete
+                                                        .value.length >
+                                                    10) {
+                                                  CoolAlert.show(
+                                                      context: context,
+                                                      type: CoolAlertType.info,
+                                                      title: "Max delete is 10",
+                                                      text:
+                                                          "You can only delete 10 items in 1 go.\nPlease delete these first before selecting more items to delete");
+                                                } else {
+                                                  log("v = $v");
+                                                  if (v == true) {
+                                                    log("added");
+                                                    postIdsToDelete.value
+                                                        .add(arPendingModel.id);
+                                                  } else {
+                                                    log("removed");
+                                                    postIdsToDelete.value
+                                                        .remove(
+                                                            arPendingModel.id);
+                                                  }
+                                                  arPendingModel
+                                                      .deletethis!.value = v;
+                                                  log(postIdsToDelete
+                                                      .toString());
+                                                }
+                                              })
+                                          : Container(
+                                              decoration: BoxDecoration(
+                                                color: snaps.data!.docs[index]
+                                                            ['main'] ==
+                                                        null
+                                                    ? constantColors.navButton
+                                                    : Colors.green,
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                              ),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(3.0),
+                                                child: Text(
+                                                  snaps.data!.docs[index]
+                                                              ['main'] ==
+                                                          null
+                                                      ? LocaleKeys.pending.tr()
+                                                      : LocaleKeys.ready.tr(),
+                                                  style: TextStyle(
+                                                    color: constantColors
+                                                        .whiteColor,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                    );
+                                  }),
+                            );
+                          },
+                        ),
+                        Visibility(
+                          visible: selectDelete.value == true,
+                          child: Container(
+                            height: 7.h,
+                            width: 100.w,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                SlidableAction(
-                                  onPressed: (_) {
+                                ElevatedButton.icon(
+                                  onPressed: () {
                                     CoolAlert.show(
                                       context: context,
                                       type: CoolAlertType.info,
-                                      title: "Delete this AR?",
+                                      title:
+                                          "Delete ${postIdsToDelete.value.length} posts?",
                                       text:
-                                          "Are you sure you want to delete this AR?",
+                                          "Are you sure you want to delete these AR's?",
                                       onConfirmBtnTap: () async {
-                                        await FirebaseFirestore.instance
-                                            .collection("users")
-                                            .doc(Provider.of<Authentication>(
-                                                    context,
-                                                    listen: false)
-                                                .getUserId)
-                                            .collection("MyCollection")
-                                            .doc(arPendingModel.id)
-                                            .delete();
+                                        for (String postId
+                                            in postIdsToDelete.value) {
+                                          log("delete this id = $postId");
+                                          await FirebaseFirestore.instance
+                                              .collection("users")
+                                              .doc(Provider.of<Authentication>(
+                                                      context,
+                                                      listen: false)
+                                                  .getUserId)
+                                              .collection("MyCollection")
+                                              .doc(postId)
+                                              .delete();
+                                        }
 
                                         Navigator.pop(context);
                                       },
                                     );
                                   },
-                                  backgroundColor: Colors.red,
-                                  foregroundColor: Colors.white,
-                                  icon: Icons.delete_forever,
-                                  label: 'Delete',
+                                  icon: Icon(Icons.delete_forever),
+                                  label: Text(LocaleKeys.deleteSelected.tr()),
                                 ),
                               ],
                             ),
-                            child: AnimatedBuilder(
-                                animation: Listenable.merge([
-                                  arPendingModel.deletethis,
-                                ]),
-                                builder: (context, _) {
-                                  return ListTile(
-                                    onTap: () async {
-                                      if (snaps.data!.docs[index]['main'] ==
-                                          null) {
-                                        // ignore: unawaited_futures
-                                        CoolAlert.show(
-                                          context: context,
-                                          type: CoolAlertType.info,
-                                          title: LocaleKeys.gdarprocessing.tr(),
-                                          text: LocaleKeys
-                                              .yourgdarisbeingprocessedyouwillbenotifiedonceitsdone
-                                              .tr(),
-                                        );
-                                      } else {
-                                        await FirebaseFirestore.instance
-                                            .collection("users")
-                                            .doc(Provider.of<Authentication>(
-                                                    context,
-                                                    listen: false)
-                                                .getUserId)
-                                            .collection("MyCollection")
-                                            .doc(arPendingModel.id)
-                                            .get()
-                                            .then((arVal) {
-                                          MyArCollection arDoc =
-                                              MyArCollection.fromJson(
-                                                  arVal.data()!);
-
-                                          Navigator.push(
-                                              context,
-                                              PageTransition(
-                                                  child: ArPreviewSetting(
-                                                    gifUrl: arDoc.gif,
-                                                    ownerName: arDoc.ownerName,
-                                                    audioFlag:
-                                                        arDoc.audioFlag == true
-                                                            ? 1
-                                                            : 0,
-                                                    alphaUrl: arDoc.alpha,
-                                                    audioUrl: arDoc.audioFile,
-                                                    imgSeqList: arDoc.imgSeq,
-                                                    arIdVal: arDoc.id,
-                                                    inputUrl: arDoc.main,
-                                                    userUid: arDoc.ownerId,
-                                                    endDuration: parseDuration(
-                                                        arDoc.endDuration!),
-                                                  ),
-                                                  type:
-                                                      PageTransitionType.fade));
-                                        });
-                                      }
-                                    },
-                                    title: Text("${arPendingModel.ownerName}"),
-                                    leading: Container(
-                                      height: 50,
-                                      width: 50,
-                                      child: ImageNetworkLoader(
-                                          imageUrl: arPendingModel.gif),
-                                    ),
-                                    trailing: snaps.data!.docs[index]['main'] !=
-                                                null &&
-                                            selectDelete.value == true
-                                        ? Switch(
-                                            value: arPendingModel
-                                                .deletethis!.value,
-                                            onChanged: (v) {
-                                              if (postIdsToDelete.value.length >
-                                                  10) {
-                                                CoolAlert.show(
-                                                    context: context,
-                                                    type: CoolAlertType.info,
-                                                    title: "Max delete is 10",
-                                                    text:
-                                                        "You can only delete 10 items in 1 go.\nPlease delete these first before selecting more items to delete");
-                                              } else {
-                                                log("v = $v");
-                                                if (v == true) {
-                                                  log("added");
-                                                  postIdsToDelete.value
-                                                      .add(arPendingModel.id);
-                                                } else {
-                                                  log("removed");
-                                                  postIdsToDelete.value.remove(
-                                                      arPendingModel.id);
-                                                }
-                                                arPendingModel
-                                                    .deletethis!.value = v;
-                                                log(postIdsToDelete.toString());
-                                              }
-                                            })
-                                        : Container(
-                                            decoration: BoxDecoration(
-                                              color: snaps.data!.docs[index]
-                                                          ['main'] ==
-                                                      null
-                                                  ? constantColors.navButton
-                                                  : Colors.green,
-                                              borderRadius:
-                                                  BorderRadius.circular(5),
-                                            ),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(3.0),
-                                              child: Text(
-                                                snaps.data!.docs[index]
-                                                            ['main'] ==
-                                                        null
-                                                    ? LocaleKeys.pending.tr()
-                                                    : LocaleKeys.ready.tr(),
-                                                style: TextStyle(
-                                                  color:
-                                                      constantColors.whiteColor,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                  );
-                                }),
-                          );
-                        },
-                      ),
-                      Visibility(
-                        visible: selectDelete.value == true,
-                        child: Container(
-                          height: 7.h,
-                          width: 100.w,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  CoolAlert.show(
-                                    context: context,
-                                    type: CoolAlertType.info,
-                                    title:
-                                        "Delete ${postIdsToDelete.value.length} posts?",
-                                    text:
-                                        "Are you sure you want to delete these AR's?",
-                                    onConfirmBtnTap: () async {
-                                      for (String postId
-                                          in postIdsToDelete.value) {
-                                        log("delete this id = $postId");
-                                        await FirebaseFirestore.instance
-                                            .collection("users")
-                                            .doc(Provider.of<Authentication>(
-                                                    context,
-                                                    listen: false)
-                                                .getUserId)
-                                            .collection("MyCollection")
-                                            .doc(postId)
-                                            .delete();
-                                      }
-
-                                      Navigator.pop(context);
-                                    },
-                                  );
-                                },
-                                icon: Icon(Icons.delete_forever),
-                                label: Text(LocaleKeys.deleteSelected.tr()),
-                              ),
-                            ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
