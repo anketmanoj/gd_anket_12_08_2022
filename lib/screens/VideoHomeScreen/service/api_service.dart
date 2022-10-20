@@ -16,7 +16,6 @@ class ApiService extends ChangeNotifier {
 
   static Future<List<Video>> loadBasedOnUserGenre(
       List<String> userGenres) async {
-    log("genre video list len == ${genreVideos.length}");
     if (userGenres.isNotEmpty) {
       await FirebaseFirestore.instance
           .collection("posts")

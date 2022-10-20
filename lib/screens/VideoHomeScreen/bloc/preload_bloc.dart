@@ -187,7 +187,7 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
 
         if (e.index == state.urls.length - 1) {
           log("running now");
-          createIsolate(e.index);
+          createIsolate(state.urls.length - 1);
         }
 
         if (shouldFetch) {
