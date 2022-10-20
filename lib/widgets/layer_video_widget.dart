@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
+// import 'package:rxdart/rxdart.dart';
 import 'package:video_player/video_player.dart';
 
-final videoStreamController = PublishSubject<VideoAction>();
+// final videoStreamController = PublishSubject<VideoAction>();
 enum VideoAction { play, pause, stop }
 
 class LayerVideoWidget extends StatefulWidget {
@@ -41,21 +41,21 @@ class _LayerVideoWidgetState extends State<LayerVideoWidget> {
   }
 
   void _videoStreamListen() {
-    _streamSubscription = videoStreamController.stream.listen((action) {
-      print('Video playing is: $action');
-      if (_videoPlayerController != null &&
-          _videoPlayerController!.value.isInitialized) {
-        if (action == VideoAction.stop) {
-          _videoPlayerController!
-            ..pause()
-            ..seekTo(Duration.zero);
-        } else if (action == VideoAction.play) {
-          _videoPlayerController?.play();
-        } else {
-          _videoPlayerController?.pause();
-        }
-      }
-    });
+    // _streamSubscription = videoStreamController.stream.listen((action) {
+    //   print('Video playing is: $action');
+    //   if (_videoPlayerController != null &&
+    //       _videoPlayerController!.value.isInitialized) {
+    //     if (action == VideoAction.stop) {
+    //       _videoPlayerController!
+    //         ..pause()
+    //         ..seekTo(Duration.zero);
+    //     } else if (action == VideoAction.play) {
+    //       _videoPlayerController?.play();
+    //     } else {
+    //       _videoPlayerController?.pause();
+    //     }
+    //   }
+    // });
   }
 
   @override
