@@ -10,6 +10,8 @@ class NotificationModel {
   String userimage;
   String username;
   String useruid;
+  String? title;
+  String? body;
 
   NotificationModel({
     required this.id,
@@ -21,6 +23,8 @@ class NotificationModel {
     required this.userimage,
     required this.username,
     required this.useruid,
+    this.title,
+    this.body,
   });
 
   NotificationModel.fromJson(Map<String, dynamic> json)
@@ -32,7 +36,9 @@ class NotificationModel {
         useremail = json['useremail'],
         userimage = json['userimage'],
         username = json['username'],
-        useruid = json['useruid'];
+        useruid = json['useruid'],
+        title = json['title'],
+        body = json['body'];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
@@ -45,6 +51,9 @@ class NotificationModel {
     data['userimage'] = this.userimage;
     data['username'] = this.username;
     data['useruid'] = this.useruid;
+    data['title'] = this.title;
+    data['body'] = this.body;
+
     return data;
   }
 }

@@ -8,8 +8,10 @@ import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/notifications_class.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class NotificationScreen extends StatelessWidget {
@@ -174,6 +176,66 @@ class NotificationScreen extends StatelessWidget {
                   trailing: Icon(
                     Icons.person_add,
                     color: seen == false ? Colors.green : Colors.grey,
+                  ),
+                );
+              } else if (type == "admin") {
+                return ListTile(
+                  onTap: () async {
+                    await firebaseOperations.makeNotificationSeen(
+                        userUid: authentication.getUserId,
+                        notificationId: notification.id);
+
+                    Get.dialog(SimpleDialog(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 10.h,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image:
+                                        AssetImage("assets/images/GDlogo.png"),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(notification.title!.capitalize!),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(notification.body!.capitalize!),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ));
+                  },
+                  leading: Container(
+                    height: 45,
+                    width: 45,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/GDlogo.png"),
+                      ),
+                    ),
+                  ),
+                  title: Text("Admin Notification"),
+                  subtitle: Text(
+                    timeago.format((notification.timestamp).toDate()),
+                    style: TextStyle(
+                      color: constantColors.greenColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.notification_important,
+                    color:
+                        seen == false ? constantColors.navButton : Colors.grey,
                   ),
                 );
               } else {

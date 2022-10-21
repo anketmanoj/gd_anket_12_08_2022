@@ -3327,4 +3327,55 @@ class FirebaseOperations with ChangeNotifier {
         .doc(arID)
         .delete();
   }
+
+  Future<void> sendMassNotification(
+      {required String title, required String body}) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .where("useruid", isEqualTo: "RoxEsgFFdLZu9un1i654DBIha4K3")
+        .get()
+        .then(
+      (value) async {
+        for (QueryDocumentSnapshot<Map<String, dynamic>> item in value.docs) {
+          if (item.data().containsKey("token")) {
+            await _fcmNotificationService.sendNotificationToUser(
+                to: item.data()['token'], //To change once set up
+                title: title,
+                body: body);
+
+            await sendAdminNotification(
+              otherUserId: item.id,
+              title: title,
+              body: body,
+            );
+          }
+        }
+      },
+    );
+  }
+
+  Future sendAdminNotification({
+    required String otherUserId,
+    required String title,
+    required String body,
+  }) {
+    final String id = nanoid().toString();
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(otherUserId)
+        .collection("notifications")
+        .doc(id)
+        .set({
+      "id": id,
+      "useruid": "admin",
+      "seen": false,
+      "type": "admin",
+      "timestamp": Timestamp.now(),
+      "username": initUserName,
+      "userimage": initUserImage,
+      "useremail": initUserEmail,
+      "title": title,
+      "body": body,
+    });
+  }
 }
