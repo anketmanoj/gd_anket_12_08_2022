@@ -1450,6 +1450,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   void dispose() {
     _videoPlayerController.dispose();
     _chewieController.dispose();
+    turnPreventionOff();
 
     super.dispose();
   }

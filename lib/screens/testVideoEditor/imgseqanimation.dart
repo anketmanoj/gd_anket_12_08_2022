@@ -25,13 +25,15 @@ class ImageSeqAniScreen extends StatefulWidget {
       {Key? key,
       required this.folderName,
       required this.fileName,
-      required this.MyAR})
+      required this.MyAR,
+      this.arViewerScreen = false})
       : super(key: key);
 
   final String folderName;
   final String fileName;
 
   final MyArCollection MyAR;
+  final bool arViewerScreen;
 
   @override
   State<ImageSeqAniScreen> createState() => _ImageSeqAniScreenState();
@@ -81,7 +83,7 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
     log("added 1st to AR List ${widget.MyAR.imgSeq.length}");
     super.initState();
 
-    if (widget.MyAR.usage != "Material") {
+    if (widget.arViewerScreen) {
       controller = CameraController(
         cameras![0],
         ResolutionPreset.low,
@@ -100,12 +102,19 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
         });
       });
     }
+
+    if (widget.MyAR.valueType == "free" || widget.MyAR.valueType == "myItems") {
+      turnPreventionOff();
+    } else {
+      turnPreventionOn();
+    }
   }
 
   @override
   void dispose() async {
     await _player!.dispose();
-    if (widget.MyAR.usage != "Material") await controller!.dispose();
+    if (widget.arViewerScreen) await controller!.dispose();
+    turnPreventionOff();
     // imageSequenceAnimator!.stop();
     // imageSequenceAnimator!.dispose();
     log("disposed");
@@ -316,8 +325,7 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
             icon: Icon(Icons.info_outline),
           ),
         ],
-        title: Text(
-            widget.MyAR.usage != "Material" ? "Ar Viewer" : "Material Viewer"),
+        title: Text(widget.arViewerScreen ? "Ar Viewer" : "Material Viewer"),
         leading: IconButton(
           onPressed: () async {
             await DefaultCacheManager().emptyCache();
@@ -488,14 +496,14 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                       scrollDirection: Axis.horizontal,
                       physics: BouncingScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: widget.MyAR.usage != "Material"
+                      itemCount: widget.arViewerScreen
                           ? iconsList.length
                           : iconsMaterialList.length,
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.all(3.0),
                           child: InkWell(
-                            onTap: widget.MyAR.usage != "Material"
+                            onTap: widget.arViewerScreen
                                 ? functionList[index]
                                 : functionMaterialList[index],
                             child: Container(
@@ -508,7 +516,7 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                                 ),
                               ),
                               child: Icon(
-                                widget.MyAR.usage != "Material"
+                                widget.arViewerScreen
                                     ? iconsList[index]
                                     : iconsMaterialList[index],
                                 color: constantColors.bioBg,

@@ -29,6 +29,7 @@ class ArViewcollectionScreen extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ImageSeqAniScreen(
+          arViewerScreen: true,
           folderName: folderName,
           fileName: fileName,
           MyAR: myAr,

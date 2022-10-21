@@ -32,11 +32,22 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:screen_protector/screen_protector.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sizer/sizer.dart';
 
 ConstantColors constantColors = ConstantColors();
+
+turnPreventionOn() async {
+  await ScreenProtector.preventScreenshotOn();
+  await ScreenProtector.protectDataLeakageOn();
+}
+
+turnPreventionOff() async {
+  await ScreenProtector.preventScreenshotOff();
+  await ScreenProtector.protectDataLeakageOff();
+}
 
 List<Shadow> outlinedText(
     {double strokeWidth = 0.75,

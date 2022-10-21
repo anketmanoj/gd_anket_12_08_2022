@@ -36,6 +36,7 @@ import 'package:path_provider/path_provider.dart';
 // import 'package:glamorous_diastation/services/authentication.dart';
 // import 'package:glamorous_diastation/services/fcm_notification_Service.dart';
 import 'package:provider/provider.dart';
+import 'package:screen_protector/screen_protector.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -3221,6 +3222,7 @@ class FirebaseOperations with ChangeNotifier {
       log("paid video but bought?");
       if (videoVal.boughtBy.contains(useruidVal)) {
         log("paid video but bought? YEs user bought");
+        turnPreventionOn();
 
         await FirebaseFirestore.instance
             .collection("posts")
@@ -3231,6 +3233,7 @@ class FirebaseOperations with ChangeNotifier {
       }
     } else if (videoVal.isFree) {
       log("Free video view ");
+      turnPreventionOff();
       await FirebaseFirestore.instance.collection("posts").doc(videoId).update({
         "views": FieldValue.increment(1),
       });
@@ -3330,11 +3333,7 @@ class FirebaseOperations with ChangeNotifier {
 
   Future<void> sendMassNotification(
       {required String title, required String body}) async {
-    await FirebaseFirestore.instance
-        .collection("users")
-        .where("useruid", isEqualTo: "RoxEsgFFdLZu9un1i654DBIha4K3")
-        .get()
-        .then(
+    await FirebaseFirestore.instance.collection("users").get().then(
       (value) async {
         for (QueryDocumentSnapshot<Map<String, dynamic>> item in value.docs) {
           if (item.data().containsKey("token")) {
