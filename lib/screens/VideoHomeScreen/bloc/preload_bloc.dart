@@ -7,6 +7,7 @@ import 'package:diamon_rose_app/main.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/core/constants.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/service/api_service.dart';
 import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
+import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -147,12 +148,28 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
         }
       },
       getVideosFromApi: (e) async* {
-        log("running isolate");
+        log("running isolate here first");
 
         /// Fetch first 5 videos from api
         await ApiService.loadFreeOnly();
         final List<Video> _urls = await ApiService.getVideos();
         state.urls.addAll(_urls);
+
+        final List<String> genreList =
+            SharedPreferencesHelper.getListString("selected_options");
+
+        final List<Video> _genreUrls =
+            await ApiService.loadBasedOnUserGenre(genreList);
+        log("Loaded genre vids ${_genreUrls.length}");
+
+        for (Video video in _genreUrls) {
+          var contain = state.urls.where((element) => element.id == video.id);
+          if (contain.isEmpty) {
+            state.urls.insert(0, video);
+          }
+          // //value not exists
+          // else {}
+        }
 
         log("statelen = ${state.urls.length}");
 

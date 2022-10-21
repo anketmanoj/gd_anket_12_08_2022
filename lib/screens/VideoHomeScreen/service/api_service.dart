@@ -293,7 +293,7 @@ class ApiService extends ChangeNotifier {
       });
     });
 
-    log("done loading all following videos");
+    log("done loading all following videos ${_following_videos.length} ");
   }
 
   static loadFollowingFreeVideos() async {

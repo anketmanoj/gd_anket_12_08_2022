@@ -109,9 +109,9 @@ class _FeedPageState extends State<FeedPage> {
   @override
   void initState() {
     Future.delayed(Duration.zero, () async {
-      await ScreenProtector.preventScreenshotOn();
-      await ScreenProtector.protectDataLeakageWithBlur();
       SystemChrome.setEnabledSystemUIOverlays([]);
+      await ScreenProtector.preventScreenshotOn();
+      await ScreenProtector.protectDataLeakageOn();
       checkPage(widget.pageIndexValue);
       await load();
       await Provider.of<FirebaseOperations>(context, listen: false)
@@ -243,14 +243,16 @@ class _FeedPageState extends State<FeedPage> {
                 body: PageView(
                   controller: homepageController,
                   physics: const NeverScrollableScrollPhysics(),
-                  onPageChanged: (page) {
+                  onPageChanged: (page) async {
                     pageIndex.value = page;
                     // log("value == $page");
 
                     if (pageIndex.value == 0) {
+                      await ScreenProtector.preventScreenshotOn();
                       homeScreenProvider.setHomeScreen(true);
                     } else {
                       homeScreenProvider.setHomeScreen(false);
+                      await ScreenProtector.preventScreenshotOff();
                     }
 
                     if (pageIndex.value == 2) {
