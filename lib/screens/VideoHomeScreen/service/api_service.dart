@@ -17,6 +17,7 @@ class ApiService extends ChangeNotifier {
   static Future<List<Video>> loadBasedOnUserGenre(
       List<String> userGenres) async {
     if (userGenres.isNotEmpty) {
+      genreVideos.clear();
       await FirebaseFirestore.instance
           .collection("posts")
           .where("genre", arrayContainsAny: userGenres)

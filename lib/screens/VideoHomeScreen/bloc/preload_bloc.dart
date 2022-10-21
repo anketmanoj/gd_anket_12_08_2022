@@ -27,18 +27,17 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
   ) async* {
     yield* event.map(
       updatePostsByUserGenre: (e) async* {
-        // state.urls.clear();
-        final List<Video> _urls =
+        state.urls.clear();
+        await ApiService.loadFreeOnly();
+        log("Loaded new");
+        final List<Video> _urls = await ApiService.getVideos();
+        state.urls
+            .addAll(_urls.where((element) => element.isFree == true).toList());
+        final List<Video> _genreUrls =
             await ApiService.loadBasedOnUserGenre(e.userGenre);
-        log("Loaded genre vids ${_urls.length}");
-        // final List<Video> _urls = await ApiService.getVideos();
-        // _urls.forEach((url) {
-        //   if (!state.urls.contains(url)) {
-        //     state.urls.insert(0, url);
-        //   }
-        // });
+        log("Loaded genre vids ${_genreUrls.length}");
 
-        for (Video video in _urls) {
+        for (Video video in _genreUrls) {
           var contain = state.urls.where((element) => element.id == video.id);
           if (contain.isEmpty) {
             state.urls.insert(0, video);
@@ -46,14 +45,6 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
           // //value not exists
           // else {}
         }
-        // state.urls.insertAll(0, _urls);
-
-        // state.urls
-        //     .addAll(_urls.where((element) => element.isFree == true).toList());
-
-        // state.urls.where((element) => element.isFree == true).toList();
-
-        // state.urls.shuffle();
 
         log("state length in free this one == ${state.urls.length}");
         log("focused index == ${state.focusedIndex} ||");
