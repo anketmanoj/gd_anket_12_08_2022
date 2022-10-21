@@ -10,7 +10,7 @@ class MyArCollection {
   Timestamp timestamp;
   List<String> imgSeq;
   String audioFile;
-  bool audioFlag;
+  bool audioFlag = false;
   String ownerId;
   String ownerName;
   String? usage = 'Material';
@@ -40,15 +40,15 @@ class MyArCollection {
       gif: json['gif'] as String,
       main: json['main'] as String,
       alpha: json['alpha'] as String,
-      audioFlag: json['audioFlag'] as bool,
-      layerType: json['layerType'] as String,
-      valueType: json['valueType'] as String,
-      audioFile: json['audioFile'] as String,
+      audioFlag: json['audioFlag'] ?? false,
+      layerType: json['layerType'].toString(),
+      valueType: json['valueType'].toString(),
+      audioFile: json['audioFile'].toString(),
       timestamp: json['timestamp'] as Timestamp,
-      ownerId: json['ownerId'] as String,
-      ownerName: json['ownerName'] as String,
+      ownerId: json['ownerId'].toString(),
+      ownerName: json['ownerName'].toString(),
       usage: json['usage'] as String?,
-      endDuration: json['endDuration'] as String?,
+      endDuration: json['endDuration'].toString(),
       imgSeq: (json['imgSeq'] as List).map((item) => item as String).toList(),
     );
   }

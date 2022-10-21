@@ -75,7 +75,7 @@ class ArViewcollectionScreen extends StatelessWidget {
                         .getUserId)
                     .collection("MyCollection")
                     .where("layerType", isEqualTo: "AR")
-                    .where("usage", isEqualTo: "Ar View Only")
+                    // .where("usage", isEqualTo: "Ar View Only")
                     .orderBy("timestamp", descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
