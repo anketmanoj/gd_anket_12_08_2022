@@ -1389,6 +1389,117 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                           _controller.video
                                                               .pause();
                                                         });
+                                                        final bool showMessage =
+                                                            SharedPreferencesHelper
+                                                                .getBool(
+                                                                    "dontShowMessage");
+
+                                                        if (showMessage ==
+                                                            false) {
+                                                          final ValueNotifier<
+                                                                  bool>
+                                                              dontShowMessage =
+                                                              ValueNotifier<
+                                                                  bool>(false);
+                                                          await Get.dialog(
+                                                            SimpleDialog(
+                                                              children: [
+                                                                Container(
+                                                                  width: 100.w,
+                                                                  child: Text(
+                                                                    "AR Quality in the Video Editor may seem low resolution.\nThis is to be able to process multiple layers together.\nPlease go to the next page to see the actual quality",
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center,
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                  height: 10,
+                                                                ),
+                                                                ValueListenableBuilder<
+                                                                        bool>(
+                                                                    valueListenable:
+                                                                        dontShowMessage,
+                                                                    builder:
+                                                                        (context,
+                                                                            messageOpt,
+                                                                            _) {
+                                                                      return ListTile(
+                                                                        title: Text(
+                                                                            "Dont show message again"),
+                                                                        trailing:
+                                                                            Checkbox(
+                                                                          value:
+                                                                              dontShowMessage.value,
+                                                                          onChanged:
+                                                                              (v) {
+                                                                            dontShowMessage.value =
+                                                                                !dontShowMessage.value;
+                                                                          },
+                                                                        ),
+                                                                      );
+                                                                    }),
+                                                                SizedBox(
+                                                                  height: 10,
+                                                                ),
+                                                                Padding(
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .all(
+                                                                              10),
+                                                                  child:
+                                                                      ElevatedButton(
+                                                                    style:
+                                                                        ButtonStyle(
+                                                                      foregroundColor: MaterialStateProperty.all<
+                                                                              Color>(
+                                                                          Colors
+                                                                              .white),
+                                                                      backgroundColor: MaterialStateProperty.all<
+                                                                              Color>(
+                                                                          constantColors
+                                                                              .navButton),
+                                                                      shape: MaterialStateProperty
+                                                                          .all<
+                                                                              RoundedRectangleBorder>(
+                                                                        RoundedRectangleBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(20),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    onPressed:
+                                                                        () {
+                                                                      SharedPreferencesHelper.setBool(
+                                                                          "dontShowMessage",
+                                                                          dontShowMessage
+                                                                              .value);
+                                                                      Get.back();
+                                                                    },
+                                                                    child: Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      children: [
+                                                                        Icon(
+                                                                          Icons
+                                                                              .check,
+                                                                          color:
+                                                                              Colors.white,
+                                                                        ),
+                                                                        Text(
+                                                                          LocaleKeys
+                                                                              .understood
+                                                                              .tr(),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          );
+                                                        }
                                                         selectArBottomSheet(
                                                             context, size);
                                                       },
@@ -1972,379 +2083,406 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                         size: 25,
                       ),
                       onPressed: list.value.isNotEmpty
-                          ? () async {
-                              await _controller.video.seekTo(Duration.zero);
-                              await _controller.video.pause();
-                              // ! for x = W - w (and the final bit for Ar position on screen)
-                              double finalVideoContainerPointX =
-                                  videoContainerKey
-                                      .globalPaintBounds!.bottomRight.dx;
-                              double finalVideoContainerPointY =
-                                  videoContainerKey
-                                      .globalPaintBounds!.bottomRight.dy;
-
-                              // * to calculate videoContainer Height
-                              double videoContainerHeight =
-                                  videoContainerKey.globalPaintBounds!.height;
-
-                              // * to calculate videoContainer Width
-                              double videoContainerWidth =
-                                  videoContainerKey.globalPaintBounds!.width;
-
-                              // *ffmpeg list string
-                              List<String> ffmpegInputList = [];
-                              List<String> alphaTransparencyLayer = [];
-                              List<String> ffmpegStartPointList = [];
-                              List<String> ffmpegArFiltercomplex = [];
-                              List<String> ffmpegOverlay = [];
-                              List<String> ffmpegVolumeList = [];
-                              List<String> ffmpegSoundInputs = [];
-                              ValueNotifier<int> lastVal =
-                                  ValueNotifier<int>(0);
-
-                              for (ARList arElement in list.value) {
-                                dev.log(
-                                    "rotations for ${arElement.arId} = rot = ${arElement.rotation}");
-                                double finalArContainerPointX = arElement
-                                    .arKey!.globalPaintBounds!.bottomRight.dx;
-                                double finalArContainerPointY = arElement
-                                    .arKey!.globalPaintBounds!.bottomRight.dy;
-                                // print(
-                                //     "arIndexhere = ${arElement.arIndex} |finalVideoContainerPointX $finalVideoContainerPointX | finalVideoContainerPointY $finalVideoContainerPointY");
-                                // print(
-                                //     "arIndex = ${arElement.arIndex} |finalArContainerPointX $finalArContainerPointX | finalArContainerPointY $finalArContainerPointY");
-                                // * move x pixels to the right (minus) / left (plus) from left border of video
-                                double x = ((finalVideoContainerPointX -
-                                        finalArContainerPointX) *
-                                    (1080 / videoContainerWidth) *
-                                    -1);
-                                // print("ar ${arElement.arIndex} x = $x");
-                                // * move y pixels to the top (minus) / bottom (plus) from bottom border of video
-                                double y = ((finalVideoContainerPointY -
-                                        finalArContainerPointY) *
-                                    (1920 / videoContainerHeight) *
-                                    -1);
-
-                                //  videoContainerHeight (322.5) = 1920
-                                // videoContainerWidth (177.375) = 1080
-                                // (finalVideoContainerPointX - finalArContainerPointX) is x =
-
-                                // ar start time
-                                double arStartTime = (arElement
-                                            .startingPositon! /
-                                        _fullLayout.width) *
-                                    _videoController.value.duration.inSeconds;
-
-                                // ar end time
-                                double arEndTime =
-                                    (arElement.totalDuration!) + arStartTime;
-
-                                // * to calculate arContainer Height & Width
-
-                                double arScaleWidth =
-                                    (arElement.width! * arElement.scale!)
-                                        .floorToDouble();
-                                double arScaleHeigth =
-                                    (arElement.height! * arElement.scale!)
-                                        .floorToDouble();
-
-                                double arContainerHeight =
-                                    arElement.arKey!.globalPaintBounds!.height;
-
-                                double arScaleHeightVal = arContainerHeight *
-                                    1920 /
-                                    videoContainerHeight;
-
-                                double arContainerWidth =
-                                    arElement.arKey!.globalPaintBounds!.width;
-
-                                double arScaleWidthVal = arContainerWidth *
-                                    1080 /
-                                    videoContainerWidth;
-                                print("x = $x | y = $y");
-                                print(
-                                    "ar point x $finalArContainerPointX | screen height $videoContainerHeight");
-
-                                if (arElement.layerType == LayerType.AR) {
-                                  ffmpegInputList.add(
-                                      " -i ${arElement.mainFile} -i ${arElement.alphaFile}");
-                                } else {
-                                  ffmpegInputList
-                                      .add(" -i ${arElement.gifFilePath!}");
+                          ? arIndexVal.value <= 0
+                              ? () {
+                                  Get.snackbar(
+                                    "No AR has been detected",
+                                    "In order to create content, please include at least 1 AR in your video!",
+                                    overlayColor: constantColors.navButton,
+                                    colorText: constantColors.whiteColor,
+                                    duration: Duration(seconds: 10),
+                                    snackPosition: SnackPosition.TOP,
+                                    forwardAnimationCurve: Curves.elasticInOut,
+                                    reverseAnimationCurve: Curves.easeOut,
+                                  );
                                 }
+                              : () async {
+                                  await _controller.video.seekTo(Duration.zero);
+                                  await _controller.video.pause();
+                                  // ! for x = W - w (and the final bit for Ar position on screen)
+                                  double finalVideoContainerPointX =
+                                      videoContainerKey
+                                          .globalPaintBounds!.bottomRight.dx;
+                                  double finalVideoContainerPointY =
+                                      videoContainerKey
+                                          .globalPaintBounds!.bottomRight.dy;
 
-                                if (arElement.layerType == LayerType.AR) {
-                                  alphaTransparencyLayer.add(
-                                      "[${arElement.arIndex! + 1}][${arElement.arIndex}]scale2ref[mask][main];[main][mask]alphamerge[vid${arElement.arIndex}];");
-                                }
+                                  // * to calculate videoContainer Height
+                                  double videoContainerHeight =
+                                      videoContainerKey
+                                          .globalPaintBounds!.height;
 
-                                if (arElement.layerType == LayerType.AR) {
-                                  ffmpegStartPointList.add(
-                                      "[vid${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
-                                } else {
-                                  ffmpegStartPointList.add(
-                                      "[${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
-                                }
+                                  // * to calculate videoContainer Width
+                                  double videoContainerWidth = videoContainerKey
+                                      .globalPaintBounds!.width;
 
-                                ffmpegArFiltercomplex.add(
-                                    "[top${arElement.arIndex}]rotate=${arElement.rotation! * 180 / pi}*PI/180:c=none:ow=rotw(${arElement.rotation! * 180 / pi}*PI/180):oh=roth(${arElement.rotation! * 180 / pi}*PI/180),scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
+                                  // *ffmpeg list string
+                                  List<String> ffmpegInputList = [];
+                                  List<String> alphaTransparencyLayer = [];
+                                  List<String> ffmpegStartPointList = [];
+                                  List<String> ffmpegArFiltercomplex = [];
+                                  List<String> ffmpegOverlay = [];
+                                  List<String> ffmpegVolumeList = [];
+                                  List<String> ffmpegSoundInputs = [];
+                                  ValueNotifier<int> lastVal =
+                                      ValueNotifier<int>(0);
 
-                                if (arElement.arIndex == 1) {
-                                  ffmpegOverlay.add(
-                                      "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(0)}\"\\,\"${arEndTime.toStringAsFixed(0)}\")':eof_action=pass[${arElement.arIndex}out];");
-                                  lastVal.value = arElement.arIndex!;
-                                } else {
-                                  ffmpegOverlay.add(
-                                      "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(0)}\"\\,\"${arEndTime.toStringAsFixed(0)}\")':eof_action=pass[${arElement.arIndex}out];");
-                                  lastVal.value = arElement.arIndex!;
-                                }
-                                if (arElement.layerType == LayerType.AR &&
-                                    arElement.audioFlag == true) {
-                                  ffmpegVolumeList.add(
-                                      "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(0)}s:all=1[a${arElement.arIndex}];");
-                                  ffmpegSoundInputs
-                                      .add("[a${arElement.arIndex}]");
-                                }
+                                  for (ARList arElement in list.value) {
+                                    dev.log(
+                                        "rotations for ${arElement.arId} = rot = ${arElement.rotation}");
+                                    double finalArContainerPointX = arElement
+                                        .arKey!
+                                        .globalPaintBounds!
+                                        .bottomRight
+                                        .dx;
+                                    double finalArContainerPointY = arElement
+                                        .arKey!
+                                        .globalPaintBounds!
+                                        .bottomRight
+                                        .dy;
+                                    // print(
+                                    //     "arIndexhere = ${arElement.arIndex} |finalVideoContainerPointX $finalVideoContainerPointX | finalVideoContainerPointY $finalVideoContainerPointY");
+                                    // print(
+                                    //     "arIndex = ${arElement.arIndex} |finalArContainerPointX $finalArContainerPointX | finalArContainerPointY $finalArContainerPointY");
+                                    // * move x pixels to the right (minus) / left (plus) from left border of video
+                                    double x = ((finalVideoContainerPointX -
+                                            finalArContainerPointX) *
+                                        (1080 / videoContainerWidth) *
+                                        -1);
+                                    // print("ar ${arElement.arIndex} x = $x");
+                                    // * move y pixels to the top (minus) / bottom (plus) from bottom border of video
+                                    double y = ((finalVideoContainerPointY -
+                                            finalArContainerPointY) *
+                                        (1920 / videoContainerHeight) *
+                                        -1);
 
-                                if (arElement.finishedCaching!.value == true)
-                                  arElement.arState!.skip(0);
-                                arElement.arState!.pause();
-                                if (arElement.audioFlag == true)
-                                  arElement.audioPlayer!
-                                      .seek(Duration(milliseconds: 0));
-                                arElement.audioPlayer!.pause();
+                                    //  videoContainerHeight (322.5) = 1920
+                                    // videoContainerWidth (177.375) = 1080
+                                    // (finalVideoContainerPointX - finalArContainerPointX) is x =
 
-                                // print("arIndex = ${arElement.arIndex} | x = $x | y = $y");
+                                    // ar start time
+                                    double arStartTime =
+                                        (arElement.startingPositon! /
+                                                _fullLayout.width) *
+                                            _videoController
+                                                .value.duration.inSeconds;
 
-                              }
+                                    // ar end time
+                                    double arEndTime =
+                                        (arElement.totalDuration!) +
+                                            arStartTime;
 
-                              // list.value.forEach((arElement) {
-                              // });
+                                    // * to calculate arContainer Height & Width
 
-                              String commandNoBgAudio =
-                                  "${ffmpegInputList.join()} -t ${_videoController.value.duration} -filter_complex \"${alphaTransparencyLayer.join()}${ffmpegStartPointList.join()}[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];${ffmpegArFiltercomplex.join()}${ffmpegOverlay.join()}${ffmpegVolumeList.join()}${ffmpegSoundInputs.join()}${ffmpegSoundInputs.isEmpty ? '' : 'amix=inputs=${ffmpegSoundInputs.length + 1}[a]'}\" -map ''[${lastVal.value}out]'' ${ffmpegSoundInputs.isEmpty ? '' : '-map ' '[a]' ''} -y ";
+                                    double arScaleWidth =
+                                        (arElement.width! * arElement.scale!)
+                                            .floorToDouble();
+                                    double arScaleHeigth =
+                                        (arElement.height! * arElement.scale!)
+                                            .floorToDouble();
 
-                              String command =
-                                  "${ffmpegInputList.join()} -t ${_videoController.value.duration} -filter_complex \"${alphaTransparencyLayer.join()}${ffmpegStartPointList.join()}[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];${ffmpegArFiltercomplex.join()}${ffmpegOverlay.join()}${ffmpegVolumeList.join()}[0:a]volume=${_controller.video.value.volume}[a0];[a0]${ffmpegSoundInputs.join()}amix=inputs=${ffmpegSoundInputs.length + 1}[a]\" -map ''[${lastVal.value}out]'' -map ''[a]'' -y ";
+                                    double arContainerHeight = arElement
+                                        .arKey!.globalPaintBounds!.height;
 
-                              dev.log(arVideoCreation.getArAudioFlagGeneral == 1
-                                  ? command
-                                  : commandNoBgAudio);
-                              // * for combining Ar with BG
-                              // ignore: unawaited_futures
-                              CoolAlert.show(
-                                context: context,
-                                type: CoolAlertType.loading,
-                                text: LocaleKeys.processingvideo.tr(),
-                                barrierDismissible: false,
-                              );
-                              try {
-                                await combineBgAr(
-                                  bgVideoFile: context
-                                      .read<VideoEditorProvider>()
-                                      .getBackgroundVideoFile,
-                                  ffmpegArCommand:
-                                      arVideoCreation.getArAudioFlagGeneral == 1
-                                          ? command
-                                          : commandNoBgAudio,
-                                  bgVideoDuartion:
-                                      _videoController.value.duration,
-                                  onProgress: (stats, value) =>
-                                      _exportingProgress.value = value,
-                                  onCompleted: (file) async {
-                                    if (file != null) {
-                                      dev.log("we're here now");
+                                    double arScaleHeightVal =
+                                        arContainerHeight *
+                                            1920 /
+                                            videoContainerHeight;
 
-                                      await context
-                                          .read<VideoEditorProvider>()
-                                          .setAfterEditorVideoController(file);
+                                    double arContainerWidth = arElement
+                                        .arKey!.globalPaintBounds!.width;
 
-                                      dev.log("Done!!!!!");
+                                    double arScaleWidthVal = arContainerWidth *
+                                        1080 /
+                                        videoContainerWidth;
+                                    print("x = $x | y = $y");
+                                    print(
+                                        "ar point x $finalArContainerPointX | screen height $videoContainerHeight");
 
-                                      await context
-                                          .read<VideoEditorProvider>()
-                                          .setBgMaterialThumnailFile();
-
-                                      // context
-                                      //     .read<VideoEditorProvider>()
-                                      //     .setBackgroundVideoFile(file);
-
-                                      dev.log("Send!");
-                                      Get.back();
-                                      await Get.to(
-                                        () => VideothumbnailSelector(
-                                          arList: list.value,
-                                        ),
-                                      );
-
-                                      // Navigator.pushReplacement(
-                                      //     context,
-                                      //     PageTransition(
-                                      //         child: VideothumbnailSelector(
-                                      //           arList: list.value,
-                                      //           file: file,
-                                      //           bgMaterialThumnailFile:
-                                      //               bgMaterialThumnailFile,
-                                      //         ),
-                                      //         type: PageTransitionType.fade));
-
-                                      dev.log("we're here?");
+                                    if (arElement.layerType == LayerType.AR) {
+                                      ffmpegInputList.add(
+                                          " -i ${arElement.mainFile} -i ${arElement.alphaFile}");
                                     } else {
-                                      Navigator.pop(context);
-                                      CoolAlert.show(
-                                        context: context,
-                                        type: CoolAlertType.error,
-                                        title: LocaleKeys.errorprocessingvideo
-                                            .tr(),
-                                        text:
-                                            "Device RAM issue. Main Please free up space on your phone to be able to process the video properly",
-                                      );
-                                      dev.log("hello ?? ");
+                                      ffmpegInputList
+                                          .add(" -i ${arElement.gifFilePath!}");
                                     }
 
-                                    setState(() => _exported = true);
-                                    Future.delayed(
-                                        const Duration(seconds: 2),
-                                        () =>
-                                            setState(() => _exported = false));
-                                  },
-                                );
-                              } catch (e) {
-                                Navigator.pop(context);
-                                CoolAlert.show(
-                                  context: context,
-                                  type: CoolAlertType.error,
-                                  title: "Error processing video",
-                                  text: e.toString(),
-                                );
-                              }
+                                    if (arElement.layerType == LayerType.AR) {
+                                      alphaTransparencyLayer.add(
+                                          "[${arElement.arIndex! + 1}][${arElement.arIndex}]scale2ref[mask][main];[main][mask]alphamerge[vid${arElement.arIndex}];");
+                                    }
 
-                              // * for combining effect with BG
-                              // await combineBgEffect(
-                              //   bgVideoFile: widget.file,
-                              //   effectFile: File(selectedFile!.path!),
-                              //   arScaleWidth: "${arScaleWidthVal.floor()}",
-                              //   arScaleHeight: "${arScaleHeightVal.floor()}",
-                              //   arXCoordinate: x < 0 ? "-$x" : "+$x",
-                              //   arYCoordinate: y < 0 ? "-$y" : "+$y",
-                              //   arStartTime: arStartTime.toString(),
-                              //   arEndTime: "${arEndTime + arStartTime}",
-                              //   bgVideoDuartion: _videoController.value.duration,
-                              //   onProgress: (stats, value) =>
-                              //       _exportingProgress.value = value,
-                              //   onCompleted: (file) async {
-                              //     _isExporting.value = false;
-                              //     if (!mounted) return;
-                              //     if (file != null) {
-                              //       final VideoPlayerController _videoController =
-                              //           VideoPlayerController.file(file);
+                                    if (arElement.layerType == LayerType.AR) {
+                                      ffmpegStartPointList.add(
+                                          "[vid${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
+                                    } else {
+                                      ffmpegStartPointList.add(
+                                          "[${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
+                                    }
 
-                              //       // ignore: unawaited_futures
-                              //       _videoController.initialize().then((value) async {
-                              //         setState(() {});
+                                    ffmpegArFiltercomplex.add(
+                                        "[top${arElement.arIndex}]rotate=${arElement.rotation! * 180 / pi}*PI/180:c=none:ow=rotw(${arElement.rotation! * 180 / pi}*PI/180):oh=roth(${arElement.rotation! * 180 / pi}*PI/180),scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
 
-                              //         _videoController.setLooping(true);
-                              //         await showDialog(
-                              //           context: context,
-                              //           builder: (_) => Padding(
-                              //             padding: const EdgeInsets.all(30),
-                              //             child: Container(
-                              //               color: Colors.black,
-                              //               child: Column(
-                              //                 children: [
-                              //                   Container(
-                              //                     height: 50,
-                              //                     color: Colors.white,
-                              //                     child: Row(
-                              //                       mainAxisAlignment:
-                              //                           MainAxisAlignment.center,
-                              //                       children: [
-                              //                         Text(
-                              //                           "Preview",
-                              //                           style: TextStyle(
-                              //                             color: Colors.black,
-                              //                             fontSize: 20,
-                              //                           ),
-                              //                         ),
-                              //                       ],
-                              //                     ),
-                              //                   ),
-                              //                   Container(
-                              //                     height:
-                              //                         MediaQuery.of(context).size.height *
-                              //                             0.6,
-                              //                     child: Center(
-                              //                       child: GestureDetector(
-                              //                         onTap: () {
-                              //                           _videoController.value.isPlaying
-                              //                               ? _videoController.pause()
-                              //                               : _videoController.play();
-                              //                         },
-                              //                         child: AspectRatio(
-                              //                           aspectRatio: _videoController
-                              //                               .value.aspectRatio,
-                              //                           child:
-                              //                               VideoPlayer(_videoController),
-                              //                         ),
-                              //                       ),
-                              //                     ),
-                              //                   ),
-                              //                   Container(
-                              //                     color: Colors.white,
-                              //                     child: Row(
-                              //                       mainAxisAlignment:
-                              //                           MainAxisAlignment.spaceEvenly,
-                              //                       children: [
-                              //                         ElevatedButton(
-                              //                           onPressed: () {
-                              //                             Navigator.pop(context);
-                              //                           },
-                              //                           child: Text(
-                              //                             "Cancel",
-                              //                           ),
-                              //                         ),
-                              //                         ElevatedButton(
-                              //                           onPressed: () {
-                              //                             Navigator.push(
-                              //                                 context,
-                              //                                 PageTransition(
-                              //                                     child: PreviewVideoScreen(
-                              //                                         thumbnailFile:
-                              //                                             thumbnailfile,
-                              //                                         videoFile:
-                              //                                             File(file.path),
-                              //                                         videoPlayerController:
-                              //                                             _videoController),
-                              //                                     type: PageTransitionType
-                              //                                         .fade));
-                              //                           },
-                              //                           child: Text(
-                              //                             "Next",
-                              //                           ),
-                              //                         ),
-                              //                       ],
-                              //                     ),
-                              //                   ),
-                              //                 ],
-                              //               ),
-                              //             ),
-                              //           ),
-                              //         );
-                              //         await _videoController.pause();
-                              //         _videoController.dispose();
-                              //       });
+                                    if (arElement.arIndex == 1) {
+                                      ffmpegOverlay.add(
+                                          "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(0)}\"\\,\"${arEndTime.toStringAsFixed(0)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                      lastVal.value = arElement.arIndex!;
+                                    } else {
+                                      ffmpegOverlay.add(
+                                          "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(0)}\"\\,\"${arEndTime.toStringAsFixed(0)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                      lastVal.value = arElement.arIndex!;
+                                    }
+                                    if (arElement.layerType == LayerType.AR &&
+                                        arElement.audioFlag == true) {
+                                      ffmpegVolumeList.add(
+                                          "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(0)}s:all=1[a${arElement.arIndex}];");
+                                      ffmpegSoundInputs
+                                          .add("[a${arElement.arIndex}]");
+                                    }
 
-                              //       _exportText = "Video success export!";
-                              //     } else {
-                              //       _exportText = "Error on export video :(";
-                              //     }
+                                    if (arElement.finishedCaching!.value ==
+                                        true) arElement.arState!.skip(0);
+                                    arElement.arState!.pause();
+                                    if (arElement.audioFlag == true)
+                                      arElement.audioPlayer!
+                                          .seek(Duration(milliseconds: 0));
+                                    arElement.audioPlayer!.pause();
 
-                              //     setState(() => _exported = true);
-                              //     Future.delayed(const Duration(seconds: 2),
-                              //         () => setState(() => _exported = false));
-                              //   },
-                              // );
-                            }
+                                    // print("arIndex = ${arElement.arIndex} | x = $x | y = $y");
+
+                                  }
+
+                                  // list.value.forEach((arElement) {
+                                  // });
+
+                                  String commandNoBgAudio =
+                                      "${ffmpegInputList.join()} -t ${_videoController.value.duration} -filter_complex \"${alphaTransparencyLayer.join()}${ffmpegStartPointList.join()}[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];${ffmpegArFiltercomplex.join()}${ffmpegOverlay.join()}${ffmpegVolumeList.join()}${ffmpegSoundInputs.join()}${ffmpegSoundInputs.isEmpty ? '' : 'amix=inputs=${ffmpegSoundInputs.length + 1}[a]'}\" -map ''[${lastVal.value}out]'' ${ffmpegSoundInputs.isEmpty ? '' : '-map ' '[a]' ''} -y ";
+
+                                  String command =
+                                      "${ffmpegInputList.join()} -t ${_videoController.value.duration} -filter_complex \"${alphaTransparencyLayer.join()}${ffmpegStartPointList.join()}[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];${ffmpegArFiltercomplex.join()}${ffmpegOverlay.join()}${ffmpegVolumeList.join()}[0:a]volume=${_controller.video.value.volume}[a0];[a0]${ffmpegSoundInputs.join()}amix=inputs=${ffmpegSoundInputs.length + 1}[a]\" -map ''[${lastVal.value}out]'' -map ''[a]'' -y ";
+
+                                  dev.log(
+                                      arVideoCreation.getArAudioFlagGeneral == 1
+                                          ? command
+                                          : commandNoBgAudio);
+                                  // * for combining Ar with BG
+                                  // ignore: unawaited_futures
+                                  CoolAlert.show(
+                                    context: context,
+                                    type: CoolAlertType.loading,
+                                    text: LocaleKeys.processingvideo.tr(),
+                                    barrierDismissible: false,
+                                  );
+                                  try {
+                                    await combineBgAr(
+                                      bgVideoFile: context
+                                          .read<VideoEditorProvider>()
+                                          .getBackgroundVideoFile,
+                                      ffmpegArCommand: arVideoCreation
+                                                  .getArAudioFlagGeneral ==
+                                              1
+                                          ? command
+                                          : commandNoBgAudio,
+                                      bgVideoDuartion:
+                                          _videoController.value.duration,
+                                      onProgress: (stats, value) =>
+                                          _exportingProgress.value = value,
+                                      onCompleted: (file) async {
+                                        if (file != null) {
+                                          dev.log("we're here now");
+
+                                          await context
+                                              .read<VideoEditorProvider>()
+                                              .setAfterEditorVideoController(
+                                                  file);
+
+                                          dev.log("Done!!!!!");
+
+                                          await context
+                                              .read<VideoEditorProvider>()
+                                              .setBgMaterialThumnailFile();
+
+                                          // context
+                                          //     .read<VideoEditorProvider>()
+                                          //     .setBackgroundVideoFile(file);
+
+                                          dev.log("Send!");
+                                          Get.back();
+                                          await Get.to(
+                                            () => VideothumbnailSelector(
+                                              arList: list.value,
+                                            ),
+                                          );
+
+                                          // Navigator.pushReplacement(
+                                          //     context,
+                                          //     PageTransition(
+                                          //         child: VideothumbnailSelector(
+                                          //           arList: list.value,
+                                          //           file: file,
+                                          //           bgMaterialThumnailFile:
+                                          //               bgMaterialThumnailFile,
+                                          //         ),
+                                          //         type: PageTransitionType.fade));
+
+                                          dev.log("we're here?");
+                                        } else {
+                                          Navigator.pop(context);
+                                          CoolAlert.show(
+                                            context: context,
+                                            type: CoolAlertType.error,
+                                            title: LocaleKeys
+                                                .errorprocessingvideo
+                                                .tr(),
+                                            text:
+                                                "Device RAM issue. Main Please free up space on your phone to be able to process the video properly",
+                                          );
+                                          dev.log("hello ?? ");
+                                        }
+
+                                        setState(() => _exported = true);
+                                        Future.delayed(
+                                            const Duration(seconds: 2),
+                                            () => setState(
+                                                () => _exported = false));
+                                      },
+                                    );
+                                  } catch (e) {
+                                    Navigator.pop(context);
+                                    CoolAlert.show(
+                                      context: context,
+                                      type: CoolAlertType.error,
+                                      title: "Error processing video",
+                                      text: e.toString(),
+                                    );
+                                  }
+
+                                  // * for combining effect with BG
+                                  // await combineBgEffect(
+                                  //   bgVideoFile: widget.file,
+                                  //   effectFile: File(selectedFile!.path!),
+                                  //   arScaleWidth: "${arScaleWidthVal.floor()}",
+                                  //   arScaleHeight: "${arScaleHeightVal.floor()}",
+                                  //   arXCoordinate: x < 0 ? "-$x" : "+$x",
+                                  //   arYCoordinate: y < 0 ? "-$y" : "+$y",
+                                  //   arStartTime: arStartTime.toString(),
+                                  //   arEndTime: "${arEndTime + arStartTime}",
+                                  //   bgVideoDuartion: _videoController.value.duration,
+                                  //   onProgress: (stats, value) =>
+                                  //       _exportingProgress.value = value,
+                                  //   onCompleted: (file) async {
+                                  //     _isExporting.value = false;
+                                  //     if (!mounted) return;
+                                  //     if (file != null) {
+                                  //       final VideoPlayerController _videoController =
+                                  //           VideoPlayerController.file(file);
+
+                                  //       // ignore: unawaited_futures
+                                  //       _videoController.initialize().then((value) async {
+                                  //         setState(() {});
+
+                                  //         _videoController.setLooping(true);
+                                  //         await showDialog(
+                                  //           context: context,
+                                  //           builder: (_) => Padding(
+                                  //             padding: const EdgeInsets.all(30),
+                                  //             child: Container(
+                                  //               color: Colors.black,
+                                  //               child: Column(
+                                  //                 children: [
+                                  //                   Container(
+                                  //                     height: 50,
+                                  //                     color: Colors.white,
+                                  //                     child: Row(
+                                  //                       mainAxisAlignment:
+                                  //                           MainAxisAlignment.center,
+                                  //                       children: [
+                                  //                         Text(
+                                  //                           "Preview",
+                                  //                           style: TextStyle(
+                                  //                             color: Colors.black,
+                                  //                             fontSize: 20,
+                                  //                           ),
+                                  //                         ),
+                                  //                       ],
+                                  //                     ),
+                                  //                   ),
+                                  //                   Container(
+                                  //                     height:
+                                  //                         MediaQuery.of(context).size.height *
+                                  //                             0.6,
+                                  //                     child: Center(
+                                  //                       child: GestureDetector(
+                                  //                         onTap: () {
+                                  //                           _videoController.value.isPlaying
+                                  //                               ? _videoController.pause()
+                                  //                               : _videoController.play();
+                                  //                         },
+                                  //                         child: AspectRatio(
+                                  //                           aspectRatio: _videoController
+                                  //                               .value.aspectRatio,
+                                  //                           child:
+                                  //                               VideoPlayer(_videoController),
+                                  //                         ),
+                                  //                       ),
+                                  //                     ),
+                                  //                   ),
+                                  //                   Container(
+                                  //                     color: Colors.white,
+                                  //                     child: Row(
+                                  //                       mainAxisAlignment:
+                                  //                           MainAxisAlignment.spaceEvenly,
+                                  //                       children: [
+                                  //                         ElevatedButton(
+                                  //                           onPressed: () {
+                                  //                             Navigator.pop(context);
+                                  //                           },
+                                  //                           child: Text(
+                                  //                             "Cancel",
+                                  //                           ),
+                                  //                         ),
+                                  //                         ElevatedButton(
+                                  //                           onPressed: () {
+                                  //                             Navigator.push(
+                                  //                                 context,
+                                  //                                 PageTransition(
+                                  //                                     child: PreviewVideoScreen(
+                                  //                                         thumbnailFile:
+                                  //                                             thumbnailfile,
+                                  //                                         videoFile:
+                                  //                                             File(file.path),
+                                  //                                         videoPlayerController:
+                                  //                                             _videoController),
+                                  //                                     type: PageTransitionType
+                                  //                                         .fade));
+                                  //                           },
+                                  //                           child: Text(
+                                  //                             "Next",
+                                  //                           ),
+                                  //                         ),
+                                  //                       ],
+                                  //                     ),
+                                  //                   ),
+                                  //                 ],
+                                  //               ),
+                                  //             ),
+                                  //           ),
+                                  //         );
+                                  //         await _videoController.pause();
+                                  //         _videoController.dispose();
+                                  //       });
+
+                                  //       _exportText = "Video success export!";
+                                  //     } else {
+                                  //       _exportText = "Error on export video :(";
+                                  //     }
+
+                                  //     setState(() => _exported = true);
+                                  //     Future.delayed(const Duration(seconds: 2),
+                                  //         () => setState(() => _exported = false));
+                                  //   },
+                                  // );
+                                }
                           : () {
                               Get.snackbar(
                                 LocaleKeys.noareffectadded.tr(),
@@ -2765,108 +2903,6 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                             arVal: indexCounter.value,
                                             myAr: myArCollection,
                                           );
-
-                                          final bool showMessage =
-                                              SharedPreferencesHelper.getBool(
-                                                  "dontShowMessage");
-
-                                          if (showMessage == false) {
-                                            final ValueNotifier<bool>
-                                                dontShowMessage =
-                                                ValueNotifier<bool>(false);
-                                            await Get.dialog(
-                                              SimpleDialog(
-                                                children: [
-                                                  Container(
-                                                    width: 100.w,
-                                                    child: Text(
-                                                      "AR Quality in the Video Editor may seem low resolution.\nThis is to be able to process multiple layers together.\nPlease go to the next page to see the actual quality",
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 10,
-                                                  ),
-                                                  ValueListenableBuilder<bool>(
-                                                      valueListenable:
-                                                          dontShowMessage,
-                                                      builder: (context,
-                                                          messageOpt, _) {
-                                                        return ListTile(
-                                                          title: Text(
-                                                              "Dont show message again"),
-                                                          trailing: Checkbox(
-                                                            value:
-                                                                dontShowMessage
-                                                                    .value,
-                                                            onChanged: (v) {
-                                                              dontShowMessage
-                                                                      .value =
-                                                                  !dontShowMessage
-                                                                      .value;
-                                                            },
-                                                          ),
-                                                        );
-                                                      }),
-                                                  SizedBox(
-                                                    height: 10,
-                                                  ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(10),
-                                                    child: ElevatedButton(
-                                                      style: ButtonStyle(
-                                                        foregroundColor:
-                                                            MaterialStateProperty
-                                                                .all<Color>(
-                                                                    Colors
-                                                                        .white),
-                                                        backgroundColor:
-                                                            MaterialStateProperty.all<
-                                                                    Color>(
-                                                                constantColors
-                                                                    .navButton),
-                                                        shape: MaterialStateProperty
-                                                            .all<
-                                                                RoundedRectangleBorder>(
-                                                          RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        20),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      onPressed: () {
-                                                        SharedPreferencesHelper
-                                                            .setBool(
-                                                                "dontShowMessage",
-                                                                dontShowMessage
-                                                                    .value);
-                                                        Get.back();
-                                                      },
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Icon(
-                                                            Icons.check,
-                                                            color: Colors.white,
-                                                          ),
-                                                          Text(
-                                                            LocaleKeys
-                                                                .understood
-                                                                .tr(),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          }
                                         } else {
                                           CoolAlert.show(
                                             context: context,
