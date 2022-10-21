@@ -38,6 +38,7 @@ import 'package:get/get.dart' hide Trans;
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:screen_protector/screen_protector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
@@ -108,6 +109,8 @@ class _FeedPageState extends State<FeedPage> {
   @override
   void initState() {
     Future.delayed(Duration.zero, () async {
+      await ScreenProtector.preventScreenshotOn();
+      await ScreenProtector.protectDataLeakageWithBlur();
       SystemChrome.setEnabledSystemUIOverlays([]);
       checkPage(widget.pageIndexValue);
       await load();

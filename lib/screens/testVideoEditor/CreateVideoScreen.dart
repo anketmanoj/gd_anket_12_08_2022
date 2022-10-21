@@ -444,80 +444,6 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               print("error running ffprobe on image == ${e.toString()}");
             }
 
-            final bool showMessage =
-                SharedPreferencesHelper.getBool("dontShowMessage");
-
-            if (showMessage == false) {
-              final ValueNotifier<bool> dontShowMessage =
-                  ValueNotifier<bool>(false);
-              await Get.dialog(
-                SimpleDialog(
-                  children: [
-                    Container(
-                      width: 100.w,
-                      child: Text(
-                        "AR Quality in the Video Editor may seem low resolution.\nThis is to be able to process multiple layers together.\nPlease go to the next page to see the actual quality",
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    ValueListenableBuilder<bool>(
-                        valueListenable: dontShowMessage,
-                        builder: (context, messageOpt, _) {
-                          return ListTile(
-                            title: Text("Dont show message again"),
-                            trailing: Checkbox(
-                              value: dontShowMessage.value,
-                              onChanged: (v) {
-                                dontShowMessage.value = !dontShowMessage.value;
-                              },
-                            ),
-                          );
-                        }),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.white),
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              constantColors.navButton),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                        ),
-                        onPressed: () {
-                          SharedPreferencesHelper.setBool(
-                              "dontShowMessage", dontShowMessage.value);
-                          Get.back();
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.check,
-                              color: Colors.white,
-                            ),
-                            Text(
-                              LocaleKeys.understood.tr(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-
             // setState(() {
             //   loading = false;
             // });
@@ -1150,6 +1076,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                     onReadyToPlay:
                                                                         (ImageSequenceAnimatorState
                                                                             _imageSequenceAnimator) {
+                                                                      dev.log(
+                                                                          "Its ready now lad!");
                                                                       value.arState =
                                                                           _imageSequenceAnimator;
                                                                       if (value
@@ -2837,6 +2765,108 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                             arVal: indexCounter.value,
                                             myAr: myArCollection,
                                           );
+
+                                          final bool showMessage =
+                                              SharedPreferencesHelper.getBool(
+                                                  "dontShowMessage");
+
+                                          if (showMessage == false) {
+                                            final ValueNotifier<bool>
+                                                dontShowMessage =
+                                                ValueNotifier<bool>(false);
+                                            await Get.dialog(
+                                              SimpleDialog(
+                                                children: [
+                                                  Container(
+                                                    width: 100.w,
+                                                    child: Text(
+                                                      "AR Quality in the Video Editor may seem low resolution.\nThis is to be able to process multiple layers together.\nPlease go to the next page to see the actual quality",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  ValueListenableBuilder<bool>(
+                                                      valueListenable:
+                                                          dontShowMessage,
+                                                      builder: (context,
+                                                          messageOpt, _) {
+                                                        return ListTile(
+                                                          title: Text(
+                                                              "Dont show message again"),
+                                                          trailing: Checkbox(
+                                                            value:
+                                                                dontShowMessage
+                                                                    .value,
+                                                            onChanged: (v) {
+                                                              dontShowMessage
+                                                                      .value =
+                                                                  !dontShowMessage
+                                                                      .value;
+                                                            },
+                                                          ),
+                                                        );
+                                                      }),
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(10),
+                                                    child: ElevatedButton(
+                                                      style: ButtonStyle(
+                                                        foregroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    Colors
+                                                                        .white),
+                                                        backgroundColor:
+                                                            MaterialStateProperty.all<
+                                                                    Color>(
+                                                                constantColors
+                                                                    .navButton),
+                                                        shape: MaterialStateProperty
+                                                            .all<
+                                                                RoundedRectangleBorder>(
+                                                          RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      onPressed: () {
+                                                        SharedPreferencesHelper
+                                                            .setBool(
+                                                                "dontShowMessage",
+                                                                dontShowMessage
+                                                                    .value);
+                                                        Get.back();
+                                                      },
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Icon(
+                                                            Icons.check,
+                                                            color: Colors.white,
+                                                          ),
+                                                          Text(
+                                                            LocaleKeys
+                                                                .understood
+                                                                .tr(),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }
                                         } else {
                                           CoolAlert.show(
                                             context: context,
