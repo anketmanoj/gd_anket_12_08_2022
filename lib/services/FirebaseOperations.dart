@@ -842,8 +842,8 @@ class FirebaseOperations with ChangeNotifier {
     await FirebaseFirestore.instance.collection("posts").doc(videoId).update({
       "videotitle": video_title,
       "caption": caption,
-      "username": initUserName,
-      "userimage": initUserImage,
+      // "username": initUserName,
+      // "userimage": initUserImage,
       "isfree": isFree,
       "ispaid": isPaid,
       "price": price,

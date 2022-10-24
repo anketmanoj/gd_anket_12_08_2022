@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
+import 'package:diamon_rose_app/screens/PostPage/userPurchasedPostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ArViewerScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/imgseqanimation.dart';
 import 'package:diamon_rose_app/services/Effect_BG_Model.dart';
@@ -81,7 +82,7 @@ class PurchaseHistoryScreen extends StatelessWidget {
                     Navigator.push(
                         context,
                         PageTransition(
-                            child: PostDetailsScreen(
+                            child: UserPurchasePostDetailScreen(
                               videoId: video.id,
                             ),
                             type: PageTransitionType.fade));

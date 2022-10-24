@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
+import 'package:diamon_rose_app/screens/PostPage/userPurchasedPostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ArViewerScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/backgroundVideoViewer.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/imgseqanimation.dart';
@@ -265,7 +266,8 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                                             Navigator.push(
                                                 context,
                                                 PageTransition(
-                                                    child: PostDetailsScreen(
+                                                    child:
+                                                        UserPurchasePostDetailScreen(
                                                       videoId: videoSnap.id,
                                                     ),
                                                     type: PageTransitionType
@@ -564,7 +566,8 @@ class _MyCollectionHomeState extends State<MyCollectionHome> {
                                             Navigator.push(
                                                 context,
                                                 PageTransition(
-                                                    child: PostDetailsScreen(
+                                                    child:
+                                                        UserPurchasePostDetailScreen(
                                                       videoId: videoSnap.id,
                                                     ),
                                                     type: PageTransitionType

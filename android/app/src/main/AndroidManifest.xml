@@ -14,6 +14,10 @@ xmlns:tools="http://schemas.android.com/tools"
      <!-- Add the block below to your manifest file to configure apps with action.VIEW intent filters as visible to your app -->
     <!-- START HERE -->
     <queries>
+        <!-- <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="video/mp4" />
+        </intent> -->
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.action.LAUNCHER" />
