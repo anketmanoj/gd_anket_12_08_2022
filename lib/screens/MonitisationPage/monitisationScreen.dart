@@ -251,15 +251,16 @@ class MonitizationScreen extends StatelessWidget {
                                     // .orderBy("month", descending: true)
                                     .snapshots(),
                                 builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Center(
-                                      child: Text("No Data Available"),
-                                    );
-                                  }
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
                                     return Center(
                                       child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  if (snapshot.data!.docs.isEmpty) {
+                                    return Center(
+                                      child: Text(
+                                          "You haven’t made any sales yet"),
                                     );
                                   }
 
