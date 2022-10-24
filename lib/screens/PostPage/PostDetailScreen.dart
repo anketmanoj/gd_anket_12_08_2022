@@ -1,3 +1,5 @@
+// ignore_for_file: cascade_invocations
+
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -182,16 +184,12 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
     log("detecting screenshory now");
     screenListener.addScreenRecordListener((recorded) {
       ///Recorded was your record status (bool)
-      log("screen recording now");
+      showScreenrecordWarningMsg();
     });
 
     screenListener.addScreenShotListener((filePath) {
       ///filePath only available for Android
-      log("screen shoted!");
-      CoolAlert.show(
-          context: context,
-          type: CoolAlertType.info,
-          text: "Screenshot detected");
+      showScreenshotWarningMsg();
     });
     screenListener.watch();
 

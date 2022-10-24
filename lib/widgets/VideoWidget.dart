@@ -74,11 +74,11 @@ class VideoWidget extends StatelessWidget {
     final Authentication authentication =
         Provider.of<Authentication>(context, listen: false);
 
-    context.read<FirebaseOperations>().updatePostView(
-          videoId: video.id,
-          useruidVal: context.read<Authentication>().getUserId,
-          videoVal: video,
-        );
+    // context.read<FirebaseOperations>().updatePostView(
+    //       videoId: video.id,
+    //       useruidVal: context.read<Authentication>().getUserId,
+    //       videoVal: video,
+    //     );
     return Stack(
       children: [
         VisibilityDetector(
@@ -89,11 +89,11 @@ class VideoWidget extends StatelessWidget {
             if (visiblePercentage == 100) {
               log("${video.videotitle} played");
 
-              context.read<FirebaseOperations>().updatePostView(
-                    videoId: video.id,
-                    useruidVal: context.read<Authentication>().getUserId,
-                    videoVal: video,
-                  );
+              // context.read<FirebaseOperations>().updatePostView(
+              //       videoId: video.id,
+              //       useruidVal: context.read<Authentication>().getUserId,
+              //       videoVal: video,
+              //     );
 
               controller.play();
               if (video.isPaid &&

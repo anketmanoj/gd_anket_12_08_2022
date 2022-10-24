@@ -38,6 +38,181 @@ import 'package:sizer/sizer.dart';
 
 ConstantColors constantColors = ConstantColors();
 
+showScreenshotWarningMsg() async {
+  final bool showMessage = SharedPreferencesHelper.getBool("screenshotWarning");
+
+  if (showMessage == false) {
+    final ValueNotifier<bool> dontShowMessage = ValueNotifier<bool>(false);
+    await Get.dialog(
+      SimpleDialog(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Text(
+              "Screenshot detected",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: constantColors.navButton,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Text(
+              "Abusing the creators content by illegally sharing this content is a breach of the terms and conditions of Glamorous Diastation",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: constantColors.navButton,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          ValueListenableBuilder<bool>(
+              valueListenable: dontShowMessage,
+              builder: (context, messageOpt, _) {
+                return ListTile(
+                  title: Text("Dont show message again"),
+                  trailing: Checkbox(
+                    value: dontShowMessage.value,
+                    onChanged: (v) {
+                      dontShowMessage.value = !dontShowMessage.value;
+                    },
+                  ),
+                );
+              }),
+          SizedBox(
+            height: 10,
+          ),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: ElevatedButton(
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(constantColors.navButton),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+              onPressed: () {
+                SharedPreferencesHelper.setBool(
+                    "screenshotWarning", dontShowMessage.value);
+                Get.back();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.check,
+                    color: Colors.white,
+                  ),
+                  Text(
+                    LocaleKeys.understood.tr(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+showScreenrecordWarningMsg() async {
+  final bool showMessage =
+      SharedPreferencesHelper.getBool("screenrecordWarning");
+
+  if (showMessage == false) {
+    final ValueNotifier<bool> dontShowMessage = ValueNotifier<bool>(false);
+    await Get.dialog(
+      SimpleDialog(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Text(
+              "Screenrecord detected",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: constantColors.navButton,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Text(
+              "Abusing the creators content by illegally sharing this content is a breach of the terms and conditions of Glamorous Diastation",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: constantColors.navButton,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          ValueListenableBuilder<bool>(
+              valueListenable: dontShowMessage,
+              builder: (context, messageOpt, _) {
+                return ListTile(
+                  title: Text("Dont show message again"),
+                  trailing: Checkbox(
+                    value: dontShowMessage.value,
+                    onChanged: (v) {
+                      dontShowMessage.value = !dontShowMessage.value;
+                    },
+                  ),
+                );
+              }),
+          SizedBox(
+            height: 10,
+          ),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: ElevatedButton(
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(constantColors.navButton),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+              onPressed: () {
+                SharedPreferencesHelper.setBool(
+                    "screenrecordWarning", dontShowMessage.value);
+                Get.back();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.check,
+                    color: Colors.white,
+                  ),
+                  Text(
+                    LocaleKeys.understood.tr(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 List<Shadow> outlinedText(
     {double strokeWidth = 0.75,
     Color strokeColor = Colors.black,

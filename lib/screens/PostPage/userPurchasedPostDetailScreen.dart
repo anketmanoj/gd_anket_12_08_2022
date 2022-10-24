@@ -30,6 +30,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:screen_capture_event/screen_capture_event.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -58,6 +59,8 @@ class _UserPurchasePostDetailScreenState
   Video? video;
   bool loading = true;
 
+  final ScreenCaptureEvent screenListener = ScreenCaptureEvent();
+
   // get firebase video from video id
   Future<Video> getVideo() async {
     return await FirebaseFirestore.instance
@@ -74,80 +77,6 @@ class _UserPurchasePostDetailScreenState
     });
     // return video;
   }
-
-  // Future<void> initPayment(
-  //     {required String email,
-  //     required String amount,
-  //     required BuildContext ctx}) async {
-  //   try {
-  //     // * create a payment intent on the server
-  //     final response = await http.post(
-  //       Uri.parse(
-  //           "https://us-central1-gdfe-ac584.cloudfunctions.net/stripePaymentIntentRequest"),
-  //       body: {
-  //         'email': email,
-  //         'amount': amount,
-  //       },
-  //     );
-
-  //     final jsonResponse = jsonDecode(response.body);
-  //     // initailize the payment sheet
-  //     await Stripe.instance.initPaymentSheet(
-  //       paymentSheetParameters: SetupPaymentSheetParameters(
-  //         applePay: true,
-  //         googlePay: true,
-  //         paymentIntentClientSecret: jsonResponse['paymentIntent'],
-  //         merchantDisplayName: "Glamorous Diastation",
-  //         customerId: jsonResponse['customer'],
-  //         customerEphemeralKeySecret: jsonResponse['ephemeralKey'],
-  //         testEnv: true,
-  //         merchantCountryCode: 'US',
-  //       ),
-  //     );
-
-  //     await Stripe.instance.presentPaymentSheet();
-  //     showTopSnackBar(
-  //       ctx,
-  //       CustomSnackBar.success(
-  //         message: "Payment Successful",
-  //       ),
-  //     );
-
-  //     CoolAlert.show(
-  //       context: context,
-  //       type: CoolAlertType.loading,
-  //       text: "Saving to your collection",
-  //       barrierDismissible: false,
-  //     );
-  //     await Provider.of<FirebaseOperations>(context, listen: false)
-  //         .addToMyCollection(
-  //       videoOwnerId: video!.useruid,
-  //       amount: int.parse((double.parse(amount) / 100).toStringAsFixed(0)),
-  //       videoItem: video!,
-  //       isFree: video!.isFree,
-  //       ctx: context,
-  //       videoId: video!.id,
-  //     );
-  //     // ignore: avoid_catches_without_on_clauses
-  //   } catch (e) {
-  //     print(e.toString());
-  //     if (e is StripeException) {
-  //       showTopSnackBar(
-  //         ctx,
-  //         CustomSnackBar.error(
-  //           message: "Payment Error ${e.error.localizedMessage}",
-  //         ),
-  //       );
-  //     } else {
-  //       showTopSnackBar(
-  //         ctx,
-  //         CustomSnackBar.error(
-  //           message: "Payment Error ${e.toString()}",
-  //         ),
-  //       );
-  //     }
-  //   }
-  // }
 
   @override
   void initState() {
@@ -180,6 +109,16 @@ class _UserPurchasePostDetailScreenState
             videoVal: value,
           );
     });
+    screenListener.addScreenRecordListener((recorded) {
+      ///Recorded was your record status (bool)
+      showScreenrecordWarningMsg();
+    });
+
+    screenListener.addScreenShotListener((filePath) {
+      ///filePath only available for Android
+      showScreenshotWarningMsg();
+    });
+    screenListener.watch();
     super.initState();
   }
 
@@ -937,6 +876,7 @@ class _UserPurchasePostDetailScreenState
   void dispose() {
     _videoPlayerController.dispose();
     _chewieController.dispose();
+    screenListener.dispose();
 
     super.dispose();
   }

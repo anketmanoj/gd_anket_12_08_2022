@@ -38,6 +38,7 @@ import 'package:get/get.dart' hide Trans;
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:screen_capture_event/screen_capture_event.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
@@ -64,6 +65,8 @@ class _FeedPageState extends State<FeedPage> {
       pageIndex.value = value;
     }
   }
+
+  final ScreenCaptureEvent screenListener = ScreenCaptureEvent();
 
   Future<void> load() async {
     if (Platform.isIOS) {
@@ -130,7 +133,16 @@ class _FeedPageState extends State<FeedPage> {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       DynamicLinkService.retrieveDynamicLink(context);
     });
+    screenListener.addScreenRecordListener((recorded) {
+      ///Recorded was your record status (bool)
+      showScreenrecordWarningMsg();
+    });
 
+    screenListener.addScreenShotListener((filePath) {
+      ///filePath only available for Android
+      showScreenshotWarningMsg();
+    });
+    screenListener.watch();
     super.initState();
   }
 

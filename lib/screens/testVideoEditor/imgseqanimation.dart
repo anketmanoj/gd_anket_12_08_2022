@@ -17,6 +17,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:diamon_rose_app/services/img_seq_animator.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:screen_capture_event/screen_capture_event.dart';
 import 'package:sizer/sizer.dart';
 import 'package:spring_button/spring_button.dart';
 
@@ -63,6 +64,8 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
     setState(() {});
   }
 
+  final ScreenCaptureEvent screenListener = ScreenCaptureEvent();
+
   @override
   void initState() {
     log("init Ar");
@@ -81,6 +84,16 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
     log("usage is == ${widget.MyAR.usage}");
 
     log("added 1st to AR List ${widget.MyAR.imgSeq.length}");
+    screenListener.addScreenRecordListener((recorded) {
+      ///Recorded was your record status (bool)
+      showScreenrecordWarningMsg();
+    });
+
+    screenListener.addScreenShotListener((filePath) {
+      ///filePath only available for Android
+      showScreenshotWarningMsg();
+    });
+    screenListener.watch();
     super.initState();
 
     if (widget.arViewerScreen) {
@@ -107,6 +120,7 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
   @override
   void dispose() async {
     await _player!.dispose();
+    screenListener.dispose();
     if (widget.arViewerScreen) await controller!.dispose();
     // imageSequenceAnimator!.stop();
     // imageSequenceAnimator!.dispose();
