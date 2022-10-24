@@ -952,6 +952,8 @@ PODS:
     - Flutter
   - smart_auth (0.0.1):
     - Flutter
+  - social_share (0.0.1):
+    - Flutter
   - sqflite (0.0.2):
     - Flutter
     - FMDB (>= 2.7.5)
@@ -1007,6 +1009,7 @@ DEPENDENCIES:
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
   - simple_s3 (from `.symlinks/plugins/simple_s3/ios`)
   - smart_auth (from `.symlinks/plugins/smart_auth/ios`)
+  - social_share (from `.symlinks/plugins/social_share/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - system_info_plus (from `.symlinks/plugins/system_info_plus/ios`)
   - the_apple_sign_in (from `.symlinks/plugins/the_apple_sign_in/ios`)
@@ -1137,6 +1140,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/simple_s3/ios"
   smart_auth:
     :path: ".symlinks/plugins/smart_auth/ios"
+  social_share:
+    :path: ".symlinks/plugins/social_share/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
   system_info_plus:
@@ -1235,6 +1240,7 @@ SPEC CHECKSUMS:
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   simple_s3: dc1e236435ab824abf10e6147110fe86ab32c51c
   smart_auth: 4bedbc118723912d0e45a07e8ab34039c19e04f2
+  social_share: 702a5e3842addd22db515aa9e1e00a4b80a0296d
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   SwiftyGif: 6c3eafd0ce693cad58bb63d2b2fb9bacb8552780
   system_info_plus: 5393c8da281d899950d751713575fbf91c7709aa

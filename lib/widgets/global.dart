@@ -42,6 +42,7 @@ ConstantColors constantColors = ConstantColors();
 turnPreventionOn() async {
   await ScreenProtector.preventScreenshotOn();
   await ScreenProtector.protectDataLeakageOn();
+  await ScreenProtector.protectDataLeakageWithBlur();
 }
 
 turnPreventionOff() async {
