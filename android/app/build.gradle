@@ -107,7 +107,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation "androidx.multidex:multidex:2.0.0"
-    compile 'com.facebook.android:facebook-android-sdk:latest.release'
+    // compile 'com.facebook.android:facebook-android-sdk:latest.release'
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
     
 }
 
