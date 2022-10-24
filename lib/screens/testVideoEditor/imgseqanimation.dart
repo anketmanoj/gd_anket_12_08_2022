@@ -102,19 +102,12 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
         });
       });
     }
-
-    if (widget.MyAR.valueType == "free" || widget.MyAR.valueType == "myItems") {
-      turnPreventionOff();
-    } else {
-      turnPreventionOn();
-    }
   }
 
   @override
   void dispose() async {
     await _player!.dispose();
     if (widget.arViewerScreen) await controller!.dispose();
-    turnPreventionOff();
     // imageSequenceAnimator!.stop();
     // imageSequenceAnimator!.dispose();
     log("disposed");

@@ -331,6 +331,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                               title: "Delete Video?",
                               text:
                                   "Are you sure you want to delete this video?",
+                              showCancelBtn: true,
                               onConfirmBtnTap: () async {
                                 await firebaseOperations
                                     .deleteVideoPost(videoid: widget.videoId)

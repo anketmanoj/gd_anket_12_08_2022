@@ -204,6 +204,7 @@ class _UserPurchasePostDetailScreenState
               type: CoolAlertType.info,
               title: "Delete Video?",
               text: "Are you sure you want to delete this video?",
+              showCancelBtn: true,
               onConfirmBtnTap: () async {
                 await firebaseOperations
                     .deleteVideoPost(videoid: widget.videoId)
@@ -936,7 +937,6 @@ class _UserPurchasePostDetailScreenState
   void dispose() {
     _videoPlayerController.dispose();
     _chewieController.dispose();
-    turnPreventionOff();
 
     super.dispose();
   }

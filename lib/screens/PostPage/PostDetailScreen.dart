@@ -30,6 +30,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:screen_capture_event/screen_capture_event.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -55,6 +56,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
 
   Video? video;
   bool loading = true;
+
+  final ScreenCaptureEvent screenListener = ScreenCaptureEvent();
 
   // get firebase video from video id
   Future<Video> getVideo() async {
@@ -176,6 +179,22 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
             videoVal: value,
           );
     });
+    log("detecting screenshory now");
+    screenListener.addScreenRecordListener((recorded) {
+      ///Recorded was your record status (bool)
+      log("screen recording now");
+    });
+
+    screenListener.addScreenShotListener((filePath) {
+      ///filePath only available for Android
+      log("screen shoted!");
+      CoolAlert.show(
+          context: context,
+          type: CoolAlertType.info,
+          text: "Screenshot detected");
+    });
+    screenListener.watch();
+
     super.initState();
   }
 
@@ -200,6 +219,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
               type: CoolAlertType.info,
               title: "Delete Video?",
               text: "Are you sure you want to delete this video?",
+              showCancelBtn: true,
               onConfirmBtnTap: () async {
                 await firebaseOperations
                     .deleteVideoPost(videoid: widget.videoId)
@@ -1450,7 +1470,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   void dispose() {
     _videoPlayerController.dispose();
     _chewieController.dispose();
-    turnPreventionOff();
+    screenListener.dispose();
 
     super.dispose();
   }

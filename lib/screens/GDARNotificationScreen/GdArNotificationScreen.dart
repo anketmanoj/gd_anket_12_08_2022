@@ -107,6 +107,7 @@ class GDARNotificationScreen extends StatelessWidget {
                                         title: "Delete this AR?",
                                         text:
                                             "Are you sure you want to delete this AR?",
+                                        showCancelBtn: true,
                                         onConfirmBtnTap: () async {
                                           await FirebaseFirestore.instance
                                               .collection("users")
@@ -281,6 +282,7 @@ class GDARNotificationScreen extends StatelessWidget {
                                           "Delete ${postIdsToDelete.value.length} posts?",
                                       text:
                                           "Are you sure you want to delete these AR's?",
+                                      showCancelBtn: true,
                                       onConfirmBtnTap: () async {
                                         for (String postId
                                             in postIdsToDelete.value) {

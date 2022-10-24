@@ -49,19 +49,20 @@ class ArViewcollectionScreen extends StatelessWidget {
         context: context,
         actions: [
           ValueListenableBuilder<bool>(
-              valueListenable: deleteItems,
-              builder: (_, deleteVal, __) {
-                return IconButton(
-                  onPressed: () {
-                    deleteItems.value = !deleteItems.value;
-                  },
-                  icon: Icon(
-                    deleteVal == true
-                        ? Icons.delete_forever_outlined
-                        : Icons.delete_outlined,
-                  ),
-                );
-              })
+            valueListenable: deleteItems,
+            builder: (_, deleteVal, __) {
+              return IconButton(
+                onPressed: () {
+                  deleteItems.value = !deleteItems.value;
+                },
+                icon: Icon(
+                  deleteVal == true
+                      ? Icons.delete_forever_outlined
+                      : Icons.delete_outlined,
+                ),
+              );
+            },
+          ),
         ],
       ),
       body: AnimatedBuilder(
@@ -114,6 +115,7 @@ class ArViewcollectionScreen extends StatelessWidget {
                                           title: "Delete Item?",
                                           text:
                                               "Are you sure you want to delete this?",
+                                          showCancelBtn: true,
                                           onConfirmBtnTap: () async {
                                             await context
                                                 .read<FirebaseOperations>()

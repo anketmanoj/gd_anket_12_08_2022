@@ -2085,15 +2085,77 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                       onPressed: list.value.isNotEmpty
                           ? arIndexVal.value <= 0
                               ? () {
-                                  Get.snackbar(
-                                    "No AR has been detected",
-                                    "In order to create content, please include at least 1 AR in your video!",
-                                    overlayColor: constantColors.navButton,
-                                    colorText: constantColors.whiteColor,
-                                    duration: Duration(seconds: 10),
-                                    snackPosition: SnackPosition.TOP,
-                                    forwardAnimationCurve: Curves.elasticInOut,
-                                    reverseAnimationCurve: Curves.easeOut,
+                                  Get.dialog(
+                                    SimpleDialog(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(10),
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                "No AR has been detected",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: constantColors.black,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              Text(
+                                                "In order to create content, please include at least 1 AR in your video!",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: constantColors.black,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              ElevatedButton(
+                                                style: ButtonStyle(
+                                                  foregroundColor:
+                                                      MaterialStateProperty.all<
+                                                          Color>(Colors.white),
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all<
+                                                              Color>(
+                                                          constantColors
+                                                              .navButton),
+                                                  shape:
+                                                      MaterialStateProperty.all<
+                                                          RoundedRectangleBorder>(
+                                                    RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                    ),
+                                                  ),
+                                                ),
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.check,
+                                                      color: Colors.white,
+                                                    ),
+                                                    Text(
+                                                      LocaleKeys.understood
+                                                          .tr(),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   );
                                 }
                               : () async {

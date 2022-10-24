@@ -109,6 +109,7 @@ class _CartScreenCaratsState extends State<CartScreenCarats> {
                               title: "Remove ${videoModel.videotitle}",
                               text:
                                   "Are you sure you want to remove this content from your cart?",
+                              showCancelBtn: true,
                               onConfirmBtnTap: () async {
                                 Navigator.pop(context);
                                 setState(() {

@@ -172,6 +172,7 @@ class USerDraftVideoScreen extends StatelessWidget {
                                         "Delete ${postIdsToDelete.value.length} draft videos?",
                                     text:
                                         "Are you sure you want to delete these drafts?",
+                                    showCancelBtn: true,
                                     onConfirmBtnTap: () async {
                                       for (String postId
                                           in postIdsToDelete.value) {

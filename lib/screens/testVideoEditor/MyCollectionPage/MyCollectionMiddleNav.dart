@@ -161,6 +161,7 @@ class MyCollectionMiddleNav extends StatelessWidget {
                                                       title: "Delete Item?",
                                                       text:
                                                           "Are you sure you want to delete this?",
+                                                      showCancelBtn: true,
                                                       onConfirmBtnTap:
                                                           () async {
                                                         await context
@@ -287,6 +288,7 @@ class MyCollectionMiddleNav extends StatelessWidget {
                                                       title: "Delete Item?",
                                                       text:
                                                           "Are you sure you want to delete this?",
+                                                      showCancelBtn: true,
                                                       onConfirmBtnTap:
                                                           () async {
                                                         await context
@@ -414,6 +416,7 @@ class MyCollectionMiddleNav extends StatelessWidget {
                                                       title: "Delete Item?",
                                                       text:
                                                           "Are you sure you want to delete this?",
+                                                      showCancelBtn: true,
                                                       onConfirmBtnTap:
                                                           () async {
                                                         await context
