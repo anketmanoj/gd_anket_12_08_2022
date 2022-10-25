@@ -2647,7 +2647,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
     final String commandToExecute = "-v error -y -i ${bgVideoPath}" +
         ffmpegArCommand +
-        " -crf ${Platform.isIOS ? '30' : '40'} -preset ultrafast ${outputPath}";
+        " -crf 30 -preset ultrafast ${outputPath}";
 
     print("command : $commandToExecute");
 
