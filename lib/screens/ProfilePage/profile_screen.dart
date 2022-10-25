@@ -502,7 +502,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: Stack(
                                   children: [
                                     Container(
-                                      color: Colors.grey,
+                                      color: Colors.white,
                                       child: ImageNetworkLoader(
                                           imageUrl: video.thumbnailurl),
                                     ),

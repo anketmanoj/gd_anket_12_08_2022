@@ -518,7 +518,11 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                             trailing: Switch(
                                               activeColor:
                                                   constantColors.navButton,
-                                              value: bgVal,
+                                              value: context
+                                                      .read<ArVideoCreation>()
+                                                      .getFromPexel
+                                                  ? false
+                                                  : bgVal,
                                               onChanged: (val) {
                                                 bgSelected.value = val;
                                               },
@@ -536,6 +540,12 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                             title: Text(
                                               "Background",
                                             ),
+                                            subtitle: context
+                                                    .read<ArVideoCreation>()
+                                                    .getFromPexel
+                                                ? Text(
+                                                    "Background is from Pexel so it wont show up as your material")
+                                                : null,
                                           ),
                                           ListTile(
                                             trailing: Switch(

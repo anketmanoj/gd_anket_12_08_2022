@@ -52,19 +52,19 @@ class SearchPageHelper with ChangeNotifier {
             ),
           ),
         ),
-        CustomNavigationBarItem(
-          icon: const Icon(Icons.filter),
-          title: Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: Text(
-              "Pexel Videos",
-              style: TextStyle(
-                color: constantColors.whiteColor,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        ),
+        // CustomNavigationBarItem(
+        //   icon: const Icon(Icons.filter),
+        //   title: Padding(
+        //     padding: const EdgeInsets.only(top: 5),
+        //     child: Text(
+        //       "Pexel Videos",
+        //       style: TextStyle(
+        //         color: constantColors.whiteColor,
+        //         fontSize: 12,
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
