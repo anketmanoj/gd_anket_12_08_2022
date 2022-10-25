@@ -452,6 +452,7 @@ class VideoEditorController extends ChangeNotifier {
     String format = "mp4",
     double scale = 1.0,
     String? customInstruction,
+    int audioCheckVal = 1,
     void Function(Statistics, double)? onProgress,
     VideoExportPreset preset = VideoExportPreset.slow,
     bool isFiltersEnabled = true,
@@ -485,7 +486,7 @@ class VideoEditorController extends ChangeNotifier {
         : "";
     final String execute =
         // ignore: unnecessary_string_escapes
-        " -i \'$videoPath\' ${customInstruction ?? ""} $filter -crf ${Platform.isIOS ? '30' : '40'} -preset ultrafast $trim -y $outputPath";
+        " -i \'$videoPath\' ${audioCheckVal == 0 ? '-f lavfi -i anullsrc' : ''} ${customInstruction ?? ""} $filter -crf ${Platform.isIOS ? '30' : '40'} -preset ultrafast $trim -y $outputPath";
 
     print("trim command == $execute");
 

@@ -34,16 +34,17 @@ class VideoCreationOptionsScreen extends StatelessWidget {
 
   final ImagePicker _picker = ImagePicker();
 
-  Future<int> audioCheck({required String videoUrl}) async {
+  Future<int> audioCheck(
+      {required String videoUrl, required BuildContext context}) async {
     return FFprobeKit.execute(
             "-i $videoUrl -show_streams -select_streams a -loglevel error")
         .then((value) {
       return value.getOutput().then((output) {
         if (output!.isEmpty) {
-          ArVideoCreation().setArAudioFlagGeneral(0);
-          return 0;
+          context.read<ArVideoCreation>().setArAudioFlagGeneral(0);
+          return 1;
         } else {
-          ArVideoCreation().setArAudioFlagGeneral(1);
+          context.read<ArVideoCreation>().setArAudioFlagGeneral(1);
           return 1;
         }
       });
@@ -55,7 +56,8 @@ class VideoCreationOptionsScreen extends StatelessWidget {
       source: ImageSource.gallery,
     );
     if (file != null) {
-      final int audioFlag = await audioCheck(videoUrl: file.path);
+      final int audioFlag =
+          await audioCheck(videoUrl: file.path, context: context);
 
       switch (audioFlag) {
         case 1:
@@ -221,8 +223,8 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                           if (inputFile != null) {
                             // ignore: unawaited_futures
 
-                            final int audioFlag =
-                                await audioCheck(videoUrl: inputFile.path);
+                            final int audioFlag = await audioCheck(
+                                videoUrl: inputFile.path, context: context);
 
                             switch (audioFlag) {
                               case 1:
@@ -280,8 +282,8 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                           if (inputFile != null) {
                             // ignore: unawaited_futures
 
-                            final int audioFlag =
-                                await audioCheck(videoUrl: inputFile.path);
+                            final int audioFlag = await audioCheck(
+                                videoUrl: inputFile.path, context: context);
 
                             switch (audioFlag) {
                               case 1:
