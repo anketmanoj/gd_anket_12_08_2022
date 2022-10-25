@@ -175,21 +175,27 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
         loading = false;
       });
 
-      context.read<FirebaseOperations>().updatePostView(
-            videoId: value.id,
-            useruidVal: context.read<Authentication>().getUserId,
-            videoVal: value,
-          );
+      if (value.useruid != context.read<Authentication>().getUserId) {
+        context.read<FirebaseOperations>().updatePostView(
+              videoId: value.id,
+              useruidVal: context.read<Authentication>().getUserId,
+              videoVal: value,
+            );
+      }
     });
     log("detecting screenshory now");
     screenListener.addScreenRecordListener((recorded) {
       ///Recorded was your record status (bool)
-      showScreenrecordWarningMsg();
+      if (video!.isPaid) {
+        showScreenrecordWarningMsg();
+      }
     });
 
     screenListener.addScreenShotListener((filePath) {
       ///filePath only available for Android
-      showScreenshotWarningMsg();
+      if (video!.isPaid) {
+        showScreenshotWarningMsg();
+      }
     });
     screenListener.watch();
 

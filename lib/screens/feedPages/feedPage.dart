@@ -66,8 +66,6 @@ class _FeedPageState extends State<FeedPage> {
     }
   }
 
-  final ScreenCaptureEvent screenListener = ScreenCaptureEvent();
-
   Future<void> load() async {
     if (Platform.isIOS) {
       NotificationSettings settings = await _fcm.requestPermission(
@@ -133,16 +131,7 @@ class _FeedPageState extends State<FeedPage> {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       DynamicLinkService.retrieveDynamicLink(context);
     });
-    screenListener.addScreenRecordListener((recorded) {
-      ///Recorded was your record status (bool)
-      showScreenrecordWarningMsg();
-    });
 
-    screenListener.addScreenShotListener((filePath) {
-      ///filePath only available for Android
-      showScreenshotWarningMsg();
-    });
-    screenListener.watch();
     super.initState();
   }
 

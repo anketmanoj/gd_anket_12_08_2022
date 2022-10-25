@@ -178,11 +178,13 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
         });
       }
 
-      context.read<FirebaseOperations>().updatePostView(
-            videoId: value.id,
-            useruidVal: context.read<Authentication>().getUserId,
-            videoVal: value,
-          );
+      if (value.useruid != context.read<Authentication>().getUserId) {
+        context.read<FirebaseOperations>().updatePostView(
+              videoId: value.id,
+              useruidVal: context.read<Authentication>().getUserId,
+              videoVal: value,
+            );
+      }
     });
     super.initState();
   }

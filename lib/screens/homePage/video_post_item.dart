@@ -64,12 +64,13 @@ class _VideoPostItemState extends State<VideoPostItem> {
   @override
   void initState() {
     super.initState();
-
-    context.read<FirebaseOperations>().updatePostView(
-          videoId: widget.video.id,
-          useruidVal: context.read<Authentication>().getUserId,
-          videoVal: widget.video,
-        );
+    if (widget.video.useruid != context.read<Authentication>().getUserId) {
+      context.read<FirebaseOperations>().updatePostView(
+            videoId: widget.video.id,
+            useruidVal: context.read<Authentication>().getUserId,
+            videoVal: widget.video,
+          );
+    }
 
     _videoPlayerController =
         VideoPlayerController.network(widget.video.videourl);
