@@ -877,6 +877,7 @@ class FirebaseOperations with ChangeNotifier {
     List<ARList>? arListVal,
     required BuildContext ctx,
     required bool addBgToMaterials,
+    bool fromPexels = false,
   }) async {
     try {
       List<String> arUid = [];
@@ -921,7 +922,7 @@ class FirebaseOperations with ChangeNotifier {
           'main': uploadedAWS_BgFile!,
           'layerType': 'Background',
           'timestamp': Timestamp.now(),
-          'hideItem': false,
+          'hideItem': fromPexels ? true : false,
           'valueType': "myItems",
           "ownerId": userUid,
           "ownerName": initUserName,
@@ -1145,7 +1146,7 @@ class FirebaseOperations with ChangeNotifier {
                       .collection("materials")
                       .doc("${arUidVal}${id}")
                       .set({
-                    "hideItem": false,
+                    "hideItem": fromPexels ? true : false,
                     "id": "${arSnapshot.data()!['id']}${id}",
                     "gif": arSnapshot.data()!['gif'],
                     "main": arSnapshot.data()!['main'],

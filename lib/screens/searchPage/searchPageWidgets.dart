@@ -8,6 +8,7 @@ import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateMessage.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/pexelsService/previewPexelVideo.dart';
 import 'package:diamon_rose_app/services/pexelsService/searchForVideoModel.dart'
     as pexel;
 import 'package:diamon_rose_app/services/user.dart';
@@ -228,7 +229,6 @@ class _PexelSearchState extends State<PexelSearch> {
       },
     );
     if (response.statusCode == 200) {
-      log("search pexel response full = ${response.body}");
       value = pexel.SearchForVideoModel.fromJson(response.body);
 
       return value;
@@ -291,13 +291,25 @@ class _PexelSearchState extends State<PexelSearch> {
                   ),
                   itemCount: snapshot.data!.videos.length,
                   itemBuilder: (context, index) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                snapshot.data!.videos[index].image),
-                            fit: BoxFit.cover),
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                              child: PreviewPexelVideoScreen(
+                                  pexelVideoUrl: snapshot
+                                      .data!.videos[index].videoFiles[0].link),
+                              type: PageTransitionType.fade),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          image: DecorationImage(
+                              image: NetworkImage(
+                                  snapshot.data!.videos[index].image),
+                              fit: BoxFit.cover),
+                        ),
                       ),
                     );
                   },
@@ -305,11 +317,15 @@ class _PexelSearchState extends State<PexelSearch> {
               ),
             ],
           );
-        } else {
+        } else if (snapshot.hasError) {
           return Center(
             child: Text("Could not connect to Pexels"),
           );
         }
+
+        return Center(
+          child: Text("Looking for something?"),
+        );
       },
     );
   }

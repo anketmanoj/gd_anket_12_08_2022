@@ -15,6 +15,7 @@ import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminThumbnailPre
 import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
+import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
@@ -946,11 +947,16 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
 
                               log("thumbnail == $coverThumbnail");
 
+                              log("from pecels value = ${context.read<ArVideoCreation>().getFromPexel}");
+
                               final bool result =
                                   await firebaseOperations.uploadVideo(
                                 coverThumbnailUrl: coverThumbnail!,
                                 addBgToMaterials: bgSelected.value,
                                 ctx: context,
+                                fromPexels: context
+                                    .read<ArVideoCreation>()
+                                    .getFromPexel,
                                 backgroundVideoFile:
                                     videoEditor.getBackgroundVideoFile,
                                 arListVal: selectMaterials

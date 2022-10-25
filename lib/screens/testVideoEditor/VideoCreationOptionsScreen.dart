@@ -36,6 +36,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
 
   Future<int> audioCheck(
       {required String videoUrl, required BuildContext context}) async {
+    context.read<ArVideoCreation>().setFromPexel(false);
     return FFprobeKit.execute(
             "-i $videoUrl -show_streams -select_streams a -loglevel error")
         .then((value) {

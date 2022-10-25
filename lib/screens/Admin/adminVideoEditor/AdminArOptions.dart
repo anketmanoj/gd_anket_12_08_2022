@@ -9,6 +9,7 @@ import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminGdArNotificationScreen.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminInitArVideoEditorScreen.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/InitAdminVideoEditorScreen.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/core/build_context.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
@@ -41,6 +42,7 @@ class AdminArOptions extends StatelessWidget {
   final ImagePicker _picker = ImagePicker();
 
   Future<int> audioCheck({required String videoUrl}) async {
+    context.read<ArVideoCreation>().setFromPexel(false);
     return FFprobeKit.execute(
             "-i $videoUrl -show_streams -select_streams a -loglevel error")
         .then((value) {

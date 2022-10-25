@@ -26,6 +26,7 @@ class ArVideoCreation extends ChangeNotifier {
   RvmResponse? _rvmResponse;
   int? _audioFlag;
   int? arAudioFlagGeneral;
+  bool _fromPexel = false;
 
   File? get getGifFile => _gifFile;
   File? get getAudioCompFile => _audioCompFile;
@@ -33,8 +34,14 @@ class ArVideoCreation extends ChangeNotifier {
   RvmResponse? get getRvmResponse => _rvmResponse;
   int? get getAudioFlag => _audioFlag;
   int? get getArAudioFlagGeneral => arAudioFlagGeneral;
+  bool get getFromPexel => _fromPexel;
 
   final ConstantColors constantColors = ConstantColors();
+
+  void setFromPexel(bool value) {
+    _fromPexel = value;
+    notifyListeners();
+  }
 
   void setArAudioFlagGeneral(int value) {
     arAudioFlagGeneral = value;
