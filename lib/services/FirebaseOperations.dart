@@ -21,6 +21,8 @@ import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
 import 'package:diamon_rose_app/services/fcm_notification_Service.dart';
 import 'package:diamon_rose_app/services/mux/mux_video_stream.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
+import 'package:diamon_rose_app/services/pexelsService/searchForVideoModel.dart'
+    as pexel;
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
@@ -2852,6 +2854,40 @@ class FirebaseOperations with ChangeNotifier {
     } else {
       // ignore: unawaited_futures
       log("Anket Error RVM ${response.statusCode}");
+      return null;
+    }
+  }
+
+  Future<pexel.SearchForVideoModel?> searchPexels() async {
+    // ignore: unawaited_futures
+
+    log("sending request");
+
+    var response = await http.get(
+      Uri.parse(
+        "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api3v4/background_separation2v4/",
+        // "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api3v3/background_separation2/",
+        // "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api3v2/background_separation2/",
+        // "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/api3/background_separation2/",
+      ),
+      headers: {"Content-Type": "application/json"},
+    );
+
+    log("sent request");
+
+    // log(response.statusCode)
+
+    if (response.statusCode == 200) {
+      log("Anket response OK");
+
+      log("rvm response full = ${response.body}");
+      final pexel.SearchForVideoModel pexelResponse =
+          pexel.SearchForVideoModel.fromJson(response.body);
+
+      return pexelResponse;
+    } else {
+      // ignore: unawaited_futures
+      log("Anket Error pexelResponse ${response.statusCode}");
       return null;
     }
   }

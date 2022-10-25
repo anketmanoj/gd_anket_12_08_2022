@@ -53,52 +53,49 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: Provider.of<SearchPageHelper>(context, listen: false)
                       .topNavBar(context, pageIndex, pageController)),
             ),
-            Visibility(
-              visible: pageIndex == 0 || pageIndex == 1,
-              child: Container(
-                width: size.width * 0.85,
-                height: size.height * 0.06,
-                child: TextFormField(
-                  controller: textController,
-                  keyboardType: TextInputType.text,
-                  autocorrect: false,
-                  style: TextStyle(
+            Container(
+              width: size.width * 0.85,
+              height: size.height * 0.06,
+              child: TextFormField(
+                controller: textController,
+                keyboardType: TextInputType.text,
+                autocorrect: false,
+                style: TextStyle(
+                  color: constantColors.whiteColor,
+                  fontSize: 12,
+                ),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: constantColors.black,
+                  hintText: LocaleKeys.searchbyuserorvideo.tr(),
+                  hintStyle: TextStyle(
                     color: constantColors.whiteColor,
                     fontSize: 12,
                   ),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: constantColors.black,
-                    hintText: LocaleKeys.searchbyuserorvideo.tr(),
-                    hintStyle: TextStyle(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50),
+                    borderSide: BorderSide(
+                      color: Colors.white,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50),
+                    borderSide: BorderSide(
+                      color: Colors.white,
+                    ),
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search_outlined,
+                    color: constantColors.whiteColor,
+                  ),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      textController.clear();
+                      setState(() {});
+                    },
+                    icon: Icon(
+                      Icons.clear,
                       color: constantColors.whiteColor,
-                      fontSize: 12,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(50),
-                      borderSide: BorderSide(
-                        color: Colors.white,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(50),
-                      borderSide: BorderSide(
-                        color: Colors.white,
-                      ),
-                    ),
-                    prefixIcon: Icon(
-                      Icons.search_outlined,
-                      color: constantColors.whiteColor,
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        textController.clear();
-                        setState(() {});
-                      },
-                      icon: Icon(
-                        Icons.clear,
-                        color: constantColors.whiteColor,
-                      ),
                     ),
                   ),
                 ),
@@ -115,8 +112,8 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             UserSearch(userSearchVal: textController.text),
             VideoSearch(videoSearchVal: textController.text),
-            Center(
-              child: Text("Pexels Page"),
+            PexelSearch(
+              searchQuery: textController.text,
             ),
           ],
           physics: const NeverScrollableScrollPhysics(),

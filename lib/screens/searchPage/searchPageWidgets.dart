@@ -1,17 +1,15 @@
 // ignore_for_file: unawaited_futures
-
-import 'dart:collection';
 import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/OtherUserProfile/otherUserProfile.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateMessage.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/pexelsService/searchForVideoModel.dart'
+    as pexel;
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
@@ -22,7 +20,7 @@ import 'package:get/get.dart' hide Trans;
 import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-import 'package:sizer/sizer.dart';
+import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 class UserSearch extends StatelessWidget {
@@ -200,6 +198,120 @@ class UserSearch extends StatelessWidget {
               }
             },
           );
+  }
+}
+
+class PexelSearch extends StatefulWidget {
+  final String searchQuery;
+  PexelSearch({
+    Key? key,
+    required this.searchQuery,
+  }) : super(key: key);
+
+  @override
+  State<PexelSearch> createState() => _PexelSearchState();
+}
+
+class _PexelSearchState extends State<PexelSearch> {
+  final ConstantColors constantColors = ConstantColors();
+
+  pexel.SearchForVideoModel? value;
+
+  Future<pexel.SearchForVideoModel?> getSearchPexelResults(
+      {required String searchQuery}) async {
+    final response = await http.get(
+      Uri.parse(
+          "https://api.pexels.com/videos/search?query=$searchQuery&per_page=80&orientation=portrait&size=medium"),
+      headers: {
+        "Authorization":
+            "563492ad6f91700001000001933231fd77ce46fab50bdb31e7298df0"
+      },
+    );
+    if (response.statusCode == 200) {
+      log("search pexel response full = ${response.body}");
+      value = pexel.SearchForVideoModel.fromJson(response.body);
+
+      return value;
+    } else {
+      log("idhar bro");
+      return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return FutureBuilder<pexel.SearchForVideoModel?>(
+      future: getSearchPexelResults(searchQuery: widget.searchQuery),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (snapshot.hasData) {
+          if (snapshot.data!.videos.isEmpty) {
+            return Center(
+              child: Text("No Videos found for ${widget.searchQuery}"),
+            );
+          }
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: InkWell(
+                  onTap: () async {
+                    final url = 'https://www.pexels.com/';
+                    if (await canLaunch(url)) {
+                      await launch(
+                        url,
+                        forceSafariVC: false,
+                      );
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Videos provided by Pexels",
+                        style: TextStyle(
+                          color: constantColors.navButton,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 5,
+                    mainAxisSpacing: 5,
+                  ),
+                  itemCount: snapshot.data!.videos.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        image: DecorationImage(
+                            image: NetworkImage(
+                                snapshot.data!.videos[index].image),
+                            fit: BoxFit.cover),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        } else {
+          return Center(
+            child: Text("Could not connect to Pexels"),
+          );
+        }
+      },
+    );
   }
 }
 

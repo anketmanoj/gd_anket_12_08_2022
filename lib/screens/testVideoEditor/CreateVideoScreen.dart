@@ -2546,15 +2546,73 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                   // );
                                 }
                           : () {
-                              Get.snackbar(
-                                LocaleKeys.noareffectadded.tr(),
-                                LocaleKeys.OneAROrOneEffect.tr(),
-                                overlayColor: constantColors.navButton,
-                                colorText: constantColors.whiteColor,
-                                duration: Duration(seconds: 10),
-                                snackPosition: SnackPosition.TOP,
-                                forwardAnimationCurve: Curves.elasticInOut,
-                                reverseAnimationCurve: Curves.easeOut,
+                              Get.dialog(
+                                SimpleDialog(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            LocaleKeys.noareffectadded.tr(),
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: constantColors.black,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            LocaleKeys.OneAROrOneEffect.tr(),
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: constantColors.black,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          ElevatedButton(
+                                            style: ButtonStyle(
+                                              foregroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(Colors.white),
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                          Color>(
+                                                      constantColors.navButton),
+                                              shape: MaterialStateProperty.all<
+                                                  RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                              ),
+                                            ),
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.check,
+                                                  color: Colors.white,
+                                                ),
+                                                Text(
+                                                  LocaleKeys.understood.tr(),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               );
                             },
                     ),
