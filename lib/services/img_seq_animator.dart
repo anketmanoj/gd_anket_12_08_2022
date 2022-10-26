@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 typedef CacheProgressIndicatorBuilder = Widget Function(
     BuildContext context, double progress);
@@ -71,7 +72,6 @@ class ImageSequenceAnimator extends StatefulWidget {
   final bool isOnline;
   final double frameHeight;
   final double frameWidth;
-  final int listValue;
 
   ///Set this value to true if you want the [ImageSequenceAnimator] to wait until the entire image sequence is cached. Otherwise, the [ImageSequenceAnimator]
   ///will invoke [onReadyToPlay] and start playing if [isAutoPlay] is set to true when it approximates that the remaining caching can be completed without
@@ -120,7 +120,6 @@ class ImageSequenceAnimator extends StatefulWidget {
     this.onPlaying,
     this.onFinishPlaying,
     this.fit,
-    this.listValue: 1,
   }) : super(key: key);
 
   @override
@@ -381,7 +380,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
     if (!_isReadyToPlay) {
       if ((widget.waitUntilCacheIsComplete && _isCacheComplete) ||
           (!widget.waitUntilCacheIsComplete &&
-              _cacheMillisRemaining * 0.9 < totalTime)) {
+              _cacheMillisRemaining * 0.9999 < totalTime)) {
         _isReadyToPlay = true;
         if (widget.onReadyToPlay != null) widget.onReadyToPlay!(this);
         if (widget.isAutoPlay) play(from: 0.0);
@@ -444,6 +443,8 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
     else
       return ValueListenableBuilder(
         builder: (BuildContext context, int change, Widget? cachedChild) {
+          final String timeNow =
+              Timestamp.now().millisecondsSinceEpoch.toString();
           if (!_isCacheComplete) {
             if (_currentCachedOnlineFrame == null ||
                 _newCacheFrame != _previousCacheFrame) {
@@ -453,11 +454,10 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
               log("here bruvva");
 
               _currentCachedOnlineFrame = CachedNetworkImage(
-                cacheKey: widget.listValue > 1
-                    ? "${Timestamp.now().millisecondsSinceEpoch}{_getCacheDirectory()}"
-                    : null,
                 // key: UniqueKey(),
+                // cacheKey: timeNow + _getCacheDirectory(),
                 memCacheWidth: (widget.frameWidth).toInt(),
+                cacheManager: DefaultCacheManager(),
                 memCacheHeight: (widget.frameHeight).toInt(),
                 maxHeightDiskCache: (widget.frameHeight).toInt(),
                 maxWidthDiskCache: (widget.frameWidth).toInt(),
@@ -474,8 +474,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
                   }
                   if (!_isReadyToPlay &&
                       widget.cacheProgressIndicatorBuilder != null)
-                    return widget.cacheProgressIndicatorBuilder!(context,
-                        1.0 - _cacheMillisRemaining / _cacheMillisTotal);
+                    return Container();
                   else
                     return Container();
                 },
@@ -492,11 +491,11 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
               _colorChanged = false;
               _previousFrame = _animationController!.value.floor();
               if (_previousFrame < _frameCount) {
-                log("here now anket dev this onesss");
                 _currentDisplayedOnlineFrame = CachedNetworkImage(
                   // key: UniqueKey(),
-
+                  // cacheKey: timeNow + _getDirectory(),
                   memCacheWidth: (widget.frameWidth).toInt(),
+                  cacheManager: DefaultCacheManager(),
                   memCacheHeight: (widget.frameHeight).toInt(),
                   maxHeightDiskCache: (widget.frameHeight).toInt(),
                   maxWidthDiskCache: (widget.frameWidth).toInt(),
