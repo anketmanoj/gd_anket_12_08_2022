@@ -1448,69 +1448,85 @@ class VideoWidget extends StatelessWidget {
                                   );
                                 },
                               ),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: myItems.length,
-                                itemBuilder: (context, index) {
-                                  return ValueListenableBuilder<bool>(
-                                      valueListenable: myItems[index].selected,
-                                      builder: (context, selected, _) {
-                                        return ListTile(
-                                          leading: Container(
-                                            height: 40,
-                                            width: 40,
-                                            child: ImageNetworkLoader(
-                                              imageUrl: myItems[index].gif,
+                              Visibility(
+                                visible: myItems.isNotEmpty,
+                                replacement: Center(
+                                  child: Text(
+                                    "Owner has not added any Materials for free with this video!",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: constantColors.bioBg,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: myItems.length,
+                                  itemBuilder: (context, index) {
+                                    return ValueListenableBuilder<bool>(
+                                        valueListenable:
+                                            myItems[index].selected,
+                                        builder: (context, selected, _) {
+                                          return ListTile(
+                                            leading: Container(
+                                              height: 40,
+                                              width: 40,
+                                              child: ImageNetworkLoader(
+                                                imageUrl: myItems[index].gif,
+                                              ),
                                             ),
-                                          ),
-                                          trailing: Checkbox(
-                                            value:
-                                                myItems[index].selected.value,
-                                            onChanged: (val) {
-                                              myItems[index].selected.value =
-                                                  val!;
+                                            trailing: Checkbox(
+                                              value:
+                                                  myItems[index].selected.value,
+                                              onChanged: (val) {
+                                                myItems[index].selected.value =
+                                                    val!;
 
-                                              log(myItems
-                                                  .where((element) =>
-                                                      element.selected.value ==
-                                                      true)
-                                                  .toList()
-                                                  .length
-                                                  .toString());
-                                            },
-                                          ),
-                                          title: Text(
-                                            // !Found this here;
-                                            "${myItems[index].layerType} by ${myItems[index].ownerName}",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.white,
+                                                log(myItems
+                                                    .where((element) =>
+                                                        element
+                                                            .selected.value ==
+                                                        true)
+                                                    .toList()
+                                                    .length
+                                                    .toString());
+                                              },
                                             ),
-                                          ),
-                                          subtitle: myItems[index].usage != null
-                                              ? Row(
-                                                  children: [
-                                                    TextButton.icon(
-                                                      onPressed: () {},
-                                                      icon: Icon(
-                                                        Icons.arrow_forward,
-                                                        color: constantColors
-                                                            .bioBg,
-                                                      ),
-                                                      label: Text(
-                                                        "As ${snapshot.data!.docs[index]['usage']}",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          color: Colors.white,
+                                            title: Text(
+                                              // !Found this here;
+                                              "${myItems[index].layerType} by ${myItems[index].ownerName}",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            subtitle: myItems[index].usage !=
+                                                    null
+                                                ? Row(
+                                                    children: [
+                                                      TextButton.icon(
+                                                        onPressed: () {},
+                                                        icon: Icon(
+                                                          Icons.arrow_forward,
+                                                          color: constantColors
+                                                              .bioBg,
+                                                        ),
+                                                        label: Text(
+                                                          "As ${snapshot.data!.docs[index]['usage']}",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            color: Colors.white,
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ],
-                                                )
-                                              : null,
-                                        );
-                                      });
-                                },
+                                                    ],
+                                                  )
+                                                : null,
+                                          );
+                                        });
+                                  },
+                                ),
                               ),
                               Divider(
                                 color: constantColors.whiteColor,
@@ -1585,7 +1601,7 @@ class VideoWidget extends StatelessWidget {
                                       //     amount: "10", currency: "USD"),
                                       child: Text(
                                         video!.videoType == "video"
-                                            ? LocaleKeys.addToMyInventory.tr()
+                                            ? LocaleKeys.addtomymaterials.tr()
                                             : LocaleKeys.addtoarviewcollection
                                                 .tr(),
                                         style: TextStyle(
