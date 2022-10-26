@@ -447,6 +447,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
               _newCacheFrame = _previousCacheFrame;
               if (_cacheStartDateTime == null)
                 _cacheStartDateTime = DateTime.now();
+              log("here bruvva");
               _currentCachedOnlineFrame = CachedNetworkImage(
                 // key: UniqueKey(),
                 memCacheWidth: (widget.frameWidth).toInt(),

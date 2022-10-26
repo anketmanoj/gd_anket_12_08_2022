@@ -146,6 +146,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
 
   @override
   void initState() {
+    log("length of arList == ${widget.arList.length}");
     selectMaterials = widget.arList;
 
     super.initState();
@@ -521,7 +522,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                               value: context
                                                       .read<ArVideoCreation>()
                                                       .getFromPexel
-                                                  ? false
+                                                  ? true
                                                   : bgVal,
                                               onChanged: (val) {
                                                 bgSelected.value = val;
@@ -544,7 +545,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                                     .read<ArVideoCreation>()
                                                     .getFromPexel
                                                 ? Text(
-                                                    "Background is from Pexel so it wont show up as your material")
+                                                    "Background is from Pexel so you cant hide it")
                                                 : null,
                                           ),
                                           ListTile(
@@ -601,6 +602,12 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                                   ? "AR Cut out"
                                                   : "Effect Added",
                                             ),
+                                            subtitle: selectMaterials[index]
+                                                        .layerType ==
+                                                    LayerType.Effect
+                                                ? Text(
+                                                    "Effect picked from GIPHY so you cant hide it")
+                                                : null,
                                           ),
                                         ],
                                       );
@@ -611,9 +618,17 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                           activeColor: constantColors.navButton,
                                           value: selected,
                                           onChanged: (val) {
-                                            selectMaterials[index]
-                                                .selectedMaterial!
-                                                .value = val;
+                                            if (selectMaterials[index]
+                                                    .layerType ==
+                                                LayerType.Effect) {
+                                              selectMaterials[index]
+                                                  .selectedMaterial!
+                                                  .value = true;
+                                            } else {
+                                              selectMaterials[index]
+                                                  .selectedMaterial!
+                                                  .value = val;
+                                            }
 
                                             log(selectMaterials
                                                 .where((element) =>
@@ -656,6 +671,12 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                               ? "AR Cut out"
                                               : "Effect Added",
                                         ),
+                                        subtitle: selectMaterials[index]
+                                                    .layerType ==
+                                                LayerType.Effect
+                                            ? Text(
+                                                "Effect picked from GIPHY so you cant hide it")
+                                            : null,
                                       );
                                   }
                                 });
@@ -1027,7 +1048,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                 );
                               }
 
-                              //ignore: avoid_catches_without_on_clauses
+                              // //ignore: avoid_catches_without_on_clauses
 
                             } else if (_selectedRecommendedOptions.length ==
                                 0) {

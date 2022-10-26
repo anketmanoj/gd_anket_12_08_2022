@@ -112,9 +112,9 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             UserSearch(userSearchVal: textController.text),
             VideoSearch(videoSearchVal: textController.text),
-            // PexelSearch(
-            //   searchQuery: textController.text,
-            // ),
+            PexelSearch(
+              searchQuery: textController.text,
+            ),
           ],
           physics: const NeverScrollableScrollPhysics(),
           onPageChanged: (page) {

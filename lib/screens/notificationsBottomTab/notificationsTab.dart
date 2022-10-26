@@ -25,6 +25,7 @@ class _NotificationsTabState extends State<NotificationsTab> {
         child: Scaffold(
           backgroundColor: constantColors.whiteColor,
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             backgroundColor: constantColors.navButton,
             title: Text(
               LocaleKeys.interactions.tr(),
