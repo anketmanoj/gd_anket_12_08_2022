@@ -162,7 +162,7 @@ Future createIsolate(int index) async {
 
   await ApiService.loadNextFreeOnly();
   final List<Video> _urlList = await ApiService.getVideos();
-  final List<Video> newList = _urlList.sublist(index, _urlList.length);
+  final List<Video> newList = _urlList.sublist(index + 1, _urlList.length);
   log("index == $index | urlLen = ${_urlList.length} || new == ${newList.length}");
 
   isolateSendPort.send([

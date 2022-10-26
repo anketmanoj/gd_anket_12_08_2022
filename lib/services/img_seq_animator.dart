@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -70,6 +71,7 @@ class ImageSequenceAnimator extends StatefulWidget {
   final bool isOnline;
   final double frameHeight;
   final double frameWidth;
+  final int listValue;
 
   ///Set this value to true if you want the [ImageSequenceAnimator] to wait until the entire image sequence is cached. Otherwise, the [ImageSequenceAnimator]
   ///will invoke [onReadyToPlay] and start playing if [isAutoPlay] is set to true when it approximates that the remaining caching can be completed without
@@ -118,6 +120,7 @@ class ImageSequenceAnimator extends StatefulWidget {
     this.onPlaying,
     this.onFinishPlaying,
     this.fit,
+    this.listValue: 1,
   }) : super(key: key);
 
   @override
@@ -378,7 +381,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
     if (!_isReadyToPlay) {
       if ((widget.waitUntilCacheIsComplete && _isCacheComplete) ||
           (!widget.waitUntilCacheIsComplete &&
-              _cacheMillisRemaining * 0.85 < totalTime)) {
+              _cacheMillisRemaining * 0.9 < totalTime)) {
         _isReadyToPlay = true;
         if (widget.onReadyToPlay != null) widget.onReadyToPlay!(this);
         if (widget.isAutoPlay) play(from: 0.0);
@@ -448,7 +451,15 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
               if (_cacheStartDateTime == null)
                 _cacheStartDateTime = DateTime.now();
               log("here bruvva");
+              if (widget.listValue <= 1) {
+                log("list vlaue 0");
+              } else {
+                log("list vlaue ${widget.listValue}");
+              }
               _currentCachedOnlineFrame = CachedNetworkImage(
+                cacheKey: widget.listValue > 1
+                    ? "${Timestamp.now().millisecondsSinceEpoch}${_getCacheDirectory()}"
+                    : null,
                 // key: UniqueKey(),
                 memCacheWidth: (widget.frameWidth).toInt(),
                 memCacheHeight: (widget.frameHeight).toInt(),
@@ -488,6 +499,8 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
                 log("here now anket dev this onesss");
                 _currentDisplayedOnlineFrame = CachedNetworkImage(
                   // key: UniqueKey(),
+                  // cacheKey:
+                  //     "${Timestamp.now().millisecondsSinceEpoch}{ _getDirectory()}",
                   memCacheWidth: (widget.frameWidth).toInt(),
                   memCacheHeight: (widget.frameHeight).toInt(),
                   maxHeightDiskCache: (widget.frameHeight).toInt(),
