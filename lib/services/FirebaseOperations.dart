@@ -910,7 +910,7 @@ class FirebaseOperations with ChangeNotifier {
 
       String idVal = nanoid();
 
-      if (addBgToMaterials == true) {
+      if (addBgToMaterials == true || fromPexels == true) {
         await FirebaseFirestore.instance
             .collection("users")
             .doc(userUid)
@@ -927,6 +927,7 @@ class FirebaseOperations with ChangeNotifier {
           "ownerId": userUid,
           "ownerName": fromPexels ? "Pexels" : initUserName,
         }).then((value) {
+          log("added background to arIdsVal");
           arIdsVal.add(idVal);
           notifyListeners();
         });

@@ -525,7 +525,16 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                                   ? true
                                                   : bgVal,
                                               onChanged: (val) {
-                                                bgSelected.value = val;
+                                                if (context
+                                                    .read<ArVideoCreation>()
+                                                    .getFromPexel) {
+                                                  bgSelected.value = true;
+                                                } else {
+                                                  bgSelected.value = val;
+                                                }
+
+                                                log(bgSelected.value
+                                                    .toString());
                                               },
                                             ),
                                             leading: Container(

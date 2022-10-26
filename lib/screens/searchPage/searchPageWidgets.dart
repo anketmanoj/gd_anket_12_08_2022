@@ -310,6 +310,18 @@ class _PexelSearchState extends State<PexelSearch> {
                                   snapshot.data!.videos[index].image),
                               fit: BoxFit.cover),
                         ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 10, left: 10),
+                          child: Text(
+                            "${snapshot.data!.videos[index].duration} secs",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              shadows: outlinedText(
+                                  strokeColor: constantColors.black,
+                                  strokeWidth: 1),
+                            ),
+                          ),
+                        ),
                       ),
                     );
                   },
