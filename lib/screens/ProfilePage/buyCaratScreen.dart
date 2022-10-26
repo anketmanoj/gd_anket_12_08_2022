@@ -108,7 +108,24 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
               title: Text('Fetching products...')));
     }
     if (!_isAvailable) {
-      return const Card();
+      return Card(
+          child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Text(
+                "Error Getting Products from ${Platform.isIOS ? 'Apple App Store' : 'Google Play Store'}"),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => this.widget));
+                },
+                child: Text("Retry")),
+          ],
+        ),
+      ));
     }
     const ListTile productHeader = ListTile(title: Text('Products for Sale'));
     final List<ListTile> productList = <ListTile>[];
@@ -335,7 +352,24 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
               title: Text('Fetching consumables...')));
     }
     if (!_isAvailable || _notFoundIds.contains(_kConsumableId0)) {
-      return const Card();
+      return Card(
+          child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Text(
+                "Error Getting Products from ${Platform.isIOS ? 'Apple App Store' : 'Google Play Store'}"),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => this.widget));
+                },
+                child: Text("Retry")),
+          ],
+        ),
+      ));
     }
     const ListTile consumableHeader =
         ListTile(title: Text('Purchased consumables'));
