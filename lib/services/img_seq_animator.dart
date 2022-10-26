@@ -451,14 +451,10 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
               if (_cacheStartDateTime == null)
                 _cacheStartDateTime = DateTime.now();
               log("here bruvva");
-              if (widget.listValue <= 1) {
-                log("list vlaue 0");
-              } else {
-                log("list vlaue ${widget.listValue}");
-              }
+
               _currentCachedOnlineFrame = CachedNetworkImage(
                 cacheKey: widget.listValue > 1
-                    ? "${Timestamp.now().millisecondsSinceEpoch}${_getCacheDirectory()}"
+                    ? "${Timestamp.now().millisecondsSinceEpoch}{_getCacheDirectory()}"
                     : null,
                 // key: UniqueKey(),
                 memCacheWidth: (widget.frameWidth).toInt(),
@@ -499,8 +495,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
                 log("here now anket dev this onesss");
                 _currentDisplayedOnlineFrame = CachedNetworkImage(
                   // key: UniqueKey(),
-                  // cacheKey:
-                  //     "${Timestamp.now().millisecondsSinceEpoch}{ _getDirectory()}",
+
                   memCacheWidth: (widget.frameWidth).toInt(),
                   memCacheHeight: (widget.frameHeight).toInt(),
                   maxHeightDiskCache: (widget.frameHeight).toInt(),

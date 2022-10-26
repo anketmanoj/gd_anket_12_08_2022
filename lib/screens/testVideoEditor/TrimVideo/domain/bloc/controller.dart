@@ -486,7 +486,7 @@ class VideoEditorController extends ChangeNotifier {
         : "";
     final String execute =
         // ignore: unnecessary_string_escapes
-        " -i \'$videoPath\' ${audioCheckVal == 0 ? '-f lavfi -i anullsrc' : ''} ${customInstruction ?? ""} $filter -crf 20 -preset ultrafast $trim -y $outputPath";
+        " -i \'$videoPath\' ${audioCheckVal == 0 ? '-f lavfi -i anullsrc' : ''} ${customInstruction ?? ""} $filter -crf 30 -preset ultrafast $trim -y $outputPath";
 
     print("trim command == $execute");
 
