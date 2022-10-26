@@ -952,115 +952,141 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return ListView.builder(
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (context, index) {
-                            return snapshot.data!.docs[index]["ownerId"] ==
-                                    video!.useruid
-                                ? ListTile(
-                                    leading: Container(
-                                      height: 40,
-                                      width: 40,
-                                      child: ImageNetworkLoader(
-                                        imageUrl: snapshot.data!.docs[index]
-                                            ["gif"],
-                                      ),
-                                    ),
-                                    title: Text(
-                                      "${snapshot.data!.docs[index]["layerType"]} by ${video!.username}",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    subtitle: (snapshot.data!.docs[index].data()
-                                                as Map<String, dynamic>)
-                                            .containsKey("usage")
-                                        ? Row(
-                                            children: [
-                                              TextButton.icon(
-                                                onPressed: () {},
-                                                icon: Icon(
-                                                  Icons.arrow_forward,
-                                                  color: constantColors.bioBg,
+                        List<PostMaterialModel> postMaterials = [];
+                        snapshot.data!.docs.forEach((element) {
+                          PostMaterialModel postMaterialModel =
+                              PostMaterialModel.fromMap(
+                                  element.data() as Map<String, dynamic>);
+                          postMaterials.add(postMaterialModel);
+                        });
+
+                        List<PostMaterialModel> othersMaterials = postMaterials
+                            .where(
+                                (element) => element.ownerId != video!.useruid)
+                            .toList();
+                        List<PostMaterialModel> myItems = postMaterials
+                            .where(
+                                (element) => element.ownerId == video!.useruid)
+                            .toList();
+
+                        return Column(
+                          children: [
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: othersMaterials.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  tileColor: constantColors.bioBg,
+                                  trailing: Container(
+                                    height: 50,
+                                    width: 80,
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            PageTransition(
+                                                child: PostDetailsScreen(
+                                                  videoId:
+                                                      othersMaterials[index]
+                                                          .videoId,
                                                 ),
-                                                label: Text(
-                                                  "As ${snapshot.data!.docs[index]['usage']}",
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                        : null,
-                                  )
-                                : ListTile(
-                                    tileColor: constantColors.bioBg,
-                                    trailing: Container(
-                                      height: 50,
-                                      width: 80,
-                                      child: InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              PageTransition(
-                                                  child: PostDetailsScreen(
-                                                    videoId: snapshot.data!
-                                                        .docs[index]["videoId"],
-                                                  ),
-                                                  type:
-                                                      PageTransitionType.fade));
-                                        },
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                            color: Colors.black,
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                child: Text(
-                                                  LocaleKeys.visitowner.tr(),
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.white,
-                                                  ),
+                                                type: PageTransitionType.fade));
+                                      },
+                                      child: Container(
+                                        height: 50,
+                                        decoration: BoxDecoration(
+                                          color: Colors.black,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              child: Text(
+                                                LocaleKeys.visitowner.tr(),
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
                                                 ),
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                    subtitle: Text(
-                                      "${LocaleKeys.ownedby.tr()} ${snapshot.data!.docs[index]["ownerName"]}",
+                                  ),
+                                  subtitle: Text(
+                                    "${LocaleKeys.ownedby.tr()} ${othersMaterials[index].ownerName}",
+                                    style:
+                                        TextStyle(color: constantColors.bioBg),
+                                  ),
+                                  leading: Container(
+                                    height: 40,
+                                    width: 40,
+                                    child: ImageNetworkLoader(
+                                      imageUrl: othersMaterials[index].gif,
                                     ),
-                                    leading: Container(
-                                      height: 40,
-                                      width: 40,
-                                      child: ImageNetworkLoader(
-                                        imageUrl: snapshot.data!.docs[index]
-                                            ["gif"],
-                                      ),
+                                  ),
+                                  title: Text(
+                                    "${othersMaterials[index].layerType} by ${othersMaterials[index].ownerName}",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
                                     ),
-                                    title: Text(
-                                      "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
+                                  ),
+                                );
+                              },
+                            ),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: myItems.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  leading: Container(
+                                    height: 40,
+                                    width: 40,
+                                    child: ImageNetworkLoader(
+                                      imageUrl: myItems[index].gif,
                                     ),
-                                  );
-                          },
+                                  ),
+                                  title: Text(
+                                    "${myItems[index].layerType} by ${myItems[index].ownerName}",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  subtitle: myItems[index].usage != null
+                                      ? Row(
+                                          children: [
+                                            TextButton.icon(
+                                              onPressed: () {},
+                                              icon: Icon(
+                                                Icons.arrow_forward,
+                                                color: constantColors.bioBg,
+                                              ),
+                                              label: Text(
+                                                "As ${myItems[index].usage}",
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : null,
+                                );
+                              },
+                            ),
+                          ],
                         );
                       } else {
                         return Center(

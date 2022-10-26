@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/screens/HelpScreen/tutorialVideos.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
+import 'package:diamon_rose_app/screens/PostPage/postMaterialModel.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ArViewerScreen.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateMessage.dart';
 import 'package:diamon_rose_app/screens/homePage/showCommentScreen.dart';
@@ -982,7 +983,7 @@ class VideoWidget extends StatelessWidget {
                 height: 10,
               ),
               Text(
-                "Materials for ${video.isPaid ? 'Sale' : 'Free'}",
+                "Materials for ${video!.isPaid ? 'Sale' : 'Free'}",
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white,
@@ -994,120 +995,146 @@ class VideoWidget extends StatelessWidget {
                 child: StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection("posts")
-                        .doc(video.id)
+                        .doc(video!.id)
                         .collection("materials")
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return ListView.builder(
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (context, index) {
-                            return snapshot.data!.docs[index]["ownerId"] ==
-                                    video.useruid
-                                ? ListTile(
-                                    leading: Container(
-                                      height: 40,
-                                      width: 40,
-                                      child: ImageNetworkLoader(
-                                        imageUrl: snapshot.data!.docs[index]
-                                            ["gif"],
-                                      ),
-                                    ),
-                                    title: Text(
-                                      "${snapshot.data!.docs[index]["layerType"]} by ${video.username}",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    subtitle: (snapshot.data!.docs[index].data()
-                                                as Map<String, dynamic>)
-                                            .containsKey("usage")
-                                        ? Row(
-                                            children: [
-                                              TextButton.icon(
-                                                onPressed: () {},
-                                                icon: Icon(
-                                                  Icons.arrow_forward,
-                                                  color: constantColors.bioBg,
+                        List<PostMaterialModel> postMaterials = [];
+                        snapshot.data!.docs.forEach((element) {
+                          PostMaterialModel postMaterialModel =
+                              PostMaterialModel.fromMap(
+                                  element.data() as Map<String, dynamic>);
+                          postMaterials.add(postMaterialModel);
+                        });
+
+                        List<PostMaterialModel> othersMaterials = postMaterials
+                            .where(
+                                (element) => element.ownerId != video!.useruid)
+                            .toList();
+                        List<PostMaterialModel> myItems = postMaterials
+                            .where(
+                                (element) => element.ownerId == video!.useruid)
+                            .toList();
+
+                        return Column(
+                          children: [
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: othersMaterials.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  tileColor: constantColors.bioBg,
+                                  trailing: Container(
+                                    height: 50,
+                                    width: 80,
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            PageTransition(
+                                                child: PostDetailsScreen(
+                                                  videoId:
+                                                      othersMaterials[index]
+                                                          .videoId,
                                                 ),
-                                                label: Text(
-                                                  "As ${snapshot.data!.docs[index]['usage']}",
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                        : null,
-                                  )
-                                : ListTile(
-                                    tileColor: constantColors.bioBg,
-                                    trailing: Container(
-                                      height: 50,
-                                      width: 80,
-                                      child: InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              PageTransition(
-                                                  child: PostDetailsScreen(
-                                                    videoId: snapshot.data!
-                                                        .docs[index]["videoId"],
-                                                  ),
-                                                  type:
-                                                      PageTransitionType.fade));
-                                        },
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                            color: Colors.black,
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                child: Text(
-                                                  LocaleKeys.visitowner.tr(),
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.white,
-                                                  ),
+                                                type: PageTransitionType.fade));
+                                      },
+                                      child: Container(
+                                        height: 50,
+                                        decoration: BoxDecoration(
+                                          color: Colors.black,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              child: Text(
+                                                LocaleKeys.visitowner.tr(),
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
                                                 ),
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                    subtitle: Text(
-                                      "${LocaleKeys.ownedby.tr()} ${snapshot.data!.docs[index]["ownerName"]}",
+                                  ),
+                                  subtitle: Text(
+                                    "${LocaleKeys.ownedby.tr()} ${othersMaterials[index].ownerName}",
+                                    style:
+                                        TextStyle(color: constantColors.bioBg),
+                                  ),
+                                  leading: Container(
+                                    height: 40,
+                                    width: 40,
+                                    child: ImageNetworkLoader(
+                                      imageUrl: othersMaterials[index].gif,
                                     ),
-                                    leading: Container(
-                                      height: 40,
-                                      width: 40,
-                                      child: ImageNetworkLoader(
-                                        imageUrl: snapshot.data!.docs[index]
-                                            ["gif"],
-                                      ),
+                                  ),
+                                  title: Text(
+                                    "${othersMaterials[index].layerType} by ${othersMaterials[index].ownerName}",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
                                     ),
-                                    title: Text(
-                                      "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
+                                  ),
+                                );
+                              },
+                            ),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: myItems.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  leading: Container(
+                                    height: 40,
+                                    width: 40,
+                                    child: ImageNetworkLoader(
+                                      imageUrl: myItems[index].gif,
                                     ),
-                                  );
-                          },
+                                  ),
+                                  title: Text(
+                                    "${myItems[index].layerType} by ${myItems[index].ownerName}",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  subtitle: myItems[index].usage != null
+                                      ? Row(
+                                          children: [
+                                            TextButton.icon(
+                                              onPressed: () {},
+                                              icon: Icon(
+                                                Icons.arrow_forward,
+                                                color: constantColors.bioBg,
+                                              ),
+                                              label: Text(
+                                                "As ${myItems[index].usage}",
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : null,
+                                );
+                              },
+                            ),
+                          ],
                         );
                       } else {
                         return Center(
@@ -1122,24 +1149,24 @@ class VideoWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: Row(
-                  mainAxisAlignment: video.isPaid
+                  mainAxisAlignment: video!.isPaid
                       ? MainAxisAlignment.spaceBetween
                       : MainAxisAlignment.center,
                   children: [
-                    video.isPaid
-                        ? video.discountAmount == 0
+                    video!.isPaid
+                        ? video!.discountAmount == 0
                             ? Text(
-                                "${(video.price).toStringAsFixed(2)} Carats",
+                                "${(video!.price).toStringAsFixed(2)} Carats",
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.white,
                                 ),
                               )
-                            : video.discountAmount >= 0 &&
+                            : video!.discountAmount >= 0 &&
                                     DateTime.now().isAfter(
-                                        (video.startDiscountDate).toDate()) &&
+                                        (video!.startDiscountDate).toDate()) &&
                                     DateTime.now().isBefore(
-                                        (video.endDiscountDate).toDate())
+                                        (video!.endDiscountDate).toDate())
                                 ? Row(
                                     children: [
                                       Text(
@@ -1150,7 +1177,7 @@ class VideoWidget extends StatelessWidget {
                                         ),
                                       ),
                                       Text(
-                                        " \$${(video.price).toStringAsFixed(2)}",
+                                        " \$${(video!.price).toStringAsFixed(2)}",
                                         style: TextStyle(
                                           decoration:
                                               TextDecoration.lineThrough,
@@ -1159,7 +1186,7 @@ class VideoWidget extends StatelessWidget {
                                         ),
                                       ),
                                       Text(
-                                        " \$${((video.price) * (1 - video.discountAmount / 100)).toStringAsFixed(2)} Carats",
+                                        " \$${((video!.price) * (1 - video!.discountAmount / 100)).toStringAsFixed(2)} Carats",
                                         style: TextStyle(
                                           fontSize: 16,
                                           color: Colors.red,
@@ -1168,54 +1195,65 @@ class VideoWidget extends StatelessWidget {
                                     ],
                                   )
                                 : Text(
-                                    "${(video.price).toStringAsFixed(2)} Carats",
+                                    "${(video!.price).toStringAsFixed(2)} Carats",
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.white,
                                     ),
                                   )
                         : Container(),
-                    video.isPaid
-                        ? ElevatedButton(
-                            style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.white),
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  constantColors.bioBg),
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                    video!.isPaid
+                        ? !video!.boughtBy.contains(
+                                context.read<Authentication>().getUserId)
+                            ? ElevatedButton(
+                                style: ButtonStyle(
+                                  foregroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.white),
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          constantColors.bioBg),
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            onPressed: () async {
-                              // Beamer.of(context).beamToNamed('/success');
-                              // *Change to add to cart
-                              // await selectPaymentOptionsSheet(
-                              //   ctx: context,
-                              // );
-                              await Provider.of<FirebaseOperations>(context,
-                                      listen: false)
-                                  .addToCart(
-                                canPop: false,
-                                useruid:
-                                    context.read<Authentication>().getUserId,
-                                videoItem: video,
-                                isFree: video.isFree,
-                                ctx: context,
-                                videoId: video.id,
-                              );
-                            },
-                            // paymentController.makePayment(
-                            //     amount: "10", currency: "USD"),
-                            child: Text(
-                              LocaleKeys.addtocart.tr(),
-                              style: TextStyle(
-                                color: constantColors.navButton,
-                              ),
-                            ),
-                          )
+                                onPressed: () async {
+                                  // Beamer.of(context).beamToNamed('/success');
+                                  // *Change to add to cart
+                                  // await selectPaymentOptionsSheet(
+                                  //   ctx: context,
+                                  // );
+                                  await Provider.of<FirebaseOperations>(context,
+                                          listen: false)
+                                      .addToCart(
+                                    canPop: false,
+                                    useruid: context
+                                        .read<Authentication>()
+                                        .getUserId,
+                                    videoItem: video!,
+                                    isFree: video!.isFree,
+                                    ctx: context,
+                                    videoId: video!.id,
+                                  );
+                                },
+                                // paymentController.makePayment(
+                                //     amount: "10", currency: "USD"),
+                                child: Text(
+                                  LocaleKeys.addtocart.tr(),
+                                  style: TextStyle(
+                                    color: constantColors.navButton,
+                                  ),
+                                ),
+                              )
+                            : Text(
+                                "Already Purchased Content",
+                                style: TextStyle(
+                                  color: constantColors.whiteColor,
+                                ),
+                              )
                         : ElevatedButton(
                             style: ButtonStyle(
                               foregroundColor: MaterialStateProperty.all<Color>(
@@ -1271,15 +1309,15 @@ class VideoWidget extends StatelessWidget {
       FirebaseOperations firebaseOperations) async {
     await showModalBottomSheet(
       context: context,
-      isDismissible: false,
+      isDismissible: true,
       isScrollControlled: true,
       builder: (context) {
         return SafeArea(
           bottom: Platform.isAndroid ? true : false,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 15),
-            height: size.height * 0.5,
             width: size.width,
+            height: 60.h,
             decoration: BoxDecoration(
               color: constantColors.navButton,
               borderRadius: BorderRadius.only(
@@ -1300,210 +1338,272 @@ class VideoWidget extends StatelessWidget {
                   height: 10,
                 ),
                 Text(
-                  video.videoType == "video" ? "Items" : "AR View Only Items",
+                  video!.videoType == "video" ? "Items" : "AR View Only Items",
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
                   ),
                 ),
                 Container(
-                  height: size.height * 0.3,
                   width: size.width,
                   child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection("posts")
-                          .doc(video.id)
+                          .doc(video!.id)
                           .collection("materials")
                           .where("hideItem", isEqualTo: false)
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
+                        if (snapshot.hasData) {
+                          List<PostMaterialModel> postMaterials = [];
+                          snapshot.data!.docs.forEach((element) {
+                            PostMaterialModel postMaterialModel =
+                                PostMaterialModel.fromMap(
+                                    element.data() as Map<String, dynamic>);
+                            postMaterials.add(postMaterialModel);
+                          });
+
+                          List<PostMaterialModel> othersMaterials =
+                              postMaterials
+                                  .where((element) =>
+                                      element.ownerId != video!.useruid)
+                                  .toList();
+                          List<PostMaterialModel> myItems = postMaterials
+                              .where((element) =>
+                                  element.ownerId == video!.useruid)
+                              .toList();
+
+                          return Column(
+                            children: [
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: othersMaterials.length,
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                    tileColor: constantColors.bioBg,
+                                    trailing: Container(
+                                      height: 50,
+                                      width: 80,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              PageTransition(
+                                                  child: PostDetailsScreen(
+                                                    videoId:
+                                                        othersMaterials[index]
+                                                            .videoId,
+                                                  ),
+                                                  type:
+                                                      PageTransitionType.fade));
+                                        },
+                                        child: Container(
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                            color: Colors.black,
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                child: Text(
+                                                  LocaleKeys.visitowner.tr(),
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      "${LocaleKeys.ownedby.tr()} ${othersMaterials[index].ownerName}",
+                                      style: TextStyle(
+                                          color: constantColors.bioBg),
+                                    ),
+                                    leading: Container(
+                                      height: 40,
+                                      width: 40,
+                                      child: ImageNetworkLoader(
+                                        imageUrl: othersMaterials[index].gif,
+                                      ),
+                                    ),
+                                    title: Text(
+                                      "${othersMaterials[index].layerType} by ${othersMaterials[index].ownerName}",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: myItems.length,
+                                itemBuilder: (context, index) {
+                                  return ValueListenableBuilder<bool>(
+                                      valueListenable: myItems[index].selected,
+                                      builder: (context, selected, _) {
+                                        return ListTile(
+                                          leading: Container(
+                                            height: 40,
+                                            width: 40,
+                                            child: ImageNetworkLoader(
+                                              imageUrl: myItems[index].gif,
+                                            ),
+                                          ),
+                                          trailing: Checkbox(
+                                            value:
+                                                myItems[index].selected.value,
+                                            onChanged: (val) {
+                                              myItems[index].selected.value =
+                                                  val!;
+
+                                              log(myItems
+                                                  .where((element) =>
+                                                      element.selected.value ==
+                                                      true)
+                                                  .toList()
+                                                  .length
+                                                  .toString());
+                                            },
+                                          ),
+                                          title: Text(
+                                            // !Found this here;
+                                            "${myItems[index].layerType} by ${myItems[index].ownerName}",
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          subtitle: myItems[index].usage != null
+                                              ? Row(
+                                                  children: [
+                                                    TextButton.icon(
+                                                      onPressed: () {},
+                                                      icon: Icon(
+                                                        Icons.arrow_forward,
+                                                        color: constantColors
+                                                            .bioBg,
+                                                      ),
+                                                      label: Text(
+                                                        "As ${snapshot.data!.docs[index]['usage']}",
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              : null,
+                                        );
+                                      });
+                                },
+                              ),
+                              Divider(
+                                color: constantColors.whiteColor,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    ElevatedButton(
+                                      style: ButtonStyle(
+                                        foregroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.white),
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                constantColors.bioBg),
+                                        shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                        ),
+                                      ),
+                                      onPressed: () async {
+                                        if (myItems
+                                            .where((element) =>
+                                                element.selected.value == true)
+                                            .toList()
+                                            .isNotEmpty) {
+                                          final List<String> materialIds = [];
+                                          myItems
+                                              .where((element) =>
+                                                  element.selected.value ==
+                                                  true)
+                                              .toList()
+                                              .forEach((element) {
+                                            materialIds.add(element.id);
+                                          });
+                                          // // ignore: unawaited_futures
+                                          CoolAlert.show(
+                                            context: context,
+                                            type: CoolAlertType.loading,
+                                            text: "Saving to your collection",
+                                            barrierDismissible: false,
+                                          );
+                                          await firebaseOperations
+                                              .addToMyCollection(
+                                            videoOwnerId: video!.useruid,
+                                            videoItem: video!,
+                                            isFree: video!.isFree,
+                                            ctx: context,
+                                            videoId: video!.id,
+                                            materialIds: materialIds,
+                                          );
+                                        } else {
+                                          await Get.dialog(
+                                            SimpleDialog(
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.all(10),
+                                                  child: Text(
+                                                      "No items selected to add to your inventory!"),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      // paymentController.makePayment(
+                                      //     amount: "10", currency: "USD"),
+                                      child: Text(
+                                        video!.videoType == "video"
+                                            ? LocaleKeys.addToMyInventory.tr()
+                                            : LocaleKeys.addtoarviewcollection
+                                                .tr(),
+                                        style: TextStyle(
+                                          color: constantColors.navButton,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        } else {
                           return Center(
                             child: CircularProgressIndicator(),
                           );
                         }
-                        if (snapshot.hasData) {
-                          if (snapshot.data!.docs.isEmpty) {
-                            return Center(
-                              child: Text(
-                                "The owner of this post has not set any items for sale!",
-                                style:
-                                    TextStyle(color: constantColors.whiteColor),
-                              ),
-                            );
-                          }
-
-                          return ListView.builder(
-                            itemCount: snapshot.data!.docs.length,
-                            itemBuilder: (context, index) {
-                              return snapshot.data!.docs[index]["ownerId"] ==
-                                      video.useruid
-                                  ? ListTile(
-                                      leading: Container(
-                                        height: 40,
-                                        width: 40,
-                                        child: ImageNetworkLoader(
-                                          imageUrl: snapshot.data!.docs[index]
-                                              ["gif"],
-                                        ),
-                                      ),
-                                      title: Text(
-                                        "${snapshot.data!.docs[index]["layerType"]} by ${video.username}",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      subtitle: (snapshot.data!.docs[index]
-                                                      .data()
-                                                  as Map<String, dynamic>)
-                                              .containsKey("usage")
-                                          ? Row(
-                                              children: [
-                                                TextButton.icon(
-                                                  onPressed: () {},
-                                                  icon: Icon(
-                                                    Icons.arrow_forward,
-                                                    color: constantColors.bioBg,
-                                                  ),
-                                                  label: Text(
-                                                    "As ${snapshot.data!.docs[index]['usage']}",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          : null,
-                                    )
-                                  : ListTile(
-                                      tileColor: constantColors.bioBg,
-                                      trailing: Container(
-                                        height: 50,
-                                        width: 80,
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                PageTransition(
-                                                    child: PostDetailsScreen(
-                                                      videoId: snapshot
-                                                              .data!.docs[index]
-                                                          ["videoId"],
-                                                    ),
-                                                    type: PageTransitionType
-                                                        .fade));
-                                          },
-                                          child: Container(
-                                            height: 50,
-                                            decoration: BoxDecoration(
-                                              color: Colors.black,
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Container(
-                                                  child: Text(
-                                                    LocaleKeys.visitowner.tr(),
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      subtitle: Text(
-                                        "${LocaleKeys.ownedby.tr()} ${snapshot.data!.docs[index]["ownerName"]}",
-                                      ),
-                                      leading: Container(
-                                        height: 40,
-                                        width: 40,
-                                        child: ImageNetworkLoader(
-                                          imageUrl: snapshot.data!.docs[index]
-                                              ["gif"],
-                                        ),
-                                      ),
-                                      title: Text(
-                                        "${snapshot.data!.docs[index]["layerType"]} by ${snapshot.data!.docs[index]["ownerName"]}",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    );
-                            },
-                          );
-                        }
-
-                        return Center(
-                          child: Text("No Items for Sale"),
-                        );
                       }),
-                ),
-                Divider(
-                  color: constantColors.whiteColor,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.white),
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              constantColors.bioBg),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                        ),
-                        onPressed: () async {
-                          // ignore: unawaited_futures
-                          CoolAlert.show(
-                            context: context,
-                            type: CoolAlertType.loading,
-                            text: "Saving to your collection",
-                            barrierDismissible: false,
-                          );
-                          await firebaseOperations.addToMyCollection(
-                            videoOwnerId: video.useruid,
-                            videoItem: video,
-                            isFree: video.isFree,
-                            ctx: context,
-                            videoId: video.id,
-                          );
-                        },
-                        // paymentController.makePayment(
-                        //     amount: "10", currency: "USD"),
-                        child: Text(
-                          video.videoType == "video"
-                              ? LocaleKeys.addToMyInventory.tr()
-                              : LocaleKeys.addtoarviewcollection.tr(),
-                          style: TextStyle(
-                            color: constantColors.navButton,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ],
             ),
