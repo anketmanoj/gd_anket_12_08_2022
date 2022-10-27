@@ -176,7 +176,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       }
       // await deleteFile(element.pathsForVideoFrames!);
       if (element.arState != null) {
-        element.arState!.dispose();
+        element.arState?.dispose();
         if (element.audioFlag == true) element.audioPlayer!.dispose();
       }
     }
@@ -277,7 +277,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             list.value.isNotEmpty) {
           if (arElement.finishedCaching!.value == true &&
               arElement.arState != null) {
-            arElement.arState!.skip(0);
+            arElement.arState?.skip(0);
           }
           if (arElement.audioFlag == true)
             arElement.audioPlayer!.seek(Duration(milliseconds: 0));
@@ -2087,6 +2087,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                       "EFFECT INDEX NOW = ${effectIndexVal.value} | indexCounter.value = ${indexCounter.value}");
                                   break;
                               }
+
+                              // var appDir = (await getTemporaryDirectory()).path;
+                              // new Directory(appDir).delete(recursive: true);
 
                               // setState(() {
                               // selected!.layerType == LayerType.AR

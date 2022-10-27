@@ -493,7 +493,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
               if (_previousFrame < _frameCount) {
                 _currentDisplayedOnlineFrame = CachedNetworkImage(
                   // key: UniqueKey(),
-                  // cacheKey: timeNow + _getDirectory(),
+                  // cacheKey: _getDirectory(),
                   memCacheWidth: (widget.frameWidth).toInt(),
                   cacheManager: DefaultCacheManager(),
                   memCacheHeight: (widget.frameHeight).toInt(),
@@ -510,7 +510,9 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
               }
             }
           } else
-            _currentDisplayedOnlineFrame = Container();
+            _currentDisplayedOnlineFrame = Center(
+              child: CircularProgressIndicator(),
+            );
 
           return Stack(
             alignment: Alignment.center,
