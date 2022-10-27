@@ -451,6 +451,7 @@ class VideoEditorController extends ChangeNotifier {
     String? outDir,
     String format = "mp4",
     double scale = 1.0,
+    double? playbackSpeed = 1.0,
     String? customInstruction,
     int audioCheckVal = 1,
     void Function(Statistics, double)? onProgress,
@@ -468,27 +469,32 @@ class VideoEditorController extends ChangeNotifier {
     final String trim = minTrim >= _min.dx && maxTrim <= _max.dx
         ? "-ss $_trimStart -to $_trimEnd"
         : "";
-    final String crop =
-        "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1";
+    String filters =
+        "[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1,setpts=${1 / playbackSpeed!}*PTS[v];";
     // minCrop >= _min && maxCrop <= _max ? await _getCrop() : "";
     final String rotation =
         _rotation >= 360 || _rotation <= 0 ? "" : _getRotation();
     final String scaleInstruction =
         scale == 1.0 ? "" : "scale=iw*$scale:ih*$scale";
+    final String audioPlayback = "[0:a]atempo=${playbackSpeed}[a]";
 
     // await runRvm()
 
     // VALIDATE FILTERS
-    final List<String> filters = [crop, scaleInstruction, rotation, gif];
-    filters.removeWhere((item) => item.isEmpty);
-    final String filter = filters.isNotEmpty && isFiltersEnabled
-        ? "-filter:v " + filters.join(",")
-        : "";
+    // final List<String> filters = [crop, scaleInstruction, rotation, gif];
+    // filters.removeWhere((item) => item.isEmpty);
+    // final String filter = filters.isNotEmpty && isFiltersEnabled
+    //     ? "-filter_complex " + filters.join(",")
+    //     : "";
+    if (audioCheckVal != 0) {
+      filters = filters + audioPlayback;
+    }
+
     final String execute =
         // ignore: unnecessary_string_escapes
-        " -i \'$videoPath\' ${audioCheckVal == 0 ? '-f lavfi -i anullsrc' : ''} ${customInstruction ?? ""} $filter -crf 30 -preset ultrafast $trim -y $outputPath";
+        " -i \'$videoPath\' ${audioCheckVal == 0 ? '-f lavfi -i anullsrc' : ''} ${customInstruction ?? ""} -filter_complex \"$filters\" -map ''[v]'' ${audioCheckVal == 0 ? '' : '-map  ' '[a]' ' '} -crf 30 -preset ultrafast $trim -y $outputPath";
 
-    print("trim command == $execute");
+    log("trim command == $execute");
 
     // PROGRESS CALLBACKS
     await FFmpegKit.executeAsync(

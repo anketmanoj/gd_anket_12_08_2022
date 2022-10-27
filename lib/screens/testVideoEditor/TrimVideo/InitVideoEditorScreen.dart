@@ -76,6 +76,7 @@ class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
     log("audio check val == $audioCheckVal");
     // NOTE: To use `-crf 1` and [VideoExportPreset] you need `ffmpeg_kit_flutter_min_gpl` package (with `ffmpeg_kit` only it won't work)
     await _controller.exportVideo(
+      playbackSpeed: _controller.video.value.playbackSpeed,
       audioCheckVal: audioCheckVal!,
       // preset: VideoExportPreset.medium,
       onProgress: (stats, value) => _exportingProgress.value = value,
@@ -262,6 +263,9 @@ class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
               ),
             ),
             Expanded(
+              child: _ControlsOverlay(controller: _controller.video),
+            ),
+            Expanded(
               child: ValueListenableBuilder<bool>(
                   valueListenable: _isExporting,
                   builder: (context, exporting, _) {
@@ -373,6 +377,77 @@ class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
             child: Text(_exportText,
                 style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ControlsOverlay extends StatelessWidget {
+  _ControlsOverlay({Key? key, required this.controller}) : super(key: key);
+
+  static const List<Duration> _exampleCaptionOffsets = <Duration>[
+    Duration(seconds: -10),
+    Duration(seconds: -3),
+    Duration(seconds: -1, milliseconds: -500),
+    Duration(milliseconds: -250),
+    Duration.zero,
+    Duration(milliseconds: 250),
+    Duration(seconds: 1, milliseconds: 500),
+    Duration(seconds: 3),
+    Duration(seconds: 10),
+  ];
+  static const List<double> _examplePlaybackRates = <double>[
+    0.25,
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    3.0,
+    5.0,
+  ];
+
+  final VideoPlayerController controller;
+
+  ValueNotifier<double> playbackSpeed = ValueNotifier<double>(1.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: PopupMenuButton<double>(
+        initialValue: controller.value.playbackSpeed,
+        tooltip: 'Playback speed',
+        onSelected: (double speed) {
+          controller.setPlaybackSpeed(speed);
+          playbackSpeed.value = speed;
+        },
+        itemBuilder: (BuildContext context) {
+          return <PopupMenuItem<double>>[
+            for (final double speed in _examplePlaybackRates)
+              PopupMenuItem<double>(
+                value: speed,
+                child: Text('${speed}x'),
+              )
+          ];
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            // Using less vertical padding as the text is also longer
+            // horizontally, so it feels like it would need more spacing
+            // horizontally (matching the aspect ratio of the video).
+            vertical: 12,
+            horizontal: 16,
+          ),
+          child: ValueListenableBuilder<double>(
+              valueListenable: playbackSpeed,
+              builder: (context, playbackVal, _) {
+                return Text(
+                  '${playbackVal}x',
+                  style: TextStyle(
+                    color: constantColors.whiteColor,
+                  ),
+                );
+              }),
         ),
       ),
     );
