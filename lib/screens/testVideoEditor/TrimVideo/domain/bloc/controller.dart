@@ -470,13 +470,13 @@ class VideoEditorController extends ChangeNotifier {
         ? "-ss $_trimStart -to $_trimEnd"
         : "";
     String filters =
-        "[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1,setpts=${1 / playbackSpeed!}*PTS[v];";
+        "[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1,setpts=${1 / playbackSpeed!}*PTS[v]";
     // minCrop >= _min && maxCrop <= _max ? await _getCrop() : "";
     final String rotation =
         _rotation >= 360 || _rotation <= 0 ? "" : _getRotation();
     final String scaleInstruction =
         scale == 1.0 ? "" : "scale=iw*$scale:ih*$scale";
-    final String audioPlayback = "[0:a]atempo=${playbackSpeed}[a]";
+    final String audioPlayback = ";[0:a]atempo=${playbackSpeed}[a]";
 
     // await runRvm()
 
