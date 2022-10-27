@@ -405,7 +405,6 @@ class _ControlsOverlay extends StatelessWidget {
     1.5,
     2.0,
     3.0,
-    5.0,
   ];
 
   final VideoPlayerController controller;
