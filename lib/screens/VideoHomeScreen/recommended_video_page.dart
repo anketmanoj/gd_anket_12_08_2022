@@ -102,28 +102,39 @@ class _RecommendedVideoPageState extends State<RecommendedVideoPage>
         switch (state.filterOption) {
           case HomeScreenOptions.Free:
             log("We're here in Free! !!! ANKEKKEEETTTT");
-            return PageView.builder(
-              itemCount: state.urls.length,
-              scrollDirection: Axis.vertical,
-              onPageChanged: (index) =>
-                  BlocProvider.of<PreloadBloc>(context, listen: false)
-                      .add(PreloadEvent.onVideoIndexChanged(index)),
-              itemBuilder: (context, index) {
-                // Is at end and isLoading
-                final bool _isLoading =
-                    state.isLoading && index == state.urls.length - 1;
+            return RefreshIndicator(
+              onRefresh: () async {
+                BlocProvider.of<PreloadBloc>(context, listen: false)
+                    .add(PreloadEvent.setLoading(true));
+                BlocProvider.of<PreloadBloc>(context, listen: false).add(
+                    PreloadEvent.filterBetweenFreePaid(HomeScreenOptions.Free));
 
-                return state.focusedIndex == index
-                    ? VideoWidget(
-                        video: state.urls[index],
-                        isLoading: _isLoading,
-                        controller: state.controllers[index]!,
-                      )
-                    : Container(
-                        height: 200,
-                        width: 200,
-                      );
+                BlocProvider.of<PreloadBloc>(context, listen: false)
+                    .add(PreloadEvent.onVideoIndexChanged(0));
               },
+              child: PageView.builder(
+                itemCount: state.urls.length,
+                scrollDirection: Axis.vertical,
+                onPageChanged: (index) =>
+                    BlocProvider.of<PreloadBloc>(context, listen: false)
+                        .add(PreloadEvent.onVideoIndexChanged(index)),
+                itemBuilder: (context, index) {
+                  // Is at end and isLoading
+                  final bool _isLoading =
+                      state.isLoading && index == state.urls.length - 1;
+
+                  return state.focusedIndex == index
+                      ? VideoWidget(
+                          video: state.urls[index],
+                          isLoading: _isLoading,
+                          controller: state.controllers[index]!,
+                        )
+                      : Container(
+                          height: 200,
+                          width: 200,
+                        );
+                },
+              ),
             );
           case HomeScreenOptions.Paid:
             log("We're here in Paid!");

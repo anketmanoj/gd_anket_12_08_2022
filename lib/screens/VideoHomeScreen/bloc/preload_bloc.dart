@@ -83,6 +83,25 @@ class PreloadBloc extends Bloc<PreloadEvent, PreloadState> {
             state.urls.addAll(
                 _urls.where((element) => element.isFree == true).toList());
 
+            final List<String> genreList =
+                SharedPreferencesHelper.getListString("selected_options");
+
+            final List<Video> _genreUrls =
+                await ApiService.loadBasedOnUserGenre(genreList);
+            log("Loaded genre vids ${_genreUrls.length}");
+
+            for (Video video in _genreUrls) {
+              var contain =
+                  state.urls.where((element) => element.id == video.id);
+              if (contain.isEmpty) {
+                state.urls.insert(0, video);
+              }
+              // //value not exists
+              // else {}
+            }
+
+            log("statelen = ${state.urls.length}");
+
             log("state length in free == ${state.urls.length}");
             log("focused index == ${state.focusedIndex} ||");
 
