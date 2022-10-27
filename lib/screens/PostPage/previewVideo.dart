@@ -520,14 +520,25 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                               activeColor:
                                                   constantColors.navButton,
                                               value: context
-                                                      .read<ArVideoCreation>()
-                                                      .getFromPexel
+                                                          .read<
+                                                              ArVideoCreation>()
+                                                          .getFromPexel ||
+                                                      context
+                                                              .read<
+                                                                  VideoEditorProvider>()
+                                                              .getBackgroundVideoId !=
+                                                          null
                                                   ? true
                                                   : bgVal,
                                               onChanged: (val) {
                                                 if (context
-                                                    .read<ArVideoCreation>()
-                                                    .getFromPexel) {
+                                                        .read<ArVideoCreation>()
+                                                        .getFromPexel ||
+                                                    context
+                                                            .read<
+                                                                VideoEditorProvider>()
+                                                            .getBackgroundVideoId !=
+                                                        null) {
                                                   bgSelected.value = true;
                                                 } else {
                                                   bgSelected.value = val;
@@ -550,12 +561,43 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                             title: Text(
                                               "Background",
                                             ),
-                                            subtitle: context
+                                            //  context
+                                            //                       .read<
+                                            //                           VideoEditorProvider>()
+                                            subtitle: Builder(
+                                              builder: (context) {
+                                                switch (context
                                                     .read<ArVideoCreation>()
-                                                    .getFromPexel
-                                                ? Text(
-                                                    "Background is from Pexel so you cant hide it")
-                                                : null,
+                                                    .getFromPexel) {
+                                                  case true:
+                                                    return Text(
+                                                        "Background is from Pexel so you cant hide it");
+
+                                                  case false:
+                                                    switch (context
+                                                                .read<
+                                                                    VideoEditorProvider>()
+                                                                .getBackgroundVideoId !=
+                                                            null &&
+                                                        context
+                                                                .read<
+                                                                    VideoEditorProvider>()
+                                                                .getBackgroundVideoId!
+                                                                .ownerId !=
+                                                            context
+                                                                .read<
+                                                                    Authentication>()
+                                                                .getUserId) {
+                                                      case true:
+                                                        return Text(
+                                                            "Background is from ${context.read<VideoEditorProvider>().getBackgroundVideoId!.ownerName} so you cant hide it");
+                                                      case false:
+                                                        return Container();
+                                                    }
+                                                }
+                                                return SizedBox();
+                                              },
+                                            ),
                                           ),
                                           ListTile(
                                             trailing: Switch(
@@ -994,6 +1036,15 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                 coverThumbnailUrl: coverThumbnail!,
                                 addBgToMaterials: bgSelected.value,
                                 ctx: context,
+                                bgTakenFromMaterials: context
+                                            .read<VideoEditorProvider>()
+                                            .getBackgroundVideoId !=
+                                        null
+                                    ? context
+                                        .read<VideoEditorProvider>()
+                                        .getBackgroundVideoId!
+                                        .id
+                                    : null,
                                 fromPexels: context
                                     .read<ArVideoCreation>()
                                     .getFromPexel,

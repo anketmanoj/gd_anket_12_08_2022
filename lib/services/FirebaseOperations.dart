@@ -608,6 +608,24 @@ class FirebaseOperations with ChangeNotifier {
   }
 
   // check if user exists based on field userrealname
+  Future<bool> checkPostExists({required String postId}) async {
+    log("anket here");
+    return FirebaseFirestore.instance
+        .collection("posts")
+        .doc(postId)
+        .get()
+        .then((value) {
+      if (value.exists == true) {
+        log("anket here -- true");
+        return true;
+      } else {
+        log("anket here -- false");
+        return false;
+      }
+    });
+  }
+
+  // check if user exists based on field userrealname
   Future<bool> checkUserAlreadySubmitted({required String useruid}) async {
     log("user here");
     return FirebaseFirestore.instance
@@ -878,7 +896,9 @@ class FirebaseOperations with ChangeNotifier {
     required BuildContext ctx,
     required bool addBgToMaterials,
     bool fromPexels = false,
+    String? bgTakenFromMaterials,
   }) async {
+    log("taken from material value from BG is === ${bgTakenFromMaterials}");
     try {
       List<String> arUid = [];
       List<String> effectUID = [];
@@ -910,7 +930,8 @@ class FirebaseOperations with ChangeNotifier {
 
       String idVal = nanoid();
 
-      if (addBgToMaterials == true || fromPexels == true) {
+      if (addBgToMaterials == true && bgTakenFromMaterials == null) {
+        log("taken from material value from BG is === null so uploading my bgFile");
         await FirebaseFirestore.instance
             .collection("users")
             .doc(userUid)
@@ -931,6 +952,8 @@ class FirebaseOperations with ChangeNotifier {
           arIdsVal.add(idVal);
           notifyListeners();
         });
+      } else {
+        arIdsVal.add(bgTakenFromMaterials!);
       }
 
       await AwsAnketS3.uploadFile(
@@ -1078,7 +1101,8 @@ class FirebaseOperations with ChangeNotifier {
                     "videoId": id,
                   });
                 } else {
-                  await notifyUserOfUsage(userid: userUid, type: "AR");
+                  await notifyUserOfUsage(
+                      userid: arSnapshot.data()!['ownerId'], type: "AR");
                   await FirebaseFirestore.instance
                       .collection("posts")
                       .doc(id)
@@ -1144,7 +1168,10 @@ class FirebaseOperations with ChangeNotifier {
                     "videoId": id,
                   });
                 } else {
-                  await notifyUserOfUsage(userid: userUid, type: "Background");
+                  log("adding bg video from user!");
+                  await notifyUserOfUsage(
+                      userid: arSnapshot.data()!['ownerId'],
+                      type: "Background");
                   await FirebaseFirestore.instance
                       .collection("posts")
                       .doc(id)

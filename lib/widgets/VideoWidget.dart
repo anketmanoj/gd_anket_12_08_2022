@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_catches_without_on_clauses
+
 import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
@@ -195,7 +197,7 @@ class VideoWidget extends StatelessWidget {
                                     Container(
                                       height: size.height * 0.07,
                                       width: size.width,
-                                      child: ElevatedButton.icon(
+                                      child: ElevatedButton(
                                         onPressed: () {
                                           try {
                                             firebaseOperations.goToUserProfile(
@@ -220,12 +222,7 @@ class VideoWidget extends StatelessWidget {
                                             ),
                                           ),
                                         ),
-                                        icon: Icon(
-                                          Icons.person,
-                                          color: constantColors.whiteColor,
-                                          size: 30,
-                                        ),
-                                        label: Text(
+                                        child: Text(
                                           LocaleKeys.visitprofile.tr(),
                                           style: TextStyle(
                                             color: constantColors.whiteColor,
@@ -1030,16 +1027,40 @@ class VideoWidget extends StatelessWidget {
                                     height: 50,
                                     width: 80,
                                     child: InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            PageTransition(
-                                                child: PostDetailsScreen(
-                                                  videoId:
-                                                      othersMaterials[index]
-                                                          .videoId,
+                                      onTap: () async {
+                                        bool checkExists = await Provider.of<
+                                                    FirebaseOperations>(context,
+                                                listen: false)
+                                            .checkPostExists(
+                                                postId: othersMaterials[index]
+                                                    .videoId!);
+
+                                        if (checkExists == true) {
+                                          Navigator.push(
+                                              context,
+                                              PageTransition(
+                                                  child: PostDetailsScreen(
+                                                    videoId:
+                                                        othersMaterials[index]
+                                                            .videoId!,
+                                                  ),
+                                                  type:
+                                                      PageTransitionType.fade));
+                                        } else {
+                                          Get.dialog(
+                                            SimpleDialog(
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.all(10),
+                                                  child: Text(
+                                                    "Post No longer Exists",
+                                                    textAlign: TextAlign.center,
+                                                  ),
                                                 ),
-                                                type: PageTransitionType.fade));
+                                              ],
+                                            ),
+                                          );
+                                        }
                                       },
                                       child: Container(
                                         height: 50,
@@ -1386,17 +1407,42 @@ class VideoWidget extends StatelessWidget {
                                       height: 50,
                                       width: 80,
                                       child: InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              PageTransition(
-                                                  child: PostDetailsScreen(
-                                                    videoId:
-                                                        othersMaterials[index]
-                                                            .videoId,
+                                        onTap: () async {
+                                          bool checkExists = await Provider.of<
+                                                      FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .checkPostExists(
+                                                  postId: othersMaterials[index]
+                                                      .videoId!);
+
+                                          if (checkExists == true) {
+                                            Navigator.push(
+                                                context,
+                                                PageTransition(
+                                                    child: PostDetailsScreen(
+                                                      videoId:
+                                                          othersMaterials[index]
+                                                              .videoId!,
+                                                    ),
+                                                    type: PageTransitionType
+                                                        .fade));
+                                          } else {
+                                            Get.dialog(
+                                              SimpleDialog(
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.all(10),
+                                                    child: Text(
+                                                      "Post No longer Exists",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
                                                   ),
-                                                  type:
-                                                      PageTransitionType.fade));
+                                                ],
+                                              ),
+                                            );
+                                          }
                                         },
                                         child: Container(
                                           height: 50,

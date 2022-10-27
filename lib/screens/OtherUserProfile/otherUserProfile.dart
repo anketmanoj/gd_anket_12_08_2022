@@ -304,173 +304,189 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                             ),
                           ),
                         ),
-                        StreamBuilder<DocumentSnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection("users")
-                                .doc(widget.userModel.useruid)
-                                .collection("followers")
-                                .doc(auth.getUserId)
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                              if (snapshot.data!.exists) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 20),
-                                  child: InkWell(
-                                    onTap: () async {
-                                      await Provider.of<FirebaseOperations>(
-                                              context,
-                                              listen: false)
-                                          .unfollowUser(
-                                        followingUid: widget.userModel.useruid,
-                                        followingDocId: auth.getUserId,
-                                        followerUid:
-                                            Provider.of<Authentication>(context,
-                                                    listen: false)
-                                                .getUserId,
-                                        followerDocId: widget.userModel.useruid,
-                                      )
-                                          .whenComplete(() {
-                                        unfollowedNotification(
-                                            context: context,
-                                            name: widget.userModel.username);
-                                      });
-                                    },
-                                    child: Container(
-                                      height: 35,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: Image.asset(
-                                                    "assets/images/follow_Bg.jpg")
-                                                .image,
-                                            fit: BoxFit.cover),
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.remove,
-                                            color: Colors.white,
-                                          ),
-                                          Text(
-                                            LocaleKeys.unfollow.tr(),
-                                            style: TextStyle(
-                                              fontSize: 16,
+                        Visibility(
+                          visible: widget.userModel.useruid !=
+                              context.read<Authentication>().getUserId,
+                          child: StreamBuilder<DocumentSnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(widget.userModel.useruid)
+                                  .collection("followers")
+                                  .doc(auth.getUserId)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+                                if (snapshot.data!.exists) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 20),
+                                    child: InkWell(
+                                      onTap: () async {
+                                        await Provider.of<FirebaseOperations>(
+                                                context,
+                                                listen: false)
+                                            .unfollowUser(
+                                          followingUid:
+                                              widget.userModel.useruid,
+                                          followingDocId: auth.getUserId,
+                                          followerUid:
+                                              Provider.of<Authentication>(
+                                                      context,
+                                                      listen: false)
+                                                  .getUserId,
+                                          followerDocId:
+                                              widget.userModel.useruid,
+                                        )
+                                            .whenComplete(() {
+                                          unfollowedNotification(
+                                              context: context,
+                                              name: widget.userModel.username);
+                                        });
+                                      },
+                                      child: Container(
+                                        height: 35,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              image: Image.asset(
+                                                      "assets/images/follow_Bg.jpg")
+                                                  .image,
+                                              fit: BoxFit.cover),
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.remove,
                                               color: Colors.white,
                                             ),
-                                          ),
-                                        ],
+                                            Text(
+                                              LocaleKeys.unfollow.tr(),
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              } else {
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 20),
-                                  child: InkWell(
-                                    onTap: () async {
-                                      await Provider.of<FirebaseOperations>(
-                                              context,
-                                              listen: false)
-                                          .followUser(
-                                        otherUserToken: widget.userModel.token,
-                                        followingUserName:
-                                            userProvider.initUserName,
-                                        followingUid: widget.userModel.useruid,
-                                        followingDocId: auth.getUserId,
-                                        followingData: {
-                                          'username': userProvider.initUserName,
-                                          'userimage':
-                                              userProvider.initUserImage,
-                                          'useremail':
-                                              userProvider.initUserEmail,
-                                          'useruid': auth.getUserId,
-                                          'time': Timestamp.now(),
-                                        },
-                                        followerUid:
-                                            Provider.of<Authentication>(context,
+                                  );
+                                } else {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 20),
+                                    child: InkWell(
+                                      onTap: () async {
+                                        await Provider.of<FirebaseOperations>(
+                                                context,
+                                                listen: false)
+                                            .followUser(
+                                          otherUserToken:
+                                              widget.userModel.token,
+                                          followingUserName:
+                                              userProvider.initUserName,
+                                          followingUid:
+                                              widget.userModel.useruid,
+                                          followingDocId: auth.getUserId,
+                                          followingData: {
+                                            'username':
+                                                userProvider.initUserName,
+                                            'userimage':
+                                                userProvider.initUserImage,
+                                            'useremail':
+                                                userProvider.initUserEmail,
+                                            'useruid': auth.getUserId,
+                                            'time': Timestamp.now(),
+                                          },
+                                          followerUid:
+                                              Provider.of<Authentication>(
+                                                      context,
+                                                      listen: false)
+                                                  .getUserId,
+                                          followerDocId:
+                                              widget.userModel.useruid,
+                                          followerData: {
+                                            'username':
+                                                widget.userModel.username,
+                                            'userimage':
+                                                widget.userModel.userimage,
+                                            'useremail':
+                                                widget.userModel.useremail,
+                                            'useruid': widget.userModel.useruid,
+                                            'time': Timestamp.now(),
+                                          },
+                                        )
+                                            .whenComplete(() async {
+                                          try {
+                                            List<String> currentFollowingList =
+                                                SharedPreferencesHelper
+                                                    .getListString(
+                                                        "followersList");
+                                            currentFollowingList.add(
+                                                "${widget.userModel.useruid}");
+                                            SharedPreferencesHelper
+                                                .setListString("followersList",
+                                                    currentFollowingList);
+                                            await Provider.of<
+                                                        FirebaseOperations>(
+                                                    context,
                                                     listen: false)
-                                                .getUserId,
-                                        followerDocId: widget.userModel.useruid,
-                                        followerData: {
-                                          'username': widget.userModel.username,
-                                          'userimage':
-                                              widget.userModel.userimage,
-                                          'useremail':
-                                              widget.userModel.useremail,
-                                          'useruid': widget.userModel.useruid,
-                                          'time': Timestamp.now(),
-                                        },
-                                      )
-                                          .whenComplete(() async {
-                                        try {
-                                          List<String> currentFollowingList =
-                                              SharedPreferencesHelper
-                                                  .getListString(
-                                                      "followersList");
-                                          currentFollowingList.add(
-                                              "${widget.userModel.useruid}");
-                                          SharedPreferencesHelper.setListString(
-                                              "followersList",
-                                              currentFollowingList);
-                                          await Provider.of<FirebaseOperations>(
-                                                  context,
-                                                  listen: false)
-                                              .addFollowNotification(
-                                            userUid:
-                                                Provider.of<Authentication>(
-                                                        context,
-                                                        listen: false)
-                                                    .getUserId,
-                                            otherUserId:
-                                                widget.userModel.useruid,
-                                            context: context,
-                                          );
-                                        } catch (e) {
-                                          print("ERROR ====> $e");
-                                        }
-                                      });
-                                    },
-                                    child: Container(
-                                      height: 35,
-                                      width: 100,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: Image.asset(
-                                                    "assets/images/follow_Bg.jpg")
-                                                .image,
-                                            fit: BoxFit.cover),
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.add,
-                                            color: Colors.white,
-                                          ),
-                                          Text(
-                                            LocaleKeys.follow.tr(),
-                                            style: TextStyle(
-                                              fontSize: 16,
+                                                .addFollowNotification(
+                                              userUid:
+                                                  Provider.of<Authentication>(
+                                                          context,
+                                                          listen: false)
+                                                      .getUserId,
+                                              otherUserId:
+                                                  widget.userModel.useruid,
+                                              context: context,
+                                            );
+                                          } catch (e) {
+                                            print("ERROR ====> $e");
+                                          }
+                                        });
+                                      },
+                                      child: Container(
+                                        height: 35,
+                                        width: 100,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              image: Image.asset(
+                                                      "assets/images/follow_Bg.jpg")
+                                                  .image,
+                                              fit: BoxFit.cover),
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.add,
                                               color: Colors.white,
                                             ),
-                                          ),
-                                        ],
+                                            Text(
+                                              LocaleKeys.follow.tr(),
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              }
-                            }),
+                                  );
+                                }
+                              }),
+                        ),
                       ],
                     ),
                     Padding(
@@ -1046,45 +1062,103 @@ class _TopProfileStackState extends State<TopProfileStack> {
             imageUrl: widget.userModel.usercover!,
           ),
         ),
-        Positioned(
-          top: 5.h,
-          right: 5.w,
-          child: Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: constantColors.black.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    otherUserOptionsMenu(context);
-                  },
-                  icon: Icon(
-                    Icons.menu,
-                    color: Colors.white,
+        Visibility(
+          visible: widget.userModel.useruid !=
+              context.read<Authentication>().getUserId,
+          child: Positioned(
+            top: 5.h,
+            right: 5.w,
+            child: Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: constantColors.black.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      otherUserOptionsMenu(context);
+                    },
+                    icon: Icon(
+                      Icons.menu,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection("users")
-                        .doc(widget.userModel.useruid)
-                        .collection("notifyUsers")
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection("users")
+                          .doc(widget.userModel.useruid)
+                          .collection("notifyUsers")
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
 
-                      if (snapshot.data!.docs.isEmpty) {
+                        if (snapshot.data!.docs.isEmpty) {
+                          return InkWell(
+                            onTap: () async {
+                              NotifyUsers notifyUser = NotifyUsers(
+                                  personalUserId: auth.getUserId,
+                                  token: context
+                                      .read<FirebaseOperations>()
+                                      .fcmToken);
+                              await context
+                                  .read<FirebaseOperations>()
+                                  .addUserToNotifierList(
+                                      accountOwnerId: widget.userModel.useruid,
+                                      notifyUsers: notifyUser);
+                            },
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                color: constantColors.black.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Icon(
+                                Icons.notifications_on_outlined,
+                                color: Colors.white,
+                              ),
+                            ),
+                          );
+                        } else if (snapshot.data!.docs
+                            .any((element) => element.id == auth.getUserId)) {
+                          return InkWell(
+                            onTap: () async {
+                              await context
+                                  .read<FirebaseOperations>()
+                                  .removeUserFromNotifierList(
+                                      accountOwnerId: widget.userModel.useruid,
+                                      personlUserid: context
+                                          .read<Authentication>()
+                                          .getUserId);
+                            },
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                color: constantColors.black.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Icon(
+                                Icons.notifications_off_rounded,
+                                color: Colors.white,
+                              ),
+                            ),
+                          );
+                        }
+
                         return InkWell(
                           onTap: () async {
-                            NotifyUsers notifyUser = NotifyUsers(
+                            // log("what");
+                            final NotifyUsers notifyUser = NotifyUsers(
                                 personalUserId: auth.getUserId,
                                 token: context
                                     .read<FirebaseOperations>()
@@ -1105,66 +1179,14 @@ class _TopProfileStackState extends State<TopProfileStack> {
                             child: Icon(
                               Icons.notifications_on_outlined,
                               color: Colors.white,
+                              size: 25,
                             ),
                           ),
                         );
-                      } else if (snapshot.data!.docs
-                          .any((element) => element.id == auth.getUserId)) {
-                        return InkWell(
-                          onTap: () async {
-                            await context
-                                .read<FirebaseOperations>()
-                                .removeUserFromNotifierList(
-                                    accountOwnerId: widget.userModel.useruid,
-                                    personlUserid: context
-                                        .read<Authentication>()
-                                        .getUserId);
-                          },
-                          child: Container(
-                            height: 50,
-                            width: 50,
-                            decoration: BoxDecoration(
-                              color: constantColors.black.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: Icon(
-                              Icons.notifications_off_rounded,
-                              color: Colors.white,
-                            ),
-                          ),
-                        );
-                      }
-
-                      return InkWell(
-                        onTap: () async {
-                          // log("what");
-                          final NotifyUsers notifyUser = NotifyUsers(
-                              personalUserId: auth.getUserId,
-                              token:
-                                  context.read<FirebaseOperations>().fcmToken);
-                          await context
-                              .read<FirebaseOperations>()
-                              .addUserToNotifierList(
-                                  accountOwnerId: widget.userModel.useruid,
-                                  notifyUsers: notifyUser);
-                        },
-                        child: Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                            color: constantColors.black.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Icon(
-                            Icons.notifications_on_outlined,
-                            color: Colors.white,
-                            size: 25,
-                          ),
-                        ),
-                      );
-                    }),
-              ),
-            ],
+                      }),
+                ),
+              ],
+            ),
           ),
         ),
         Positioned(

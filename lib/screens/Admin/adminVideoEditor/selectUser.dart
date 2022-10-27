@@ -41,6 +41,7 @@ class SelectUserVideoEditor extends StatelessWidget {
 
   Future<int> audioCheck({required String videoUrl}) async {
     context.read<ArVideoCreation>().setFromPexel(false);
+    context.read<VideoEditorProvider>().setBackgroundVideoId(null);
     return FFprobeKit.execute(
             "-i $videoUrl -show_streams -select_streams a -loglevel error")
         .then((value) {

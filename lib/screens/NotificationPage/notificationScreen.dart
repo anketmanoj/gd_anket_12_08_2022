@@ -58,13 +58,36 @@ class NotificationScreen extends StatelessWidget {
 
                     print("notification.postId: ${notification.postId}");
 
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            child: PostDetailsScreen(
-                              videoId: notification.postId!,
+                    bool checkExists = await Provider.of<FirebaseOperations>(
+                            context,
+                            listen: false)
+                        .checkPostExists(
+                      postId: notification.postId!,
+                    );
+
+                    if (checkExists == true) {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              child: PostDetailsScreen(
+                                videoId: notification.postId!,
+                              ),
+                              type: PageTransitionType.fade));
+                    } else {
+                      Get.dialog(
+                        SimpleDialog(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Text(
+                                "Post No longer Exists",
+                                textAlign: TextAlign.center,
+                              ),
                             ),
-                            type: PageTransitionType.fade));
+                          ],
+                        ),
+                      );
+                    }
                   },
                   leading: CircleAvatar(
                     backgroundImage: Image.network(

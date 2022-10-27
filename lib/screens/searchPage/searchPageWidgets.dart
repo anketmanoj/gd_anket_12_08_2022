@@ -217,12 +217,13 @@ class _PexelSearchState extends State<PexelSearch> {
   final ConstantColors constantColors = ConstantColors();
 
   pexel.SearchForVideoModel? value;
+  int statueCode = 200;
 
   Future<pexel.SearchForVideoModel?> getSearchPexelResults(
       {required String searchQuery}) async {
     final response = await http.get(
       Uri.parse(
-          "https://api.pexels.com/videos/search?query=$searchQuery&per_page=80&orientation=portrait&size=medium"),
+          "https://api.pexels.com/videos/search?query=$searchQuery&per_page=10&orientation=portrait&size=medium"),
       headers: {
         "Authorization":
             "563492ad6f91700001000001933231fd77ce46fab50bdb31e7298df0"
@@ -230,10 +231,16 @@ class _PexelSearchState extends State<PexelSearch> {
     );
     if (response.statusCode == 200) {
       value = pexel.SearchForVideoModel.fromJson(response.body);
+      setState(() {
+        statueCode = response.statusCode;
+      });
 
       return value;
     } else {
-      log("idhar bro");
+      log("idhar bro == ${response.statusCode}");
+      setState(() {
+        statueCode = response.statusCode;
+      });
       return null;
     }
   }
@@ -241,105 +248,117 @@ class _PexelSearchState extends State<PexelSearch> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return FutureBuilder<pexel.SearchForVideoModel?>(
-      future: getSearchPexelResults(searchQuery: widget.searchQuery),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        if (snapshot.hasData) {
-          if (snapshot.data!.videos.isEmpty) {
-            return Center(
-              child: Text("No Videos found for ${widget.searchQuery}"),
-            );
-          }
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: InkWell(
-                  onTap: () async {
-                    final url = 'https://www.pexels.com/';
-                    if (await canLaunch(url)) {
-                      await launch(
-                        url,
-                        forceSafariVC: false,
-                      );
-                    }
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Videos provided by Pexels",
-                        style: TextStyle(
-                          color: constantColors.navButton,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 5,
-                    mainAxisSpacing: 5,
-                  ),
-                  itemCount: snapshot.data!.videos.length,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                              child: PreviewPexelVideoScreen(
-                                  pexelVideoUrl: snapshot
-                                      .data!.videos[index].videoFiles[0].link),
-                              type: PageTransitionType.fade),
-                        );
+    switch (statueCode) {
+      case 200:
+        return FutureBuilder<pexel.SearchForVideoModel?>(
+          future: getSearchPexelResults(searchQuery: widget.searchQuery),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (snapshot.hasData) {
+              if (snapshot.data!.videos.isEmpty) {
+                return Center(
+                  child: Text("No Videos found for ${widget.searchQuery}"),
+                );
+              }
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: InkWell(
+                      onTap: () async {
+                        final url = 'https://www.pexels.com/';
+                        if (await canLaunch(url)) {
+                          await launch(
+                            url,
+                            forceSafariVC: false,
+                          );
+                        }
                       },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          image: DecorationImage(
-                              image: NetworkImage(
-                                  snapshot.data!.videos[index].image),
-                              fit: BoxFit.cover),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 10, left: 10),
-                          child: Text(
-                            "${snapshot.data!.videos[index].duration} secs",
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Videos provided by Pexels",
                             style: TextStyle(
-                              color: constantColors.whiteColor,
-                              shadows: outlinedText(
-                                  strokeColor: constantColors.black,
-                                  strokeWidth: 1),
+                              color: constantColors.navButton,
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text("Could not connect to Pexels"),
-          );
-        }
+                    ),
+                  ),
+                  Expanded(
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 5,
+                        mainAxisSpacing: 5,
+                      ),
+                      itemCount: snapshot.data!.videos.length,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                  child: PreviewPexelVideoScreen(
+                                      pexelVideoUrl: snapshot.data!
+                                          .videos[index].videoFiles[0].link),
+                                  type: PageTransitionType.fade),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              image: DecorationImage(
+                                  image: NetworkImage(
+                                      snapshot.data!.videos[index].image),
+                                  fit: BoxFit.cover),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 10, left: 10),
+                              child: Text(
+                                "${snapshot.data!.videos[index].duration} secs",
+                                style: TextStyle(
+                                  color: constantColors.whiteColor,
+                                  shadows: outlinedText(
+                                      strokeColor: constantColors.black,
+                                      strokeWidth: 1),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text("Could not connect to Pexels"),
+              );
+            }
 
-        return Center(
-          child: Text("Looking for something?"),
+            return Center(
+              child: Text("Looking for something?"),
+            );
+          },
         );
-      },
-    );
+
+      case 429:
+        return Center(
+          child: Text("Search limit crossed! Please check back later!"),
+        );
+      default:
+        return Center(
+          child: Text("Server Error | $statueCode"),
+        );
+    }
   }
 }
 

@@ -2342,7 +2342,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
 
     final String commandToExecute = "-v error -y -i ${bgVideoPath}" +
         ffmpegArCommand +
-        " -crf 30 -preset ultrafast ${outputPath}";
+        " -crf 30 -preset faster ${outputPath}";
 
     print("command : $commandToExecute");
 

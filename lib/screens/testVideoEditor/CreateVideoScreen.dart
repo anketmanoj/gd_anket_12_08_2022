@@ -164,6 +164,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
   }
 
   void disposeScreen() async {
+    timer.cancel();
     // CoolAlert.show(
     //     context: context,
     //     type: CoolAlertType.info,
@@ -184,8 +185,6 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     if (list.value.isNotEmpty) {
       _exportingProgress.dispose();
       _isExporting.dispose();
-
-      timer.cancel();
 
       // for (ARList arVal in list.value) {
       //   await deleteFile(arVal.pathsForVideoFrames!);
@@ -2325,7 +2324,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
                                     if (arElement.layerType == LayerType.AR) {
                                       ffmpegStartPointList.add(
-                                          "[vid${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
+                                          "[vid${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(3)}/TB[top${arElement.arIndex}];");
                                     } else {
                                       ffmpegStartPointList.add(
                                           "[${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
@@ -2336,17 +2335,17 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
                                     if (arElement.arIndex == 1) {
                                       ffmpegOverlay.add(
-                                          "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(0)}\"\\,\"${arEndTime.toStringAsFixed(0)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                          "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(3)}\"\\,\"${arEndTime.toStringAsFixed(3)}\")':eof_action=pass[${arElement.arIndex}out];");
                                       lastVal.value = arElement.arIndex!;
                                     } else {
                                       ffmpegOverlay.add(
-                                          "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(0)}\"\\,\"${arEndTime.toStringAsFixed(0)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                          "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(3)}\"\\,\"${arEndTime.toStringAsFixed(3)}\")':eof_action=pass[${arElement.arIndex}out];");
                                       lastVal.value = arElement.arIndex!;
                                     }
                                     if (arElement.layerType == LayerType.AR &&
                                         arElement.audioFlag == true) {
                                       ffmpegVolumeList.add(
-                                          "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(0)}s:all=1[a${arElement.arIndex}];");
+                                          "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(3)}s:all=1[a${arElement.arIndex}];");
                                       ffmpegSoundInputs
                                           .add("[a${arElement.arIndex}]");
                                     }
@@ -2696,7 +2695,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
     final String commandToExecute = "-v error -y -i ${bgVideoPath}" +
         ffmpegArCommand +
-        " -crf 30 -preset ultrafast ${outputPath}";
+        " -crf 30 -preset faster ${outputPath}";
 
     print("command : $commandToExecute");
 

@@ -884,17 +884,42 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                       height: 50,
                                       width: 80,
                                       child: InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              PageTransition(
-                                                  child: PostDetailsScreen(
-                                                    videoId:
-                                                        othersMaterials[index]
-                                                            .videoId,
+                                        onTap: () async {
+                                          bool checkExists = await Provider.of<
+                                                      FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .checkPostExists(
+                                                  postId: othersMaterials[index]
+                                                      .videoId!);
+
+                                          if (checkExists == true) {
+                                            Navigator.push(
+                                                context,
+                                                PageTransition(
+                                                    child: PostDetailsScreen(
+                                                      videoId:
+                                                          othersMaterials[index]
+                                                              .videoId!,
+                                                    ),
+                                                    type: PageTransitionType
+                                                        .fade));
+                                          } else {
+                                            Get.dialog(
+                                              SimpleDialog(
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.all(10),
+                                                    child: Text(
+                                                      "Post No longer Exists",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
                                                   ),
-                                                  type:
-                                                      PageTransitionType.fade));
+                                                ],
+                                              ),
+                                            );
+                                          }
                                         },
                                         child: Container(
                                           height: 50,
@@ -1205,16 +1230,40 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                     height: 50,
                                     width: 80,
                                     child: InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            PageTransition(
-                                                child: PostDetailsScreen(
-                                                  videoId:
-                                                      othersMaterials[index]
-                                                          .videoId,
+                                      onTap: () async {
+                                        bool checkExists = await Provider.of<
+                                                    FirebaseOperations>(context,
+                                                listen: false)
+                                            .checkPostExists(
+                                                postId: othersMaterials[index]
+                                                    .videoId!);
+
+                                        if (checkExists == true) {
+                                          Navigator.push(
+                                              context,
+                                              PageTransition(
+                                                  child: PostDetailsScreen(
+                                                    videoId:
+                                                        othersMaterials[index]
+                                                            .videoId!,
+                                                  ),
+                                                  type:
+                                                      PageTransitionType.fade));
+                                        } else {
+                                          Get.dialog(
+                                            SimpleDialog(
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.all(10),
+                                                  child: Text(
+                                                    "Post No longer Exists",
+                                                    textAlign: TextAlign.center,
+                                                  ),
                                                 ),
-                                                type: PageTransitionType.fade));
+                                              ],
+                                            ),
+                                          );
+                                        }
                                       },
                                       child: Container(
                                         height: 50,

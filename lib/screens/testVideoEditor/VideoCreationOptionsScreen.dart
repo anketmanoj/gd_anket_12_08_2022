@@ -37,6 +37,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
   Future<int> audioCheck(
       {required String videoUrl, required BuildContext context}) async {
     context.read<ArVideoCreation>().setFromPexel(false);
+    context.read<VideoEditorProvider>().setBackgroundVideoId(null);
     return FFprobeKit.execute(
             "-i $videoUrl -show_streams -select_streams a -loglevel error")
         .then((value) {
@@ -406,6 +407,29 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: MaterialButton(
+                      minWidth: 100.w,
+                      color: constantColors.navButton,
+                      child: Text(
+                        "Pick Background from My Materials",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          PageTransition(
+                            child: MyCollectionMiddleNav(goToMaterial: 2),
+                            type: PageTransitionType.fade,
+                          ),
+                        );
+                      },
                     ),
                   )
                 ],

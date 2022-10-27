@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
+import 'package:diamon_rose_app/screens/PostPage/postMaterialModel.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -27,6 +28,7 @@ class VideoEditorProvider extends ChangeNotifier {
   late File _coverGif;
   late File _coverImage;
   late File _afterFinalTouchesFrame;
+  PostMaterialModel? _backgroundVideoId;
 
   // getters
 
@@ -43,6 +45,12 @@ class VideoEditorProvider extends ChangeNotifier {
   File get getCoverGif => _coverGif;
   File get getCoverImage => _coverImage;
   File get getAfterFinalTouchesFrame => _afterFinalTouchesFrame;
+  PostMaterialModel? get getBackgroundVideoId => _backgroundVideoId;
+
+  void setBackgroundVideoId(PostMaterialModel? videoID) {
+    _backgroundVideoId = videoID;
+    notifyListeners();
+  }
 
   void setPositionFromSlider(double value) {
     _positionFromSlider = value;
@@ -89,7 +97,7 @@ class VideoEditorProvider extends ChangeNotifier {
   void setBackgroundVideoController() {
     _backgroundVideoController = VideoEditorController.file(
       _backgroundVideoFile,
-      maxDuration: const Duration(seconds: 60),
+      maxDuration: Duration(seconds: 60),
       trimStyle: TrimSliderStyle(),
     )..initialize();
     log("video controller set");

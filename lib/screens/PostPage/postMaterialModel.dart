@@ -13,7 +13,7 @@ class PostMaterialModel {
     required this.ownerId,
     required this.ownerName,
     this.usage,
-    required this.videoId,
+    this.videoId,
     required this.layerType,
     required this.selected,
   });
@@ -23,7 +23,7 @@ class PostMaterialModel {
   String ownerId;
   String ownerName;
   String? usage;
-  String videoId;
+  String? videoId;
   String layerType;
   ValueNotifier<bool> selected = ValueNotifier<bool>(false);
 

@@ -38,6 +38,25 @@ import 'package:sizer/sizer.dart';
 
 ConstantColors constantColors = ConstantColors();
 
+String formatHHMMSS(double seconds) {
+  if (seconds != null && seconds != 0) {
+    double hours = (seconds / 3600);
+    seconds = (seconds % 3600);
+    double minutes = (seconds / 60);
+
+    String hoursStr = (hours).toString().padLeft(2, '0');
+    String minutesStr = (minutes).toString().padLeft(2, '0');
+    String secondsStr = (seconds % 60).toString().padLeft(2, '0');
+
+    if (hours == 0) {
+      return "00:$minutesStr:$secondsStr";
+    }
+    return "$hoursStr:$minutesStr:$secondsStr";
+  } else {
+    return "";
+  }
+}
+
 showScreenshotWarningMsg() async {
   final bool showMessage = SharedPreferencesHelper.getBool("screenshotWarning");
 

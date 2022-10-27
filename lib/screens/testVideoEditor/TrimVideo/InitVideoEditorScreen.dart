@@ -84,6 +84,7 @@ class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
         _isExporting.value = false;
         if (!mounted) return;
         if (file != null) {
+          // log("end duration == ${endDuration.toString()}");
           context.read<VideoEditorProvider>().setBackgroundVideoFile(file);
           context.read<VideoEditorProvider>().setBackgroundVideoController();
           context.read<VideoEditorProvider>().setVideoPlayerController();
