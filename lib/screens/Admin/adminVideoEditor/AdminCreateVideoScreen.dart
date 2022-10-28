@@ -158,6 +158,42 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
     }
   }
 
+  void disposeScreen() async {
+    timer.cancel();
+    // CoolAlert.show(
+    //     context: context,
+    //     type: CoolAlertType.info,
+    //     barrierDismissible: false,
+    //     title: "Deleting Layers",
+    //     text: "Taking you back shortly...");
+    for (ARList element in list.value) {
+      if (element.gifFilePath != null) {
+        await deleteFile([element.gifFilePath!]);
+      }
+      // await deleteFile(element.pathsForVideoFrames!);
+      if (element.arState != null) {
+        element.arState?.dispose();
+        if (element.audioFlag == true) element.audioPlayer!.dispose();
+      }
+    }
+    await DefaultCacheManager().emptyCache();
+    if (list.value.isNotEmpty) {
+      _exportingProgress.dispose();
+      _isExporting.dispose();
+
+      // for (ARList arVal in list.value) {
+      //   await deleteFile(arVal.pathsForVideoFrames!);
+      // }
+    }
+    _controller.dispose();
+  }
+
+  @override
+  void dispose() {
+    disposeScreen();
+    super.dispose();
+  }
+
   // * to get the size of the AR's
   var myChildSize = Size.zero;
 
@@ -310,6 +346,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
     required MyArCollection myAr,
   }) async {
     if (await Permission.storage.request().isGranted) {
+      dev.log("AR INDEX == $arVal");
       // ignore: unawaited_futures
       CoolAlert.show(
         context: context,
@@ -345,6 +382,9 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
             //! #############################################################
 
             final List<String> _fullPathsOnline = myAr.imgSeq;
+            _fullPathsOnline.removeLast();
+            dev.log(
+                "first link == ${_fullPathsOnline.first} || last = ${_fullPathsOnline.last}");
 
             final File arCutOutFile = await getImage(url: _fullPathsOnline[0]);
             dev.log("ArCut out ois here  = ${arCutOutFile.path}");
@@ -416,24 +456,27 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                     selectedMaterial: ValueNotifier<bool>(true),
                     arCutOutFile: arCutOutFile,
                   ));
+
+                  _controllerSeekTo(0);
+                  if (!mounted) return;
+
+                  arIndexVal.value += 1;
+
+                  dev.log(
+                      "list AR ${arIndexVal.value} | index counter == $arVal");
+                  Get.back();
+                  Get.back();
+                  setState(() {});
                 });
               });
             } catch (e) {
               print("error running ffprobe on image == ${e.toString()}");
             }
 
-            _controllerSeekTo(0);
-            // setState(() {});
-
-            Navigator.pop(context);
-            Navigator.pop(context);
-
-            arIndexVal.value += 1;
-
-            dev.log("list AR ${arIndexVal.value} | index counter == $arVal");
-            setState(() {
-              loading = false;
-            });
+            // setState(() {
+            //   loading = false;
+            // });
+            // print("folder name $folderName");
 
             //! #############################################################
           });
@@ -1756,27 +1799,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                         color: Colors.white,
                         size: 25,
                       ),
-                      onPressed: () async {
-                        if (list.value.isNotEmpty) {
-                          _exportingProgress.dispose();
-                          _isExporting.dispose();
-
-                          timer.cancel();
-                          _controller.dispose();
-                          for (ARList element in list.value) {
-                            if (element.gifFilePath != null) {
-                              await deleteFile([element.gifFilePath!]);
-                            }
-                            await deleteFile(element.pathsForVideoFrames!);
-                            element.arState!.dispose();
-                            if (element.audioFlag == true)
-                              element.audioPlayer!.dispose();
-                          }
-                          // for (ARList arVal in list.value) {
-                          //   await deleteFile(arVal.pathsForVideoFrames!);
-                          // }
-                        }
-                        await DefaultCacheManager().emptyCache();
+                      onPressed: () {
                         Navigator.pop(context);
                       },
                     ),
@@ -1787,6 +1810,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                         size: 25,
                       ),
                       onPressed: () {
+                        _controllerSeekTo(0);
                         if (selected != null) {
                           CoolAlert.show(
                             context: context,
@@ -1879,32 +1903,59 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                 case LayerType.AR:
                                   dev.log(
                                       "AR INDEX BEFORE = ${arIndexVal.value}");
-                                  indexCounter.value = indexCounter.value - 2;
+                                  if (list.value.length > 1 &&
+                                      list.value.last == selected &&
+                                      list.value[list.value.length - 1]
+                                              .layerType ==
+                                          LayerType.Effect) {
+                                    indexCounter.value = indexCounter.value - 1;
+                                  } else if (list.value.length > 1 &&
+                                      list.value.last == selected &&
+                                      list.value[list.value.length - 1]
+                                              .layerType ==
+                                          LayerType.AR) {
+                                    indexCounter.value = indexCounter.value - 2;
+                                  } else {
+                                    indexCounter.value = indexCounter.value - 2;
+                                  }
                                   arIndexVal.value -= 1;
-                                  dev.log("AR INDEX NOW = ${arIndexVal.value}");
+                                  dev.log(
+                                      "AR INDEX NOW = ${arIndexVal.value} | indexCounter.value = ${indexCounter.value}");
                                   break;
                                 case LayerType.Effect:
                                   dev.log(
                                       "EFFECT INDEX BEFORE = ${effectIndexVal.value}");
-                                  indexCounter.value = indexCounter.value - 1;
+                                  if (list.value.first.layerType ==
+                                          LayerType.AR &&
+                                      list.value.last == selected &&
+                                      list.value.length == 2) {
+                                    indexCounter.value = indexCounter.value - 2;
+                                  } else {
+                                    indexCounter.value = indexCounter.value - 1;
+                                  }
                                   effectIndexVal.value -= 1;
                                   await deleteFile(
                                       selected!.pathsForVideoFrames!);
                                   dev.log(
-                                      "EFFECT INDEX NOW = ${effectIndexVal.value}");
+                                      "EFFECT INDEX NOW = ${effectIndexVal.value} | indexCounter.value = ${indexCounter.value}");
                                   break;
                               }
 
-                              setState(() {
-                                // selected!.layerType == LayerType.AR
-                                //     ? indexCounter.value =
-                                //         indexCounter.value - 2
-                                //     : indexCounter.value =
-                                //         indexCounter.value - 1;
-                                list.value.remove(selected);
+                              // var appDir = (await getTemporaryDirectory()).path;
+                              // new Directory(appDir).delete(recursive: true);
 
-                                _controllerSeekTo(0);
-                              });
+                              // setState(() {
+                              // selected!.layerType == LayerType.AR
+                              //     ? indexCounter.value =
+                              //         indexCounter.value - 2
+                              //     : indexCounter.value =
+                              //         indexCounter.value - 1;
+
+                              // _controllerSeekTo(0);
+                              // });
+                              list.value.remove(selected);
+                              selected = null;
+                              setState(() {});
 
                               dev.log(
                                   "end indexcounter == ${indexCounter.value}");
@@ -2699,41 +2750,51 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                       onTap: () async {
                                         dev.log("arIndexVal = ${arIndex}");
 
-                                        if (arIndexVal.value <= 2) {
-                                          if (list.value.isNotEmpty) {
-                                            list.value.last.layerType ==
-                                                    LayerType.AR
-                                                ? indexCounter.value =
-                                                    indexCounter.value + 2
-                                                : indexCounter.value =
-                                                    indexCounter.value + 1;
+                                        var contain = list.value.where(
+                                            (element) =>
+                                                element.arId ==
+                                                myArCollection.id);
+
+                                        if (contain.isEmpty) {
+                                          if (arIndexVal.value <= 2) {
+                                            if (list.value.isNotEmpty) {
+                                              list.value.last.layerType ==
+                                                      LayerType.AR
+                                                  ? indexCounter.value =
+                                                      indexCounter.value + 2
+                                                  : indexCounter.value =
+                                                      indexCounter.value + 1;
+                                            } else {
+                                              indexCounter.value = 1;
+                                            }
+
+                                            if (indexCounter.value <= 0) {
+                                              indexCounter.value = 1;
+                                            }
+
+                                            await runFFmpegCommand(
+                                              arVal: indexCounter.value,
+                                              myAr: myArCollection,
+                                            );
+                                          } else {
+                                            CoolAlert.show(
+                                              context: context,
+                                              type: CoolAlertType.info,
+                                              title: "Max AR's Reached",
+                                              text: "You can only have 2 AR's",
+                                            );
                                           }
-
-                                          if (indexCounter.value <= 0) {
-                                            indexCounter.value = 1;
-                                          }
-
-                                          await runFFmpegCommand(
-                                            arVal: indexCounter.value,
-                                            myAr: myArCollection,
-                                          );
-
-                                          setState(() {
-                                            arIndexVal.value = list.value
-                                                .where((element) =>
-                                                    element.layerType ==
-                                                    LayerType.AR)
-                                                .length;
-                                          });
-
-                                          dev.log(
-                                              "list AR ${arIndexVal.value}");
                                         } else {
-                                          CoolAlert.show(
-                                            context: context,
-                                            type: CoolAlertType.info,
-                                            title: "Max AR's Reached",
-                                            text: "You can only have 2 AR's",
+                                          await Get.dialog(
+                                            SimpleDialog(
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.all(10),
+                                                  child: Text(
+                                                      "You've already added this AR!"),
+                                                ),
+                                              ],
+                                            ),
                                           );
                                         }
                                       },

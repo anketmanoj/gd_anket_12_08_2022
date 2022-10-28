@@ -399,7 +399,6 @@ class _ControlsOverlay extends StatelessWidget {
     Duration(seconds: 10),
   ];
   static const List<double> _examplePlaybackRates = <double>[
-    0.25,
     0.5,
     1.0,
     1.5,
