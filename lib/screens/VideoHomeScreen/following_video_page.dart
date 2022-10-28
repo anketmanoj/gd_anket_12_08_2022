@@ -335,8 +335,16 @@ class _FollowingVideoPageState extends State<FollowingVideoPage>
                 final bool _isLoading =
                     state.isLoading && index == state.urls.length - 1;
 
+                bool showIcon = false;
+                if (index % 5 == 0 && index != 0) {
+                  showIcon = true;
+                } else {
+                  showIcon = false;
+                }
+
                 return state.focusedIndex == index
                     ? VideoWidget(
+                        showIconNow: showIcon,
                         video: state.urls[index],
                         isLoading: _isLoading,
                         controller: state.controllers[index]!,
