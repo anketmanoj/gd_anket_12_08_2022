@@ -277,7 +277,7 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                         size: 30,
                                       ),
                                       label: Text(
-                                        LocaleKeys.unlockvideo.tr(),
+                                        "Purchase Content",
                                         style: TextStyle(
                                           color: constantColors.whiteColor,
                                           fontSize: 18,

@@ -381,7 +381,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                           size: 30,
                                         ),
                                         label: Text(
-                                          LocaleKeys.unlockvideo.tr(),
+                                          "Purchase Content",
                                           style: TextStyle(
                                             color: constantColors.whiteColor,
                                             fontSize: 18,
