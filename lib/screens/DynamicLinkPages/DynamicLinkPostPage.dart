@@ -10,9 +10,11 @@ import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/providers/homeScreenProvider.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/PostPage/postMaterialModel.dart';
+import 'package:diamon_rose_app/screens/ProfilePage/buyCaratScreen.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateMessage.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/homePage/showCommentScreen.dart';
@@ -1444,29 +1446,274 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                     ),
                                   ),
                                 ),
-                                onPressed: () async {
-                                  // Beamer.of(context).beamToNamed('/success');
-                                  // *Change to add to cart
-                                  // await selectPaymentOptionsSheet(
-                                  //   ctx: context,
-                                  // );
-                                  await Provider.of<FirebaseOperations>(context,
-                                          listen: false)
-                                      .addToCart(
-                                    canPop: false,
-                                    useruid: context
-                                        .read<Authentication>()
-                                        .getUserId,
-                                    videoItem: video!,
-                                    isFree: video!.isFree,
-                                    ctx: context,
-                                    videoId: video!.id,
+                                onPressed: () {
+                                  Get.dialog(
+                                    SimpleDialog(
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.all(10),
+                                          child: Consumer<CaratProvider>(
+                                              builder: (context, carat, _) {
+                                            return Column(
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      "Carats",
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .navButton,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    VerifiedMark(
+                                                      height: 25,
+                                                      width: 25,
+                                                    ),
+                                                    SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    Text(
+                                                      carat.getCarats
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .navButton,
+                                                        fontSize: 16,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                Text(
+                                                  "Are you sure you want to spend ${((video!.price) * (1 - video!.discountAmount / 100)).toStringAsFixed(2)} Carats?",
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                              context),
+                                                      child: Text(
+                                                        "Cancel",
+                                                      ),
+                                                    ),
+                                                    ElevatedButton.icon(
+                                                      onPressed: () async {
+                                                        final double
+                                                            totalPrice =
+                                                            (video!.price) *
+                                                                (1 -
+                                                                    video!.discountAmount /
+                                                                        100);
+
+                                                        log("total price : $totalPrice");
+                                                        if (carat.getCarats <
+                                                            totalPrice) {
+                                                          await Get.bottomSheet(
+                                                              Container(
+                                                                height: 80.h,
+                                                                width: 100.w,
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                        horizontal:
+                                                                            15,
+                                                                        vertical:
+                                                                            10),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: constantColors
+                                                                      .whiteColor,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .only(
+                                                                    topLeft: Radius
+                                                                        .circular(
+                                                                            20),
+                                                                    topRight: Radius
+                                                                        .circular(
+                                                                            20),
+                                                                  ),
+                                                                ),
+                                                                child: Column(
+                                                                  children: [
+                                                                    Text(
+                                                                      "Not Enough Carats",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: constantColors
+                                                                            .navButton,
+                                                                        fontSize:
+                                                                            18,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          10,
+                                                                    ),
+                                                                    Text(
+                                                                      "Please purchase ${totalPrice - carat.getCarats} more carat(s) to purchase the items",
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: constantColors
+                                                                            .navButton,
+                                                                        fontSize:
+                                                                            16,
+                                                                      ),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child:
+                                                                          BuyCaratScreen(
+                                                                        showAppBar:
+                                                                            false,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              enableDrag: true,
+                                                              isDismissible:
+                                                                  true,
+                                                              isScrollControlled:
+                                                                  true);
+                                                        } else {
+                                                          log("old timestamp == ${video!.timestamp.toDate()}");
+
+                                                          video!.timestamp =
+                                                              Timestamp.now();
+
+                                                          log("new timestamp == ${video!.timestamp.toDate()}");
+
+                                                          log("Total price here  = $totalPrice");
+                                                          log("here ${video!.timestamp}");
+                                                          log("amount transfered == $totalPrice");
+                                                          try {
+                                                            await context
+                                                                .read<
+                                                                    FirebaseOperations>()
+                                                                .addToMyCollectionFromCart(
+                                                                  auth: context
+                                                                      .read<
+                                                                          Authentication>(),
+                                                                  videoOwnerId:
+                                                                      video!
+                                                                          .useruid,
+                                                                  amount:
+                                                                      totalPrice
+                                                                          .toInt(),
+                                                                  videoItem:
+                                                                      video!,
+                                                                  isFree: video!
+                                                                      .isFree,
+                                                                  videoId:
+                                                                      video!.id,
+                                                                );
+
+                                                            log("success added to cart!");
+                                                          } catch (e) {
+                                                            log("error saving cart to my collection ${e.toString()}");
+                                                          }
+
+                                                          try {
+                                                            final int
+                                                                remainingCarats =
+                                                                carat.getCarats -
+                                                                    totalPrice
+                                                                        .toInt();
+
+                                                            log("started ${carat.getCarats} | using ${totalPrice} | remaining ${remainingCarats}");
+                                                            context
+                                                                .read<
+                                                                    CaratProvider>()
+                                                                .setCarats(
+                                                                    remainingCarats);
+                                                            log("cartprovider value ${context.read<CaratProvider>().getCarats}");
+                                                            await context
+                                                                .read<
+                                                                    FirebaseOperations>()
+                                                                .updateCaratsOfUser(
+                                                                    userid: context
+                                                                        .read<
+                                                                            Authentication>()
+                                                                        .getUserId,
+                                                                    caratValue:
+                                                                        remainingCarats);
+                                                          } catch (e) {
+                                                            log("error updating users carat amount");
+                                                          }
+                                                          Get.snackbar(
+                                                            'Content Purchased!',
+                                                            "Content was successfully purchased!",
+                                                            overlayColor:
+                                                                constantColors
+                                                                    .navButton,
+                                                            colorText:
+                                                                constantColors
+                                                                    .whiteColor,
+                                                            snackPosition:
+                                                                SnackPosition
+                                                                    .TOP,
+                                                            forwardAnimationCurve:
+                                                                Curves
+                                                                    .elasticInOut,
+                                                            reverseAnimationCurve:
+                                                                Curves.easeOut,
+                                                          );
+
+                                                          Navigator.pop(
+                                                              context);
+                                                          Navigator.pop(
+                                                              context);
+                                                          Navigator.pushReplacement(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (BuildContext
+                                                                          context) =>
+                                                                      super
+                                                                          .widget));
+                                                        }
+                                                      },
+                                                      icon: VerifiedMark(
+                                                        height: 25,
+                                                        width: 25,
+                                                      ),
+                                                      label: Text(
+                                                        "Purchase",
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            );
+                                          }),
+                                        ),
+                                      ],
+                                    ),
                                   );
                                 },
                                 // paymentController.makePayment(
                                 //     amount: "10", currency: "USD"),
                                 child: Text(
-                                  LocaleKeys.addtocart.tr(),
+                                  "Purchase",
                                   style: TextStyle(
                                     color: constantColors.navButton,
                                   ),

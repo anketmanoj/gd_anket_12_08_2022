@@ -57,6 +57,37 @@ String formatHHMMSS(double seconds) {
   }
 }
 
+const String kConsumableId0 = 'gd_carats_1';
+const String kConsumableId1 = 'gd_carats_5';
+const String kConsumableId2 = 'gd_carats_10';
+const String kConsumableId3 = 'gd_carats_30';
+const String kConsumableId4 = 'gd_carats_55';
+const String kConsumableId5 = 'gd_carats_80';
+// const String _kConsumableId6 = 'gd_carats_222';
+// const String _kConsumableId7 = 'gd_carats_312';
+// const String _kConsumableId8 = 'gd_carats_555';
+
+const Set<String> kProductIdiOS = {
+  'gd_caratval_1',
+  'gd_carat_5',
+  'gd_carat_10',
+  'gd_carat_30',
+  'gd_carat_55',
+  'gd_carat_80',
+};
+
+const List<String> kProductIdAndroid = <String>[
+  kConsumableId0,
+  kConsumableId1,
+  kConsumableId2,
+  kConsumableId3,
+  kConsumableId4,
+  kConsumableId5,
+];
+// Auto-consume must be true on iOS.
+// To try without auto-consume on another platform, change `true` to `false` here.
+final bool kAutoConsume = Platform.isIOS || true;
+
 showScreenshotWarningMsg() async {
   final bool showMessage = SharedPreferencesHelper.getBool("screenshotWarning");
 

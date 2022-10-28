@@ -7,10 +7,13 @@ import 'dart:math' as math;
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/screens/HelpScreen/tutorialVideos.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/PostPage/postMaterialModel.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ArViewerScreen.dart';
+import 'package:diamon_rose_app/screens/ProfilePage/buyCaratScreen.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/following_bloc/following_preload_bloc.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateMessage.dart';
 import 'package:diamon_rose_app/screens/homePage/showCommentScreen.dart';
 import 'package:diamon_rose_app/screens/homePage/showLikeScreen.dart';
@@ -28,6 +31,7 @@ import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:diamon_rose_app/widgets/readMoreWidget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
@@ -48,19 +52,33 @@ class VideoWidget extends StatelessWidget {
       required this.isLoading,
       required this.controller,
       required this.video,
-      this.homeScreenOptions = HomeScreenOptions.Free});
+      this.homeScreenOptions = HomeScreenOptions.Free,
+      this.showIconNow = false});
 
   final bool isLoading;
   final VideoPlayerController controller;
   final Video video;
   final HomeScreenOptions homeScreenOptions;
+  final bool showIconNow;
 
   Offset? _initPos;
   Offset? _currentPos = Offset(0, 0);
+  Offset? _initPosDiamond;
+  Offset? _currentPosDiamond = Offset(0, 0);
   ContainerList tipsNTricksContainer = ContainerList(
     gifSelected: "assets/images/tipsntricks.png",
     height: 150,
     width: 150,
+    rotation: 0,
+    scale: 1,
+    xPosition: 0,
+    yPosition: 0,
+  );
+
+  ContainerList diamondContainer = ContainerList(
+    gifSelected: "assets/images/GD_mark.png",
+    height: 100,
+    width: 100,
     rotation: 0,
     scale: 1,
     xPosition: 0,
@@ -945,6 +963,142 @@ class VideoWidget extends StatelessWidget {
                 );
               })
             : SizedBox(),
+        SharedPreferencesHelper.getBool("hideDiamondAd") == false &&
+                showIconNow == true
+            ? StatefulBuilder(builder: (context, innerState) {
+                return Padding(
+                  padding: EdgeInsets.only(top: 10.h),
+                  child: Container(
+                    height: 90.h,
+                    alignment: Alignment.bottomCenter,
+                    width: double.infinity,
+                    child: Stack(
+                      children: [
+                        GestureDetector(
+                          onScaleStart: (details) {
+                            if (diamondContainer == null) return;
+                            _initPosDiamond = details.focalPoint;
+
+                            _currentPosDiamond = Offset(
+                                SharedPreferencesHelper.getDxValue(
+                                        "dxValDiamond") /
+                                    screen.width,
+                                SharedPreferencesHelper.getDxValue(
+                                        "dyValDiamond") /
+                                    screen.height);
+
+                            log("starting");
+                          },
+                          onScaleUpdate: (details) {
+                            if (diamondContainer == null) return;
+                            final delta = details.focalPoint - _initPosDiamond!;
+                            final left = (delta.dx / screen.width) +
+                                _currentPosDiamond!.dx;
+                            final top = (delta.dy / screen.height) +
+                                _currentPosDiamond!.dy;
+
+                            innerState(() {
+                              diamondContainer.xPosition = Offset(left, top).dx;
+                              diamondContainer.yPosition = Offset(left, top).dy;
+                            });
+
+                            // diamondContainer.value.xPosition =
+                            //     Offset(left, top).dx;
+                            // diamondContainer.value.yPosition =
+                            //     Offset(left, top).dy;
+
+                            SharedPreferencesHelper.setDxValue("dxValDiamond",
+                                diamondContainer.xPosition! * screen.width);
+                            SharedPreferencesHelper.setDyValue("dyValDiamond",
+                                diamondContainer.yPosition! * screen.height);
+                            // print(
+                            //     "x value = ${left * MediaQuery.of(context).size.width}");
+                            // print(
+                            //     " y value = ${top * MediaQuery.of(context).size.height}");
+                          },
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                left: SharedPreferencesHelper.getDxValue(
+                                    "dxValDiamond"),
+                                top: SharedPreferencesHelper.getDyValue(
+                                    "dyValDiamond"),
+                                child: Transform.scale(
+                                  scale: 1,
+                                  child: Transform.rotate(
+                                    angle: diamondContainer.rotation!,
+                                    child: Container(
+                                      height: diamondContainer.height,
+                                      width: diamondContainer.width,
+                                      child: FittedBox(
+                                        fit: BoxFit.fill,
+                                        child: Listener(
+                                          onPointerDown: (details) {
+                                            // if (_inAction) return;
+                                            // _inAction = true;
+                                            // _activeItem = val;
+                                            _initPosDiamond = details.position;
+                                            _currentPosDiamond = Offset(
+                                                diamondContainer.xPosition!,
+                                                diamondContainer.yPosition!);
+                                          },
+                                          onPointerUp: (details) {
+                                            // _inAction = false;
+                                          },
+                                          child: InkWell(
+                                            onTap: () {
+                                              controller.pause();
+                                              Navigator.push(
+                                                  context,
+                                                  PageTransition(
+                                                      child: BuyCaratScreen(),
+                                                      type: PageTransitionType
+                                                          .fade));
+                                            },
+                                            child: Stack(
+                                              children: [
+                                                Image.asset(
+                                                  "assets/images/GD_mark.png",
+                                                  fit: BoxFit.cover,
+                                                ),
+                                                Positioned(
+                                                  top: 0,
+                                                  right: 0,
+                                                  left: 0,
+                                                  bottom: 0,
+                                                  child: Text(
+                                                    "Get Carats",
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                      fontSize: 60,
+                                                      color: constantColors
+                                                          .whiteColor,
+                                                      shadows: outlinedText(
+                                                        strokeColor:
+                                                            constantColors
+                                                                .navButton,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              })
+            : SizedBox(),
       ],
     );
   }
@@ -1241,29 +1395,294 @@ class VideoWidget extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                onPressed: () async {
-                                  // Beamer.of(context).beamToNamed('/success');
-                                  // *Change to add to cart
-                                  // await selectPaymentOptionsSheet(
-                                  //   ctx: context,
-                                  // );
-                                  await Provider.of<FirebaseOperations>(context,
-                                          listen: false)
-                                      .addToCart(
-                                    canPop: false,
-                                    useruid: context
-                                        .read<Authentication>()
-                                        .getUserId,
-                                    videoItem: video!,
-                                    isFree: video!.isFree,
-                                    ctx: context,
-                                    videoId: video!.id,
+                                onPressed: () {
+                                  Get.dialog(
+                                    SimpleDialog(
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.all(10),
+                                          child: Consumer<CaratProvider>(
+                                              builder: (context, carat, _) {
+                                            return Column(
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      "Carats",
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .navButton,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    VerifiedMark(
+                                                      height: 25,
+                                                      width: 25,
+                                                    ),
+                                                    SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    Text(
+                                                      carat.getCarats
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        color: constantColors
+                                                            .navButton,
+                                                        fontSize: 16,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                Text(
+                                                  "Are you sure you want to spend ${((video.price) * (1 - video.discountAmount / 100)).toStringAsFixed(2)} Carats?",
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                              context),
+                                                      child: Text(
+                                                        "Cancel",
+                                                      ),
+                                                    ),
+                                                    ElevatedButton.icon(
+                                                      onPressed: () async {
+                                                        final double
+                                                            totalPrice =
+                                                            (video.price) *
+                                                                (1 -
+                                                                    video.discountAmount /
+                                                                        100);
+
+                                                        log("total price : $totalPrice");
+                                                        if (carat.getCarats <
+                                                            totalPrice) {
+                                                          await Get.bottomSheet(
+                                                              Container(
+                                                                height: 80.h,
+                                                                width: 100.w,
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                        horizontal:
+                                                                            15,
+                                                                        vertical:
+                                                                            10),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: constantColors
+                                                                      .whiteColor,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .only(
+                                                                    topLeft: Radius
+                                                                        .circular(
+                                                                            20),
+                                                                    topRight: Radius
+                                                                        .circular(
+                                                                            20),
+                                                                  ),
+                                                                ),
+                                                                child: Column(
+                                                                  children: [
+                                                                    Text(
+                                                                      "Not Enough Carats",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: constantColors
+                                                                            .navButton,
+                                                                        fontSize:
+                                                                            18,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          10,
+                                                                    ),
+                                                                    Text(
+                                                                      "Please purchase ${totalPrice - carat.getCarats} more carat(s) to purchase the items",
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: constantColors
+                                                                            .navButton,
+                                                                        fontSize:
+                                                                            16,
+                                                                      ),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child:
+                                                                          BuyCaratScreen(
+                                                                        showAppBar:
+                                                                            false,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              enableDrag: true,
+                                                              isDismissible:
+                                                                  true,
+                                                              isScrollControlled:
+                                                                  true);
+                                                        } else {
+                                                          log("old timestamp == ${video.timestamp.toDate()}");
+
+                                                          video.timestamp =
+                                                              Timestamp.now();
+
+                                                          log("new timestamp == ${video.timestamp.toDate()}");
+
+                                                          log("Total price here  = $totalPrice");
+                                                          log("here ${video.timestamp}");
+                                                          log("amount transfered == $totalPrice");
+                                                          try {
+                                                            await context
+                                                                .read<
+                                                                    FirebaseOperations>()
+                                                                .addToMyCollectionFromCart(
+                                                                  auth: context
+                                                                      .read<
+                                                                          Authentication>(),
+                                                                  videoOwnerId:
+                                                                      video
+                                                                          .useruid,
+                                                                  amount:
+                                                                      totalPrice
+                                                                          .toInt(),
+                                                                  videoItem:
+                                                                      video,
+                                                                  isFree: video
+                                                                      .isFree,
+                                                                  videoId:
+                                                                      video.id,
+                                                                );
+
+                                                            log("success added to cart!");
+                                                          } catch (e) {
+                                                            log("error saving cart to my collection ${e.toString()}");
+                                                          }
+
+                                                          try {
+                                                            final int
+                                                                remainingCarats =
+                                                                carat.getCarats -
+                                                                    totalPrice
+                                                                        .toInt();
+
+                                                            log("started ${carat.getCarats} | using ${totalPrice} | remaining ${remainingCarats}");
+                                                            context
+                                                                .read<
+                                                                    CaratProvider>()
+                                                                .setCarats(
+                                                                    remainingCarats);
+                                                            log("cartprovider value ${context.read<CaratProvider>().getCarats}");
+                                                            await context
+                                                                .read<
+                                                                    FirebaseOperations>()
+                                                                .updateCaratsOfUser(
+                                                                    userid: context
+                                                                        .read<
+                                                                            Authentication>()
+                                                                        .getUserId,
+                                                                    caratValue:
+                                                                        remainingCarats);
+                                                          } catch (e) {
+                                                            log("error updating users carat amount");
+                                                          }
+
+                                                          Get.snackbar(
+                                                            'Content Purchased!',
+                                                            "Content was successfully purchased!",
+                                                            overlayColor:
+                                                                constantColors
+                                                                    .navButton,
+                                                            colorText:
+                                                                constantColors
+                                                                    .whiteColor,
+                                                            snackPosition:
+                                                                SnackPosition
+                                                                    .TOP,
+                                                            forwardAnimationCurve:
+                                                                Curves
+                                                                    .elasticInOut,
+                                                            reverseAnimationCurve:
+                                                                Curves.easeOut,
+                                                          );
+
+                                                          Navigator.pop(
+                                                              context);
+                                                          Navigator.pop(
+                                                              context);
+
+                                                          BlocProvider.of<
+                                                                      FollowingPreloadBloc>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .add(FollowingPreloadEvent
+                                                                  .setLoadingForFilter(
+                                                                      true));
+
+                                                          BlocProvider.of<
+                                                                      FollowingPreloadBloc>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .add(FollowingPreloadEvent
+                                                                  .filterBetweenFreePaid(
+                                                                      HomeScreenOptions
+                                                                          .Both));
+
+                                                          // ignore: unawaited_futures
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (context) =>
+                                                                      PostDetailsScreen(
+                                                                          videoId:
+                                                                              video.id)));
+                                                        }
+                                                      },
+                                                      icon: VerifiedMark(
+                                                        height: 25,
+                                                        width: 25,
+                                                      ),
+                                                      label: Text(
+                                                        "Purchase",
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            );
+                                          }),
+                                        ),
+                                      ],
+                                    ),
                                   );
                                 },
                                 // paymentController.makePayment(
                                 //     amount: "10", currency: "USD"),
                                 child: Text(
-                                  LocaleKeys.addtocart.tr(),
+                                  "Purchase",
                                   style: TextStyle(
                                     color: constantColors.navButton,
                                   ),

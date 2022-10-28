@@ -21,39 +21,9 @@ import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
-const String _kConsumableId0 = 'gd_carats_1';
-const String _kConsumableId1 = 'gd_carats_5';
-const String _kConsumableId2 = 'gd_carats_10';
-const String _kConsumableId3 = 'gd_carats_30';
-const String _kConsumableId4 = 'gd_carats_55';
-const String _kConsumableId5 = 'gd_carats_80';
-// const String _kConsumableId6 = 'gd_carats_222';
-// const String _kConsumableId7 = 'gd_carats_312';
-// const String _kConsumableId8 = 'gd_carats_555';
-
-const Set<String> _kProductIdiOS = {
-  'gd_caratval_1',
-  'gd_carat_5',
-  'gd_carat_10',
-  'gd_carat_30',
-  'gd_carat_55',
-  'gd_carat_80',
-};
-
-const List<String> _kProductIdAndroid = <String>[
-  _kConsumableId0,
-  _kConsumableId1,
-  _kConsumableId2,
-  _kConsumableId3,
-  _kConsumableId4,
-  _kConsumableId5,
-];
-// Auto-consume must be true on iOS.
-// To try without auto-consume on another platform, change `true` to `false` here.
-final bool _kAutoConsume = Platform.isIOS || true;
-
 class BuyCaratScreen extends StatefulWidget {
-  BuyCaratScreen({Key? key}) : super(key: key);
+  BuyCaratScreen({Key? key, this.showAppBar = true}) : super(key: key);
+  final bool showAppBar;
 
   @override
   State<BuyCaratScreen> createState() => _BuyCaratScreenState();
@@ -182,9 +152,9 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
               );
             }
 
-            if (productDetails.id == _kConsumableId0) {
+            if (productDetails.id == kConsumableId0) {
               _inAppPurchase.buyConsumable(
-                  purchaseParam: purchaseParam, autoConsume: _kAutoConsume);
+                  purchaseParam: purchaseParam, autoConsume: kAutoConsume);
             } else {
               _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
             }
@@ -351,7 +321,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
               leading: CircularProgressIndicator(),
               title: Text('Fetching consumables...')));
     }
-    if (!_isAvailable || _notFoundIds.contains(_kConsumableId0)) {
+    if (!_isAvailable || _notFoundIds.contains(kConsumableId0)) {
       return Card(
           child: Padding(
         padding: const EdgeInsets.all(20),
@@ -440,7 +410,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
 
   Future<void> deliverProduct(PurchaseDetails purchaseDetails) async {
     // IMPORTANT!! Always verify purchase details before delivering the product.
-    if (purchaseDetails.productID == _kConsumableId0) {
+    if (purchaseDetails.productID == kConsumableId0) {
       await ConsumableStore.save(purchaseDetails.purchaseID!);
       final List<String> consumables = await ConsumableStore.load();
       setState(() {
@@ -508,7 +478,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
           }
         }
         if (Platform.isAndroid) {
-          if (!_kAutoConsume && purchaseDetails.productID == _kConsumableId0) {
+          if (!kAutoConsume && purchaseDetails.productID == kConsumableId0) {
             final InAppPurchaseAndroidPlatformAddition androidAddition =
                 _inAppPurchase.getPlatformAddition<
                     InAppPurchaseAndroidPlatformAddition>();
@@ -632,7 +602,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
 
     final ProductDetailsResponse productDetailResponse =
         await _inAppPurchase.queryProductDetails(
-            Platform.isIOS ? _kProductIdiOS : _kProductIdAndroid.toSet());
+            Platform.isIOS ? kProductIdiOS : kProductIdAndroid.toSet());
     if (productDetailResponse.error != null) {
       log("anket eeror here == ${productDetailResponse.error!.message}");
       setState(() {
@@ -733,10 +703,12 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
     }
     return Scaffold(
       backgroundColor: constantColors.whiteColor,
-      appBar: AppBarWidget(
-        text: LocaleKeys.collectcarats.tr(),
-        context: context,
-      ),
+      appBar: widget.showAppBar == true
+          ? AppBarWidget(
+              text: LocaleKeys.collectcarats.tr(),
+              context: context,
+            )
+          : null,
       body: Stack(
         children: stack,
       ),

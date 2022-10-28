@@ -392,6 +392,18 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.postrecommendations.tr(),
                 ),
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () async {
+                //     await FirebaseFirestore.instance
+                //         .collection("posts")
+                //         .doc("nNQySqcKvLD5HW4HPuTeg")
+                //         .update({"price": 0.0, "totalBilled": 0});
+                //   },
+                //   leadingIcon: Icons.recommend_outlined,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: LocaleKeys.postrecommendations.tr(),
+                // ),
 
                 // ListTileOption(
                 //   constantColors: constantColors,
@@ -458,57 +470,57 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 //   text: "Post This",
                 // ),
 
-                Consumer<CaratProvider>(builder: (context, carats, _) {
-                  return ListTileOption(
-                    constantColors: constantColors,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                            child: CartScreenCarats(
-                              useruid: _auth.getUserId,
-                              caratValue: carats.getCarats,
-                            ),
-                            type: PageTransitionType.rightToLeft),
-                      );
-                      // final String cartUrl =
-                      //     "https://gdfe-ac584.firebaseapp.com/#/cartcarats/${_auth.getUserId}/${carats.getCarats}";
-                      // // "https://gdfe-ac584.firebaseapp.com/#/cart/${_auth.getUserId}";
+                // Consumer<CaratProvider>(builder: (context, carats, _) {
+                //   return ListTileOption(
+                //     constantColors: constantColors,
+                //     onTap: () {
+                //       Navigator.push(
+                //         context,
+                //         PageTransition(
+                //             child: CartScreenCarats(
+                //               useruid: _auth.getUserId,
+                //               caratValue: carats.getCarats,
+                //             ),
+                //             type: PageTransitionType.rightToLeft),
+                //       );
+                //       // final String cartUrl =
+                //       //     "https://gdfe-ac584.firebaseapp.com/#/cartcarats/${_auth.getUserId}/${carats.getCarats}";
+                //       // // "https://gdfe-ac584.firebaseapp.com/#/cart/${_auth.getUserId}";
 
-                      // log(cartUrl);
+                //       // log(cartUrl);
 
-                      // ViewPaidVideoWeb(context, cartUrl, _auth,
-                      //     _firebaseOperation, carats.getCarats, _caratProvider);
+                //       // ViewPaidVideoWeb(context, cartUrl, _auth,
+                //       //     _firebaseOperation, carats.getCarats, _caratProvider);
 
-                      // CoolAlert.show(
-                      //   context: context,
-                      //   type: CoolAlertType.info,
-                      //   title: "Use Carats ",
-                      //   text:
-                      //       "Some content cannot be acquired by the application. You must configure your acquisition with our web service. It has nothing to do with Apple and Apple is not responsible.",
-                      //   confirmBtnText: "Show Diamonds",
-                      //   cancelBtnText: "Nevermind",
-                      //   confirmBtnColor: constantColors.navButton,
-                      //   showCancelBtn: false,
-                      //   onCancelBtnTap: () {
-                      //     Navigator.pop(context);
-                      //   },
-                      //   onConfirmBtnTap: () => ViewPaidVideoWeb(
-                      //       context, cartUrl, _auth, _firebaseOperation),
-                      //   confirmBtnTextStyle: TextStyle(
-                      //     fontSize: 14,
-                      //     color: constantColors.whiteColor,
-                      //   ),
-                      //   cancelBtnTextStyle: TextStyle(
-                      //     fontSize: 14,
-                      //   ),
-                      // );
-                    },
-                    leadingIcon: Icons.shopping_cart_checkout,
-                    trailingIcon: Icons.arrow_forward_ios,
-                    text: LocaleKeys.shoppingcart.tr(),
-                  );
-                }),
+                //       // CoolAlert.show(
+                //       //   context: context,
+                //       //   type: CoolAlertType.info,
+                //       //   title: "Use Carats ",
+                //       //   text:
+                //       //       "Some content cannot be acquired by the application. You must configure your acquisition with our web service. It has nothing to do with Apple and Apple is not responsible.",
+                //       //   confirmBtnText: "Show Diamonds",
+                //       //   cancelBtnText: "Nevermind",
+                //       //   confirmBtnColor: constantColors.navButton,
+                //       //   showCancelBtn: false,
+                //       //   onCancelBtnTap: () {
+                //       //     Navigator.pop(context);
+                //       //   },
+                //       //   onConfirmBtnTap: () => ViewPaidVideoWeb(
+                //       //       context, cartUrl, _auth, _firebaseOperation),
+                //       //   confirmBtnTextStyle: TextStyle(
+                //       //     fontSize: 14,
+                //       //     color: constantColors.whiteColor,
+                //       //   ),
+                //       //   cancelBtnTextStyle: TextStyle(
+                //       //     fontSize: 14,
+                //       //   ),
+                //       // );
+                //     },
+                //     leadingIcon: Icons.shopping_cart_checkout,
+                //     trailingIcon: Icons.arrow_forward_ios,
+                //     text: LocaleKeys.shoppingcart.tr(),
+                //   );
+                // }),
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () {
