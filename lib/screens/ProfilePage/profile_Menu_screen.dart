@@ -3,6 +3,7 @@
 import 'dart:collection';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
@@ -535,6 +536,39 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.purchaseHistory.tr(),
                 ),
+                // ! use tp update others dates!
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () async {
+                //     await FirebaseFirestore.instance
+                //         .collection("users")
+                //         .doc(context.read<Authentication>().getUserId)
+                //         .collection("graphData")
+                //         .get()
+                //         .then((value) async {
+                //       for (var element in value.docs) {
+                //         var rng = math.Random();
+                //         int day = rng.nextInt(20);
+                //         log(element['month'].toString());
+
+                //         log("day == ${rng.nextInt(20)}");
+                //         var date = DateTime(2022, element['month'], day);
+                //         Timestamp timestampVal = Timestamp.fromDate(date);
+                //         log("timestampVal == $timestampVal");
+
+                //         await FirebaseFirestore.instance
+                //             .collection("users")
+                //             .doc(context.read<Authentication>().getUserId)
+                //             .collection("graphData")
+                //             .doc(element.id)
+                //             .update({"timestamp": timestampVal});
+                //       }
+                //     });
+                //   },
+                //   leadingIcon: Icons.history,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "Fix Montisation timestamp",
+                // ),
 
                 // ListTileOption(
                 //   constantColors: constantColors,

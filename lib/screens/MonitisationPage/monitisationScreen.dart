@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
@@ -20,6 +22,19 @@ class MonitizationScreen extends StatelessWidget {
   MonitizationScreen({Key? key}) : super(key: key);
   ConstantColors constantColors = ConstantColors();
   double paddingVal = 15;
+
+  int dayOfYear(DateTime date) {
+    return date.difference(DateTime(date.year, 1, 1)).inDays;
+  }
+
+  double isoWeekNumber(DateTime date) {
+    int daysToAdd = DateTime.thursday - date.weekday;
+    DateTime thursdayDate = daysToAdd > 0
+        ? date.add(Duration(days: daysToAdd))
+        : date.subtract(Duration(days: daysToAdd.abs()));
+    int dayOfYearThursday = dayOfYear(thursdayDate);
+    return 1 + ((dayOfYearThursday - 1) / 7).floor().toDouble();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,7 +262,7 @@ class MonitizationScreen extends StatelessWidget {
                                     .collection("users")
                                     .doc(auth.getUserId)
                                     .collection("graphData")
-                                    .orderBy("amount", descending: false)
+                                    .orderBy("timestamp", descending: false)
                                     // .orderBy("month", descending: true)
                                     .snapshots(),
                                 builder: (context, snapshot) {
@@ -271,16 +286,27 @@ class MonitizationScreen extends StatelessWidget {
                                     return gd;
                                   }).toList();
 
-                                  graphDataList.sort(
-                                      (a, b) => a.amount.compareTo(b.amount));
+                                  List<FlSpot> spots = graphDataList
+                                      .map((e) => FlSpot(
+                                          isoWeekNumber(e.timestamp.toDate())
+                                              .toDouble(),
+                                          e.amount))
+                                      .toList();
 
                                   return graphDataList.isNotEmpty
                                       ? LineChart(
                                           LineChartData(
-                                            maxX: 12,
-                                            maxY: graphDataList.last.amount,
+                                            maxX: isoWeekNumber(graphDataList
+                                                    .last.timestamp
+                                                    .toDate())
+                                                .toDouble(),
+
+                                            // maxY: graphDataList.last.amount,
                                             minY: 0,
-                                            minX: 6,
+                                            minX: isoWeekNumber(graphDataList
+                                                    .first.timestamp
+                                                    .toDate())
+                                                .toDouble(),
                                             borderData: FlBorderData(
                                               show: false,
                                             ),
@@ -313,37 +339,8 @@ class MonitizationScreen extends StatelessWidget {
                                                 ),
                                                 sideTitles: SideTitles(
                                                   reservedSize:
-                                                      size.height * 0.03,
+                                                      size.height * 0.04,
                                                   showTitles: true,
-                                                  // getTitlesWidget: (value, _) {
-                                                  //   switch (value.toInt()) {
-                                                  //     case 1:
-                                                  //       return Text("Jan");
-                                                  //     case 2:
-                                                  //       return Text("Feb");
-                                                  //     case 3:
-                                                  //       return Text("Mar");
-                                                  //     case 4:
-                                                  //       return Text("Apr");
-                                                  //     case 5:
-                                                  //       return Text("May");
-                                                  //     case 6:
-                                                  //       return Text("Jun");
-                                                  //     case 7:
-                                                  //       return Text("Jul");
-                                                  //     case 8:
-                                                  //       return Text("Aug");
-                                                  //     case 9:
-                                                  //       return Text("Sep");
-                                                  //     case 10:
-                                                  //       return Text("Oct");
-                                                  //     case 11:
-                                                  //       return Text("Nov");
-                                                  //     case 12:
-                                                  //       return Text("Dec");
-                                                  //   }
-                                                  //   return Text("");
-                                                  // },
                                                 ),
                                               ),
                                               leftTitles: AxisTitles(
@@ -369,12 +366,7 @@ class MonitizationScreen extends StatelessWidget {
                                             ),
                                             lineBarsData: [
                                               LineChartBarData(
-                                                spots: graphDataList
-                                                    .map((e) => FlSpot(
-                                                        double.parse(
-                                                            e.month.toString()),
-                                                        e.amount))
-                                                    .toList(),
+                                                spots: spots,
                                                 isCurved: false,
                                                 color: constantColors.navButton,
                                                 barWidth: 1,

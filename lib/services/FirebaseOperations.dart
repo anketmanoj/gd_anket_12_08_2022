@@ -2137,6 +2137,7 @@ class FirebaseOperations with ChangeNotifier {
       'id': id,
       'month': month,
       'amount': amount,
+      'timestamp': Timestamp.now(),
     });
   }
 
