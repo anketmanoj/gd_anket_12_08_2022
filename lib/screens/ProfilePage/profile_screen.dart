@@ -12,11 +12,13 @@ import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ProfileCoverImageSelector.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ProfileImageSelector.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/profile_Menu_screen.dart';
+import 'package:diamon_rose_app/screens/chatPage/chatScreenMain.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:diamon_rose_app/widgets/readMoreWidget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -87,22 +89,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: constantColors.bioBg,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            automaticallyImplyLeading: false,
-            expandedHeight: 30.h,
-            backgroundColor: constantColors.bioBg,
-            flexibleSpace: FlexibleSpaceBar(
-              background: TopProfileStack(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 35.h,
+              child: TopProfileStack(
                   size: size,
                   userProvider: userProvider,
                   constantColors: constantColors),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              height: size.height * 0.23,
+            Container(
               width: size.width,
               decoration: BoxDecoration(
                 color: constantColors.bioBg,
@@ -119,17 +116,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       right: 10,
                     ),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          width: size.width * 0.8,
-                          height: 70,
-                          child: Text(
+                        Expanded(
+                          child: ReadMoreText(
                             userProvider.userbio.length == '0'
                                 ? 'Add a bio'
                                 : userProvider.userbio,
-                            softWrap: true,
+                            trimLines: 2,
+                            colorClickableText: constantColors.navButton,
+                            trimMode: TrimMode.Line,
+                            moreStyle: TextStyle(
+                              color: constantColors.mainColor,
+                            ),
+                            lessStyle: TextStyle(
+                              color: constantColors.mainColor,
+                            ),
+                            trimCollapsedText: 'Show more',
+                            trimExpandedText: 'Show less',
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 14,
                               color: Colors.black,
                             ),
                           ),
@@ -139,9 +145,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             showLinksBottomSheet(context);
                           },
                           icon: Icon(FontAwesomeIcons.link),
+                          iconSize: 20,
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                PageTransition(
+                                    child: ChatScreen(
+                                      showAppBar: true,
+                                    ),
+                                    type: PageTransitionType.bottomToTop));
+                          },
+                          icon: Icon(FontAwesomeIcons.paperPlane),
+                          iconSize: 20,
                         ),
                       ],
                     ),
+                  ),
+                  SizedBox(
+                    height: 10,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
@@ -384,9 +407,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
+            SizedBox(
+              height: 20,
+            ),
+            Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -452,36 +476,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-          ),
-          StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection("posts")
-                  .where("useruid", isEqualTo: auth.getUserId)
-                  .where("isfree", isEqualTo: freeClicked)
-                  .orderBy("timestamp", descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return SliverToBoxAdapter(
-                    child: Container(
-                      height: size.height * 0.53,
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                  );
-                } else {
-                  if (snapshot.data!.docs.length > 0) {
-                    return SliverPadding(
-                      padding: const EdgeInsets.all(4),
-                      sliver: SliverGrid(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 5,
-                          mainAxisSpacing: 5,
+            Container(
+              color: constantColors.whiteColor,
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection("posts")
+                      .where("useruid", isEqualTo: auth.getUserId)
+                      .where("isfree", isEqualTo: freeClicked)
+                      .orderBy("timestamp", descending: true)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Container(
+                        child: Center(
+                          child: CircularProgressIndicator(),
                         ),
-                        delegate: SliverChildBuilderDelegate(
-                          (BuildContext context, int index) {
+                      );
+                    } else {
+                      if (snapshot.data!.docs.isNotEmpty) {
+                        return GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 5,
+                          ),
+                          itemBuilder: (BuildContext context, int index) {
                             Video video = Video.fromJson(
                                 snapshot.data!.docs[index].data()
                                     as Map<String, dynamic>);
@@ -550,31 +570,238 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             );
                           },
-                          childCount: snapshot.data!.docs.length,
-                        ),
-                      ),
-                    );
-                  } else {
-                    return SliverToBoxAdapter(
-                      child: Container(
-                        height: 200,
-                        width: 200,
-                        child: Center(
-                          child: Text(
-                            LocaleKeys.noPostYet.tr(),
-                            style: TextStyle(
-                              color: constantColors.mainColor,
-                              fontSize: 20,
+                          padding: EdgeInsets.all(0),
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: snapshot.data!.docs.length,
+                        );
+                      } else {
+                        return Container(
+                          height: 30.h,
+                          child: Center(
+                            child: Text(
+                              LocaleKeys.noPostYet.tr(),
+                              style: TextStyle(
+                                color: constantColors.mainColor,
+                                fontSize: 20,
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    );
-                  }
-                }
-              }),
-        ],
+                        );
+                      }
+                    }
+                  }),
+            ),
+          ],
+        ),
       ),
+
+      // CustomScrollView(
+      //   slivers: [
+      //     SliverAppBar(
+      //       automaticallyImplyLeading: false,
+      //       expandedHeight: 30.h,
+      //       backgroundColor: constantColors.bioBg,
+      //       flexibleSpace: FlexibleSpaceBar(
+      //         background: TopProfileStack(
+      //             size: size,
+      //             userProvider: userProvider,
+      //             constantColors: constantColors),
+      //       ),
+      //     ),
+      //     SliverToBoxAdapter(
+      //       child:
+      //     ),
+      //     SliverToBoxAdapter(
+      //       child: Container(
+      //         decoration: BoxDecoration(
+      //           color: Colors.white,
+      //           borderRadius: BorderRadius.only(
+      //             topLeft: Radius.circular(30),
+      //             topRight: Radius.circular(30),
+      //           ),
+      //         ),
+      //         child: Row(
+      //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //           children: [
+      //             Container(
+      //               alignment: Alignment.topCenter,
+      //               child: FilterChip(
+      //                 showCheckmark: false,
+      //                 backgroundColor: Colors.black,
+      //                 label: Container(
+      //                   alignment: Alignment.center,
+      //                   width: size.width * 0.4,
+      //                   child: Text(
+      //                     "Free",
+      //                     style: TextStyle(
+      //                       color: constantColors.whiteColor,
+      //                     ),
+      //                   ),
+      //                 ),
+      //                 selected: freeClicked,
+      //                 onSelected: (bool value) {
+      //                   setState(() {
+      //                     freeClicked = value;
+      //                     paidClicked = !value;
+      //                   });
+      //                 },
+      //                 pressElevation: 15,
+      //                 selectedColor: constantColors.mainColor,
+      //               ),
+      //             ),
+      //             Container(
+      //               alignment: Alignment.topCenter,
+      //               child: FilterChip(
+      //                 backgroundColor: Colors.black,
+      //                 showCheckmark: false,
+      //                 label: Container(
+      //                   alignment: Alignment.center,
+      //                   width: size.width * 0.4,
+      //                   child: Text(
+      //                     "Premium",
+      //                     style: TextStyle(
+      //                       color: constantColors.whiteColor,
+      //                     ),
+      //                   ),
+      //                 ),
+      //                 selected: paidClicked,
+      //                 onSelected: (bool value) {
+      //                   setState(() {
+      //                     paidClicked = value;
+      //                     freeClicked = !value;
+      //                   });
+      //                 },
+      //                 pressElevation: 15,
+      //                 selectedColor: constantColors.mainColor,
+      //               ),
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //     ),
+      //     StreamBuilder<QuerySnapshot>(
+      //         stream: FirebaseFirestore.instance
+      //             .collection("posts")
+      //             .where("useruid", isEqualTo: auth.getUserId)
+      //             .where("isfree", isEqualTo: freeClicked)
+      //             .orderBy("timestamp", descending: true)
+      //             .snapshots(),
+      //         builder: (context, snapshot) {
+      //           if (snapshot.connectionState == ConnectionState.waiting) {
+      //             return SliverToBoxAdapter(
+      //               child: Container(
+      //                 height: size.height * 0.53,
+      //                 child: Center(
+      //                   child: CircularProgressIndicator(),
+      //                 ),
+      //               ),
+      //             );
+      //           } else {
+      //             if (snapshot.data!.docs.length > 0) {
+      //               return SliverPadding(
+      //                 padding: const EdgeInsets.all(4),
+      //                 sliver: SliverGrid(
+      //                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      //                     crossAxisCount: 2,
+      //                     crossAxisSpacing: 5,
+      //                     mainAxisSpacing: 5,
+      //                   ),
+      //                   delegate: SliverChildBuilderDelegate(
+      //                     (BuildContext context, int index) {
+      //                       Video video = Video.fromJson(
+      //                           snapshot.data!.docs[index].data()
+      //                               as Map<String, dynamic>);
+      //                       return InkWell(
+      //                         onTap: () {
+      //                           Navigator.push(
+      //                             context,
+      //                             PageTransition(
+      //                               type: PageTransitionType.rightToLeft,
+      //                               child: PostDetailsScreen(
+      //                                 videoId: video.id,
+      //                               ),
+      //                             ),
+      //                           );
+      //                         },
+      //                         child: ClipRRect(
+      //                           borderRadius: BorderRadius.circular(20),
+      //                           child: Stack(
+      //                             children: [
+      //                               Container(
+      //                                 color: Colors.white,
+      //                                 child: ImageNetworkLoader(
+      //                                     imageUrl: video.thumbnailurl),
+      //                               ),
+      //                               Positioned(
+      //                                 bottom: 5,
+      //                                 left: 10,
+      //                                 child: Container(
+      //                                   width: size.width,
+      //                                   height: 40,
+      //                                   child: Row(
+      //                                     children: [
+      //                                       Icon(
+      //                                         Icons.play_arrow_outlined,
+      //                                         size: 16,
+      //                                         color: Colors.white,
+      //                                       ),
+      //                                       Stack(
+      //                                         children: [
+      //                                           Text(
+      //                                             video.views.toString(),
+      //                                             style: TextStyle(
+      //                                               fontSize: 12,
+      //                                               foreground: Paint()
+      //                                                 ..style =
+      //                                                     PaintingStyle.stroke
+      //                                                 ..strokeWidth = 2
+      //                                                 ..color = Colors.black,
+      //                                             ),
+      //                                           ),
+      //                                           Text(
+      //                                             video.views.toString(),
+      //                                             style: TextStyle(
+      //                                               fontSize: 12,
+      //                                               color: Colors.white,
+      //                                             ),
+      //                                           ),
+      //                                         ],
+      //                                       ),
+      //                                     ],
+      //                                   ),
+      //                                 ),
+      //                               ),
+      //                             ],
+      //                           ),
+      //                         ),
+      //                       );
+      //                     },
+      //                     childCount: snapshot.data!.docs.length,
+      //                   ),
+      //                 ),
+      //               );
+      //             } else {
+      //               return SliverToBoxAdapter(
+      //                 child: Container(
+      //                   height: 200,
+      //                   width: 200,
+      //                   child: Center(
+      //                     child: Text(
+      //                       LocaleKeys.noPostYet.tr(),
+      //                       style: TextStyle(
+      //                         color: constantColors.mainColor,
+      //                         fontSize: 20,
+      //                       ),
+      //                     ),
+      //                   ),
+      //                 ),
+      //               );
+      //             }
+      //           }
+      //         }),
+      //   ],
+      // ),
     );
   }
 

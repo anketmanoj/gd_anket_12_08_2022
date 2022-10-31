@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
@@ -60,6 +62,7 @@ class _AdminMassNotificationScreenState
               SubmitButton(
                 function: () async {
                   if (_formKey.currentState!.validate()) {
+                    log("sending now!");
                     await context
                         .read<FirebaseOperations>()
                         .sendMassNotification(
@@ -72,6 +75,7 @@ class _AdminMassNotificationScreenState
                           text: "Notification sent to all!",
                           title: "Mass Notification Successful!");
                     });
+                    log("sent all!");
                   }
                 },
                 text: "Send Mass Notification",

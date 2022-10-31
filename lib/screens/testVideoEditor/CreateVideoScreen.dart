@@ -2324,7 +2324,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
                                     if (arElement.layerType == LayerType.AR) {
                                       ffmpegStartPointList.add(
-                                          "[vid${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(5)}/TB[top${arElement.arIndex}];");
+                                          "[vid${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(10)}/TB[top${arElement.arIndex}];");
                                     } else {
                                       ffmpegStartPointList.add(
                                           "[${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
@@ -2335,17 +2335,17 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
                                     if (arElement.arIndex == 1) {
                                       ffmpegOverlay.add(
-                                          "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(5)}\"\\,\"${arEndTime.toStringAsFixed(5)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                          "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(10)}\"\\,\"${arEndTime.toStringAsFixed(10)}\")':eof_action=pass[${arElement.arIndex}out];");
                                       lastVal.value = arElement.arIndex!;
                                     } else {
                                       ffmpegOverlay.add(
-                                          "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(5)}\"\\,\"${arEndTime.toStringAsFixed(5)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                          "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(10)}\"\\,\"${arEndTime.toStringAsFixed(10)}\")':eof_action=pass[${arElement.arIndex}out];");
                                       lastVal.value = arElement.arIndex!;
                                     }
                                     if (arElement.layerType == LayerType.AR &&
                                         arElement.audioFlag == true) {
                                       ffmpegVolumeList.add(
-                                          "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(5)}s:all=1[a${arElement.arIndex}];");
+                                          "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(10)}s:all=1[a${arElement.arIndex}];");
                                       ffmpegSoundInputs
                                           .add("[a${arElement.arIndex}]");
                                     }
@@ -2711,6 +2711,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               FFmpegKitConfig.sessionStateToString(await value.getState());
           final code = await value.getReturnCode();
           final failStackTrace = await value.getFailStackTrace();
+
+          dev.log("OUTPUT! ==  ${value.getOutput()}");
 
           debugPrint(
               "FFmpeg process exited with state $state and return code $code.${(failStackTrace == null) ? "" : "\\n" + failStackTrace}");

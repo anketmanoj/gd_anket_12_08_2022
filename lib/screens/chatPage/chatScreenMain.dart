@@ -12,12 +12,16 @@ import 'package:provider/provider.dart';
 class ChatScreen extends StatelessWidget {
   const ChatScreen({
     Key? key,
+    this.showAppBar = false,
   }) : super(key: key);
+  final bool showAppBar;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: showAppBar ? AppBarWidget(text: "Chats", context: context) : null,
       floatingActionButton: _externalConnectionManagement(),
+      backgroundColor: constantColors.whiteColor,
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,

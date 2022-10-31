@@ -1642,14 +1642,14 @@ class FirebaseOperations with ChangeNotifier {
       );
       final File videoThumbnail =
           await Provider.of<FFmpegProvider>(ctx, listen: false)
-              .thumbnailCreator(vidFilePath: videoUrl);
+              .thumbnailCreatorStatic(vidFilePath: videoUrl);
 
       final String? packageThumbnailUrl = await AwsAnketS3.uploadFile(
           accessKey: "AKIATF76MVYR34JAVB7H",
           secretKey: "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",
           bucket: "anketvideobucket",
           file: videoThumbnail,
-          filename: "${Timestamp.now().millisecondsSinceEpoch}.gif",
+          filename: "${Timestamp.now().millisecondsSinceEpoch}.png",
           region: "us-east-1",
           destDir: "${Timestamp.now().millisecondsSinceEpoch}");
 

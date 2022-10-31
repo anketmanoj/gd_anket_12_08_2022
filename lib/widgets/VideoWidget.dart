@@ -1253,7 +1253,12 @@ class VideoWidget extends StatelessWidget {
                                     height: 40,
                                     width: 40,
                                     child: ImageNetworkLoader(
-                                      imageUrl: othersMaterials[index].gif,
+                                      imageUrl:
+                                          othersMaterials[index].layerType ==
+                                                  "AR"
+                                              ? snapshot.data!.docs[index]
+                                                  ['imgSeq'][0]
+                                              : othersMaterials[index].gif,
                                     ),
                                   ),
                                   title: Text(
@@ -1276,7 +1281,10 @@ class VideoWidget extends StatelessWidget {
                                     height: 40,
                                     width: 40,
                                     child: ImageNetworkLoader(
-                                      imageUrl: myItems[index].gif,
+                                      imageUrl: myItems[index].layerType == "AR"
+                                          ? snapshot.data!.docs[index]['imgSeq']
+                                              [0]
+                                          : myItems[index].gif,
                                     ),
                                   ),
                                   title: Text(
@@ -1900,7 +1908,12 @@ class VideoWidget extends StatelessWidget {
                                       height: 40,
                                       width: 40,
                                       child: ImageNetworkLoader(
-                                        imageUrl: othersMaterials[index].gif,
+                                        imageUrl:
+                                            othersMaterials[index].layerType ==
+                                                    "AR"
+                                                ? snapshot.data!.docs[index]
+                                                    ['imgSeq'][0]
+                                                : othersMaterials[index].gif,
                                       ),
                                     ),
                                     title: Text(
@@ -1938,7 +1951,12 @@ class VideoWidget extends StatelessWidget {
                                               height: 40,
                                               width: 40,
                                               child: ImageNetworkLoader(
-                                                imageUrl: myItems[index].gif,
+                                                imageUrl: myItems[index]
+                                                            .layerType ==
+                                                        "AR"
+                                                    ? snapshot.data!.docs[index]
+                                                        ['imgSeq'][0]
+                                                    : myItems[index].gif,
                                               ),
                                             ),
                                             trailing: Checkbox(
