@@ -4,6 +4,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class AdminMassNotificationScreen extends StatefulWidget {
@@ -20,6 +21,8 @@ class _AdminMassNotificationScreenState
 
   TextEditingController _bodyController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  ValueNotifier<bool> absorbing = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
@@ -59,27 +62,45 @@ class _AdminMassNotificationScreenState
               SizedBox(
                 height: 20,
               ),
-              SubmitButton(
-                function: () async {
-                  if (_formKey.currentState!.validate()) {
-                    log("sending now!");
-                    await context
-                        .read<FirebaseOperations>()
-                        .sendMassNotification(
-                            title: _titleController.text,
-                            body: _bodyController.text)
-                        .whenComplete(() {
-                      CoolAlert.show(
-                          context: context,
-                          type: CoolAlertType.success,
-                          text: "Notification sent to all!",
-                          title: "Mass Notification Successful!");
-                    });
-                    log("sent all!");
-                  }
-                },
-                text: "Send Mass Notification",
-              ),
+              AnimatedBuilder(
+                  animation: Listenable.merge([absorbing]),
+                  builder: (context, _) {
+                    return AbsorbPointer(
+                      absorbing: absorbing.value,
+                      child: SubmitButton(
+                        function: () async {
+                          if (_formKey.currentState!.validate()) {
+                            absorbing.value = true;
+                            log("sending now!");
+                            CoolAlert.show(
+                              barrierDismissible: false,
+                              context: context,
+                              type: CoolAlertType.loading,
+                              text: "Sending Notification...",
+                            );
+
+                            await context
+                                .read<FirebaseOperations>()
+                                .sendMassNotification(
+                                    title: _titleController.text,
+                                    body: _bodyController.text);
+
+                            Get.back();
+
+                            absorbing.value = false;
+                            CoolAlert.show(
+                              context: context,
+                              type: CoolAlertType.success,
+                              text: "Notification Sent to all!",
+                              title: "Mass Notification Sent",
+                            );
+                            log("sent all!");
+                          }
+                        },
+                        text: "Send Mass Notification",
+                      ),
+                    );
+                  }),
             ],
           ),
         ),
