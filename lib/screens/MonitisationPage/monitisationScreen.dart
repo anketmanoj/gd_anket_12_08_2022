@@ -14,6 +14,7 @@ import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -35,6 +36,42 @@ class MonitizationScreen extends StatelessWidget {
     int dayOfYearThursday = dayOfYear(thursdayDate);
     return 1 + ((dayOfYearThursday - 1) / 7).floor().toDouble();
   }
+
+  static const List<String> graphTypesList = <String>[
+    "Month",
+    "Day",
+    "Week",
+    "Custom"
+  ];
+
+  ValueNotifier<DateTime> _endDate = ValueNotifier<DateTime>(DateTime.now());
+  // show todays date as Sun, Jan 14
+  ValueNotifier<DateTime> _startDate = ValueNotifier<DateTime>(DateTime.now());
+
+  // Function to pick date
+  Future<void> _selectEndDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: _startDate.value,
+        firstDate: _startDate.value,
+        lastDate: DateTime(2025));
+    if (picked != null && picked != _endDate.value) {
+      _endDate.value = picked;
+    }
+  }
+
+  // Function to pick date
+  Future<void> _selectStartDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(DateTime.now().year),
+        lastDate: DateTime(2025));
+    if (picked != null && picked != _startDate.value) _startDate.value = picked;
+    _endDate.value = picked!;
+  }
+
+  ValueNotifier<String> graphType = ValueNotifier<String>("Month");
 
   @override
   Widget build(BuildContext context) {
@@ -246,157 +283,1003 @@ class MonitizationScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(
-                              paddingVal, 0, paddingVal, paddingVal),
-                          child: Container(
-                            padding: EdgeInsets.only(top: 20),
-                            height: size.height * 0.4,
-                            width: size.width,
-                            decoration: BoxDecoration(
-                              color: constantColors.whiteColor,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: StreamBuilder<QuerySnapshot>(
-                                stream: FirebaseFirestore.instance
-                                    .collection("users")
-                                    .doc(auth.getUserId)
-                                    .collection("graphData")
-                                    .orderBy("timestamp", descending: false)
-                                    // .orderBy("month", descending: true)
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  }
-                                  if (snapshot.data!.docs.isEmpty) {
-                                    return Center(
-                                      child: Text(
-                                          "You haven’t made any sales yet"),
-                                    );
-                                  }
+                        Stack(
+                          children: [
+                            AnimatedBuilder(
+                                animation: Listenable.merge(
+                                    [graphType, _startDate, _endDate]),
+                                builder: (context, _) {
+                                  return Padding(
+                                    padding: EdgeInsets.fromLTRB(
+                                        paddingVal, 0, paddingVal, paddingVal),
+                                    child: Container(
+                                      padding: EdgeInsets.only(top: 20),
+                                      height: size.height * 0.4,
+                                      width: size.width,
+                                      decoration: BoxDecoration(
+                                        color: constantColors.whiteColor,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: StreamBuilder<QuerySnapshot>(
+                                          stream: FirebaseFirestore.instance
+                                              .collection("users")
+                                              .doc(auth.getUserId)
+                                              .collection("graphData")
+                                              .orderBy("timestamp",
+                                                  descending: false)
+                                              // .orderBy("month", descending: true)
+                                              .snapshots(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              );
+                                            }
+                                            if (snapshot.data!.docs.isEmpty) {
+                                              return Center(
+                                                child: Text(
+                                                    "You haven’t made any sales yet"),
+                                              );
+                                            }
 
-                                  final List<GraphData> graphDataList =
-                                      snapshot.data!.docs.map((e) {
-                                    final GraphData gd = GraphData.fromMap(
-                                        e.data()! as Map<String, dynamic>);
-                                    return gd;
-                                  }).toList();
+                                            switch (graphType.value) {
+                                              case "Custom":
+                                                log("Custom selected");
+                                                final List<GraphData>
+                                                    graphDataList = snapshot
+                                                        .data!.docs
+                                                        .map((e) {
+                                                  final GraphData gd =
+                                                      GraphData.fromMap(
+                                                          e.data()! as Map<
+                                                              String, dynamic>);
 
-                                  List<FlSpot> spots = graphDataList
-                                      .map((e) => FlSpot(
-                                          isoWeekNumber(e.timestamp.toDate())
-                                              .toDouble(),
-                                          e.amount))
-                                      .toList();
+                                                  return gd;
+                                                }).toList();
 
-                                  return graphDataList.isNotEmpty
-                                      ? LineChart(
-                                          LineChartData(
-                                            maxX: isoWeekNumber(graphDataList
-                                                    .last.timestamp
-                                                    .toDate())
-                                                .toDouble(),
+                                                log("total graphs list == ${graphDataList.length}");
+                                                List<FlSpot>? spots = [];
 
-                                            // maxY: graphDataList.last.amount,
-                                            minY: 0,
-                                            minX: isoWeekNumber(graphDataList
-                                                    .first.timestamp
-                                                    .toDate())
-                                                .toDouble(),
-                                            borderData: FlBorderData(
-                                              show: false,
-                                            ),
-                                            gridData: FlGridData(
-                                              show: true,
-                                              getDrawingHorizontalLine:
-                                                  (value) {
-                                                return FlLine(
-                                                    color: constantColors
-                                                        .navButton
-                                                        .withOpacity(0.2),
-                                                    strokeWidth: 1,
-                                                    dashArray: [5]);
-                                              },
-                                              drawVerticalLine: true,
-                                              getDrawingVerticalLine: (value) {
-                                                return FlLine(
-                                                    color: constantColors
-                                                        .navButton
-                                                        .withOpacity(0.2),
-                                                    strokeWidth: 1,
-                                                    dashArray: [5]);
-                                              },
-                                            ),
-                                            titlesData: FlTitlesData(
-                                              show: true,
-                                              bottomTitles: AxisTitles(
-                                                axisNameWidget: Text(
-                                                  LocaleKeys.months.tr(),
-                                                ),
-                                                sideTitles: SideTitles(
-                                                  reservedSize:
-                                                      size.height * 0.04,
-                                                  showTitles: true,
-                                                ),
-                                              ),
-                                              leftTitles: AxisTitles(
-                                                axisNameWidget: Text(
-                                                  LocaleKeys.amount.tr(),
-                                                ),
-                                                sideTitles: SideTitles(
-                                                  reservedSize:
-                                                      size.width * 0.1,
-                                                  showTitles: true,
-                                                ),
-                                              ),
-                                              rightTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: false,
-                                                ),
-                                              ),
-                                              topTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: false,
-                                                ),
-                                              ),
-                                            ),
-                                            lineBarsData: [
-                                              LineChartBarData(
-                                                spots: spots,
-                                                isCurved: false,
-                                                color: constantColors.navButton,
-                                                barWidth: 1,
-                                                belowBarData: BarAreaData(
-                                                  show: true,
-                                                  gradient: LinearGradient(
-                                                    begin:
-                                                        Alignment.centerRight,
-                                                    end: Alignment.centerLeft,
-                                                    stops: const [
-                                                      0.0,
-                                                      0.5,
-                                                      0.9
-                                                    ],
-                                                    colors: [
-                                                      Color(0xFF760380),
-                                                      Color(0xFFE6ADFF),
-                                                      constantColors.whiteColor,
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      : Center(
-                                          child: CircularProgressIndicator(),
-                                        );
+                                                graphDataList.forEach((gd) {
+                                                  if (gd.timestamp
+                                                          .toDate()
+                                                          .isAfter(_startDate
+                                                              .value) &&
+                                                      gd.timestamp
+                                                          .toDate()
+                                                          .isBefore(
+                                                              _endDate.value)) {
+                                                    spots.add(FlSpot(
+                                                        gd!.timestamp
+                                                            .toDate()
+                                                            .month
+                                                            .toDouble(),
+                                                        gd!.amount));
+                                                  }
+                                                });
+
+                                                return graphDataList.isNotEmpty
+                                                    ? LineChart(
+                                                        LineChartData(
+                                                          maxX: graphDataList
+                                                              .last!.timestamp
+                                                              .toDate()
+                                                              .month
+                                                              .toDouble(),
+
+                                                          // maxY: graphDataList.last.amount,
+                                                          minY: 0,
+                                                          minX: graphDataList
+                                                              .first!.timestamp
+                                                              .toDate()
+                                                              .month
+                                                              .toDouble(),
+
+                                                          borderData:
+                                                              FlBorderData(
+                                                            show: false,
+                                                          ),
+                                                          gridData: FlGridData(
+                                                            show: true,
+                                                            getDrawingHorizontalLine:
+                                                                (value) {
+                                                              return FlLine(
+                                                                  color: constantColors
+                                                                      .navButton
+                                                                      .withOpacity(0.2),
+                                                                  strokeWidth: 1,
+                                                                  dashArray: [
+                                                                    5
+                                                                  ]);
+                                                            },
+                                                            drawVerticalLine:
+                                                                true,
+                                                            getDrawingVerticalLine:
+                                                                (value) {
+                                                              return FlLine(
+                                                                  color: constantColors
+                                                                      .navButton
+                                                                      .withOpacity(0.2),
+                                                                  strokeWidth: 1,
+                                                                  dashArray: [
+                                                                    5
+                                                                  ]);
+                                                            },
+                                                          ),
+                                                          titlesData:
+                                                              FlTitlesData(
+                                                            show: true,
+                                                            bottomTitles:
+                                                                AxisTitles(
+                                                              axisNameWidget:
+                                                                  Text(
+                                                                "Custom",
+                                                              ),
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                reservedSize:
+                                                                    size.height *
+                                                                        0.04,
+                                                                showTitles:
+                                                                    true,
+                                                              ),
+                                                            ),
+                                                            leftTitles:
+                                                                AxisTitles(
+                                                              axisNameWidget:
+                                                                  Text(
+                                                                LocaleKeys
+                                                                    .amount
+                                                                    .tr(),
+                                                              ),
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                reservedSize:
+                                                                    size.width *
+                                                                        0.1,
+                                                                showTitles:
+                                                                    true,
+                                                              ),
+                                                            ),
+                                                            rightTitles:
+                                                                AxisTitles(
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                showTitles:
+                                                                    false,
+                                                              ),
+                                                            ),
+                                                            topTitles:
+                                                                AxisTitles(
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                showTitles:
+                                                                    false,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          lineBarsData: [
+                                                            LineChartBarData(
+                                                              spots: spots,
+                                                              isCurved: false,
+                                                              color:
+                                                                  constantColors
+                                                                      .navButton,
+                                                              barWidth: 1,
+                                                              belowBarData:
+                                                                  BarAreaData(
+                                                                show: true,
+                                                                gradient:
+                                                                    LinearGradient(
+                                                                  begin: Alignment
+                                                                      .centerRight,
+                                                                  end: Alignment
+                                                                      .centerLeft,
+                                                                  stops: const [
+                                                                    0.0,
+                                                                    0.5,
+                                                                    0.9
+                                                                  ],
+                                                                  colors: [
+                                                                    Color(
+                                                                        0xFF760380),
+                                                                    Color(
+                                                                        0xFFE6ADFF),
+                                                                    constantColors
+                                                                        .whiteColor,
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    : Center(
+                                                        child:
+                                                            CircularProgressIndicator(),
+                                                      );
+                                              case "Month":
+                                                log("month selected");
+                                                final List<GraphData>
+                                                    graphDataList = snapshot
+                                                        .data!.docs
+                                                        .map((e) {
+                                                  final GraphData gd =
+                                                      GraphData.fromMap(
+                                                          e.data()! as Map<
+                                                              String, dynamic>);
+                                                  return gd;
+                                                }).toList();
+
+                                                List<FlSpot> spots =
+                                                    graphDataList
+                                                        .map((e) => FlSpot(
+                                                            e.timestamp
+                                                                .toDate()
+                                                                .month
+                                                                .toDouble(),
+                                                            e.amount))
+                                                        .toList();
+
+                                                return graphDataList.isNotEmpty
+                                                    ? LineChart(
+                                                        LineChartData(
+                                                          maxX: graphDataList
+                                                              .last.timestamp
+                                                              .toDate()
+                                                              .month
+                                                              .toDouble(),
+
+                                                          // maxY: graphDataList.last.amount,
+                                                          minY: 0,
+                                                          minX: graphDataList
+                                                              .first.timestamp
+                                                              .toDate()
+                                                              .month
+                                                              .toDouble(),
+
+                                                          borderData:
+                                                              FlBorderData(
+                                                            show: false,
+                                                          ),
+                                                          gridData: FlGridData(
+                                                            show: true,
+                                                            getDrawingHorizontalLine:
+                                                                (value) {
+                                                              return FlLine(
+                                                                  color: constantColors
+                                                                      .navButton
+                                                                      .withOpacity(0.2),
+                                                                  strokeWidth: 1,
+                                                                  dashArray: [
+                                                                    5
+                                                                  ]);
+                                                            },
+                                                            drawVerticalLine:
+                                                                true,
+                                                            getDrawingVerticalLine:
+                                                                (value) {
+                                                              return FlLine(
+                                                                  color: constantColors
+                                                                      .navButton
+                                                                      .withOpacity(0.2),
+                                                                  strokeWidth: 1,
+                                                                  dashArray: [
+                                                                    5
+                                                                  ]);
+                                                            },
+                                                          ),
+                                                          titlesData:
+                                                              FlTitlesData(
+                                                            show: true,
+                                                            bottomTitles:
+                                                                AxisTitles(
+                                                              axisNameWidget:
+                                                                  Text(
+                                                                LocaleKeys
+                                                                    .months
+                                                                    .tr(),
+                                                              ),
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                reservedSize:
+                                                                    size.height *
+                                                                        0.04,
+                                                                showTitles:
+                                                                    true,
+                                                              ),
+                                                            ),
+                                                            leftTitles:
+                                                                AxisTitles(
+                                                              axisNameWidget:
+                                                                  Text(
+                                                                LocaleKeys
+                                                                    .amount
+                                                                    .tr(),
+                                                              ),
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                reservedSize:
+                                                                    size.width *
+                                                                        0.1,
+                                                                showTitles:
+                                                                    true,
+                                                              ),
+                                                            ),
+                                                            rightTitles:
+                                                                AxisTitles(
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                showTitles:
+                                                                    false,
+                                                              ),
+                                                            ),
+                                                            topTitles:
+                                                                AxisTitles(
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                showTitles:
+                                                                    false,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          lineBarsData: [
+                                                            LineChartBarData(
+                                                              spots: spots,
+                                                              isCurved: false,
+                                                              color:
+                                                                  constantColors
+                                                                      .navButton,
+                                                              barWidth: 1,
+                                                              belowBarData:
+                                                                  BarAreaData(
+                                                                show: true,
+                                                                gradient:
+                                                                    LinearGradient(
+                                                                  begin: Alignment
+                                                                      .centerRight,
+                                                                  end: Alignment
+                                                                      .centerLeft,
+                                                                  stops: const [
+                                                                    0.0,
+                                                                    0.5,
+                                                                    0.9
+                                                                  ],
+                                                                  colors: [
+                                                                    Color(
+                                                                        0xFF760380),
+                                                                    Color(
+                                                                        0xFFE6ADFF),
+                                                                    constantColors
+                                                                        .whiteColor,
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    : Center(
+                                                        child:
+                                                            CircularProgressIndicator(),
+                                                      );
+                                              case "Day":
+                                                log("day selected");
+                                                final List<GraphData>
+                                                    graphDataList = snapshot
+                                                        .data!.docs
+                                                        .map((e) {
+                                                  final GraphData gd =
+                                                      GraphData.fromMap(
+                                                          e.data()! as Map<
+                                                              String, dynamic>);
+                                                  return gd;
+                                                }).toList();
+
+                                                List<FlSpot> spots =
+                                                    graphDataList
+                                                        .map((e) => FlSpot(
+                                                            dayOfYear(e
+                                                                    .timestamp
+                                                                    .toDate())
+                                                                .toDouble(),
+                                                            e.amount))
+                                                        .toList();
+
+                                                return graphDataList.isNotEmpty
+                                                    ? LineChart(
+                                                        LineChartData(
+                                                          maxX: dayOfYear(
+                                                                  graphDataList
+                                                                      .last
+                                                                      .timestamp
+                                                                      .toDate())
+                                                              .toDouble(),
+
+                                                          // maxY: graphDataList.last.amount,
+                                                          minY: 0,
+                                                          minX: dayOfYear(
+                                                                  graphDataList
+                                                                      .first
+                                                                      .timestamp
+                                                                      .toDate())
+                                                              .toDouble(),
+                                                          borderData:
+                                                              FlBorderData(
+                                                            show: false,
+                                                          ),
+                                                          gridData: FlGridData(
+                                                            show: true,
+                                                            getDrawingHorizontalLine:
+                                                                (value) {
+                                                              return FlLine(
+                                                                  color: constantColors
+                                                                      .navButton
+                                                                      .withOpacity(0.2),
+                                                                  strokeWidth: 1,
+                                                                  dashArray: [
+                                                                    5
+                                                                  ]);
+                                                            },
+                                                            drawVerticalLine:
+                                                                true,
+                                                            getDrawingVerticalLine:
+                                                                (value) {
+                                                              return FlLine(
+                                                                  color: constantColors
+                                                                      .navButton
+                                                                      .withOpacity(0.2),
+                                                                  strokeWidth: 1,
+                                                                  dashArray: [
+                                                                    5
+                                                                  ]);
+                                                            },
+                                                          ),
+                                                          titlesData:
+                                                              FlTitlesData(
+                                                            show: true,
+                                                            bottomTitles:
+                                                                AxisTitles(
+                                                              axisNameWidget:
+                                                                  Text(
+                                                                "Days",
+                                                              ),
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                reservedSize:
+                                                                    size.height *
+                                                                        0.04,
+                                                                showTitles:
+                                                                    true,
+                                                              ),
+                                                            ),
+                                                            leftTitles:
+                                                                AxisTitles(
+                                                              axisNameWidget:
+                                                                  Text(
+                                                                LocaleKeys
+                                                                    .amount
+                                                                    .tr(),
+                                                              ),
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                reservedSize:
+                                                                    size.width *
+                                                                        0.1,
+                                                                showTitles:
+                                                                    true,
+                                                              ),
+                                                            ),
+                                                            rightTitles:
+                                                                AxisTitles(
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                showTitles:
+                                                                    false,
+                                                              ),
+                                                            ),
+                                                            topTitles:
+                                                                AxisTitles(
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                showTitles:
+                                                                    false,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          lineBarsData: [
+                                                            LineChartBarData(
+                                                              spots: spots,
+                                                              isCurved: false,
+                                                              color:
+                                                                  constantColors
+                                                                      .navButton,
+                                                              barWidth: 1,
+                                                              belowBarData:
+                                                                  BarAreaData(
+                                                                show: true,
+                                                                gradient:
+                                                                    LinearGradient(
+                                                                  begin: Alignment
+                                                                      .centerRight,
+                                                                  end: Alignment
+                                                                      .centerLeft,
+                                                                  stops: const [
+                                                                    0.0,
+                                                                    0.5,
+                                                                    0.9
+                                                                  ],
+                                                                  colors: [
+                                                                    Color(
+                                                                        0xFF760380),
+                                                                    Color(
+                                                                        0xFFE6ADFF),
+                                                                    constantColors
+                                                                        .whiteColor,
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    : Center(
+                                                        child:
+                                                            CircularProgressIndicator(),
+                                                      );
+                                              case "Week":
+                                                log("Week selected");
+                                                final List<GraphData>
+                                                    graphDataList = snapshot
+                                                        .data!.docs
+                                                        .map((e) {
+                                                  final GraphData gd =
+                                                      GraphData.fromMap(
+                                                          e.data()! as Map<
+                                                              String, dynamic>);
+                                                  return gd;
+                                                }).toList();
+
+                                                List<FlSpot> spots =
+                                                    graphDataList
+                                                        .map((e) => FlSpot(
+                                                            isoWeekNumber(e
+                                                                    .timestamp
+                                                                    .toDate())
+                                                                .toDouble(),
+                                                            e.amount))
+                                                        .toList();
+
+                                                return graphDataList.isNotEmpty
+                                                    ? LineChart(
+                                                        LineChartData(
+                                                          maxX: isoWeekNumber(
+                                                                  graphDataList
+                                                                      .last
+                                                                      .timestamp
+                                                                      .toDate())
+                                                              .toDouble(),
+
+                                                          // maxY: graphDataList.last.amount,
+                                                          minY: 0,
+                                                          minX: isoWeekNumber(
+                                                                  graphDataList
+                                                                      .first
+                                                                      .timestamp
+                                                                      .toDate())
+                                                              .toDouble(),
+                                                          borderData:
+                                                              FlBorderData(
+                                                            show: false,
+                                                          ),
+                                                          gridData: FlGridData(
+                                                            show: true,
+                                                            getDrawingHorizontalLine:
+                                                                (value) {
+                                                              return FlLine(
+                                                                  color: constantColors
+                                                                      .navButton
+                                                                      .withOpacity(0.2),
+                                                                  strokeWidth: 1,
+                                                                  dashArray: [
+                                                                    5
+                                                                  ]);
+                                                            },
+                                                            drawVerticalLine:
+                                                                true,
+                                                            getDrawingVerticalLine:
+                                                                (value) {
+                                                              return FlLine(
+                                                                  color: constantColors
+                                                                      .navButton
+                                                                      .withOpacity(0.2),
+                                                                  strokeWidth: 1,
+                                                                  dashArray: [
+                                                                    5
+                                                                  ]);
+                                                            },
+                                                          ),
+                                                          titlesData:
+                                                              FlTitlesData(
+                                                            show: true,
+                                                            bottomTitles:
+                                                                AxisTitles(
+                                                              axisNameWidget:
+                                                                  Text("Weeks"),
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                reservedSize:
+                                                                    size.height *
+                                                                        0.04,
+                                                                showTitles:
+                                                                    true,
+                                                              ),
+                                                            ),
+                                                            leftTitles:
+                                                                AxisTitles(
+                                                              axisNameWidget:
+                                                                  Text(
+                                                                LocaleKeys
+                                                                    .amount
+                                                                    .tr(),
+                                                              ),
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                reservedSize:
+                                                                    size.width *
+                                                                        0.1,
+                                                                showTitles:
+                                                                    true,
+                                                              ),
+                                                            ),
+                                                            rightTitles:
+                                                                AxisTitles(
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                showTitles:
+                                                                    false,
+                                                              ),
+                                                            ),
+                                                            topTitles:
+                                                                AxisTitles(
+                                                              sideTitles:
+                                                                  SideTitles(
+                                                                showTitles:
+                                                                    false,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          lineBarsData: [
+                                                            LineChartBarData(
+                                                              spots: spots,
+                                                              isCurved: false,
+                                                              color:
+                                                                  constantColors
+                                                                      .navButton,
+                                                              barWidth: 1,
+                                                              belowBarData:
+                                                                  BarAreaData(
+                                                                show: true,
+                                                                gradient:
+                                                                    LinearGradient(
+                                                                  begin: Alignment
+                                                                      .centerRight,
+                                                                  end: Alignment
+                                                                      .centerLeft,
+                                                                  stops: const [
+                                                                    0.0,
+                                                                    0.5,
+                                                                    0.9
+                                                                  ],
+                                                                  colors: [
+                                                                    Color(
+                                                                        0xFF760380),
+                                                                    Color(
+                                                                        0xFFE6ADFF),
+                                                                    constantColors
+                                                                        .whiteColor,
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    : Center(
+                                                        child:
+                                                            CircularProgressIndicator(),
+                                                      );
+                                              default:
+                                            }
+                                            final List<GraphData>
+                                                graphDataList =
+                                                snapshot.data!.docs.map((e) {
+                                              final GraphData gd =
+                                                  GraphData.fromMap(e.data()!
+                                                      as Map<String, dynamic>);
+                                              return gd;
+                                            }).toList();
+
+                                            List<FlSpot> spots = graphDataList
+                                                .map((e) => FlSpot(
+                                                    e.timestamp
+                                                        .toDate()
+                                                        .month
+                                                        .toDouble(),
+                                                    e.amount))
+                                                .toList();
+
+                                            return graphDataList.isNotEmpty
+                                                ? LineChart(
+                                                    LineChartData(
+                                                      maxX: graphDataList
+                                                          .last.timestamp
+                                                          .toDate()
+                                                          .month
+                                                          .toDouble(),
+
+                                                      // maxY: graphDataList.last.amount,
+                                                      minY: 0,
+                                                      minX: graphDataList
+                                                          .first.timestamp
+                                                          .toDate()
+                                                          .month
+                                                          .toDouble(),
+
+                                                      borderData: FlBorderData(
+                                                        show: false,
+                                                      ),
+                                                      gridData: FlGridData(
+                                                        show: true,
+                                                        getDrawingHorizontalLine:
+                                                            (value) {
+                                                          return FlLine(
+                                                              color:
+                                                                  constantColors
+                                                                      .navButton
+                                                                      .withOpacity(
+                                                                          0.2),
+                                                              strokeWidth: 1,
+                                                              dashArray: [5]);
+                                                        },
+                                                        drawVerticalLine: true,
+                                                        getDrawingVerticalLine:
+                                                            (value) {
+                                                          return FlLine(
+                                                              color:
+                                                                  constantColors
+                                                                      .navButton
+                                                                      .withOpacity(
+                                                                          0.2),
+                                                              strokeWidth: 1,
+                                                              dashArray: [5]);
+                                                        },
+                                                      ),
+                                                      titlesData: FlTitlesData(
+                                                        show: true,
+                                                        bottomTitles:
+                                                            AxisTitles(
+                                                          axisNameWidget: Text(
+                                                            LocaleKeys.months
+                                                                .tr(),
+                                                          ),
+                                                          sideTitles:
+                                                              SideTitles(
+                                                            reservedSize:
+                                                                size.height *
+                                                                    0.04,
+                                                            showTitles: true,
+                                                          ),
+                                                        ),
+                                                        leftTitles: AxisTitles(
+                                                          axisNameWidget: Text(
+                                                            LocaleKeys.amount
+                                                                .tr(),
+                                                          ),
+                                                          sideTitles:
+                                                              SideTitles(
+                                                            reservedSize:
+                                                                size.width *
+                                                                    0.1,
+                                                            showTitles: true,
+                                                          ),
+                                                        ),
+                                                        rightTitles: AxisTitles(
+                                                          sideTitles:
+                                                              SideTitles(
+                                                            showTitles: false,
+                                                          ),
+                                                        ),
+                                                        topTitles: AxisTitles(
+                                                          sideTitles:
+                                                              SideTitles(
+                                                            showTitles: false,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      lineBarsData: [
+                                                        LineChartBarData(
+                                                          spots: spots,
+                                                          isCurved: false,
+                                                          color: constantColors
+                                                              .navButton,
+                                                          barWidth: 1,
+                                                          belowBarData:
+                                                              BarAreaData(
+                                                            show: true,
+                                                            gradient:
+                                                                LinearGradient(
+                                                              begin: Alignment
+                                                                  .centerRight,
+                                                              end: Alignment
+                                                                  .centerLeft,
+                                                              stops: const [
+                                                                0.0,
+                                                                0.5,
+                                                                0.9
+                                                              ],
+                                                              colors: [
+                                                                Color(
+                                                                    0xFF760380),
+                                                                Color(
+                                                                    0xFFE6ADFF),
+                                                                constantColors
+                                                                    .whiteColor,
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )
+                                                : Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  );
+                                          }),
+                                    ),
+                                  );
                                 }),
-                          ),
+                            Positioned(
+                              top: 10,
+                              right: 10,
+                              child: PopupMenuButton<String>(
+                                initialValue: graphType.value,
+                                tooltip: 'Graph Type',
+                                onSelected: (String type) {
+                                  switch (type) {
+                                    case "Custom":
+                                      log("custom");
+                                      Get.bottomSheet(
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 15),
+                                            decoration: BoxDecoration(
+                                              color: constantColors.whiteColor,
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(20),
+                                                topRight: Radius.circular(20),
+                                              ),
+                                            ),
+                                            height: 25.h,
+                                            child: AnimatedBuilder(
+                                              animation: Listenable.merge(
+                                                  [_startDate, _endDate]),
+                                              builder: (context, _) {
+                                                return Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 10),
+                                                      child: Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: constantColors
+                                                              .navButton,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(30),
+                                                        ),
+                                                        child: Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceEvenly,
+                                                          children: [
+                                                            TextButton.icon(
+                                                              style: TextButton
+                                                                  .styleFrom(
+                                                                primary: Colors
+                                                                    .white,
+                                                              ),
+                                                              onPressed: () =>
+                                                                  _selectStartDate(
+                                                                      context),
+                                                              icon: Icon(Icons
+                                                                  .calendar_month),
+                                                              label: Text(
+                                                                "${DateFormat("E, MMM, d").format(_startDate.value)}",
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              ">",
+                                                              style: TextStyle(
+                                                                color: constantColors
+                                                                    .whiteColor,
+                                                                fontSize: 40,
+                                                              ),
+                                                            ),
+                                                            TextButton.icon(
+                                                              style: TextButton
+                                                                  .styleFrom(
+                                                                primary: Colors
+                                                                    .white,
+                                                              ),
+                                                              onPressed: () =>
+                                                                  _selectEndDate(
+                                                                      context),
+                                                              icon: Icon(Icons
+                                                                  .calendar_month),
+                                                              label: Text(
+                                                                  "${DateFormat("E, MMM, d").format(_endDate.value)}"),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SubmitButton(
+                                                      function: () {
+                                                        log("clicked");
+                                                        graphType.value = type;
+                                                        Get.back();
+                                                      },
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          isDismissible: true,
+                                          isScrollControlled: true,
+                                          enableDrag: true);
+                                      break;
+                                    case "Month":
+                                      graphType.value = type;
+                                      break;
+                                    case "Day":
+                                      graphType.value = type;
+                                      break;
+                                    case "Week":
+                                      graphType.value = type;
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) {
+                                  return <PopupMenuItem<String>>[
+                                    for (final String type in graphTypesList)
+                                      PopupMenuItem<String>(
+                                        value: type,
+                                        child: Text('$type'),
+                                        textStyle: graphType.value == type
+                                            ? TextStyle(
+                                                color: constantColors.navButton,
+                                                fontWeight: FontWeight.bold)
+                                            : null,
+                                      )
+                                  ];
+                                },
+                                child: Icon(Icons.filter_alt_rounded),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     );
