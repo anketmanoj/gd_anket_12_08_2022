@@ -415,7 +415,7 @@ class MonitizationScreen extends StatelessWidget {
                                                                 AxisTitles(
                                                               axisNameWidget:
                                                                   Text(
-                                                                "Custom",
+                                                                "Months",
                                                               ),
                                                               sideTitles:
                                                                   SideTitles(
