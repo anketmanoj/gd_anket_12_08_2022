@@ -225,8 +225,8 @@ class _PexelSearchState extends State<PexelSearch> {
       Uri.parse(
           "https://api.pexels.com/videos/search?query=$searchQuery&per_page=15&orientation=portrait&size=medium"),
       headers: {
-        "Authorization":
-            "563492ad6f91700001000001152836b1519c43b2ad35aef165eabe15"
+        'Authorization':
+            '563492ad6f9170000100000130a9525c45f04f8d8d0e104abc227b5c'
       },
     );
     if (response.statusCode == 200) {
