@@ -19,6 +19,7 @@ import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/OptionsWidget.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:diamon_rose_app/widgets/readMoreWidget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -34,7 +35,7 @@ class OtherUserProfile extends StatefulWidget {
       {Key? key, required this.userModel, this.fromLink = false})
       : super(key: key);
   final UserModel userModel;
-  final bool? fromLink;
+  final bool fromLink;
 
   @override
   State<OtherUserProfile> createState() => _OtherUserProfileState();
@@ -209,476 +210,427 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: constantColors.bioBg,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            leading: Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: constantColors.black.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: IconButton(
-                    onPressed: () {
-                      Get.back();
-                      if (widget.fromLink == true) {
-                        Get.to(() => FeedPage(
-                              pageIndexValue: 0,
-                            ));
-                      }
-                    },
-                    icon: Icon(
-                      Icons.arrow_back_ios,
-                    )),
-              ),
-            ),
-            automaticallyImplyLeading: true,
-            backgroundColor: constantColors.bioBg,
-            expandedHeight: 30.h,
-            flexibleSpace: FlexibleSpaceBar(
-              background: TopProfileStack(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 35.h,
+              child: TopProfileStack(
+                  fromLink: widget.fromLink!,
                   size: size,
                   userModel: widget.userModel,
                   constantColors: constantColors),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              height: 27.h,
-              width: size.width,
-              decoration: BoxDecoration(
-                color: constantColors.bioBg,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(80),
-                ),
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 10,
+                left: 10,
+                right: 10,
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  top: 10,
-                  left: 10,
-                  right: 10,
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 3),
-                      child: Row(
-                        children: [
-                          Text(
-                            widget.userModel.userrealname!,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: InkWell(
-                              onTap: () {
-                                showLinksBottomSheet(context);
-                              },
-                              child: Icon(
-                                FontAwesomeIcons.link,
-                                size: 15,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Row(
                       children: [
-                        Expanded(
-                          child: Container(
-                            height: 70,
-                            child: Text(
-                              widget.userModel.userbio!.length == '0'
-                                  ? ''
-                                  : widget.userModel.userbio!,
-                              softWrap: true,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black,
-                              ),
-                            ),
+                        Text(
+                          widget.userModel.userrealname!,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
                           ),
                         ),
-                        Visibility(
-                          visible: widget.userModel.useruid !=
-                              context.read<Authentication>().getUserId,
-                          child: StreamBuilder<DocumentSnapshot>(
-                              stream: FirebaseFirestore.instance
-                                  .collection("users")
-                                  .doc(widget.userModel.useruid)
-                                  .collection("followers")
-                                  .doc(auth.getUserId)
-                                  .snapshots(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-                                if (snapshot.data!.exists) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(right: 20),
-                                    child: InkWell(
-                                      onTap: () async {
-                                        await Provider.of<FirebaseOperations>(
-                                                context,
-                                                listen: false)
-                                            .unfollowUser(
-                                          followingUid:
-                                              widget.userModel.useruid,
-                                          followingDocId: auth.getUserId,
-                                          followerUid:
-                                              Provider.of<Authentication>(
-                                                      context,
-                                                      listen: false)
-                                                  .getUserId,
-                                          followerDocId:
-                                              widget.userModel.useruid,
-                                        )
-                                            .whenComplete(() {
-                                          unfollowedNotification(
-                                              context: context,
-                                              name: widget.userModel.username);
-                                        });
-                                      },
-                                      child: Container(
-                                        height: 35,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              image: Image.asset(
-                                                      "assets/images/follow_Bg.jpg")
-                                                  .image,
-                                              fit: BoxFit.cover),
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.remove,
-                                              color: Colors.white,
-                                            ),
-                                            Text(
-                                              LocaleKeys.unfollow.tr(),
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(right: 20),
-                                    child: InkWell(
-                                      onTap: () async {
-                                        await Provider.of<FirebaseOperations>(
-                                                context,
-                                                listen: false)
-                                            .followUser(
-                                          otherUserToken:
-                                              widget.userModel.token,
-                                          followingUserName:
-                                              userProvider.initUserName,
-                                          followingUid:
-                                              widget.userModel.useruid,
-                                          followingDocId: auth.getUserId,
-                                          followingData: {
-                                            'username':
-                                                userProvider.initUserName,
-                                            'userimage':
-                                                userProvider.initUserImage,
-                                            'useremail':
-                                                userProvider.initUserEmail,
-                                            'useruid': auth.getUserId,
-                                            'time': Timestamp.now(),
-                                          },
-                                          followerUid:
-                                              Provider.of<Authentication>(
-                                                      context,
-                                                      listen: false)
-                                                  .getUserId,
-                                          followerDocId:
-                                              widget.userModel.useruid,
-                                          followerData: {
-                                            'username':
-                                                widget.userModel.username,
-                                            'userimage':
-                                                widget.userModel.userimage,
-                                            'useremail':
-                                                widget.userModel.useremail,
-                                            'useruid': widget.userModel.useruid,
-                                            'time': Timestamp.now(),
-                                          },
-                                        )
-                                            .whenComplete(() async {
-                                          try {
-                                            List<String> currentFollowingList =
-                                                SharedPreferencesHelper
-                                                    .getListString(
-                                                        "followersList");
-                                            currentFollowingList.add(
-                                                "${widget.userModel.useruid}");
-                                            SharedPreferencesHelper
-                                                .setListString("followersList",
-                                                    currentFollowingList);
-                                            await Provider.of<
-                                                        FirebaseOperations>(
-                                                    context,
-                                                    listen: false)
-                                                .addFollowNotification(
-                                              userUid:
-                                                  Provider.of<Authentication>(
-                                                          context,
-                                                          listen: false)
-                                                      .getUserId,
-                                              otherUserId:
-                                                  widget.userModel.useruid,
-                                              context: context,
-                                            );
-                                          } catch (e) {
-                                            print("ERROR ====> $e");
-                                          }
-                                        });
-                                      },
-                                      child: Container(
-                                        height: 35,
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              image: Image.asset(
-                                                      "assets/images/follow_Bg.jpg")
-                                                  .image,
-                                              fit: BoxFit.cover),
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.add,
-                                              color: Colors.white,
-                                            ),
-                                            Text(
-                                              LocaleKeys.follow.tr(),
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }
-                              }),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: InkWell(
+                            onTap: () {
+                              showLinksBottomSheet(context);
+                            },
+                            child: Icon(
+                              FontAwesomeIcons.link,
+                              size: 15,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Container(
-                        width: size.width * 0.7,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            // show followers in column
-                            StreamBuilder<QuerySnapshot>(
-                                stream: FirebaseFirestore.instance
-                                    .collection("users")
-                                    .doc(widget.userModel.useruid)
-                                    .collection("followers")
-                                    .snapshots(),
-                                builder: (context, followers) {
-                                  if (followers.hasData) {
-                                    return InkWell(
-                                      onTap: () async {
-                                        await showModalBottomSheet(
-                                            isDismissible: true,
-                                            isScrollControlled: true,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Expanded(
+                          child: ReadMoreText(
+                            widget.userModel.userbio!.length == '0'
+                                ? ''
+                                : widget.userModel.userbio!,
+                            trimLines: 2,
+                            colorClickableText: constantColors.navButton,
+                            trimMode: TrimMode.Line,
+                            moreStyle: TextStyle(
+                              color: constantColors.mainColor,
+                            ),
+                            lessStyle: TextStyle(
+                              color: constantColors.mainColor,
+                            ),
+                            trimCollapsedText: 'Show more',
+                            trimExpandedText: ' Show less',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: widget.userModel.useruid !=
+                            context.read<Authentication>().getUserId,
+                        child: StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection("users")
+                                .doc(widget.userModel.useruid)
+                                .collection("followers")
+                                .doc(auth.getUserId)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              if (snapshot.data!.exists) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 20),
+                                  child: InkWell(
+                                    onTap: () async {
+                                      await Provider.of<FirebaseOperations>(
+                                              context,
+                                              listen: false)
+                                          .unfollowUser(
+                                        followingUid: widget.userModel.useruid,
+                                        followingDocId: auth.getUserId,
+                                        followerUid:
+                                            Provider.of<Authentication>(context,
+                                                    listen: false)
+                                                .getUserId,
+                                        followerDocId: widget.userModel.useruid,
+                                      )
+                                          .whenComplete(() {
+                                        unfollowedNotification(
                                             context: context,
-                                            builder: (context) {
-                                              return Container(
-                                                height: size.height * 0.9,
-                                                width: size.width,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.only(
-                                                    topLeft:
-                                                        Radius.circular(20),
-                                                    topRight:
-                                                        Radius.circular(20),
-                                                  ),
-                                                ),
-                                                child: Column(
+                                            name: widget.userModel.username);
+                                      });
+                                    },
+                                    child: Container(
+                                      height: 35,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: Image.asset(
+                                                    "assets/images/follow_Bg.jpg")
+                                                .image,
+                                            fit: BoxFit.cover),
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.remove,
+                                            color: Colors.white,
+                                          ),
+                                          Text(
+                                            LocaleKeys.unfollow.tr(),
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 20),
+                                  child: InkWell(
+                                    onTap: () async {
+                                      await Provider.of<FirebaseOperations>(
+                                              context,
+                                              listen: false)
+                                          .followUser(
+                                        otherUserToken: widget.userModel.token,
+                                        followingUserName:
+                                            userProvider.initUserName,
+                                        followingUid: widget.userModel.useruid,
+                                        followingDocId: auth.getUserId,
+                                        followingData: {
+                                          'username': userProvider.initUserName,
+                                          'userimage':
+                                              userProvider.initUserImage,
+                                          'useremail':
+                                              userProvider.initUserEmail,
+                                          'useruid': auth.getUserId,
+                                          'time': Timestamp.now(),
+                                        },
+                                        followerUid:
+                                            Provider.of<Authentication>(context,
+                                                    listen: false)
+                                                .getUserId,
+                                        followerDocId: widget.userModel.useruid,
+                                        followerData: {
+                                          'username': widget.userModel.username,
+                                          'userimage':
+                                              widget.userModel.userimage,
+                                          'useremail':
+                                              widget.userModel.useremail,
+                                          'useruid': widget.userModel.useruid,
+                                          'time': Timestamp.now(),
+                                        },
+                                      )
+                                          .whenComplete(() async {
+                                        try {
+                                          List<String> currentFollowingList =
+                                              SharedPreferencesHelper
+                                                  .getListString(
+                                                      "followersList");
+                                          currentFollowingList.add(
+                                              "${widget.userModel.useruid}");
+                                          SharedPreferencesHelper.setListString(
+                                              "followersList",
+                                              currentFollowingList);
+                                          await Provider.of<FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .addFollowNotification(
+                                            userUid:
+                                                Provider.of<Authentication>(
+                                                        context,
+                                                        listen: false)
+                                                    .getUserId,
+                                            otherUserId:
+                                                widget.userModel.useruid,
+                                            context: context,
+                                          );
+                                        } catch (e) {
+                                          print("ERROR ====> $e");
+                                        }
+                                      });
+                                    },
+                                    child: Container(
+                                      height: 35,
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: Image.asset(
+                                                    "assets/images/follow_Bg.jpg")
+                                                .image,
+                                            fit: BoxFit.cover),
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.add,
+                                            color: Colors.white,
+                                          ),
+                                          Text(
+                                            LocaleKeys.follow.tr(),
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                            }),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w.toDouble()),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // show followers in column
+                        StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection("users")
+                                .doc(widget.userModel.useruid)
+                                .collection("followers")
+                                .snapshots(),
+                            builder: (context, followers) {
+                              if (followers.hasData) {
+                                return InkWell(
+                                  onTap: () async {
+                                    await showModalBottomSheet(
+                                        isDismissible: true,
+                                        isScrollControlled: true,
+                                        context: context,
+                                        builder: (context) {
+                                          return Container(
+                                            height: size.height * 0.9,
+                                            width: size.width,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(20),
+                                                topRight: Radius.circular(20),
+                                              ),
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Column(
                                                   children: [
-                                                    Column(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .symmetric(
-                                                                  horizontal:
-                                                                      150),
-                                                          child: Divider(
-                                                            thickness: 4,
-                                                            color:
-                                                                constantColors
-                                                                    .navButton,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Container(
-                                                      height: size.height * 0.8,
-                                                      child: ListView.builder(
-                                                        itemCount: followers
-                                                            .data!.docs.length,
-                                                        itemBuilder:
-                                                            (context, index) {
-                                                          return ListTile(
-                                                            leading:
-                                                                CircleAvatar(
-                                                              backgroundImage:
-                                                                  CachedNetworkImageProvider(
-                                                                followers.data!
-                                                                            .docs[
-                                                                        index][
-                                                                    "userimage"],
-                                                              ),
-                                                            ),
-                                                            title: Text(followers
-                                                                    .data!
-                                                                    .docs[index]
-                                                                ['username']),
-                                                            onTap: () {
-                                                              userProvider.goToUserProfile(
-                                                                  userUid: followers
-                                                                          .data!
-                                                                          .docs[index]
-                                                                      [
-                                                                      'useruid'],
-                                                                  context:
-                                                                      context);
-                                                            },
-                                                          );
-                                                        },
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 150),
+                                                      child: Divider(
+                                                        thickness: 4,
+                                                        color: constantColors
+                                                            .navButton,
                                                       ),
                                                     ),
-                                                    Container(
-                                                      height: 50,
-                                                      child: TextButton(
-                                                        onPressed: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: Text("Close"),
-                                                      ),
-                                                    )
                                                   ],
                                                 ),
-                                              );
-                                            });
-                                      },
-                                      child: UserStats(
-                                        text: "${followers.data!.docs.length}",
-                                        label: LocaleKeys.followers.tr(),
-                                      ),
-                                    );
-                                  } else {
-                                    return UserStats(
-                                      text: "0",
-                                      label: LocaleKeys.followers.tr(),
-                                    );
-                                  }
-                                }),
-                            Vdivider(),
-                            StreamBuilder<QuerySnapshot>(
-                                stream: FirebaseFirestore.instance
-                                    .collection("users")
-                                    .doc(widget.userModel.useruid)
-                                    .collection("following")
-                                    .snapshots(),
-                                builder: (context, following) {
-                                  if (following.hasData) {
-                                    return InkWell(
-                                      onTap: () async {
-                                        await showModalBottomSheet(
-                                            isDismissible: true,
-                                            isScrollControlled: true,
-                                            context: context,
-                                            builder: (context) {
-                                              return Container(
-                                                height: size.height * 0.9,
-                                                width: size.width,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.only(
-                                                    topLeft:
-                                                        Radius.circular(20),
-                                                    topRight:
-                                                        Radius.circular(20),
-                                                  ),
-                                                ),
-                                                child: Column(
-                                                  children: [
-                                                    Column(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .symmetric(
-                                                                  horizontal:
-                                                                      150),
-                                                          child: Divider(
-                                                            thickness: 4,
-                                                            color:
-                                                                constantColors
-                                                                    .navButton,
+                                                Container(
+                                                  height: size.height * 0.8,
+                                                  child: ListView.builder(
+                                                    itemCount: followers
+                                                        .data!.docs.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return ListTile(
+                                                        leading: CircleAvatar(
+                                                          backgroundImage:
+                                                              CachedNetworkImageProvider(
+                                                            followers.data!
+                                                                    .docs[index]
+                                                                ["userimage"],
                                                           ),
                                                         ),
-                                                      ],
+                                                        title: Text(followers
+                                                                .data!
+                                                                .docs[index]
+                                                            ['username']),
+                                                        onTap: () {
+                                                          userProvider.goToUserProfile(
+                                                              userUid: followers
+                                                                          .data!
+                                                                          .docs[
+                                                                      index]
+                                                                  ['useruid'],
+                                                              context: context);
+                                                        },
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                                Container(
+                                                  height: 50,
+                                                  child: TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text("Close"),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        });
+                                  },
+                                  child: UserStats(
+                                    text: "${followers.data!.docs.length}",
+                                    label: LocaleKeys.followers.tr(),
+                                  ),
+                                );
+                              } else {
+                                return UserStats(
+                                  text: "0",
+                                  label: LocaleKeys.followers.tr(),
+                                );
+                              }
+                            }),
+                        Vdivider(),
+                        StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection("users")
+                                .doc(widget.userModel.useruid)
+                                .collection("following")
+                                .snapshots(),
+                            builder: (context, following) {
+                              if (following.hasData) {
+                                return InkWell(
+                                  onTap: () async {
+                                    await showModalBottomSheet(
+                                        isDismissible: true,
+                                        isScrollControlled: true,
+                                        context: context,
+                                        builder: (context) {
+                                          return Container(
+                                            width: size.width,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(20),
+                                                topRight: Radius.circular(20),
+                                              ),
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Column(
+                                                  children: [
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 150),
+                                                      child: Divider(
+                                                        thickness: 4,
+                                                        color: constantColors
+                                                            .navButton,
+                                                      ),
                                                     ),
-                                                    Container(
-                                                      height: size.height * 0.8,
-                                                      child: ListView.builder(
-                                                        itemCount: following
-                                                            .data!.docs.length,
-                                                        itemBuilder:
-                                                            (context, index) {
-                                                          return ListTile(
-                                                            leading:
-                                                                CircleAvatar(
-                                                              backgroundImage:
-                                                                  CachedNetworkImageProvider(
-                                                                following.data!
-                                                                            .docs[
-                                                                        index][
-                                                                    "userimage"],
-                                                              ),
-                                                            ),
-                                                            title: Text(following
-                                                                    .data!
+                                                  ],
+                                                ),
+                                                Container(
+                                                  height: size.height * 0.8,
+                                                  child: ListView.builder(
+                                                    itemCount: following
+                                                        .data!.docs.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return ListTile(
+                                                        leading: CircleAvatar(
+                                                          backgroundImage:
+                                                              CachedNetworkImageProvider(
+                                                            following.data!
                                                                     .docs[index]
-                                                                ['username']),
-                                                            onTap: () {
-                                                              context.read<FirebaseOperations>().goToUserProfile(
+                                                                ["userimage"],
+                                                          ),
+                                                        ),
+                                                        title: Text(following
+                                                                .data!
+                                                                .docs[index]
+                                                            ['username']),
+                                                        onTap: () {
+                                                          context
+                                                              .read<
+                                                                  FirebaseOperations>()
+                                                              .goToUserProfile(
                                                                   userUid: following
                                                                           .data!
                                                                           .docs[index]
@@ -686,69 +638,67 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                                                       'useruid'],
                                                                   context:
                                                                       context);
-                                                            },
-                                                          );
                                                         },
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                      height: 50,
-                                                      child: TextButton(
-                                                        onPressed: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: Text("Close"),
-                                                      ),
-                                                    )
-                                                  ],
+                                                      );
+                                                    },
+                                                  ),
                                                 ),
-                                              );
-                                            });
-                                      },
-                                      child: UserStats(
-                                        text: "${following.data!.docs.length}",
-                                        label: LocaleKeys.following.tr(),
-                                      ),
-                                    );
-                                  } else {
-                                    return UserStats(
-                                      text: "0",
-                                      label: LocaleKeys.following.tr(),
-                                    );
-                                  }
-                                }),
-                            Vdivider(),
-                            StreamBuilder<QuerySnapshot>(
-                                stream: FirebaseFirestore.instance
-                                    .collection("posts")
-                                    .where("useruid",
-                                        isEqualTo: widget.userModel.useruid)
-                                    .snapshots(),
-                                builder: (context, posts) {
-                                  if (posts.hasData) {
-                                    return UserStats(
-                                      text: "${posts.data!.docs.length}",
-                                      label: LocaleKeys.posts.tr(),
-                                    );
-                                  } else {
-                                    return UserStats(
-                                      text: "0",
-                                      label: LocaleKeys.posts.tr(),
-                                    );
-                                  }
-                                }),
-                          ],
-                        ),
-                      ),
+                                                Container(
+                                                  height: 50,
+                                                  child: TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text("Close"),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        });
+                                  },
+                                  child: UserStats(
+                                    text: "${following.data!.docs.length}",
+                                    label: LocaleKeys.following.tr(),
+                                  ),
+                                );
+                              } else {
+                                return UserStats(
+                                  text: "0",
+                                  label: LocaleKeys.following.tr(),
+                                );
+                              }
+                            }),
+                        Vdivider(),
+                        StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection("posts")
+                                .where("useruid",
+                                    isEqualTo: widget.userModel.useruid)
+                                .snapshots(),
+                            builder: (context, posts) {
+                              if (posts.hasData) {
+                                return UserStats(
+                                  text: "${posts.data!.docs.length}",
+                                  label: LocaleKeys.posts.tr(),
+                                );
+                              } else {
+                                return UserStats(
+                                  text: "0",
+                                  label: LocaleKeys.posts.tr(),
+                                );
+                              }
+                            }),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
+            SizedBox(
+              height: 20,
+            ),
+            Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -814,175 +764,916 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                 ],
               ),
             ),
-          ),
-          StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection("posts")
-                  .where("useruid", isEqualTo: widget.userModel.useruid)
-                  .where("isfree", isEqualTo: freeClicked)
-                  .orderBy("timestamp", descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return SliverPadding(
-                    padding: EdgeInsets.all(4),
-                    sliver: SliverToBoxAdapter(
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                  );
-                }
-                return SliverPadding(
-                  padding: const EdgeInsets.all(4),
-                  sliver: SliverGrid(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 5,
-                      mainAxisSpacing: 5,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        if (index.toInt() < snapshot.data!.docs.length) {
-                          Video video = Video.fromJson(
-                              snapshot.data!.docs[index].data()
-                                  as Map<String, dynamic>);
-
-                          log(video.thumbnailurl);
-                          return InkWell(
-                            onTap: () {
-                              // if (video.isFree == true) {
-                              //   log("free");
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: PostDetailsScreen(
-                                    videoId: video.id,
+            Container(
+              color: constantColors.whiteColor,
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection("posts")
+                      .where("useruid", isEqualTo: widget.userModel.useruid)
+                      .where("isfree", isEqualTo: freeClicked)
+                      .orderBy("timestamp", descending: true)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Container(
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    } else {
+                      if (snapshot.data!.docs.isNotEmpty) {
+                        return GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 5,
+                          ),
+                          itemBuilder: (BuildContext context, int index) {
+                            Video video = Video.fromJson(
+                                snapshot.data!.docs[index].data()
+                                    as Map<String, dynamic>);
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.rightToLeft,
+                                    child: PostDetailsScreen(
+                                      videoId: video.id,
+                                    ),
                                   ),
-                                ),
-                              );
-                              // } else if (video.isPaid == true &&
-                              //         video.boughtBy.contains(auth.getUserId) ||
-                              //     video.useruid ==
-                              //         Provider.of<Authentication>(context,
-                              //                 listen: false)
-                              //             .getUserId) {
-                              //   log("paid already");
-                              //   Navigator.push(
-                              //     context,
-                              //     PageTransition(
-                              //       type: PageTransitionType.rightToLeft,
-                              //       child: PostDetailsScreen(
-                              //         videoId: video.id,
-                              //       ),
-                              //     ),
-                              //   );
-                              // } else {
-                              //   final String videoUrl =
-                              //       "https://gdfe-ac584.web.app/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
-                              //   // "http://192.168.1.6:8080/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
-                              //   // "https://gdfe-ac584.web.app/#/video/0ReK4oZIhGdbuYxBiUG5J/sjhbjhs";
-
-                              //   ViewPaidVideoWeb(context, video, videoUrl);
-                              //   // CoolAlert.show(
-                              //   //   context: context,
-                              //   //   type: CoolAlertType.info,
-                              //   //   title: "Premium Content",
-                              //   //   text:
-                              //   //       "You cannot unlock this content within the app; please unlock the content on the Glamorous Diastation website and you'll be able to view it on the Glamorous Diastation app or in the web browser",
-                              //   //   confirmBtnText: "Unlock Video",
-                              //   //   cancelBtnText: "Nevermind",
-                              //   //   confirmBtnColor: constantColors.navButton,
-                              //   //   showCancelBtn: true,
-                              //   //   onCancelBtnTap: () {
-                              //   //     Navigator.pop(context);
-                              //   //   },
-                              //   //   onConfirmBtnTap: () => ViewPaidVideoWeb(
-                              //   //       context, video, videoUrl),
-                              //   //   confirmBtnTextStyle: TextStyle(
-                              //   //     fontSize: 14,
-                              //   //     color: constantColors.whiteColor,
-                              //   //   ),
-                              //   //   cancelBtnTextStyle: TextStyle(
-                              //   //     fontSize: 14,
-                              //   //   ),
-                              //   // );
-                              // }
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(30),
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    color: Colors.grey,
-                                    child: ImageNetworkLoader(
-                                        imageUrl: video.thumbnailurl,
-                                        hide: video.isFree ||
-                                                video.boughtBy.contains(context
-                                                    .read<Authentication>()
-                                                    .getUserId) ||
-                                                context
-                                                        .read<Authentication>()
-                                                        .getUserId ==
-                                                    "dRnvDRXqrPgZmDfYMSGUJlx0Gbo2"
-                                            ? false
-                                            : true),
-                                  ),
-                                  Visibility(
-                                    visible: video.isFree,
-                                    child: Positioned(
-                                      bottom: 5,
-                                      left: 10,
-                                      child: Container(
-                                        width: size.width,
-                                        height: 40,
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.play_arrow_outlined,
-                                              size: 16,
-                                              color: Colors.white,
-                                            ),
-                                            Stack(
-                                              children: [
-                                                Text(
-                                                  video.views.toString(),
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    foreground: Paint()
-                                                      ..style =
-                                                          PaintingStyle.stroke
-                                                      ..strokeWidth = 2
-                                                      ..color = Colors.black,
+                                );
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(30),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      color: Colors.grey,
+                                      child: ImageNetworkLoader(
+                                          imageUrl: video.thumbnailurl,
+                                          hide: video.isFree ||
+                                                  video.boughtBy.contains(
+                                                      context
+                                                          .read<
+                                                              Authentication>()
+                                                          .getUserId) ||
+                                                  context
+                                                          .read<
+                                                              Authentication>()
+                                                          .getUserId ==
+                                                      "dRnvDRXqrPgZmDfYMSGUJlx0Gbo2"
+                                              ? false
+                                              : true),
+                                    ),
+                                    Visibility(
+                                      visible: video.isFree,
+                                      child: Positioned(
+                                        bottom: 5,
+                                        left: 10,
+                                        child: Container(
+                                          width: size.width,
+                                          height: 40,
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.play_arrow_outlined,
+                                                size: 16,
+                                                color: Colors.white,
+                                              ),
+                                              Stack(
+                                                children: [
+                                                  Text(
+                                                    video.views.toString(),
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      foreground: Paint()
+                                                        ..style =
+                                                            PaintingStyle.stroke
+                                                        ..strokeWidth = 2
+                                                        ..color = Colors.black,
+                                                    ),
                                                   ),
-                                                ),
-                                                Text(
-                                                  video.views.toString(),
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.white,
+                                                  Text(
+                                                    video.views.toString(),
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.white,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                          padding: EdgeInsets.all(0),
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: snapshot.data!.docs.length,
+                        );
+                      } else {
+                        return Container(
+                          height: 30.h,
+                          child: Center(
+                            child: Text(
+                              LocaleKeys.noPostYet.tr(),
+                              style: TextStyle(
+                                color: constantColors.mainColor,
+                                fontSize: 20,
                               ),
                             ),
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                );
-              }),
-        ],
+                          ),
+                        );
+                      }
+                    }
+                  }),
+            ),
+          ],
+        ),
       ),
+
+      // CustomScrollView(
+      //   slivers: [
+      //     SliverAppBar(
+      //       leading: Padding(
+      //         padding: const EdgeInsets.all(5.0),
+      //         child: Container(
+      //           decoration: BoxDecoration(
+      //             color: constantColors.black.withOpacity(0.1),
+      //             borderRadius: BorderRadius.circular(50),
+      //           ),
+      //           child: IconButton(
+      //               onPressed: () {
+      //                 Get.back();
+      //                 if (widget.fromLink == true) {
+      //                   Get.to(() => FeedPage(
+      //                         pageIndexValue: 0,
+      //                       ));
+      //                 }
+      //               },
+      //               icon: Icon(
+      //                 Icons.arrow_back_ios,
+      //               )),
+      //         ),
+      //       ),
+      //       automaticallyImplyLeading: true,
+      //       backgroundColor: constantColors.bioBg,
+      //       expandedHeight: 30.h,
+      //       flexibleSpace: FlexibleSpaceBar(
+      //         background: TopProfileStack(
+      //             size: size,
+      //             userModel: widget.userModel,
+      //             constantColors: constantColors),
+      //       ),
+      //     ),
+      //     SliverToBoxAdapter(
+      //       child: Container(
+      //         height: 27.h,
+      //         width: size.width,
+      //         decoration: BoxDecoration(
+      //           color: constantColors.bioBg,
+      //           borderRadius: BorderRadius.only(
+      //             topRight: Radius.circular(80),
+      //           ),
+      //         ),
+      //         child: Padding(
+      //           padding: const EdgeInsets.only(
+      //             top: 10,
+      //             left: 10,
+      //             right: 10,
+      //           ),
+      //           child: Column(
+      //             children: [
+      //               Padding(
+      //                 padding: const EdgeInsets.only(bottom: 3),
+      //                 child: Row(
+      //                   children: [
+      //                     Text(
+      //                       widget.userModel.userrealname!,
+      //                       style: TextStyle(
+      //                         fontSize: 16,
+      //                         color: Colors.black,
+      //                       ),
+      //                     ),
+      //                     Padding(
+      //                       padding: const EdgeInsets.only(left: 10),
+      //                       child: InkWell(
+      //                         onTap: () {
+      //                           showLinksBottomSheet(context);
+      //                         },
+      //                         child: Icon(
+      //                           FontAwesomeIcons.link,
+      //                           size: 15,
+      //                         ),
+      //                       ),
+      //                     ),
+      //                   ],
+      //                 ),
+      //               ),
+      //               Row(
+      //                 children: [
+      //                   Expanded(
+      //                     child: Container(
+      //                       height: 70,
+      //                       child: Text(
+      //                         widget.userModel.userbio!.length == '0'
+      //                             ? ''
+      //                             : widget.userModel.userbio!,
+      //                         softWrap: true,
+      //                         style: TextStyle(
+      //                           fontSize: 12,
+      //                           color: Colors.black,
+      //                         ),
+      //                       ),
+      //                     ),
+      //                   ),
+      //                   Visibility(
+      //                     visible: widget.userModel.useruid !=
+      //                         context.read<Authentication>().getUserId,
+      //                     child: StreamBuilder<DocumentSnapshot>(
+      //                         stream: FirebaseFirestore.instance
+      //                             .collection("users")
+      //                             .doc(widget.userModel.useruid)
+      //                             .collection("followers")
+      //                             .doc(auth.getUserId)
+      //                             .snapshots(),
+      //                         builder: (context, snapshot) {
+      //                           if (snapshot.connectionState ==
+      //                               ConnectionState.waiting) {
+      //                             return Center(
+      //                               child: CircularProgressIndicator(),
+      //                             );
+      //                           }
+      //                           if (snapshot.data!.exists) {
+      //                             return Padding(
+      //                               padding: const EdgeInsets.only(right: 20),
+      //                               child: InkWell(
+      //                                 onTap: () async {
+      //                                   await Provider.of<FirebaseOperations>(
+      //                                           context,
+      //                                           listen: false)
+      //                                       .unfollowUser(
+      //                                     followingUid:
+      //                                         widget.userModel.useruid,
+      //                                     followingDocId: auth.getUserId,
+      //                                     followerUid:
+      //                                         Provider.of<Authentication>(
+      //                                                 context,
+      //                                                 listen: false)
+      //                                             .getUserId,
+      //                                     followerDocId:
+      //                                         widget.userModel.useruid,
+      //                                   )
+      //                                       .whenComplete(() {
+      //                                     unfollowedNotification(
+      //                                         context: context,
+      //                                         name: widget.userModel.username);
+      //                                   });
+      //                                 },
+      //                                 child: Container(
+      //                                   height: 35,
+      //                                   decoration: BoxDecoration(
+      //                                     image: DecorationImage(
+      //                                         image: Image.asset(
+      //                                                 "assets/images/follow_Bg.jpg")
+      //                                             .image,
+      //                                         fit: BoxFit.cover),
+      //                                     borderRadius:
+      //                                         BorderRadius.circular(30),
+      //                                   ),
+      //                                   child: Row(
+      //                                     mainAxisAlignment:
+      //                                         MainAxisAlignment.center,
+      //                                     children: [
+      //                                       Icon(
+      //                                         Icons.remove,
+      //                                         color: Colors.white,
+      //                                       ),
+      //                                       Text(
+      //                                         LocaleKeys.unfollow.tr(),
+      //                                         style: TextStyle(
+      //                                           fontSize: 16,
+      //                                           color: Colors.white,
+      //                                         ),
+      //                                       ),
+      //                                     ],
+      //                                   ),
+      //                                 ),
+      //                               ),
+      //                             );
+      //                           } else {
+      //                             return Padding(
+      //                               padding: const EdgeInsets.only(right: 20),
+      //                               child: InkWell(
+      //                                 onTap: () async {
+      //                                   await Provider.of<FirebaseOperations>(
+      //                                           context,
+      //                                           listen: false)
+      //                                       .followUser(
+      //                                     otherUserToken:
+      //                                         widget.userModel.token,
+      //                                     followingUserName:
+      //                                         userProvider.initUserName,
+      //                                     followingUid:
+      //                                         widget.userModel.useruid,
+      //                                     followingDocId: auth.getUserId,
+      //                                     followingData: {
+      //                                       'username':
+      //                                           userProvider.initUserName,
+      //                                       'userimage':
+      //                                           userProvider.initUserImage,
+      //                                       'useremail':
+      //                                           userProvider.initUserEmail,
+      //                                       'useruid': auth.getUserId,
+      //                                       'time': Timestamp.now(),
+      //                                     },
+      //                                     followerUid:
+      //                                         Provider.of<Authentication>(
+      //                                                 context,
+      //                                                 listen: false)
+      //                                             .getUserId,
+      //                                     followerDocId:
+      //                                         widget.userModel.useruid,
+      //                                     followerData: {
+      //                                       'username':
+      //                                           widget.userModel.username,
+      //                                       'userimage':
+      //                                           widget.userModel.userimage,
+      //                                       'useremail':
+      //                                           widget.userModel.useremail,
+      //                                       'useruid': widget.userModel.useruid,
+      //                                       'time': Timestamp.now(),
+      //                                     },
+      //                                   )
+      //                                       .whenComplete(() async {
+      //                                     try {
+      //                                       List<String> currentFollowingList =
+      //                                           SharedPreferencesHelper
+      //                                               .getListString(
+      //                                                   "followersList");
+      //                                       currentFollowingList.add(
+      //                                           "${widget.userModel.useruid}");
+      //                                       SharedPreferencesHelper
+      //                                           .setListString("followersList",
+      //                                               currentFollowingList);
+      //                                       await Provider.of<
+      //                                                   FirebaseOperations>(
+      //                                               context,
+      //                                               listen: false)
+      //                                           .addFollowNotification(
+      //                                         userUid:
+      //                                             Provider.of<Authentication>(
+      //                                                     context,
+      //                                                     listen: false)
+      //                                                 .getUserId,
+      //                                         otherUserId:
+      //                                             widget.userModel.useruid,
+      //                                         context: context,
+      //                                       );
+      //                                     } catch (e) {
+      //                                       print("ERROR ====> $e");
+      //                                     }
+      //                                   });
+      //                                 },
+      //                                 child: Container(
+      //                                   height: 35,
+      //                                   width: 100,
+      //                                   decoration: BoxDecoration(
+      //                                     image: DecorationImage(
+      //                                         image: Image.asset(
+      //                                                 "assets/images/follow_Bg.jpg")
+      //                                             .image,
+      //                                         fit: BoxFit.cover),
+      //                                     borderRadius:
+      //                                         BorderRadius.circular(30),
+      //                                   ),
+      //                                   child: Row(
+      //                                     mainAxisAlignment:
+      //                                         MainAxisAlignment.center,
+      //                                     children: [
+      //                                       Icon(
+      //                                         Icons.add,
+      //                                         color: Colors.white,
+      //                                       ),
+      //                                       Text(
+      //                                         LocaleKeys.follow.tr(),
+      //                                         style: TextStyle(
+      //                                           fontSize: 16,
+      //                                           color: Colors.white,
+      //                                         ),
+      //                                       ),
+      //                                     ],
+      //                                   ),
+      //                                 ),
+      //                               ),
+      //                             );
+      //                           }
+      //                         }),
+      //                   ),
+      //                 ],
+      //               ),
+      //               Padding(
+      //                 padding: const EdgeInsets.only(top: 10),
+      //                 child: Container(
+      //                   width: size.width * 0.7,
+      //                   child: Row(
+      //                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //                     children: [
+      //                       // show followers in column
+      //                       StreamBuilder<QuerySnapshot>(
+      //                           stream: FirebaseFirestore.instance
+      //                               .collection("users")
+      //                               .doc(widget.userModel.useruid)
+      //                               .collection("followers")
+      //                               .snapshots(),
+      //                           builder: (context, followers) {
+      //                             if (followers.hasData) {
+      //                               return InkWell(
+      //                                 onTap: () async {
+      //                                   await showModalBottomSheet(
+      //                                       isDismissible: true,
+      //                                       isScrollControlled: true,
+      //                                       context: context,
+      //                                       builder: (context) {
+      //                                         return Container(
+      //                                           height: size.height * 0.9,
+      //                                           width: size.width,
+      //                                           decoration: BoxDecoration(
+      //                                             color: Colors.white,
+      //                                             borderRadius:
+      //                                                 BorderRadius.only(
+      //                                               topLeft:
+      //                                                   Radius.circular(20),
+      //                                               topRight:
+      //                                                   Radius.circular(20),
+      //                                             ),
+      //                                           ),
+      //                                           child: Column(
+      //                                             children: [
+      //                                               Column(
+      //                                                 children: [
+      //                                                   Padding(
+      //                                                     padding:
+      //                                                         const EdgeInsets
+      //                                                                 .symmetric(
+      //                                                             horizontal:
+      //                                                                 150),
+      //                                                     child: Divider(
+      //                                                       thickness: 4,
+      //                                                       color:
+      //                                                           constantColors
+      //                                                               .navButton,
+      //                                                     ),
+      //                                                   ),
+      //                                                 ],
+      //                                               ),
+      //                                               Container(
+      //                                                 height: size.height * 0.8,
+      //                                                 child: ListView.builder(
+      //                                                   itemCount: followers
+      //                                                       .data!.docs.length,
+      //                                                   itemBuilder:
+      //                                                       (context, index) {
+      //                                                     return ListTile(
+      //                                                       leading:
+      //                                                           CircleAvatar(
+      //                                                         backgroundImage:
+      //                                                             CachedNetworkImageProvider(
+      //                                                           followers.data!
+      //                                                                       .docs[
+      //                                                                   index][
+      //                                                               "userimage"],
+      //                                                         ),
+      //                                                       ),
+      //                                                       title: Text(followers
+      //                                                               .data!
+      //                                                               .docs[index]
+      //                                                           ['username']),
+      //                                                       onTap: () {
+      //                                                         userProvider.goToUserProfile(
+      //                                                             userUid: followers
+      //                                                                     .data!
+      //                                                                     .docs[index]
+      //                                                                 [
+      //                                                                 'useruid'],
+      //                                                             context:
+      //                                                                 context);
+      //                                                       },
+      //                                                     );
+      //                                                   },
+      //                                                 ),
+      //                                               ),
+      //                                               Container(
+      //                                                 height: 50,
+      //                                                 child: TextButton(
+      //                                                   onPressed: () {
+      //                                                     Navigator.pop(
+      //                                                         context);
+      //                                                   },
+      //                                                   child: Text("Close"),
+      //                                                 ),
+      //                                               )
+      //                                             ],
+      //                                           ),
+      //                                         );
+      //                                       });
+      //                                 },
+      //                                 child: UserStats(
+      //                                   text: "${followers.data!.docs.length}",
+      //                                   label: LocaleKeys.followers.tr(),
+      //                                 ),
+      //                               );
+      //                             } else {
+      //                               return UserStats(
+      //                                 text: "0",
+      //                                 label: LocaleKeys.followers.tr(),
+      //                               );
+      //                             }
+      //                           }),
+      //                       Vdivider(),
+      //                       StreamBuilder<QuerySnapshot>(
+      //                           stream: FirebaseFirestore.instance
+      //                               .collection("users")
+      //                               .doc(widget.userModel.useruid)
+      //                               .collection("following")
+      //                               .snapshots(),
+      //                           builder: (context, following) {
+      //                             if (following.hasData) {
+      //                               return InkWell(
+      //                                 onTap: () async {
+      //                                   await showModalBottomSheet(
+      //                                       isDismissible: true,
+      //                                       isScrollControlled: true,
+      //                                       context: context,
+      //                                       builder: (context) {
+      //                                         return Container(
+      //                                           height: size.height * 0.9,
+      //                                           width: size.width,
+      //                                           decoration: BoxDecoration(
+      //                                             color: Colors.white,
+      //                                             borderRadius:
+      //                                                 BorderRadius.only(
+      //                                               topLeft:
+      //                                                   Radius.circular(20),
+      //                                               topRight:
+      //                                                   Radius.circular(20),
+      //                                             ),
+      //                                           ),
+      //                                           child: Column(
+      //                                             children: [
+      //                                               Column(
+      //                                                 children: [
+      //                                                   Padding(
+      //                                                     padding:
+      //                                                         const EdgeInsets
+      //                                                                 .symmetric(
+      //                                                             horizontal:
+      //                                                                 150),
+      //                                                     child: Divider(
+      //                                                       thickness: 4,
+      //                                                       color:
+      //                                                           constantColors
+      //                                                               .navButton,
+      //                                                     ),
+      //                                                   ),
+      //                                                 ],
+      //                                               ),
+      //                                               Container(
+      //                                                 height: size.height * 0.8,
+      //                                                 child: ListView.builder(
+      //                                                   itemCount: following
+      //                                                       .data!.docs.length,
+      //                                                   itemBuilder:
+      //                                                       (context, index) {
+      //                                                     return ListTile(
+      //                                                       leading:
+      //                                                           CircleAvatar(
+      //                                                         backgroundImage:
+      //                                                             CachedNetworkImageProvider(
+      //                                                           following.data!
+      //                                                                       .docs[
+      //                                                                   index][
+      //                                                               "userimage"],
+      //                                                         ),
+      //                                                       ),
+      //                                                       title: Text(following
+      //                                                               .data!
+      //                                                               .docs[index]
+      //                                                           ['username']),
+      //                                                       onTap: () {
+      //                                                         context.read<FirebaseOperations>().goToUserProfile(
+      //                                                             userUid: following
+      //                                                                     .data!
+      //                                                                     .docs[index]
+      //                                                                 [
+      //                                                                 'useruid'],
+      //                                                             context:
+      //                                                                 context);
+      //                                                       },
+      //                                                     );
+      //                                                   },
+      //                                                 ),
+      //                                               ),
+      //                                               Container(
+      //                                                 height: 50,
+      //                                                 child: TextButton(
+      //                                                   onPressed: () {
+      //                                                     Navigator.pop(
+      //                                                         context);
+      //                                                   },
+      //                                                   child: Text("Close"),
+      //                                                 ),
+      //                                               )
+      //                                             ],
+      //                                           ),
+      //                                         );
+      //                                       });
+      //                                 },
+      //                                 child: UserStats(
+      //                                   text: "${following.data!.docs.length}",
+      //                                   label: LocaleKeys.following.tr(),
+      //                                 ),
+      //                               );
+      //                             } else {
+      //                               return UserStats(
+      //                                 text: "0",
+      //                                 label: LocaleKeys.following.tr(),
+      //                               );
+      //                             }
+      //                           }),
+      //                       Vdivider(),
+      //                       StreamBuilder<QuerySnapshot>(
+      //                           stream: FirebaseFirestore.instance
+      //                               .collection("posts")
+      //                               .where("useruid",
+      //                                   isEqualTo: widget.userModel.useruid)
+      //                               .snapshots(),
+      //                           builder: (context, posts) {
+      //                             if (posts.hasData) {
+      //                               return UserStats(
+      //                                 text: "${posts.data!.docs.length}",
+      //                                 label: LocaleKeys.posts.tr(),
+      //                               );
+      //                             } else {
+      //                               return UserStats(
+      //                                 text: "0",
+      //                                 label: LocaleKeys.posts.tr(),
+      //                               );
+      //                             }
+      //                           }),
+      //                     ],
+      //                   ),
+      //                 ),
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //     SliverToBoxAdapter(
+      //       child: Container(
+      //         decoration: BoxDecoration(
+      //           color: Colors.white,
+      //           borderRadius: BorderRadius.only(
+      //             topLeft: Radius.circular(30),
+      //             topRight: Radius.circular(30),
+      //           ),
+      //         ),
+      //         child: Row(
+      //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //           children: [
+      //             Container(
+      //               alignment: Alignment.topCenter,
+      //               child: FilterChip(
+      //                 showCheckmark: false,
+      //                 backgroundColor: Colors.black,
+      //                 label: Container(
+      //                   alignment: Alignment.center,
+      //                   width: size.width * 0.4,
+      //                   child: Text(
+      //                     "Free",
+      //                     style: TextStyle(
+      //                       color: constantColors.whiteColor,
+      //                     ),
+      //                   ),
+      //                 ),
+      //                 selected: freeClicked,
+      //                 onSelected: (bool value) {
+      //                   setState(() {
+      //                     freeClicked = value;
+      //                     paidClicked = !value;
+      //                   });
+      //                 },
+      //                 pressElevation: 15,
+      //                 selectedColor: constantColors.mainColor,
+      //               ),
+      //             ),
+      //             Container(
+      //               alignment: Alignment.topCenter,
+      //               child: FilterChip(
+      //                 backgroundColor: Colors.black,
+      //                 showCheckmark: false,
+      //                 label: Container(
+      //                   alignment: Alignment.center,
+      //                   width: size.width * 0.4,
+      //                   child: Text(
+      //                     "Premium",
+      //                     style: TextStyle(
+      //                       color: constantColors.whiteColor,
+      //                     ),
+      //                   ),
+      //                 ),
+      //                 selected: paidClicked,
+      //                 onSelected: (bool value) {
+      //                   setState(() {
+      //                     paidClicked = value;
+      //                     freeClicked = !value;
+      //                   });
+      //                 },
+      //                 pressElevation: 15,
+      //                 selectedColor: constantColors.mainColor,
+      //               ),
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //     ),
+      //     StreamBuilder<QuerySnapshot>(
+      //         stream: FirebaseFirestore.instance
+      //             .collection("posts")
+      //             .where("useruid", isEqualTo: widget.userModel.useruid)
+      //             .where("isfree", isEqualTo: freeClicked)
+      //             .orderBy("timestamp", descending: true)
+      //             .snapshots(),
+      //         builder: (context, snapshot) {
+      //           if (snapshot.connectionState == ConnectionState.waiting) {
+      //             return SliverPadding(
+      //               padding: EdgeInsets.all(4),
+      //               sliver: SliverToBoxAdapter(
+      //                 child: Center(
+      //                   child: CircularProgressIndicator(),
+      //                 ),
+      //               ),
+      //             );
+      //           }
+      //           return SliverPadding(
+      //             padding: const EdgeInsets.all(4),
+      //             sliver: SliverGrid(
+      //               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      //                 crossAxisCount: 2,
+      //                 crossAxisSpacing: 5,
+      //                 mainAxisSpacing: 5,
+      //               ),
+      //               delegate: SliverChildBuilderDelegate(
+      //                 (BuildContext context, int index) {
+      //                   if (index.toInt() < snapshot.data!.docs.length) {
+      //                     Video video = Video.fromJson(
+      //                         snapshot.data!.docs[index].data()
+      //                             as Map<String, dynamic>);
+
+      //                     log(video.thumbnailurl);
+      //                     return InkWell(
+      //                       onTap: () {
+      //                         // if (video.isFree == true) {
+      //                         //   log("free");
+      //                         Navigator.push(
+      //                           context,
+      //                           PageTransition(
+      //                             type: PageTransitionType.rightToLeft,
+      //                             child: PostDetailsScreen(
+      //                               videoId: video.id,
+      //                             ),
+      //                           ),
+      //                         );
+      //                         // } else if (video.isPaid == true &&
+      //                         //         video.boughtBy.contains(auth.getUserId) ||
+      //                         //     video.useruid ==
+      //                         //         Provider.of<Authentication>(context,
+      //                         //                 listen: false)
+      //                         //             .getUserId) {
+      //                         //   log("paid already");
+      //                         //   Navigator.push(
+      //                         //     context,
+      //                         //     PageTransition(
+      //                         //       type: PageTransitionType.rightToLeft,
+      //                         //       child: PostDetailsScreen(
+      //                         //         videoId: video.id,
+      //                         //       ),
+      //                         //     ),
+      //                         //   );
+      //                         // } else {
+      //                         //   final String videoUrl =
+      //                         //       "https://gdfe-ac584.web.app/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
+      //                         //   // "http://192.168.1.6:8080/#/video/${video.id}/${Provider.of<Authentication>(context, listen: false).getUserId}";
+      //                         //   // "https://gdfe-ac584.web.app/#/video/0ReK4oZIhGdbuYxBiUG5J/sjhbjhs";
+
+      //                         //   ViewPaidVideoWeb(context, video, videoUrl);
+      //                         //   // CoolAlert.show(
+      //                         //   //   context: context,
+      //                         //   //   type: CoolAlertType.info,
+      //                         //   //   title: "Premium Content",
+      //                         //   //   text:
+      //                         //   //       "You cannot unlock this content within the app; please unlock the content on the Glamorous Diastation website and you'll be able to view it on the Glamorous Diastation app or in the web browser",
+      //                         //   //   confirmBtnText: "Unlock Video",
+      //                         //   //   cancelBtnText: "Nevermind",
+      //                         //   //   confirmBtnColor: constantColors.navButton,
+      //                         //   //   showCancelBtn: true,
+      //                         //   //   onCancelBtnTap: () {
+      //                         //   //     Navigator.pop(context);
+      //                         //   //   },
+      //                         //   //   onConfirmBtnTap: () => ViewPaidVideoWeb(
+      //                         //   //       context, video, videoUrl),
+      //                         //   //   confirmBtnTextStyle: TextStyle(
+      //                         //   //     fontSize: 14,
+      //                         //   //     color: constantColors.whiteColor,
+      //                         //   //   ),
+      //                         //   //   cancelBtnTextStyle: TextStyle(
+      //                         //   //     fontSize: 14,
+      //                         //   //   ),
+      //                         //   // );
+      //                         // }
+      //                       },
+      //                       child: ClipRRect(
+      //                         borderRadius: BorderRadius.circular(30),
+      //                         child: Stack(
+      //                           children: [
+      //                             Container(
+      //                               color: Colors.grey,
+      //                               child: ImageNetworkLoader(
+      //                                   imageUrl: video.thumbnailurl,
+      //                                   hide: video.isFree ||
+      //                                           video.boughtBy.contains(context
+      //                                               .read<Authentication>()
+      //                                               .getUserId) ||
+      //                                           context
+      //                                                   .read<Authentication>()
+      //                                                   .getUserId ==
+      //                                               "dRnvDRXqrPgZmDfYMSGUJlx0Gbo2"
+      //                                       ? false
+      //                                       : true),
+      //                             ),
+      //                             Visibility(
+      //                               visible: video.isFree,
+      //                               child: Positioned(
+      //                                 bottom: 5,
+      //                                 left: 10,
+      //                                 child: Container(
+      //                                   width: size.width,
+      //                                   height: 40,
+      //                                   child: Row(
+      //                                     children: [
+      //                                       Icon(
+      //                                         Icons.play_arrow_outlined,
+      //                                         size: 16,
+      //                                         color: Colors.white,
+      //                                       ),
+      //                                       Stack(
+      //                                         children: [
+      //                                           Text(
+      //                                             video.views.toString(),
+      //                                             style: TextStyle(
+      //                                               fontSize: 12,
+      //                                               foreground: Paint()
+      //                                                 ..style =
+      //                                                     PaintingStyle.stroke
+      //                                                 ..strokeWidth = 2
+      //                                                 ..color = Colors.black,
+      //                                             ),
+      //                                           ),
+      //                                           Text(
+      //                                             video.views.toString(),
+      //                                             style: TextStyle(
+      //                                               fontSize: 12,
+      //                                               color: Colors.white,
+      //                                             ),
+      //                                           ),
+      //                                         ],
+      //                                       ),
+      //                                     ],
+      //                                   ),
+      //                                 ),
+      //                               ),
+      //                             ),
+      //                           ],
+      //                         ),
+      //                       ),
+      //                     );
+      //                   }
+      //                 },
+      //               ),
+      //             ),
+      //           );
+      //         }),
+      //   ],
+      // ),
     );
   }
 
@@ -1039,11 +1730,13 @@ class TopProfileStack extends StatefulWidget {
     required this.size,
     required this.userModel,
     required this.constantColors,
+    required this.fromLink,
   }) : super(key: key);
 
   final Size size;
   final UserModel userModel;
   final ConstantColors constantColors;
+  final bool fromLink;
 
   @override
   State<TopProfileStack> createState() => _TopProfileStackState();
@@ -1060,6 +1753,30 @@ class _TopProfileStackState extends State<TopProfileStack> {
           width: widget.size.width,
           child: ImageNetworkLoader(
             imageUrl: widget.userModel.usercover!,
+          ),
+        ),
+        Positioned(
+          top: 5.h,
+          left: 5.w,
+          child: Container(
+            decoration: BoxDecoration(
+              color: constantColors.black.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: IconButton(
+              onPressed: () {
+                Get.back();
+                if (widget.fromLink == true) {
+                  Get.to(() => FeedPage(
+                        pageIndexValue: 0,
+                      ));
+                }
+              },
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: constantColors.whiteColor,
+              ),
+            ),
           ),
         ),
         Visibility(

@@ -67,8 +67,8 @@ class VideoWidget extends StatelessWidget {
   Offset? _currentPosDiamond = Offset(0, 0);
   ContainerList tipsNTricksContainer = ContainerList(
     gifSelected: "assets/images/tipsntricks.png",
-    height: 150,
-    width: 150,
+    height: 105,
+    width: 105,
     rotation: 0,
     scale: 1,
     xPosition: 0,
@@ -76,7 +76,7 @@ class VideoWidget extends StatelessWidget {
   );
 
   ContainerList diamondContainer = ContainerList(
-    gifSelected: "assets/images/GD_mark.png",
+    gifSelected: "assets/images/getDiamonds.png",
     height: 100,
     width: 100,
     rotation: 0,
@@ -1055,33 +1055,9 @@ class VideoWidget extends StatelessWidget {
                                                       type: PageTransitionType
                                                           .fade));
                                             },
-                                            child: Stack(
-                                              children: [
-                                                Image.asset(
-                                                  "assets/images/GD_mark.png",
-                                                  fit: BoxFit.cover,
-                                                ),
-                                                Positioned(
-                                                  top: 0,
-                                                  right: 0,
-                                                  left: 0,
-                                                  bottom: 0,
-                                                  child: Text(
-                                                    "Get Carats",
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                      fontSize: 60,
-                                                      color: constantColors
-                                                          .whiteColor,
-                                                      shadows: outlinedText(
-                                                        strokeColor:
-                                                            constantColors
-                                                                .navButton,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
+                                            child: Image.asset(
+                                              "assets/images/getDiamonds.png",
+                                              fit: BoxFit.cover,
                                             ),
                                           ),
                                         ),
