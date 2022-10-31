@@ -496,8 +496,9 @@ class VideoEditorController extends ChangeNotifier {
     }
 
     final String execute =
-        // ignore: unnecessary_string_escapes
-        " -i \'$videoPath\' ${audioCheckVal == 0 ? '-f lavfi -i anullsrc' : ''} ${customInstruction ?? ""} -filter_complex \"$filters\" -map ''[v]'' ${audioCheckVal == 0 ? '' : '-map  ' '[a]' ' '} -crf 30 -preset faster  $trim -y $outputPath";
+        "-i \'$videoPath\' ${audioCheckVal == 0 ? '-f lavfi -i anullsrc' : ''} -vf \"scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1,setpts=1.0*PTS\" -acodec aac -shortest -crf 30 -preset faster $trim -y $outputPath";
+    // ignore: unnecessary_string_escapes
+    // " -i \'$videoPath\' ${audioCheckVal == 0 ? '-f lavfi -i anullsrc' : ''} ${customInstruction ?? ""} -filter_complex \"$filters\" -map ''[v]'' ${audioCheckVal == 0 ? '' : '-map  ' '[a]' ' '} -crf 30 -preset faster $trim -y $outputPath";
 
     log("trim command == $execute");
 

@@ -2712,7 +2712,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
           final code = await value.getReturnCode();
           final failStackTrace = await value.getFailStackTrace();
 
-          dev.log("OUTPUT! ==  ${value.getOutput()}");
+          dev.log("OUTPUT! ==  ${await value.getOutput()}");
 
           debugPrint(
               "FFmpeg process exited with state $state and return code $code.${(failStackTrace == null) ? "" : "\\n" + failStackTrace}");

@@ -223,10 +223,10 @@ class _PexelSearchState extends State<PexelSearch> {
       {required String searchQuery}) async {
     final response = await http.get(
       Uri.parse(
-          "https://api.pexels.com/videos/search?query=$searchQuery&per_page=10&orientation=portrait&size=medium"),
+          "https://api.pexels.com/videos/search?query=$searchQuery&per_page=15&orientation=portrait&size=medium"),
       headers: {
         "Authorization":
-            "563492ad6f91700001000001933231fd77ce46fab50bdb31e7298df0"
+            "563492ad6f91700001000001152836b1519c43b2ad35aef165eabe15"
       },
     );
     if (response.statusCode == 200) {
