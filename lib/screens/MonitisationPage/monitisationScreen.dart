@@ -12,33 +12,16 @@ import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' hide Trans;
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 // !Removing fl chart and trying anoyther
 
-class MonitizationScreen extends StatelessWidget {
+class MonitizationScreen extends StatefulWidget {
   MonitizationScreen({Key? key}) : super(key: key);
-  ConstantColors constantColors = ConstantColors();
-  double paddingVal = 15;
-
-  int dayOfYear(DateTime date) {
-    return date.difference(DateTime(date.year, 1, 1)).inDays;
-  }
-
-  double isoWeekNumber(DateTime date) {
-    int daysToAdd = DateTime.thursday - date.weekday;
-    DateTime thursdayDate = daysToAdd > 0
-        ? date.add(Duration(days: daysToAdd))
-        : date.subtract(Duration(days: daysToAdd.abs()));
-    int dayOfYearThursday = dayOfYear(thursdayDate);
-    return 1 + ((dayOfYearThursday - 1) / 7).floor().toDouble();
-  }
-
   static const List<String> graphTypesList = <String>[
     "Month",
     "Day",
@@ -46,34 +29,42 @@ class MonitizationScreen extends StatelessWidget {
     "Custom"
   ];
 
-  ValueNotifier<DateTime> _endDate = ValueNotifier<DateTime>(DateTime.now());
-  // show todays date as Sun, Jan 14
-  ValueNotifier<DateTime> _startDate = ValueNotifier<DateTime>(DateTime.now());
+  @override
+  State<MonitizationScreen> createState() => _MonitizationScreenState();
+}
 
-  // Function to pick date
-  Future<void> _selectEndDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: _startDate.value,
-        firstDate: _startDate.value,
-        lastDate: DateTime(2025));
-    if (picked != null && picked != _endDate.value) {
-      _endDate.value = picked;
-    }
+class _MonitizationScreenState extends State<MonitizationScreen> {
+  ConstantColors constantColors = ConstantColors();
+
+  double paddingVal = 15;
+
+  late List<String> _zoomModeTypeList;
+
+  late String _selectedModeType;
+
+  late ZoomMode _zoomModeType;
+
+  late bool _enableAnchor;
+
+  late num left, top;
+  List<ChartSampleData> randomData = [];
+
+  @override
+  void initState() {
+    Future.delayed(Duration.zero, () async {
+      await getDateTimeData();
+      setState(() {});
+    });
+    _zoomModeTypeList = <String>['x', 'y', 'xy'].toList();
+    _selectedModeType = 'x';
+    _zoomModeType = ZoomMode.x;
+
+    _enableAnchor = true;
+    left = 0;
+    top = 0;
+
+    super.initState();
   }
-
-  // Function to pick date
-  Future<void> _selectStartDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(DateTime.now().year),
-        lastDate: DateTime(2025));
-    if (picked != null && picked != _startDate.value) _startDate.value = picked;
-    _endDate.value = picked!;
-  }
-
-  ValueNotifier<String> graphType = ValueNotifier<String>("Month");
 
   @override
   Widget build(BuildContext context) {
@@ -87,28 +78,29 @@ class MonitizationScreen extends StatelessWidget {
       appBar:
           AppBarWidget(text: LocaleKeys.monitisation.tr(), context: context),
       body: SingleChildScrollView(
-        child: StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection("users")
-                .doc(Provider.of<Authentication>(context, listen: false)
-                    .getUserId)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return Center(
-                  child: Text("No posts yet!"),
-                );
-              }
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              UserModel user = UserModel.fromMap(
-                  snapshot.data!.data() as Map<String, dynamic>);
-              return Column(
-                children: [
-                  Padding(
+        child: Column(
+          children: [
+            StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(Provider.of<Authentication>(context, listen: false)
+                        .getUserId)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: Text("No posts yet!"),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  UserModel user = UserModel.fromMap(
+                      snapshot.data!.data() as Map<String, dynamic>);
+
+                  return Padding(
                     padding: EdgeInsets.all(paddingVal),
                     child: Material(
                       elevation: 10,
@@ -272,969 +264,270 @@ class MonitizationScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ),
-                  Stack(
-                    children: [
-                      AnimatedBuilder(
-                          animation: Listenable.merge(
-                              [graphType, _startDate, _endDate]),
-                          builder: (context, _) {
-                            return Padding(
-                              padding: EdgeInsets.fromLTRB(
-                                  paddingVal, 0, paddingVal, paddingVal),
-                              child: Container(
-                                padding: EdgeInsets.only(top: 20),
-                                height: size.height * 0.4,
-                                width: size.width,
-                                decoration: BoxDecoration(
-                                  color: constantColors.whiteColor,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: StreamBuilder<QuerySnapshot>(
-                                    stream: FirebaseFirestore.instance
-                                        .collection("users")
-                                        .doc(auth.getUserId)
-                                        .collection("graphData")
-                                        .orderBy("timestamp", descending: false)
-                                        // .orderBy("month", descending: true)
-                                        .snapshots(),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return Center(
-                                          child: CircularProgressIndicator(),
-                                        );
-                                      }
-                                      if (snapshot.data!.docs.isEmpty) {
-                                        return Center(
-                                          child: Text(
-                                              "You haven’t made any sales yet"),
-                                        );
-                                      }
-
-                                      switch (graphType.value) {
-                                        case "Custom":
-                                          log("Custom selected");
-                                          final List<GraphData> graphDataList =
-                                              snapshot.data!.docs.map((e) {
-                                            final GraphData gd =
-                                                GraphData.fromMap(e.data()!
-                                                    as Map<String, dynamic>);
-
-                                            return gd;
-                                          }).toList();
-
-                                          log("total graphs list == ${graphDataList.length}");
-                                          List<FlSpot>? spots = [];
-
-                                          graphDataList.forEach((gd) {
-                                            if (gd.timestamp.toDate().isAfter(
-                                                    _startDate.value) &&
-                                                gd.timestamp
-                                                    .toDate()
-                                                    .isBefore(_endDate.value)) {
-                                              spots.add(FlSpot(
-                                                  gd!.timestamp
-                                                      .toDate()
-                                                      .month
-                                                      .toDouble(),
-                                                  gd!.amount));
-                                            }
-                                          });
-
-                                          return graphDataList.isNotEmpty
-                                              ? LineChart(
-                                                  LineChartData(
-                                                    maxX: _endDate.value.month
-                                                        .toDouble(),
-
-                                                    // maxY: graphDataList.last.amount,
-                                                    minY: 0,
-                                                    minX: _startDate.value.month
-                                                        .toDouble(),
-
-                                                    borderData: FlBorderData(
-                                                      show: false,
-                                                    ),
-                                                    gridData: FlGridData(
-                                                      show: true,
-                                                      getDrawingHorizontalLine:
-                                                          (value) {
-                                                        return FlLine(
-                                                            color:
-                                                                constantColors
-                                                                    .navButton
-                                                                    .withOpacity(
-                                                                        0.2),
-                                                            strokeWidth: 1,
-                                                            dashArray: [5]);
-                                                      },
-                                                      drawVerticalLine: true,
-                                                      getDrawingVerticalLine:
-                                                          (value) {
-                                                        return FlLine(
-                                                            color:
-                                                                constantColors
-                                                                    .navButton
-                                                                    .withOpacity(
-                                                                        0.2),
-                                                            strokeWidth: 1,
-                                                            dashArray: [5]);
-                                                      },
-                                                    ),
-                                                    titlesData: FlTitlesData(
-                                                      show: true,
-                                                      bottomTitles: AxisTitles(
-                                                        axisNameWidget: Text(
-                                                          "Months",
-                                                        ),
-                                                        sideTitles: SideTitles(
-                                                          reservedSize:
-                                                              size.height *
-                                                                  0.04,
-                                                          showTitles: true,
-                                                        ),
-                                                      ),
-                                                      leftTitles: AxisTitles(
-                                                        axisNameWidget: Text(
-                                                          LocaleKeys.amount
-                                                              .tr(),
-                                                        ),
-                                                        sideTitles: SideTitles(
-                                                          reservedSize:
-                                                              size.width * 0.1,
-                                                          showTitles: true,
-                                                        ),
-                                                      ),
-                                                      rightTitles: AxisTitles(
-                                                        sideTitles: SideTitles(
-                                                          showTitles: false,
-                                                        ),
-                                                      ),
-                                                      topTitles: AxisTitles(
-                                                        sideTitles: SideTitles(
-                                                          showTitles: false,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    lineBarsData: [
-                                                      LineChartBarData(
-                                                        spots: spots,
-                                                        isCurved: false,
-                                                        color: constantColors
-                                                            .navButton,
-                                                        barWidth: 1,
-                                                        belowBarData:
-                                                            BarAreaData(
-                                                          show: true,
-                                                          gradient:
-                                                              LinearGradient(
-                                                            begin: Alignment
-                                                                .centerRight,
-                                                            end: Alignment
-                                                                .centerLeft,
-                                                            stops: const [
-                                                              0.0,
-                                                              0.5,
-                                                              0.9
-                                                            ],
-                                                            colors: [
-                                                              Color(0xFF760380)
-                                                                  .withOpacity(
-                                                                      0.2),
-                                                              Color(0xFFE6ADFF)
-                                                                  .withOpacity(
-                                                                      0.2),
-                                                              constantColors
-                                                                  .whiteColor
-                                                                  .withOpacity(
-                                                                      0.2),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )
-                                              : Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                );
-                                        case "Month":
-                                          log("month selected");
-                                          final List<GraphData> graphDataList =
-                                              snapshot.data!.docs.map((e) {
-                                            final GraphData gd =
-                                                GraphData.fromMap(e.data()!
-                                                    as Map<String, dynamic>);
-                                            return gd;
-                                          }).toList();
-
-                                          List<FlSpot> spots = graphDataList
-                                              .map((e) => FlSpot(
-                                                  e.timestamp
-                                                      .toDate()
-                                                      .month
-                                                      .toDouble(),
-                                                  e.amount))
-                                              .toList();
-
-                                          return graphDataList.isNotEmpty
-                                              ? LineChart(
-                                                  LineChartData(
-                                                    maxX: graphDataList
-                                                        .last.timestamp
-                                                        .toDate()
-                                                        .month
-                                                        .toDouble(),
-
-                                                    // maxY: graphDataList.last.amount,
-                                                    minY: 0,
-                                                    minX: graphDataList
-                                                        .first.timestamp
-                                                        .toDate()
-                                                        .month
-                                                        .toDouble(),
-
-                                                    borderData: FlBorderData(
-                                                      show: false,
-                                                    ),
-                                                    gridData: FlGridData(
-                                                      show: true,
-                                                      getDrawingHorizontalLine:
-                                                          (value) {
-                                                        return FlLine(
-                                                            color:
-                                                                constantColors
-                                                                    .navButton
-                                                                    .withOpacity(
-                                                                        0.2),
-                                                            strokeWidth: 1,
-                                                            dashArray: [5]);
-                                                      },
-                                                      drawVerticalLine: true,
-                                                      getDrawingVerticalLine:
-                                                          (value) {
-                                                        return FlLine(
-                                                            color:
-                                                                constantColors
-                                                                    .navButton
-                                                                    .withOpacity(
-                                                                        0.2),
-                                                            strokeWidth: 1,
-                                                            dashArray: [5]);
-                                                      },
-                                                    ),
-                                                    titlesData: FlTitlesData(
-                                                      show: true,
-                                                      bottomTitles: AxisTitles(
-                                                        axisNameWidget: Text(
-                                                          LocaleKeys.months
-                                                              .tr(),
-                                                        ),
-                                                        sideTitles: SideTitles(
-                                                          reservedSize:
-                                                              size.height *
-                                                                  0.04,
-                                                          showTitles: true,
-                                                        ),
-                                                      ),
-                                                      leftTitles: AxisTitles(
-                                                        axisNameWidget: Text(
-                                                          LocaleKeys.amount
-                                                              .tr(),
-                                                        ),
-                                                        sideTitles: SideTitles(
-                                                          reservedSize:
-                                                              size.width * 0.1,
-                                                          showTitles: true,
-                                                        ),
-                                                      ),
-                                                      rightTitles: AxisTitles(
-                                                        sideTitles: SideTitles(
-                                                          showTitles: false,
-                                                        ),
-                                                      ),
-                                                      topTitles: AxisTitles(
-                                                        sideTitles: SideTitles(
-                                                          showTitles: false,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    lineBarsData: [
-                                                      LineChartBarData(
-                                                        spots: spots,
-                                                        isCurved: false,
-                                                        color: constantColors
-                                                            .navButton,
-                                                        barWidth: 1,
-                                                        belowBarData:
-                                                            BarAreaData(
-                                                          show: true,
-                                                          gradient:
-                                                              LinearGradient(
-                                                            begin: Alignment
-                                                                .centerRight,
-                                                            end: Alignment
-                                                                .centerLeft,
-                                                            stops: const [
-                                                              0.0,
-                                                              0.5,
-                                                              0.9
-                                                            ],
-                                                            colors: [
-                                                              Color(0xFF760380),
-                                                              Color(0xFFE6ADFF),
-                                                              constantColors
-                                                                  .whiteColor,
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )
-                                              : Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                );
-                                        case "Day":
-                                          log("day selected");
-                                          final List<GraphData> graphDataList =
-                                              snapshot.data!.docs.map((e) {
-                                            final GraphData gd =
-                                                GraphData.fromMap(e.data()!
-                                                    as Map<String, dynamic>);
-                                            return gd;
-                                          }).toList();
-
-                                          List<FlSpot> spots = graphDataList
-                                              .map((e) => FlSpot(
-                                                  dayOfYear(
-                                                          e.timestamp.toDate())
-                                                      .toDouble(),
-                                                  e.amount))
-                                              .toList();
-
-                                          if (graphDataList.isNotEmpty) {
-                                            return LineChart(
-                                              LineChartData(
-                                                maxX: dayOfYear(graphDataList
-                                                        .last.timestamp
-                                                        .toDate())
-                                                    .toDouble(),
-
-                                                // maxY: graphDataList.last.amount,
-                                                minY: 0,
-                                                minX: dayOfYear(graphDataList
-                                                        .first.timestamp
-                                                        .toDate())
-                                                    .toDouble(),
-                                                borderData: FlBorderData(
-                                                  show: false,
-                                                ),
-
-                                                gridData: FlGridData(
-                                                  show: true,
-                                                  getDrawingHorizontalLine:
-                                                      (value) {
-                                                    return FlLine(
-                                                        color: constantColors
-                                                            .navButton
-                                                            .withOpacity(0.2),
-                                                        strokeWidth: 1,
-                                                        dashArray: [5]);
-                                                  },
-                                                  drawVerticalLine: true,
-                                                  getDrawingVerticalLine:
-                                                      (value) {
-                                                    return FlLine(
-                                                        color: constantColors
-                                                            .navButton
-                                                            .withOpacity(0.2),
-                                                        strokeWidth: 1,
-                                                        dashArray: [5]);
-                                                  },
-                                                ),
-                                                titlesData: FlTitlesData(
-                                                  show: true,
-                                                  bottomTitles: AxisTitles(
-                                                    axisNameWidget: Text(
-                                                      "Days",
-                                                    ),
-                                                    sideTitles: SideTitles(
-                                                      interval: 30,
-                                                      reservedSize:
-                                                          size.height * 0.04,
-                                                      showTitles: true,
-                                                    ),
-                                                  ),
-                                                  leftTitles: AxisTitles(
-                                                    axisNameWidget: Text(
-                                                      LocaleKeys.amount.tr(),
-                                                    ),
-                                                    sideTitles: SideTitles(
-                                                      reservedSize:
-                                                          size.width * 0.1,
-                                                      showTitles: true,
-                                                    ),
-                                                  ),
-                                                  rightTitles: AxisTitles(
-                                                    sideTitles: SideTitles(
-                                                      showTitles: false,
-                                                    ),
-                                                  ),
-                                                  topTitles: AxisTitles(
-                                                    sideTitles: SideTitles(
-                                                      showTitles: false,
-                                                    ),
-                                                  ),
-                                                ),
-                                                lineBarsData: [
-                                                  LineChartBarData(
-                                                    spots: spots,
-                                                    isCurved: false,
-                                                    color: constantColors
-                                                        .navButton,
-                                                    barWidth: 1,
-                                                    belowBarData: BarAreaData(
-                                                      show: true,
-                                                      gradient: LinearGradient(
-                                                        begin: Alignment
-                                                            .centerRight,
-                                                        end: Alignment
-                                                            .centerLeft,
-                                                        stops: const [
-                                                          0.0,
-                                                          0.5,
-                                                          0.9
-                                                        ],
-                                                        colors: [
-                                                          Color(0xFF760380),
-                                                          Color(0xFFE6ADFF),
-                                                          constantColors
-                                                              .whiteColor,
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          } else {
-                                            return Center(
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            );
-                                          }
-                                        case "Week":
-                                          log("Week selected");
-                                          final List<GraphData> graphDataList =
-                                              snapshot.data!.docs.map((e) {
-                                            final GraphData gd =
-                                                GraphData.fromMap(e.data()!
-                                                    as Map<String, dynamic>);
-                                            return gd;
-                                          }).toList();
-
-                                          List<FlSpot> spots = graphDataList
-                                              .map((e) => FlSpot(
-                                                  isoWeekNumber(
-                                                          e.timestamp.toDate())
-                                                      .toDouble(),
-                                                  e.amount))
-                                              .toList();
-
-                                          return graphDataList.isNotEmpty
-                                              ? LineChart(
-                                                  LineChartData(
-                                                    maxX: isoWeekNumber(
-                                                            graphDataList
-                                                                .last.timestamp
-                                                                .toDate())
-                                                        .toDouble(),
-
-                                                    // maxY: graphDataList.last.amount,
-                                                    minY: 0,
-                                                    minX: isoWeekNumber(
-                                                            graphDataList
-                                                                .first.timestamp
-                                                                .toDate())
-                                                        .toDouble(),
-                                                    borderData: FlBorderData(
-                                                      show: false,
-                                                    ),
-                                                    gridData: FlGridData(
-                                                      show: true,
-                                                      getDrawingHorizontalLine:
-                                                          (value) {
-                                                        return FlLine(
-                                                            color:
-                                                                constantColors
-                                                                    .navButton
-                                                                    .withOpacity(
-                                                                        0.2),
-                                                            strokeWidth: 1,
-                                                            dashArray: [5]);
-                                                      },
-                                                      drawVerticalLine: true,
-                                                      getDrawingVerticalLine:
-                                                          (value) {
-                                                        return FlLine(
-                                                            color:
-                                                                constantColors
-                                                                    .navButton
-                                                                    .withOpacity(
-                                                                        0.2),
-                                                            strokeWidth: 1,
-                                                            dashArray: [5]);
-                                                      },
-                                                    ),
-                                                    titlesData: FlTitlesData(
-                                                      show: true,
-                                                      bottomTitles: AxisTitles(
-                                                        axisNameWidget:
-                                                            Text("Weeks"),
-                                                        sideTitles: SideTitles(
-                                                          reservedSize:
-                                                              size.height *
-                                                                  0.04,
-                                                          showTitles: true,
-                                                        ),
-                                                      ),
-                                                      leftTitles: AxisTitles(
-                                                        axisNameWidget: Text(
-                                                          LocaleKeys.amount
-                                                              .tr(),
-                                                        ),
-                                                        sideTitles: SideTitles(
-                                                          reservedSize:
-                                                              size.width * 0.1,
-                                                          showTitles: true,
-                                                        ),
-                                                      ),
-                                                      rightTitles: AxisTitles(
-                                                        sideTitles: SideTitles(
-                                                          showTitles: false,
-                                                        ),
-                                                      ),
-                                                      topTitles: AxisTitles(
-                                                        sideTitles: SideTitles(
-                                                          showTitles: false,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    lineBarsData: [
-                                                      LineChartBarData(
-                                                        spots: spots,
-                                                        isCurved: false,
-                                                        color: constantColors
-                                                            .navButton,
-                                                        barWidth: 1,
-                                                        belowBarData:
-                                                            BarAreaData(
-                                                          show: true,
-                                                          gradient:
-                                                              LinearGradient(
-                                                            begin: Alignment
-                                                                .centerRight,
-                                                            end: Alignment
-                                                                .centerLeft,
-                                                            stops: const [
-                                                              0.0,
-                                                              0.5,
-                                                              0.9
-                                                            ],
-                                                            colors: [
-                                                              Color(0xFF760380),
-                                                              Color(0xFFE6ADFF),
-                                                              constantColors
-                                                                  .whiteColor,
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )
-                                              : Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                );
-                                        default:
-                                      }
-                                      final List<GraphData> graphDataList =
-                                          snapshot.data!.docs.map((e) {
-                                        final GraphData gd = GraphData.fromMap(
-                                            e.data()! as Map<String, dynamic>);
-                                        return gd;
-                                      }).toList();
-
-                                      List<FlSpot> spots = graphDataList
-                                          .map((e) => FlSpot(
-                                              e.timestamp
-                                                  .toDate()
-                                                  .month
-                                                  .toDouble(),
-                                              e.amount))
-                                          .toList();
-
-                                      return graphDataList.isNotEmpty
-                                          ? LineChart(
-                                              LineChartData(
-                                                maxX: graphDataList
-                                                    .last.timestamp
-                                                    .toDate()
-                                                    .month
-                                                    .toDouble(),
-
-                                                // maxY: graphDataList.last.amount,
-                                                minY: 0,
-                                                minX: graphDataList
-                                                    .first.timestamp
-                                                    .toDate()
-                                                    .month
-                                                    .toDouble(),
-
-                                                borderData: FlBorderData(
-                                                  show: false,
-                                                ),
-                                                gridData: FlGridData(
-                                                  show: true,
-                                                  getDrawingHorizontalLine:
-                                                      (value) {
-                                                    return FlLine(
-                                                        color: constantColors
-                                                            .navButton
-                                                            .withOpacity(0.2),
-                                                        strokeWidth: 1,
-                                                        dashArray: [5]);
-                                                  },
-                                                  drawVerticalLine: true,
-                                                  getDrawingVerticalLine:
-                                                      (value) {
-                                                    return FlLine(
-                                                        color: constantColors
-                                                            .navButton
-                                                            .withOpacity(0.2),
-                                                        strokeWidth: 1,
-                                                        dashArray: [5]);
-                                                  },
-                                                ),
-                                                titlesData: FlTitlesData(
-                                                  show: true,
-                                                  bottomTitles: AxisTitles(
-                                                    axisNameWidget: Text(
-                                                      LocaleKeys.months.tr(),
-                                                    ),
-                                                    sideTitles: SideTitles(
-                                                      reservedSize:
-                                                          size.height * 0.04,
-                                                      showTitles: true,
-                                                    ),
-                                                  ),
-                                                  leftTitles: AxisTitles(
-                                                    axisNameWidget: Text(
-                                                      LocaleKeys.amount.tr(),
-                                                    ),
-                                                    sideTitles: SideTitles(
-                                                      reservedSize:
-                                                          size.width * 0.1,
-                                                      showTitles: true,
-                                                    ),
-                                                  ),
-                                                  rightTitles: AxisTitles(
-                                                    sideTitles: SideTitles(
-                                                      showTitles: false,
-                                                    ),
-                                                  ),
-                                                  topTitles: AxisTitles(
-                                                    sideTitles: SideTitles(
-                                                      showTitles: false,
-                                                    ),
-                                                  ),
-                                                ),
-                                                lineBarsData: [
-                                                  LineChartBarData(
-                                                    spots: spots,
-                                                    isCurved: false,
-                                                    color: constantColors
-                                                        .navButton,
-                                                    barWidth: 1,
-                                                    belowBarData: BarAreaData(
-                                                      show: true,
-                                                      gradient: LinearGradient(
-                                                        begin: Alignment
-                                                            .centerRight,
-                                                        end: Alignment
-                                                            .centerLeft,
-                                                        stops: const [
-                                                          0.0,
-                                                          0.5,
-                                                          0.9
-                                                        ],
-                                                        colors: [
-                                                          Color(0xFF760380),
-                                                          Color(0xFFE6ADFF),
-                                                          constantColors
-                                                              .whiteColor,
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          : Center(
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            );
-                                    }),
-                              ),
-                            );
-                          }),
-                      Positioned(
-                        top: 10,
-                        right: 10,
-                        child: PopupMenuButton<String>(
-                          initialValue: graphType.value,
-                          tooltip: 'Graph Type',
-                          onSelected: (String type) {
-                            switch (type) {
-                              case "Custom":
-                                log("custom");
-                                Get.bottomSheet(
-                                    Container(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 15),
-                                      decoration: BoxDecoration(
-                                        color: constantColors.whiteColor,
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(20),
-                                          topRight: Radius.circular(20),
-                                        ),
-                                      ),
-                                      height: 25.h,
-                                      child: AnimatedBuilder(
-                                        animation: Listenable.merge(
-                                            [_startDate, _endDate]),
-                                        builder: (context, _) {
-                                          return Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 10),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    color: constantColors
-                                                        .navButton,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            30),
-                                                  ),
-                                                  child: Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly,
-                                                    children: [
-                                                      TextButton.icon(
-                                                        style: TextButton
-                                                            .styleFrom(
-                                                          primary: Colors.white,
-                                                        ),
-                                                        onPressed: () =>
-                                                            _selectStartDate(
-                                                                context),
-                                                        icon: Icon(Icons
-                                                            .calendar_month),
-                                                        label: Text(
-                                                          "${DateFormat("E, MMM, d").format(_startDate.value)}",
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        ">",
-                                                        style: TextStyle(
-                                                          color: constantColors
-                                                              .whiteColor,
-                                                          fontSize: 40,
-                                                        ),
-                                                      ),
-                                                      TextButton.icon(
-                                                        style: TextButton
-                                                            .styleFrom(
-                                                          primary: Colors.white,
-                                                        ),
-                                                        onPressed: () =>
-                                                            _selectEndDate(
-                                                                context),
-                                                        icon: Icon(Icons
-                                                            .calendar_month),
-                                                        label: Text(
-                                                            "${DateFormat("E, MMM, d").format(_endDate.value)}"),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                              SubmitButton(
-                                                function: () {
-                                                  log("clicked");
-                                                  graphType.value = type;
-                                                  Get.back();
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    isDismissible: true,
-                                    isScrollControlled: true,
-                                    enableDrag: true);
-                                break;
-                              case "Month":
-                                graphType.value = type;
-                                break;
-                              case "Day":
-                                graphType.value = type;
-                                break;
-                              case "Week":
-                                graphType.value = type;
-                                break;
-                            }
-                          },
-                          itemBuilder: (BuildContext context) {
-                            return <PopupMenuItem<String>>[
-                              for (final String type in graphTypesList)
-                                PopupMenuItem<String>(
-                                  value: type,
-                                  child: Text('$type'),
-                                  textStyle: graphType.value == type
-                                      ? TextStyle(
-                                          color: constantColors.navButton,
-                                          fontWeight: FontWeight.bold)
-                                      : null,
-                                )
-                            ];
-                          },
-                          child: Icon(Icons.filter_alt_rounded),
-                        ),
-                      ),
+                  );
+                }),
+            Padding(
+              padding:
+                  EdgeInsets.fromLTRB(paddingVal, 0, paddingVal, paddingVal),
+              child: Container(
+                padding: EdgeInsets.only(top: 20),
+                height: size.height * 0.4,
+                width: size.width,
+                decoration: BoxDecoration(
+                  color: constantColors.whiteColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: SfCartesianChart(
+                    plotAreaBorderWidth: 0,
+                    primaryXAxis: DateTimeAxis(
+                        title: AxisTitle(text: "Date"),
+                        name: 'X-Axis',
+                        majorGridLines: const MajorGridLines(width: 0)),
+                    primaryYAxis: NumericAxis(
+                        title: AxisTitle(text: "Amount"),
+                        axisLine: const AxisLine(width: 0),
+                        anchorRangeToVisiblePoints: _enableAnchor,
+                        majorTickLines: const MajorTickLines(size: 0)),
+                    series: <AreaSeries<ChartSampleData, DateTime>>[
+                      AreaSeries<ChartSampleData, DateTime>(
+                          dataSource: randomData,
+                          xValueMapper: (ChartSampleData sales, _) =>
+                              sales.x as DateTime,
+                          yValueMapper: (ChartSampleData sales, _) => sales.y,
+                          gradient: LinearGradient(
+                              colors: <Color>[
+                                Color.fromARGB(255, 235, 219, 241),
+                                Color.fromARGB(255, 207, 120, 239),
+                                Color.fromARGB(255, 174, 5, 235)
+                              ],
+                              stops: const <double>[
+                                0.0,
+                                0.4,
+                                1.0
+                              ],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter))
                     ],
+                    tooltipBehavior: TooltipBehavior(
+                      enable: true,
+                      builder: (data, point, series, pointIndex, seriesIndex) {
+                        return Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: Text(
+                            "Date: ${data.x.toString().substring(0, 10)}\nAmount: \$${data.y.truncate()}",
+                            style: TextStyle(color: constantColors.whiteColor),
+                          ),
+                        );
+                      },
+                    ),
+                    zoomPanBehavior: ZoomPanBehavior(
+                      /// To enable the pinch zooming as true.
+                      enablePinching: true,
+                      zoomMode: _zoomModeType,
+                      enablePanning: true,
+                    )),
+              ),
+            ),
+            Padding(
+              padding:
+                  EdgeInsets.fromLTRB(paddingVal, paddingVal, paddingVal, 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    LocaleKeys.topcontent.tr(),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
                   ),
-                  Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(
-                            paddingVal, paddingVal, paddingVal, 25),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              LocaleKeys.topcontent.tr(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                            Text(
-                              LocaleKeys.showall.tr(),
-                              style: TextStyle(
-                                color:
-                                    constantColors.blueColor.withOpacity(0.5),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection("posts")
-                              .where("useruid",
-                                  isEqualTo: Provider.of<Authentication>(
-                                          context,
-                                          listen: false)
-                                      .getUserId)
-                              .orderBy("totalBilled", descending: true)
-                              .limit(3)
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData) {
-                              return Center(
-                                child: Text("No posts yet!"),
-                              );
-                            }
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: snapshot.data!.docs.length,
-                              itemBuilder: (ctx, index) {
-                                var videoSnap = snapshot.data!.docs[index];
-                                final Video video = Video.fromJson(
-                                    videoSnap.data()! as Map<String, dynamic>);
-                                return Padding(
-                                  padding: EdgeInsets.only(
-                                      bottom: 10,
-                                      left: paddingVal,
-                                      right: paddingVal),
-                                  child: Container(
-                                    height: 12.h,
-                                    width: 100.w,
-                                    decoration: BoxDecoration(
-                                      color: constantColors.whiteColor,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Row(
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            child: Container(
-                                              child: Image.network(
-                                                  video.thumbnailurl),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: ListTile(
-                                              title: Text(
-                                                video.videotitle,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              subtitle: Text(video.caption),
-                                              trailing: Text(
-                                                  "\$${video.totalBilled}"),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          }),
-                    ],
+                  Text(
+                    LocaleKeys.showall.tr(),
+                    style: TextStyle(
+                      color: constantColors.blueColor.withOpacity(0.5),
+                    ),
                   ),
                 ],
-              );
-            }),
+              ),
+            ),
+            StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("posts")
+                    .where("useruid",
+                        isEqualTo:
+                            Provider.of<Authentication>(context, listen: false)
+                                .getUserId)
+                    .orderBy("totalBilled", descending: true)
+                    .limit(3)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: Text("No posts yet!"),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (ctx, index) {
+                      var videoSnap = snapshot.data!.docs[index];
+                      final Video video = Video.fromJson(
+                          videoSnap.data()! as Map<String, dynamic>);
+                      return Padding(
+                        padding: EdgeInsets.only(
+                            bottom: 10, left: paddingVal, right: paddingVal),
+                        child: Container(
+                          height: 12.h,
+                          width: 100.w,
+                          decoration: BoxDecoration(
+                            color: constantColors.whiteColor,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Container(
+                                    child: Image.network(video.thumbnailurl),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: ListTile(
+                                    title: Text(
+                                      video.videotitle,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    subtitle: Text(video.caption),
+                                    trailing: Text("\$${video.totalBilled}"),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }),
+          ],
+        ),
       ),
     );
   }
+
+  // @override
+  // Widget buildSettings(BuildContext context) {
+  //   return StatefulBuilder(
+  //       builder: (BuildContext context, StateSetter stateSetter) {
+  //     return ListView(
+  //       shrinkWrap: true,
+  //       children: <Widget>[
+  //         Row(
+  //           children: <Widget>[
+  //             Text('Zoom mode ',
+  //                 style: TextStyle(
+  //                   color: constantColors.black,
+  //                   fontSize: 16,
+  //                 )),
+  //             Container(
+  //               padding: const EdgeInsets.fromLTRB(70, 0, 40, 0),
+  //               height: 50,
+  //               child: DropdownButton<String>(
+  //                   focusColor: Colors.transparent,
+  //                   underline:
+  //                       Container(color: const Color(0xFFBDBDBD), height: 1),
+  //                   value: _selectedModeType,
+  //                   items: _zoomModeTypeList.map((String value) {
+  //                     return DropdownMenuItem<String>(
+  //                         value: (value != null) ? value : 'x',
+  //                         child: Text(value,
+  //                             style: TextStyle(color: constantColors.black)));
+  //                   }).toList(),
+  //                   onChanged: (String? value) {
+  //                     _onZoomTypeChange(value.toString());
+  //                     stateSetter(() {});
+  //                   }),
+  //             ),
+  //           ],
+  //         ),
+  //         Visibility(
+  //           visible: _selectedModeType == 'x' ? true : false,
+  //           child: Row(
+  //             children: <Widget>[
+  //               Text('Anchor range to \nvisible points',
+  //                   style: TextStyle(
+  //                     color: constantColors.black,
+  //                     fontSize: 16,
+  //                   )),
+  //               SizedBox(
+  //                   width: 90,
+  //                   child: CheckboxListTile(
+  //                       activeColor: constantColors.black,
+  //                       value: _enableAnchor,
+  //                       onChanged: (bool? value) {
+  //                         stateSetter(() {
+  //                           _enableRangeCalculation(value!);
+  //                           _enableAnchor = value;
+  //                           stateSetter(() {});
+  //                         });
+  //                       })),
+  //             ],
+  //           ),
+  //         ),
+  //       ],
+  //     );
+  //   });
+  // }
+
+  /// Method to get chart data points.
+  Future<void> getDateTimeData() async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(context.read<Authentication>().getUserId)
+        .collection("graphData")
+        .orderBy("timestamp", descending: false)
+        .get()
+        .then((value) {
+      for (QueryDocumentSnapshot<Map<String, dynamic>> item in value.docs) {
+        final GraphData graphData = GraphData.fromMap(item.data());
+        randomData.add(ChartSampleData(
+          x: graphData.timestamp.toDate(),
+          y: graphData.amount,
+        ));
+      }
+    });
+  }
+
+  // /// Method to update the selected zoom type in the chart on change.
+  // void _onZoomTypeChange(String item) {
+  //   _selectedModeType = item;
+  //   if (_selectedModeType == 'x') {
+  //     _zoomModeType = ZoomMode.x;
+  //   }
+  //   if (_selectedModeType == 'y') {
+  //     _zoomModeType = ZoomMode.y;
+  //   }
+  //   if (_selectedModeType == 'xy') {
+  //     _zoomModeType = ZoomMode.xy;
+  //   }
+  //   setState(() {
+  //     /// update the zoom mode changes
+  //   });
+  // }
+
+  // void _enableRangeCalculation(bool enableZoom) {
+  //   _enableAnchor = enableZoom;
+  //   setState(() {});
+  // }
 }
 
 class ButtonWidget extends StatelessWidget {
@@ -1304,4 +597,84 @@ class TotalAmount extends StatelessWidget {
       ],
     );
   }
+}
+
+///Chart sample data
+class ChartSampleData {
+  /// Holds the datapoint values like x, y, etc.,
+  ChartSampleData(
+      {this.x,
+      this.y,
+      this.xValue,
+      this.yValue,
+      this.secondSeriesYValue,
+      this.thirdSeriesYValue,
+      this.pointColor,
+      this.size,
+      this.text,
+      this.open,
+      this.close,
+      this.low,
+      this.high,
+      this.volume});
+
+  /// Holds x value of the datapoint
+  final dynamic x;
+
+  /// Holds y value of the datapoint
+  final num? y;
+
+  /// Holds x value of the datapoint
+  final dynamic xValue;
+
+  /// Holds y value of the datapoint
+  final num? yValue;
+
+  /// Holds y value of the datapoint(for 2nd series)
+  final num? secondSeriesYValue;
+
+  /// Holds y value of the datapoint(for 3nd series)
+  final num? thirdSeriesYValue;
+
+  /// Holds point color of the datapoint
+  final Color? pointColor;
+
+  /// Holds size of the datapoint
+  final num? size;
+
+  /// Holds datalabel/text value mapper of the datapoint
+  final String? text;
+
+  /// Holds open value of the datapoint
+  final num? open;
+
+  /// Holds close value of the datapoint
+  final num? close;
+
+  /// Holds low value of the datapoint
+  final num? low;
+
+  /// Holds high value of the datapoint
+  final num? high;
+
+  /// Holds open value of the datapoint
+  final num? volume;
+}
+
+/// Chart Sales Data
+class SalesData {
+  /// Holds the datapoint values like x, y, etc.,
+  SalesData(this.x, this.y, [this.date, this.color]);
+
+  /// X value of the data point
+  final dynamic x;
+
+  /// y value of the data point
+  final dynamic y;
+
+  /// color value of the data point
+  final Color? color;
+
+  /// Date time value of the data point
+  final DateTime? date;
 }
