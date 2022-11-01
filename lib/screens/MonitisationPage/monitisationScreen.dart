@@ -19,6 +19,8 @@ import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+// !Removing fl chart and trying anoyther
+
 class MonitizationScreen extends StatelessWidget {
   MonitizationScreen({Key? key}) : super(key: key);
   ConstantColors constantColors = ConstantColors();
