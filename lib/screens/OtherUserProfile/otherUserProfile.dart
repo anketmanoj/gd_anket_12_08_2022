@@ -260,26 +260,24 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: Expanded(
-                          child: ReadMoreText(
-                            widget.userModel.userbio!.length == '0'
-                                ? ''
-                                : widget.userModel.userbio!,
-                            trimLines: 2,
-                            colorClickableText: constantColors.navButton,
-                            trimMode: TrimMode.Line,
-                            moreStyle: TextStyle(
-                              color: constantColors.mainColor,
-                            ),
-                            lessStyle: TextStyle(
-                              color: constantColors.mainColor,
-                            ),
-                            trimCollapsedText: 'Show more',
-                            trimExpandedText: ' Show less',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black,
-                            ),
+                        child: ReadMoreText(
+                          widget.userModel.userbio!.length == '0'
+                              ? ''
+                              : widget.userModel.userbio!,
+                          trimLines: 2,
+                          colorClickableText: constantColors.navButton,
+                          trimMode: TrimMode.Line,
+                          moreStyle: TextStyle(
+                            color: constantColors.mainColor,
+                          ),
+                          lessStyle: TextStyle(
+                            color: constantColors.mainColor,
+                          ),
+                          trimCollapsedText: 'Show more',
+                          trimExpandedText: ' Show less',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
                           ),
                         ),
                       ),

@@ -542,26 +542,38 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 //   onTap: () async {
                 //     await FirebaseFirestore.instance
                 //         .collection("users")
-                //         .doc(context.read<Authentication>().getUserId)
-                //         .collection("graphData")
                 //         .get()
-                //         .then((value) async {
-                //       for (var element in value.docs) {
-                //         var rng = math.Random();
-                //         int day = rng.nextInt(20);
-                //         log(element['month'].toString());
-
-                //         log("day == ${rng.nextInt(20)}");
-                //         var date = DateTime(2022, element['month'], day);
-                //         Timestamp timestampVal = Timestamp.fromDate(date);
-                //         log("timestampVal == $timestampVal");
-
+                //         .then((usersVal) async {
+                //       for (QueryDocumentSnapshot<
+                //           Map<String, dynamic>> userElement in usersVal.docs) {
                 //         await FirebaseFirestore.instance
                 //             .collection("users")
-                //             .doc(context.read<Authentication>().getUserId)
+                //             .doc(userElement.id)
                 //             .collection("graphData")
-                //             .doc(element.id)
-                //             .update({"timestamp": timestampVal});
+                //             .get()
+                //             .then((value) async {
+                //           for (var element in value.docs) {
+                //             if (!element.data().containsKey("timestamp")) {
+                //               log("user == ${userElement['username']} element == ${element['month']}");
+                //               // var rng = math.Random();
+                //               // int day = rng.nextInt(20);
+                //               // log(element['month'].toString());
+
+                //               // log("day == ${rng.nextInt(20)}");
+                //               // var date = DateTime(2022, element['month'], day);
+                //               // Timestamp timestampVal = Timestamp.fromDate(date);
+                //               // log("timestampVal == $timestampVal");
+
+                //               // await FirebaseFirestore.instance
+                //               //     .collection("users")
+                //               //     .doc(userElement.id)
+                //               //     .collection("graphData")
+                //               //     .doc(element.id)
+                //               //     .update({"timestamp": timestampVal});
+                //               // log("done updating for ${userElement['username']}");
+                //             }
+                //           }
+                //         });
                 //       }
                 //     });
                 //   },
