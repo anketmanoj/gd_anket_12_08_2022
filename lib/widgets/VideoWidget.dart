@@ -980,10 +980,10 @@ class VideoWidget extends StatelessWidget {
                             _initPosDiamond = details.focalPoint;
 
                             _currentPosDiamond = Offset(
-                                SharedPreferencesHelper.getDxValue(
+                                SharedPreferencesHelper.getDxValueForDiamond(
                                         "dxValDiamond") /
                                     screen.width,
-                                SharedPreferencesHelper.getDxValue(
+                                SharedPreferencesHelper.getDyValueForDiamond(
                                         "dyValDiamond") /
                                     screen.height);
 
@@ -1007,9 +1007,11 @@ class VideoWidget extends StatelessWidget {
                             // diamondContainer.value.yPosition =
                             //     Offset(left, top).dy;
 
-                            SharedPreferencesHelper.setDxValue("dxValDiamond",
+                            SharedPreferencesHelper.setDxValueForDiamond(
+                                "dxValDiamond",
                                 diamondContainer.xPosition! * screen.width);
-                            SharedPreferencesHelper.setDyValue("dyValDiamond",
+                            SharedPreferencesHelper.setDyValueForDiamond(
+                                "dyValDiamond",
                                 diamondContainer.yPosition! * screen.height);
                             // print(
                             //     "x value = ${left * MediaQuery.of(context).size.width}");
@@ -1019,10 +1021,10 @@ class VideoWidget extends StatelessWidget {
                           child: Stack(
                             children: [
                               Positioned(
-                                left: SharedPreferencesHelper.getDxValue(
-                                    "dxValDiamond"),
-                                top: SharedPreferencesHelper.getDyValue(
-                                    "dyValDiamond"),
+                                left: SharedPreferencesHelper
+                                    .getDxValueForDiamond("dxValDiamond"),
+                                top: SharedPreferencesHelper
+                                    .getDyValueForDiamond("dyValDiamond"),
                                 child: Transform.scale(
                                   scale: 1,
                                   child: Transform.rotate(

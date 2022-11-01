@@ -69,4 +69,20 @@ class SharedPreferencesHelper {
   static getDxValue(String key) {
     return prefs.getDouble(key) ?? 0;
   }
+
+  static setDyValueForDiamond(String key, double value) async {
+    await prefs.setDouble(key, value);
+  }
+
+  static getDyValueForDiamond(String key) {
+    return prefs.getDouble(key) ?? 10.h;
+  }
+
+  static setDxValueForDiamond(String key, double value) async {
+    await prefs.setDouble(key, value);
+  }
+
+  static getDxValueForDiamond(String key) {
+    return prefs.getDouble(key) ?? 70.w;
+  }
 }

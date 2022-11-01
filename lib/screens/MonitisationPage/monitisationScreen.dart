@@ -614,123 +614,117 @@ class MonitizationScreen extends StatelessWidget {
                                                   e.amount))
                                               .toList();
 
-                                          return graphDataList.isNotEmpty
-                                              ? LineChart(
-                                                  LineChartData(
-                                                    maxX: dayOfYear(
-                                                            graphDataList
-                                                                .last.timestamp
-                                                                .toDate())
-                                                        .toDouble(),
+                                          if (graphDataList.isNotEmpty) {
+                                            return LineChart(
+                                              LineChartData(
+                                                maxX: dayOfYear(graphDataList
+                                                        .last.timestamp
+                                                        .toDate())
+                                                    .toDouble(),
 
-                                                    // maxY: graphDataList.last.amount,
-                                                    minY: 0,
-                                                    minX: dayOfYear(
-                                                            graphDataList
-                                                                .first.timestamp
-                                                                .toDate())
-                                                        .toDouble(),
-                                                    borderData: FlBorderData(
-                                                      show: false,
-                                                    ),
-                                                    gridData: FlGridData(
-                                                      show: true,
-                                                      getDrawingHorizontalLine:
-                                                          (value) {
-                                                        return FlLine(
-                                                            color:
-                                                                constantColors
-                                                                    .navButton
-                                                                    .withOpacity(
-                                                                        0.2),
-                                                            strokeWidth: 1,
-                                                            dashArray: [5]);
-                                                      },
-                                                      drawVerticalLine: true,
-                                                      getDrawingVerticalLine:
-                                                          (value) {
-                                                        return FlLine(
-                                                            color:
-                                                                constantColors
-                                                                    .navButton
-                                                                    .withOpacity(
-                                                                        0.2),
-                                                            strokeWidth: 1,
-                                                            dashArray: [5]);
-                                                      },
-                                                    ),
-                                                    titlesData: FlTitlesData(
-                                                      show: true,
-                                                      bottomTitles: AxisTitles(
-                                                        axisNameWidget: Text(
-                                                          "Days",
-                                                        ),
-                                                        sideTitles: SideTitles(
-                                                          reservedSize:
-                                                              size.height *
-                                                                  0.04,
-                                                          showTitles: true,
-                                                        ),
-                                                      ),
-                                                      leftTitles: AxisTitles(
-                                                        axisNameWidget: Text(
-                                                          LocaleKeys.amount
-                                                              .tr(),
-                                                        ),
-                                                        sideTitles: SideTitles(
-                                                          reservedSize:
-                                                              size.width * 0.1,
-                                                          showTitles: true,
-                                                        ),
-                                                      ),
-                                                      rightTitles: AxisTitles(
-                                                        sideTitles: SideTitles(
-                                                          showTitles: false,
-                                                        ),
-                                                      ),
-                                                      topTitles: AxisTitles(
-                                                        sideTitles: SideTitles(
-                                                          showTitles: false,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    lineBarsData: [
-                                                      LineChartBarData(
-                                                        spots: spots,
-                                                        isCurved: false,
+                                                // maxY: graphDataList.last.amount,
+                                                minY: 0,
+                                                minX: dayOfYear(graphDataList
+                                                        .first.timestamp
+                                                        .toDate())
+                                                    .toDouble(),
+                                                borderData: FlBorderData(
+                                                  show: false,
+                                                ),
+
+                                                gridData: FlGridData(
+                                                  show: true,
+                                                  getDrawingHorizontalLine:
+                                                      (value) {
+                                                    return FlLine(
                                                         color: constantColors
-                                                            .navButton,
-                                                        barWidth: 1,
-                                                        belowBarData:
-                                                            BarAreaData(
-                                                          show: true,
-                                                          gradient:
-                                                              LinearGradient(
-                                                            begin: Alignment
-                                                                .centerRight,
-                                                            end: Alignment
-                                                                .centerLeft,
-                                                            stops: const [
-                                                              0.0,
-                                                              0.5,
-                                                              0.9
-                                                            ],
-                                                            colors: [
-                                                              Color(0xFF760380),
-                                                              Color(0xFFE6ADFF),
-                                                              constantColors
-                                                                  .whiteColor,
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
+                                                            .navButton
+                                                            .withOpacity(0.2),
+                                                        strokeWidth: 1,
+                                                        dashArray: [5]);
+                                                  },
+                                                  drawVerticalLine: true,
+                                                  getDrawingVerticalLine:
+                                                      (value) {
+                                                    return FlLine(
+                                                        color: constantColors
+                                                            .navButton
+                                                            .withOpacity(0.2),
+                                                        strokeWidth: 1,
+                                                        dashArray: [5]);
+                                                  },
+                                                ),
+                                                titlesData: FlTitlesData(
+                                                  show: true,
+                                                  bottomTitles: AxisTitles(
+                                                    axisNameWidget: Text(
+                                                      "Days",
+                                                    ),
+                                                    sideTitles: SideTitles(
+                                                      interval: 30,
+                                                      reservedSize:
+                                                          size.height * 0.04,
+                                                      showTitles: true,
+                                                    ),
                                                   ),
-                                                )
-                                              : Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                );
+                                                  leftTitles: AxisTitles(
+                                                    axisNameWidget: Text(
+                                                      LocaleKeys.amount.tr(),
+                                                    ),
+                                                    sideTitles: SideTitles(
+                                                      reservedSize:
+                                                          size.width * 0.1,
+                                                      showTitles: true,
+                                                    ),
+                                                  ),
+                                                  rightTitles: AxisTitles(
+                                                    sideTitles: SideTitles(
+                                                      showTitles: false,
+                                                    ),
+                                                  ),
+                                                  topTitles: AxisTitles(
+                                                    sideTitles: SideTitles(
+                                                      showTitles: false,
+                                                    ),
+                                                  ),
+                                                ),
+                                                lineBarsData: [
+                                                  LineChartBarData(
+                                                    spots: spots,
+                                                    isCurved: false,
+                                                    color: constantColors
+                                                        .navButton,
+                                                    barWidth: 1,
+                                                    belowBarData: BarAreaData(
+                                                      show: true,
+                                                      gradient: LinearGradient(
+                                                        begin: Alignment
+                                                            .centerRight,
+                                                        end: Alignment
+                                                            .centerLeft,
+                                                        stops: const [
+                                                          0.0,
+                                                          0.5,
+                                                          0.9
+                                                        ],
+                                                        colors: [
+                                                          Color(0xFF760380),
+                                                          Color(0xFFE6ADFF),
+                                                          constantColors
+                                                              .whiteColor,
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          } else {
+                                            return Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          }
                                         case "Week":
                                           log("Week selected");
                                           final List<GraphData> graphDataList =
