@@ -3602,4 +3602,90 @@ class FirebaseOperations with ChangeNotifier {
       "body": body,
     });
   }
+
+  Future<void> transferredAmountTrue(
+      {required String useruid,
+      required bool value,
+      required int amount}) async {
+    await FirebaseFirestore.instance
+        .collection("payoutRequest")
+        .doc(useruid)
+        .update({
+      "transferred": value,
+    }).then((done) async {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(useruid)
+          .get()
+          .then((userData) async {
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(useruid)
+            .update({
+          'totalmade': int.parse((userData.data()!['totalmade'] *
+                      userData.data()!['percentage'] /
+                      100)
+                  .toStringAsFixed(0)) -
+              amount,
+        });
+
+        await _fcmNotificationService.sendNotificationToUser(
+            to: userData.data()!['token'], //To change once set up
+            title: "GD Payment Done",
+            body: "");
+
+        final String id = nanoid();
+
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(useruid)
+            .collection("notifications")
+            .doc(id)
+            .set({
+          "id": id,
+          "seen": false,
+          "type": "admin",
+          "timestamp": Timestamp.now(),
+          "username": "GD Admin | \$${amount} done",
+          "useruid": "GD ADMIN",
+          "userimage":
+              "https://firebasestorage.googleapis.com/v0/b/gdfe-ac584.appspot.com/o/thumbnail%2Fdata%2Fuser%2F0%2Fcom.diamant.jp.gd_anket%2Fcache%2FGDlogo_iOS.png?alt=media&token=ce886b43-48aa-409d-ae1d-44e771be8e16",
+          "useremail": "diamantrosebe@gmail.com",
+          "title": "Paypal Payment Complete",
+          "body":
+              "Glamorous Diastation has transfered a total of \$$amount to your registered paypal account",
+        });
+      });
+    });
+  }
+
+  Future sendNotification(
+      {required UserModel userVal, required String payoutValue}) async {
+    await _fcmNotificationService.sendNotificationToUser(
+        to: userVal.token, //To change once set up
+        title: "Payment Request recieved",
+        body: "Your payout request has been recieved");
+
+    final String id = nanoid();
+
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userVal.useruid)
+        .collection("notifications")
+        .doc(id)
+        .set({
+      "id": id,
+      "seen": false,
+      "type": "admin",
+      "timestamp": Timestamp.now(),
+      "username": "GD Admin",
+      "useruid": "GD ADMIN",
+      "userimage":
+          "https://firebasestorage.googleapis.com/v0/b/gdfe-ac584.appspot.com/o/thumbnail%2Fdata%2Fuser%2F0%2Fcom.diamant.jp.gd_anket%2Fcache%2FGDlogo_iOS.png?alt=media&token=ce886b43-48aa-409d-ae1d-44e771be8e16",
+      "useremail": "diamantrosebe@gmail.com",
+      "title": "Paypal Payout Request",
+      "body":
+          "Glamorous Diastation has recieved the payout request for $payoutValue",
+    });
+  }
 }

@@ -27,6 +27,7 @@ import 'package:diamon_rose_app/screens/ProfilePage/ArViewerScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/PostRecommendation.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/buyCaratScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/changeLanguageScreen.dart';
+import 'package:diamon_rose_app/screens/ProfilePage/payoutHomeScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/profile_favorites_screen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/shoppingCartScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/social_media_screen.dart';
@@ -556,22 +557,22 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 //           for (var element in value.docs) {
                 //             if (!element.data().containsKey("timestamp")) {
                 //               log("user == ${userElement['username']} element == ${element['month']}");
-                //               // var rng = math.Random();
-                //               // int day = rng.nextInt(20);
-                //               // log(element['month'].toString());
+                //               var rng = math.Random();
+                //               int day = 1;
+                //               log(element['month'].toString());
 
-                //               // log("day == ${rng.nextInt(20)}");
-                //               // var date = DateTime(2022, element['month'], day);
-                //               // Timestamp timestampVal = Timestamp.fromDate(date);
-                //               // log("timestampVal == $timestampVal");
+                //               log("day == ${1}");
+                //               var date = DateTime(2022, element['month'], day);
+                //               Timestamp timestampVal = Timestamp.fromDate(date);
+                //               log("timestampVal == $timestampVal");
 
-                //               // await FirebaseFirestore.instance
-                //               //     .collection("users")
-                //               //     .doc(userElement.id)
-                //               //     .collection("graphData")
-                //               //     .doc(element.id)
-                //               //     .update({"timestamp": timestampVal});
-                //               // log("done updating for ${userElement['username']}");
+                //               await FirebaseFirestore.instance
+                //                   .collection("users")
+                //                   .doc(userElement.id)
+                //                   .collection("graphData")
+                //                   .doc(element.id)
+                //                   .update({"timestamp": timestampVal});
+                //               log("done updating for ${userElement['username']}");
                 //             }
                 //           }
                 //         });
@@ -1097,6 +1098,28 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         },
                         title: Text(
                           LocaleKeys.adminVideoEditor.tr(),
+                          style: TextStyle(
+                            color: Colors.yellow,
+                            fontSize: 16,
+                          ),
+                        ),
+                        leading: Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.yellow,
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: PayoutScreen(),
+                              type: PageTransitionType.fade,
+                            ),
+                          );
+                        },
+                        title: Text(
+                          "Payout Requests",
                           style: TextStyle(
                             color: Colors.yellow,
                             fontSize: 16,

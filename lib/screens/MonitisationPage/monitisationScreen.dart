@@ -196,6 +196,22 @@ class _MonitizationScreenState extends State<MonitizationScreen> {
                                                             user.totalmade >=
                                                                     100
                                                                 ? () async {
+                                                                    await firebaseOperations.addToGraph(
+                                                                        videoOwnerId: context
+                                                                            .read<
+                                                                                Authentication>()
+                                                                            .getUserId,
+                                                                        month: DateTime.now()
+                                                                            .month,
+                                                                        amount:
+                                                                            0.0);
+
+                                                                    await firebaseOperations.sendNotification(
+                                                                        userVal:
+                                                                            user,
+                                                                        payoutValue:
+                                                                            "${(user.totalmade * user.percentage / 100).toStringAsFixed(0)}");
+
                                                                     await firebaseOperations
                                                                         .sendPayoutRequest(
                                                                       timestamp:
@@ -221,6 +237,19 @@ class _MonitizationScreenState extends State<MonitizationScreen> {
                                                                       ctx:
                                                                           context,
                                                                     );
+
+                                                                    await FirebaseFirestore
+                                                                        .instance
+                                                                        .collection(
+                                                                            "users")
+                                                                        .doc(context
+                                                                            .read<
+                                                                                Authentication>()
+                                                                            .getUserId)
+                                                                        .update({
+                                                                      "totalmade":
+                                                                          0.0
+                                                                    });
                                                                   }
                                                                 : () {
                                                                     CoolAlert

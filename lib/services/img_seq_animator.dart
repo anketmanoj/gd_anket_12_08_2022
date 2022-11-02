@@ -1,12 +1,17 @@
-import 'dart:async';
-import 'dart:developer';
-import 'dart:io';
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// © Cosmos Software | Ali Yigit Bireroglu                                                                                                           /
+// All material used in the making of this code, project, program, application, software et cetera (the "Intellectual Property")                     /
+// belongs completely and solely to Ali Yigit Bireroglu. This includes but is not limited to the source code, the multimedia and                     /
+// other asset files. If you were granted this Intellectual Property for personal use, you are obligated to include this copyright                   /
+// text at all times.                                                                                                                                /
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//@formatter:off
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 typedef CacheProgressIndicatorBuilder = Widget Function(
     BuildContext context, double progress);
@@ -70,8 +75,6 @@ class ImageSequenceAnimator extends StatefulWidget {
 
   ///Set this value to true if your [folderName] is an online path.
   final bool isOnline;
-  final double frameHeight;
-  final double frameWidth;
 
   ///Set this value to true if you want the [ImageSequenceAnimator] to wait until the entire image sequence is cached. Otherwise, the [ImageSequenceAnimator]
   ///will invoke [onReadyToPlay] and start playing if [isAutoPlay] is set to true when it approximates that the remaining caching can be completed without
@@ -111,8 +114,6 @@ class ImageSequenceAnimator extends StatefulWidget {
     this.isAutoPlay: true,
     this.color,
     this.isOnline: false,
-    this.frameHeight: 1280,
-    this.frameWidth: 720,
     this.waitUntilCacheIsComplete: false,
     this.cacheProgressIndicatorBuilder,
     this.onReadyToPlay,
@@ -380,7 +381,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
     if (!_isReadyToPlay) {
       if ((widget.waitUntilCacheIsComplete && _isCacheComplete) ||
           (!widget.waitUntilCacheIsComplete &&
-              _cacheMillisRemaining * 0.9999 < totalTime)) {
+              _cacheMillisRemaining * 0.85 < totalTime)) {
         _isReadyToPlay = true;
         if (widget.onReadyToPlay != null) widget.onReadyToPlay!(this);
         if (widget.isAutoPlay) play(from: 0.0);
@@ -428,8 +429,8 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
             _colorChanged = false;
             _previousFrame = _animationController!.value.floor();
             if (_previousFrame < _frameCount)
-              _currentOfflineFrame = Image.file(
-                File(_getDirectory()),
+              _currentOfflineFrame = Image.asset(
+                _getDirectory(),
                 color: color,
                 gaplessPlayback: true,
                 fit: widget.fit,
@@ -443,26 +444,14 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
     else
       return ValueListenableBuilder(
         builder: (BuildContext context, int change, Widget? cachedChild) {
-          final String timeNow =
-              Timestamp.now().millisecondsSinceEpoch.toString();
           if (!_isCacheComplete) {
             if (_currentCachedOnlineFrame == null ||
                 _newCacheFrame != _previousCacheFrame) {
               _newCacheFrame = _previousCacheFrame;
               if (_cacheStartDateTime == null)
                 _cacheStartDateTime = DateTime.now();
-              log("here bruvva");
-
               _currentCachedOnlineFrame = CachedNetworkImage(
-                // key: UniqueKey(),
-                // cacheKey: timeNow + _getCacheDirectory(),
-                memCacheWidth: (widget.frameWidth).toInt(),
-                cacheManager: DefaultCacheManager(),
-                memCacheHeight: (widget.frameHeight).toInt(),
-                maxHeightDiskCache: (widget.frameHeight).toInt(),
-                maxWidthDiskCache: (widget.frameWidth).toInt(),
                 imageUrl: _getCacheDirectory(),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
                 progressIndicatorBuilder: (context, url, downloadProgress) {
                   if (downloadProgress.progress == null) {
                     _cacheTimer?.cancel();
@@ -474,7 +463,8 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
                   }
                   if (!_isReadyToPlay &&
                       widget.cacheProgressIndicatorBuilder != null)
-                    return Container();
+                    return widget.cacheProgressIndicatorBuilder!(context,
+                        1.0 - _cacheMillisRemaining / _cacheMillisTotal);
                   else
                     return Container();
                 },
@@ -490,29 +480,18 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
                 _colorChanged) {
               _colorChanged = false;
               _previousFrame = _animationController!.value.floor();
-              if (_previousFrame < _frameCount) {
+              if (_previousFrame < _frameCount)
                 _currentDisplayedOnlineFrame = CachedNetworkImage(
-                  // key: UniqueKey(),
-                  // cacheKey: _getDirectory(),
-                  memCacheWidth: (widget.frameWidth).toInt(),
-                  cacheManager: DefaultCacheManager(),
-                  memCacheHeight: (widget.frameHeight).toInt(),
-                  maxHeightDiskCache: (widget.frameHeight).toInt(),
-                  maxWidthDiskCache: (widget.frameWidth).toInt(),
                   imageUrl: _getDirectory(),
                   color: color,
                   useOldImageOnUrlChange: _isCacheComplete,
-                  fadeOutDuration: const Duration(milliseconds: 1),
-                  fadeInDuration: const Duration(milliseconds: 1),
+                  fadeOutDuration: const Duration(milliseconds: 0),
+                  fadeInDuration: const Duration(milliseconds: 0),
                   fit: widget.fit,
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
                 );
-              }
             }
           } else
-            _currentDisplayedOnlineFrame = Center(
-              child: CircularProgressIndicator(),
-            );
+            _currentDisplayedOnlineFrame = Container();
 
           return Stack(
             alignment: Alignment.center,
