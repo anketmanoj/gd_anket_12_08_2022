@@ -274,8 +274,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       for (ARList arElement in list.value) {
         if (_controller.video.value.position.inMicroseconds <= 0 &&
             list.value.isNotEmpty) {
-          if (arElement.finishedCaching!.value == true) {
-            arElement.arState!.skip(0);
+          if (arElement.finishedCaching!.value == true &&
+              arElement.arState != null) {
+            arElement.arState?.skip(0);
           }
           if (arElement.audioFlag == true)
             arElement.audioPlayer!.seek(Duration(milliseconds: 0));
@@ -1116,6 +1117,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                     onReadyToPlay:
                                                                         (ImageSequenceAnimatorState
                                                                             _imageSequenceAnimator) {
+                                                                      dev.log(
+                                                                          "Its ready now lad!");
                                                                       value.arState =
                                                                           _imageSequenceAnimator;
                                                                       if (value
@@ -1125,9 +1128,27 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                         value.finishedCaching =
                                                                             ValueNotifier(true);
                                                                     },
+                                                                    cacheProgressIndicatorBuilder:
+                                                                        (context,
+                                                                            progress) {
+                                                                      return CircularProgressIndicator(
+                                                                        value: progress !=
+                                                                                null
+                                                                            ? progress
+                                                                            : 1,
+                                                                        backgroundColor:
+                                                                            constantColors.navButton,
+                                                                      );
+                                                                    },
                                                                     waitUntilCacheIsComplete:
                                                                         true,
-                                                                    fps: 30,
+                                                                    fps: 35,
+                                                                    frameHeight:
+                                                                        value
+                                                                            .height!,
+                                                                    frameWidth:
+                                                                        value
+                                                                            .width!,
                                                                     isAutoPlay:
                                                                         false,
                                                                     onPlaying: value.layerType ==

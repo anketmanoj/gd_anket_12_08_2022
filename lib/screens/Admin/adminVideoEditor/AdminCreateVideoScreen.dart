@@ -1094,12 +1094,12 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                                             "online")
                                                                         : Key(
                                                                             "offline"),
-                                                                    // frameHeight:
-                                                                    //     value
-                                                                    //         .height!,
-                                                                    // frameWidth:
-                                                                    //     value
-                                                                    //         .width!,
+                                                                    frameHeight:
+                                                                        value
+                                                                            .height!,
+                                                                    frameWidth:
+                                                                        value
+                                                                            .width!,
                                                                     fullPaths: value
                                                                         .pathsForVideoFrames,
                                                                     onReadyToPlay:
