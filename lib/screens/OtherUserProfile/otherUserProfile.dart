@@ -239,6 +239,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 10),
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 3),
