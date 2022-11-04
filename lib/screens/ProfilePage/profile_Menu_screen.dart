@@ -41,6 +41,7 @@ import 'package:diamon_rose_app/screens/closeAccount/closeAccountScreen.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage_helpers.dart';
+import 'package:diamon_rose_app/screens/searchPage/searchPageWidgets.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/demo.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/adminUserModels.dart';
@@ -724,6 +725,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.monitisation.tr(),
                 ),
+
                 // ListTileOption(
                 //   constantColors: constantColors,
                 //   onTap: () {
