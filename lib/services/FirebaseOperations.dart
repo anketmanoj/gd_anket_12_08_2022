@@ -3220,9 +3220,6 @@ class FirebaseOperations with ChangeNotifier {
     required BuildContext ctx,
   }) async {
     try {
-      showTopSnackBar(
-          ctx, CustomSnackBar.info(message: "Sending Payout Request"));
-
       await FirebaseFirestore.instance
           .collection("payoutRequest")
           .doc(userUid)
@@ -3245,8 +3242,6 @@ class FirebaseOperations with ChangeNotifier {
           amountToTransfer: amountToTransfer,
           amountGeneratedForGD: totalGeneratedForGd,
         );
-        showTopSnackBar(
-            ctx, CustomSnackBar.success(message: "Request Successful!"));
       });
       // ignore: avoid_catches_without_on_clauses
     } catch (e) {

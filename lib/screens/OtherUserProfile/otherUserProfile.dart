@@ -342,6 +342,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                         child: Container(
                                           height: 35,
                                           width: double.maxFinite,
+                                          alignment: Alignment.center,
                                           decoration: BoxDecoration(
                                             image: DecorationImage(
                                                 image: Image.asset(
@@ -351,22 +352,12 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                             borderRadius:
                                                 BorderRadius.circular(30),
                                           ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.remove,
-                                                color: Colors.white,
-                                              ),
-                                              Text(
-                                                LocaleKeys.unfollow.tr(),
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ],
+                                          child: Text(
+                                            LocaleKeys.unfollow.tr(),
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -451,6 +442,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                         child: Container(
                                           height: 35,
                                           width: double.maxFinite,
+                                          alignment: Alignment.center,
                                           decoration: BoxDecoration(
                                             image: DecorationImage(
                                                 image: Image.asset(
@@ -460,22 +452,12 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                             borderRadius:
                                                 BorderRadius.circular(30),
                                           ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.add,
-                                                color: Colors.white,
-                                              ),
-                                              Text(
-                                                LocaleKeys.follow.tr(),
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ],
+                                          child: Text(
+                                            LocaleKeys.follow.tr(),
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            ),
                                           ),
                                         ),
                                       ),
