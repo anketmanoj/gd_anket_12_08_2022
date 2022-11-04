@@ -16,6 +16,7 @@ class PostMaterialModel {
     this.videoId,
     required this.layerType,
     required this.selected,
+    this.imgSeq,
   });
 
   String gif;
@@ -26,6 +27,7 @@ class PostMaterialModel {
   String? videoId;
   String layerType;
   ValueNotifier<bool> selected = ValueNotifier<bool>(false);
+  List<dynamic>? imgSeq;
 
   factory PostMaterialModel.fromJson(String str) =>
       PostMaterialModel.fromMap(json.decode(str));
@@ -42,6 +44,7 @@ class PostMaterialModel {
         videoId: json["videoId"],
         layerType: json["layerType"],
         selected: ValueNotifier<bool>(false),
+        imgSeq: json["imgSeq"] ?? [],
       );
 
   Map<String, dynamic> toMap() => {

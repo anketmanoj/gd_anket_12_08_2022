@@ -1056,12 +1056,11 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                     height: 40,
                                     width: 40,
                                     child: ImageNetworkLoader(
-                                      imageUrl:
-                                          othersMaterials[index].layerType ==
-                                                  "AR"
-                                              ? snapshot.data!.docs[index]
-                                                  ['imgSeq'][0]
-                                              : othersMaterials[index].gif,
+                                      imageUrl: othersMaterials[index]
+                                                  .layerType ==
+                                              "AR"
+                                          ? othersMaterials[index].imgSeq![0]
+                                          : othersMaterials[index].gif,
                                     ),
                                   ),
                                   title: Text(
@@ -1085,8 +1084,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                     width: 40,
                                     child: ImageNetworkLoader(
                                       imageUrl: myItems[index].layerType == "AR"
-                                          ? snapshot.data!.docs[index]['imgSeq']
-                                              [0]
+                                          ? myItems[index].imgSeq![0]
                                           : myItems[index].gif,
                                     ),
                                   ),
@@ -1691,12 +1689,11 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                       height: 40,
                                       width: 40,
                                       child: ImageNetworkLoader(
-                                        imageUrl:
-                                            othersMaterials[index].layerType ==
-                                                    "AR"
-                                                ? snapshot.data!.docs[index]
-                                                    ['imgSeq'][0]
-                                                : othersMaterials[index].gif,
+                                        imageUrl: othersMaterials[index]
+                                                    .layerType ==
+                                                "AR"
+                                            ? othersMaterials[index].imgSeq![0]
+                                            : othersMaterials[index].gif,
                                       ),
                                     ),
                                     title: Text(
@@ -1737,8 +1734,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                 imageUrl: myItems[index]
                                                             .layerType ==
                                                         "AR"
-                                                    ? snapshot.data!.docs[index]
-                                                        ['imgSeq'][0]
+                                                    ? myItems[index].imgSeq![0]
                                                     : myItems[index].gif,
                                               ),
                                             ),
