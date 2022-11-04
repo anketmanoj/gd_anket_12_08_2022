@@ -441,13 +441,13 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                     height: ((videoContainerKey.globalPaintBounds!.height *
                                 videoHeight) /
                             1920) /
-                        1.3,
+                        1.5,
                     rotation: 0,
                     scale: 1,
                     width: ((videoContainerKey.globalPaintBounds!.width *
                                 videoWidth) /
                             1080) /
-                        1.3,
+                        1.5,
                     xPosition: 0,
                     yPosition: 0,
                     pathsForVideoFrames: _fullPathsOnline,
@@ -3111,7 +3111,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                           borderRadius:
                                               BorderRadius.circular(20),
                                           child: ImageNetworkLoader(
-                                              imageUrl: myArCollection.gif),
+                                            imageUrl: myArCollection.imgSeq[0],
+                                          ),
                                         ),
                                       ),
                                     );
