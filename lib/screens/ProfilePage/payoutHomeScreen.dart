@@ -3,6 +3,7 @@ import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/payoutRequestModel.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PayoutScreen extends StatelessWidget {
   PayoutScreen({Key? key}) : super(key: key);
@@ -98,14 +99,30 @@ class PayoutScreen extends StatelessWidget {
                               Switch(
                                 value: payoutData.transferred,
                                 onChanged: (value) async {
-                                  showAlertDialog(
-                                    context: context,
-                                    amount:
-                                        int.parse(payoutData.amountToTransfer),
-                                    username: payoutData.username,
-                                    useruid: payoutData.userUid,
-                                    value: value,
-                                  );
+                                  if (payoutData.transferred == true) {
+                                    Get.dialog(
+                                      SimpleDialog(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.all(10),
+                                            child: Text(
+                                              "Payout Already Completed",
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    showAlertDialog(
+                                      context: context,
+                                      amount: int.parse(
+                                          payoutData.amountToTransfer),
+                                      username: payoutData.username,
+                                      useruid: payoutData.userUid,
+                                      value: value,
+                                    );
+                                  }
                                 },
                               ),
                             ),

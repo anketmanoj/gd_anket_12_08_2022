@@ -341,7 +341,11 @@ dynamic logOutDialog(
 }
 
 Widget ImageNetworkLoader(
-    {required String imageUrl, bool hide = false, BoxFit fit = BoxFit.cover}) {
+    {required String imageUrl,
+    bool hide = false,
+    BoxFit fit = BoxFit.cover,
+    int? cachedHeight,
+    int? cachedWidth}) {
   return Stack(
     children: [
       Container(
@@ -350,6 +354,9 @@ Widget ImageNetworkLoader(
         child: Image.network(
           imageUrl,
           fit: fit,
+          cacheHeight: cachedHeight,
+          gaplessPlayback: true,
+          cacheWidth: cachedWidth,
           filterQuality: FilterQuality.low,
           isAntiAlias: false,
           loadingBuilder: (BuildContext context, Widget child,

@@ -392,7 +392,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
             //! #############################################################
 
-            final List<String> _fullPathsOnline = myAr.imgSeq;
+            final List<String> _fullPathsOnline =
+                myAr.imgSeq.map((e) => e.replaceAll("https", "http")).toList();
             _fullPathsOnline.removeLast();
             dev.log(
                 "first link == ${_fullPathsOnline.first} || last = ${_fullPathsOnline.last}");
@@ -1128,18 +1129,18 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                         value.finishedCaching =
                                                                             ValueNotifier(true);
                                                                     },
-                                                                    cacheProgressIndicatorBuilder:
-                                                                        (context,
-                                                                            progress) {
-                                                                      return CircularProgressIndicator(
-                                                                        value: progress !=
-                                                                                null
-                                                                            ? progress
-                                                                            : 1,
-                                                                        backgroundColor:
-                                                                            constantColors.navButton,
-                                                                      );
-                                                                    },
+                                                                    // cacheProgressIndicatorBuilder:
+                                                                    //     (context,
+                                                                    //         progress) {
+                                                                    //   return CircularProgressIndicator(
+                                                                    //     value: progress !=
+                                                                    //             null
+                                                                    //         ? progress
+                                                                    //         : 1,
+                                                                    //     backgroundColor:
+                                                                    //         constantColors.navButton,
+                                                                    //   );
+                                                                    // },
                                                                     waitUntilCacheIsComplete:
                                                                         true,
                                                                     fps: 35,
@@ -1288,7 +1289,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                     100),
                                                         left: arVal
                                                             .startingPositon,
-                                                        key: UniqueKey(),
+                                                        key: Key(Timestamp.now()
+                                                            .toString()),
                                                         child: Container(
                                                           height: 50,
                                                           width: arVal.finishedCaching!
@@ -3090,6 +3092,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                             );
                                           }
                                         } else {
+                                          dev.log(
+                                              "myArCollection.id = ${myArCollection.id}");
                                           await Get.dialog(
                                             SimpleDialog(
                                               children: [

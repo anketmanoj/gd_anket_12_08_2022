@@ -3618,16 +3618,16 @@ class FirebaseOperations with ChangeNotifier {
           .doc(useruid)
           .get()
           .then((userData) async {
-        await FirebaseFirestore.instance
-            .collection("users")
-            .doc(useruid)
-            .update({
-          'totalmade': int.parse((userData.data()!['totalmade'] *
-                      userData.data()!['percentage'] /
-                      100)
-                  .toStringAsFixed(0)) -
-              amount,
-        });
+        // await FirebaseFirestore.instance
+        //     .collection("users")
+        //     .doc(useruid)
+        //     .update({
+        //   'totalmade': int.parse((userData.data()!['totalmade'] *
+        //               userData.data()!['percentage'] /
+        //               100)
+        //           .toStringAsFixed(0)) -
+        //       amount,
+        // });
 
         await _fcmNotificationService.sendNotificationToUser(
             to: userData.data()!['token'], //To change once set up

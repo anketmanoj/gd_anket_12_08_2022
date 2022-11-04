@@ -371,17 +371,21 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
     int _value = _previousCacheFrame;
     _value++;
 
+    log("value == $_value && frameCount = $_frameCount ");
+
     if (_value < _frameCount) {
       _previousCacheFrame = _value;
       _changeNotifier.value++;
     } else
       _isCacheComplete = true;
 
+    log("_isCacheComplete == $_isCacheComplete");
     if (!_isReadyToPlay) {
       if ((widget.waitUntilCacheIsComplete && _isCacheComplete) ||
           (!widget.waitUntilCacheIsComplete &&
-              _cacheMillisRemaining * 0.9999 < totalTime)) {
+              _cacheMillisRemaining * 0.85 < totalTime)) {
         _isReadyToPlay = true;
+        log("_isReadyToPlay = ${_isReadyToPlay} && _isCacheComplete == $_isCacheComplete");
         if (widget.onReadyToPlay != null) widget.onReadyToPlay!(this);
         if (widget.isAutoPlay) play(from: 0.0);
       }
@@ -458,6 +462,7 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
                 // cacheKey: timeNow + _getCacheDirectory(),
                 memCacheWidth: (widget.frameWidth).toInt(),
                 cacheManager: DefaultCacheManager(),
+
                 memCacheHeight: (widget.frameHeight).toInt(),
                 maxHeightDiskCache: (widget.frameHeight).toInt(),
                 maxWidthDiskCache: (widget.frameWidth).toInt(),
@@ -473,17 +478,22 @@ class ImageSequenceAnimatorState extends State<ImageSequenceAnimator>
                     if (downloadProgress.progress == 1.0) _cache();
                   }
                   if (!_isReadyToPlay &&
-                      widget.cacheProgressIndicatorBuilder != null)
+                      widget.cacheProgressIndicatorBuilder != null) {
+                    log("YYYYYYYYYYOOOOOOOOOOOOOOOO");
+                    return widget.cacheProgressIndicatorBuilder!(context,
+                        1.0 - _cacheMillisRemaining / _cacheMillisTotal);
+                  } else {
+                    log("now here brrroooooooo");
                     return Container();
-                  else
-                    return Container();
+                  }
                 },
                 color: Colors.transparent,
                 fit: widget.fit,
               );
             }
-          } else
+          } else {
             _currentCachedOnlineFrame = Container();
+          }
           if (_isReadyToPlay) {
             if (_currentDisplayedOnlineFrame == null ||
                 _newFrame != _previousFrame ||

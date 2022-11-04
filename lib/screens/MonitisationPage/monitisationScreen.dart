@@ -248,7 +248,7 @@ class _MonitizationScreenState extends State<MonitizationScreen> {
                                                                             .getUserId)
                                                                         .update({
                                                                       "totalmade":
-                                                                          0.0
+                                                                          0
                                                                     });
                                                                   }
                                                                 : () {

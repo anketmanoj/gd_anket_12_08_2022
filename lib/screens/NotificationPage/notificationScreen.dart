@@ -230,7 +230,7 @@ class NotificationScreen extends StatelessWidget {
                               SizedBox(
                                 height: 10,
                               ),
-                              Text(notification.body!.capitalize!),
+                              Text(notification.body!),
                             ],
                           ),
                         ),
