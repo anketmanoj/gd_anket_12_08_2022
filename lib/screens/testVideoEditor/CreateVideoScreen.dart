@@ -1289,8 +1289,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                     100),
                                                         left: arVal
                                                             .startingPositon,
-                                                        key: Key(Timestamp.now()
-                                                            .toString()),
+                                                        key: Key("This"),
                                                         child: Container(
                                                           height: 50,
                                                           width: arVal.finishedCaching!
