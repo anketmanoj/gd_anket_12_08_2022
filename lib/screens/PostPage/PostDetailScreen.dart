@@ -71,10 +71,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
         .doc(widget.videoId)
         .get()
         .then((value) {
-      setState(() {
-        video = Video.fromJson(value.data()! as Map<String, dynamic>);
-      });
-      return video!;
+      return Video.fromJson(value.data()!);
     });
     // return video;
   }
@@ -101,6 +98,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
             );
           },
         );
+        video = value;
         loading = false;
       });
 
@@ -131,708 +129,1264 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
     super.initState();
   }
 
+  Future<dynamic> otherUserOptionsMenu(
+      {required BuildContext context, required Video video}) {
+    final List<String> optionsList = [
+      LocaleKeys.deletepost.tr(),
+      LocaleKeys.editpost.tr(),
+    ];
+    final List<void Function()> functionsList = [
+      () {
+        CoolAlert.show(
+            context: context,
+            type: CoolAlertType.info,
+            title: "Delete Video?",
+            text: "Are you sure you want to delete this video?",
+            showCancelBtn: true,
+            onConfirmBtnTap: () async {
+              await context
+                  .read<FirebaseOperations>()
+                  .deleteVideoPost(videoid: widget.videoId)
+                  .then((value) {
+                Get.back();
+                Get.back();
+                Get.back();
+              });
+            });
+      },
+      () {
+        Get.to(EditPreviewVideoScreen(
+          videoFile: video,
+        ));
+      },
+    ];
+    return showModalBottomSheet(
+      isDismissible: true,
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          bottom: Platform.isAndroid ? true : false,
+          child: Container(
+            padding: EdgeInsets.all(15),
+            height: 25.h,
+            width: 100.w,
+            decoration: BoxDecoration(
+              color: constantColors.whiteColor,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Container(
+              child: ListView.builder(
+                itemCount: optionsList.length,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return Options(
+                    tapped: functionsList[index],
+                    text: optionsList[index],
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-    final FirebaseOperations firebaseOperations =
-        Provider.of<FirebaseOperations>(context, listen: false);
-    final Authentication authentication =
-        Provider.of<Authentication>(context, listen: false);
+    if (video != null)
+      return (video!.isPaid &&
+              !video!.boughtBy
+                  .contains(context.read<Authentication>().getUserId) &&
+              video!.useruid != context.read<Authentication>().getUserId)
+          ? paidVideoNotBought(context)
+          : VideoBoughtAndViewable(context);
+    else
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+  }
 
-    Future<dynamic> otherUserOptionsMenu(
-        {required BuildContext context, required Video video}) {
-      final List<String> optionsList = [
-        LocaleKeys.deletepost.tr(),
-        LocaleKeys.editpost.tr(),
-      ];
-      final List<void Function()> functionsList = [
-        () {
-          CoolAlert.show(
-              context: context,
-              type: CoolAlertType.info,
-              title: "Delete Video?",
-              text: "Are you sure you want to delete this video?",
-              showCancelBtn: true,
-              onConfirmBtnTap: () async {
-                await firebaseOperations
-                    .deleteVideoPost(videoid: widget.videoId)
-                    .then((value) {
-                  Get.back();
-                  Get.back();
-                  Get.back();
-                });
-              });
-        },
-        () {
-          Get.to(EditPreviewVideoScreen(
-            videoFile: video,
-          ));
-        },
-      ];
-      return showModalBottomSheet(
-        isDismissible: true,
-        isScrollControlled: true,
-        context: context,
-        builder: (context) {
-          return SafeArea(
-            bottom: Platform.isAndroid ? true : false,
-            child: Container(
-              padding: EdgeInsets.all(15),
-              height: 25.h,
-              width: 100.w,
-              decoration: BoxDecoration(
-                color: constantColors.whiteColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+  Widget VideoBoughtAndViewable(BuildContext context) {
+    return SafeArea(
+      top: false,
+      bottom: Platform.isAndroid ? true : false,
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: VisibilityDetector(
+          key: Key(
+              '${video!.videotitle} + ${video!.caption} + ${DateTime.now()}'),
+          onVisibilityChanged: (visibilityInfo) {
+            var visiblePercentage = visibilityInfo.visibleFraction * 100;
+            if (visiblePercentage == 100) {
+              log("${video!.videotitle} played");
+              _videoPlayerController.play();
+            } else {
+              log("${video!.videotitle} paused");
+              _videoPlayerController.pause();
+            }
+          },
+          child: Stack(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  _videoPlayerController.value.isPlaying
+                      ? _videoPlayerController.pause()
+                      : _videoPlayerController.play();
+                },
+                child: Chewie(
+                  controller: _chewieController,
                 ),
               ),
-              child: Container(
-                child: ListView.builder(
-                  itemCount: optionsList.length,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return Options(
-                      tapped: functionsList[index],
-                      text: optionsList[index],
-                    );
+              Visibility(
+                visible: video!.isPaid &&
+                    !video!.boughtBy
+                        .contains(context.read<Authentication>().getUserId) &&
+                    video!.useruid != context.read<Authentication>().getUserId,
+                child: Positioned(
+                  child: Center(
+                    child: BlurryContainer.expand(
+                      blur: 8,
+                      elevation: 0,
+                      color: Colors.transparent,
+                      padding: const EdgeInsets.all(8),
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 45),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                height: 20.h,
+                                width: 100.w,
+                                child: ImageNetworkLoader(
+                                  imageUrl: video!.thumbnailurl,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Container(
+                                height: 7.h,
+                                width: 100.w,
+                                child: ElevatedButton.icon(
+                                  onPressed: () async {
+                                    viewMaterials(context);
+                                  },
+                                  style: ButtonStyle(
+                                    foregroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.black),
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            constantColors.black),
+                                    shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    ),
+                                  ),
+                                  icon: Icon(
+                                    Icons.lock_open,
+                                    color: constantColors.whiteColor,
+                                    size: 30,
+                                  ),
+                                  label: Text(
+                                    "Purchase Content",
+                                    style: TextStyle(
+                                      color: constantColors.whiteColor,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // back button
+              Positioned(
+                top: 10.h,
+                left: 10,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
                   },
                 ),
               ),
-            ),
-          );
-        },
-      );
-    }
-
-    return VisibilityDetector(
-      key: Key('${video!.videotitle} + ${video!.caption} + ${DateTime.now()}'),
-      onVisibilityChanged: (visibilityInfo) {
-        var visiblePercentage = visibilityInfo.visibleFraction * 100;
-        if (visiblePercentage == 100) {
-          log("${video!.videotitle} played");
-
-          if (video!.isPaid &&
-              !video!.boughtBy
-                  .contains(context.read<Authentication>().getUserId) &&
-              video!.useruid != context.read<Authentication>().getUserId) {
-            log("pls pause!");
-            _videoPlayerController.pause();
-            _chewieController.videoPlayerController.pause();
-            log("paused as well");
-          } else {
-            _videoPlayerController.play();
-          }
-        } else {
-          log("${video!.videotitle} paused");
-          _videoPlayerController.pause();
-        }
-      },
-      child: SafeArea(
-        top: false,
-        bottom: Platform.isAndroid ? true : false,
-        child: Scaffold(
-          backgroundColor: Colors.black,
-          body: loading == false
-              ? Stack(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _videoPlayerController.value.isPlaying
-                              ? _videoPlayerController.pause()
-                              : _videoPlayerController.play();
-                        });
-                      },
-                      child: Chewie(
-                        controller: _chewieController,
-                      ),
+              Visibility(
+                visible: video!.useruid ==
+                        Provider.of<Authentication>(context, listen: false)
+                            .getUserId ||
+                    adminUserId
+                        .contains(context.read<Authentication>().getUserId),
+                child: Positioned(
+                  top: 10.h,
+                  right: 10,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.menu,
+                      color: Colors.white,
                     ),
-                    Visibility(
-                      visible: video!.isPaid &&
-                          !video!.boughtBy.contains(
-                              context.read<Authentication>().getUserId) &&
-                          video!.useruid !=
-                              context.read<Authentication>().getUserId,
-                      child: Positioned(
-                        child: Center(
-                          child: BlurryContainer.expand(
-                            blur: 8,
-                            elevation: 0,
-                            color: Colors.transparent,
-                            padding: const EdgeInsets.all(8),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20)),
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 45),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      height: 20.h,
-                                      width: 100.w,
-                                      child: ImageNetworkLoader(
-                                        imageUrl: video!.thumbnailurl,
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    Container(
-                                      height: size.height * 0.07,
-                                      width: size.width,
-                                      child: ElevatedButton.icon(
-                                        onPressed: () async {
-                                          viewMaterials(context, size);
-                                        },
-                                        style: ButtonStyle(
-                                          foregroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                                  Colors.black),
-                                          backgroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                                  constantColors.black),
-                                          shape: MaterialStateProperty.all<
-                                              RoundedRectangleBorder>(
-                                            RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                        ),
-                                        icon: Icon(
-                                          Icons.lock_open,
-                                          color: constantColors.whiteColor,
-                                          size: 30,
-                                        ),
-                                        label: Text(
-                                          "Purchase Content",
-                                          style: TextStyle(
-                                            color: constantColors.whiteColor,
-                                            fontSize: 18,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    // back button
-                    Positioned(
-                      top: size.height * 0.1,
-                      left: 10,
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
+                    onPressed: () {
+                      //  ! options here
+                      setState(() {
+                        _videoPlayerController.value.isPlaying
+                            ? _videoPlayerController.pause()
+                            : null;
+                      });
+
+                      otherUserOptionsMenu(context: context, video: video!);
+                    },
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 10,
+                right: 20.w,
+                left: 5,
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  width: 100.w,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          context.read<FirebaseOperations>().goToUserProfile(
+                              userUid: video!.useruid, context: context);
                         },
-                      ),
-                    ),
-                    Visibility(
-                      visible: video!.useruid ==
-                              Provider.of<Authentication>(context,
-                                      listen: false)
-                                  .getUserId ||
-                          adminUserId.contains(
-                              context.read<Authentication>().getUserId),
-                      child: Positioned(
-                        top: size.height * 0.1,
-                        right: 10,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.menu,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            //  ! options here
-                            setState(() {
-                              _videoPlayerController.value.isPlaying
-                                  ? _videoPlayerController.pause()
-                                  : null;
-                            });
-
-                            otherUserOptionsMenu(
-                                context: context, video: video!);
-                          },
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 10,
-                      right: size.width * 0.2,
-                      left: 5,
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        width: size.width,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            InkWell(
-                              onTap: () {
-                                firebaseOperations.goToUserProfile(
-                                    userUid: video!.useruid, context: context);
-                              },
-                              child: Row(
-                                children: [
-                                  Container(
-                                    height: 40,
-                                    width: 40,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(30),
-                                      image: DecorationImage(
-                                        image: Image.network(video!.userimage)
-                                            .image,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                      padding: const EdgeInsets.only(left: 8),
-                                      child: Row(
-                                        children: [
-                                          Stack(
-                                            children: <Widget>[
-                                              // Stroked text as border.
-                                              Text(
-                                                video!.username,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  foreground: Paint()
-                                                    ..style =
-                                                        PaintingStyle.stroke
-                                                    ..strokeWidth = 3
-                                                    ..color = Colors.black,
-                                                ),
-                                              ),
-                                              // Solid text as fill.
-                                              Text(
-                                                video!.username,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Visibility(
-                                            visible:
-                                                video!.verifiedUser ?? false,
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 8.0),
-                                              child: VerifiedMark(),
-                                            ),
-                                          ),
-                                        ],
-                                      )),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 10, top: 5),
-                              child: Stack(
-                                children: <Widget>[
-                                  // Stroked text as border.
-                                  Text(
-                                    video!.videotitle,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      foreground: Paint()
-                                        ..style = PaintingStyle.stroke
-                                        ..strokeWidth = 3
-                                        ..color = Colors.black,
-                                    ),
-                                  ),
-                                  // Solid text as fill.
-                                  Text(
-                                    video!.videotitle,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 10, top: 5),
-                              child: Stack(
-                                children: <Widget>[
-                                  ReadMoreText(
-                                    video!.caption,
-                                    trimLines: 2,
-                                    colorClickableText:
-                                        constantColors.navButton,
-                                    trimMode: TrimMode.Line,
-                                    moreStyle: TextStyle(
-                                      shadows: outlinedText(
-                                        strokeColor: constantColors.whiteColor,
-                                      ),
-                                      color: constantColors.mainColor,
-                                    ),
-                                    lessStyle: TextStyle(
-                                      shadows: outlinedText(
-                                        strokeColor: constantColors.whiteColor,
-                                      ),
-                                      color: constantColors.mainColor,
-                                    ),
-                                    trimCollapsedText: 'Show more',
-                                    trimExpandedText: 'Show less',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                      shadows: outlinedText(
-                                        strokeColor: constantColors.black,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 10, top: 5),
-                              child: Stack(
-                                children: <Widget>[
-                                  // Stroked text as border.
-                                  Text(
-                                    timeago.format((video!.timestamp).toDate()),
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      foreground: Paint()
-                                        ..style = PaintingStyle.stroke
-                                        ..strokeWidth = 3
-                                        ..color = Colors.black,
-                                    ),
-                                  ),
-                                  // Solid text as fill.
-                                  Text(
-                                    timeago.format((video!.timestamp).toDate()),
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 10,
-                      bottom: 10,
-                      child: SpeedDial(
-                        backgroundColor: constantColors.navButton,
-                        childrenButtonSize:
-                            Size(size.width * 0.2, size.height * 0.09),
-                        childPadding: EdgeInsets.all(10),
-                        overlayOpacity: 0,
-                        // animatedIcon: AnimatedIcons.menu_close,
-                        spacing: size.height * 0.002,
-                        animatedIcon: AnimatedIcons.menu_close,
-                        closeManually: false,
-                        children: [
-                          SpeedDialChild(
-                            // visible: video.isPaid,
-                            child: Container(
+                            Container(
+                              height: 40,
+                              width: 40,
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: constantColors.whiteColor,
-                                image: DecorationImage(
-                                  fit: BoxFit.fitHeight,
-                                  image: AssetImage(
-                                    "assets/icons/cat_icon.png",
-                                  ),
-                                ),
-                              ),
-                            ),
-                            onTap: () => video!.isFree
-                                ? freeMaterialsBottomSheet(
-                                    context, size, firebaseOperations)
-                                : viewMaterials(context, size),
-                          ),
-                          SpeedDialChild(
-                            child: Icon(
-                              FontAwesomeIcons.shareAlt,
-                            ),
-                            onTap: () async {
-                              var generatedLink =
-                                  await DynamicLinkService.createDynamicLink(
-                                      video!.id,
-                                      short: true);
-                              final String message = generatedLink.toString();
-
-                              bool canShareVal = false;
-
-                              if (video!.isPaid) {
-                                if (video!.boughtBy.contains(
-                                    context.read<Authentication>().getUserId)) {
-                                  canShareVal = true;
-                                }
-                                if (video!.useruid ==
-                                    context.read<Authentication>().getUserId) {
-                                  canShareVal == true;
-                                }
-                              } else {
-                                canShareVal = true;
-                              }
-
-                              Get.bottomSheet(
-                                ShareWidget(
-                                  msg: message,
-                                  urlPath: video!.videourl,
-                                  videoOwnerName: video!.username,
-                                  canShareToSocialMedia: canShareVal,
-                                ),
-                              );
-                            },
-                          ),
-                          SpeedDialChild(
-                            child: Icon(
-                              FontAwesomeIcons.paperPlane,
-                            ),
-                            onTap: () async {
-                              await Provider.of<FirebaseOperations>(context,
-                                      listen: false)
-                                  .messageUser(
-                                      messagingUid: video!.useruid,
-                                      messagingDocId:
-                                          Provider.of<Authentication>(context,
-                                                  listen: false)
-                                              .getUserId,
-                                      messagingData: {
-                                        'username':
-                                            Provider.of<FirebaseOperations>(
-                                                    context,
-                                                    listen: false)
-                                                .getInitUserName,
-                                        'userimage':
-                                            Provider.of<FirebaseOperations>(
-                                                    context,
-                                                    listen: false)
-                                                .getInitUserImage,
-                                        'useremail':
-                                            Provider.of<FirebaseOperations>(
-                                                    context,
-                                                    listen: false)
-                                                .getInitUserEmail,
-                                        'useruid': Provider.of<Authentication>(
-                                                context,
-                                                listen: false)
-                                            .getUserId,
-                                        'time': Timestamp.now(),
-                                      },
-                                      messengerUid: Provider.of<Authentication>(
-                                              context,
-                                              listen: false)
-                                          .getUserId,
-                                      messengerDocId: video!.useruid,
-                                      messengerData: {
-                                        'username': video!.username,
-                                        'userimage': video!.userimage,
-                                        'useremail': 'test - remove later',
-                                        'useruid': video!.useruid,
-                                        'time': Timestamp.now(),
-                                      })
-                                  .whenComplete(() async {
-                                await FirebaseFirestore.instance
-                                    .collection("users")
-                                    .doc(video!.useruid)
-                                    .get()
-                                    .then((value) {
-                                  if (value.exists) {
-                                    try {
-                                      UserModel user =
-                                          UserModel.fromMap(value.data()!);
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => PrivateMessage(
-                                            documentSnapshot: value,
-                                          ),
-                                        ),
-                                      );
-                                    } catch (e) {
-                                      print(e.toString());
-                                    }
-                                  }
-                                });
-                              });
-                            },
-                          ),
-                          SpeedDialChild(
-                              child: StreamBuilder<DocumentSnapshot>(
-                                  stream: FirebaseFirestore.instance
-                                      .collection("posts")
-                                      .doc(video!.id)
-                                      .collection("likes")
-                                      .doc(authentication.getUserId)
-                                      .snapshots(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      if (snapshot.data!.exists) {
-                                        return IconButton(
-                                          onPressed: () {
-                                            firebaseOperations.deleteLikePost(
-                                                postUid: video!.id,
-                                                userUid:
-                                                    authentication.getUserId,
-                                                context: context);
-                                          },
-                                          icon: Icon(
-                                            Icons.favorite,
-                                            color: Colors.red,
-                                          ),
-                                        );
-                                      } else {
-                                        return IconButton(
-                                            onPressed: () async {
-                                              await firebaseOperations
-                                                  .likePost(
-                                                videoOwnerId: video!.useruid,
-                                                sendToUserToken:
-                                                    video!.ownerFcmToken!,
-                                                likerUsername:
-                                                    firebaseOperations
-                                                        .initUserName,
-                                                postUid: video!.id,
-                                                userUid:
-                                                    authentication.getUserId,
-                                                context: context,
-                                              )
-                                                  .then((value) {
-                                                firebaseOperations
-                                                    .addLikeNotification(
-                                                  postId: video!.id,
-                                                  userUid:
-                                                      authentication.getUserId,
-                                                  context: context,
-                                                  videoOwnerUid: video!.useruid,
-                                                );
-                                              });
-                                            },
-                                            icon: Icon(
-                                              Icons.favorite_border,
-                                              color: Colors.red,
-                                            ));
-                                      }
-                                    } else {
-                                      return Icon(
-                                        Icons.favorite_border,
-                                        color: Colors.red,
-                                      );
-                                    }
-                                  }),
-                              onLongPress: () {
-                                Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        child: ShowLikesPage(
-                                          postId: video!.id,
-                                        ),
-                                        type: PageTransitionType.fade));
-                              }),
-                          SpeedDialChild(
-                            child: Icon(
-                              FontAwesomeIcons.comment,
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  PageTransition(
-                                      child: ShowCommentsPage(
-                                        ownerFcmToken: video!.ownerFcmToken,
-                                        postOwnerId: video!.useruid,
-                                        postId: video!.id,
-                                      ),
-                                      type: PageTransitionType.fade));
-                            },
-                          ),
-                          SpeedDialChild(
-                            child: StreamBuilder<DocumentSnapshot>(
-                                stream: FirebaseFirestore.instance
-                                    .collection("users")
-                                    .doc(Provider.of<Authentication>(context,
-                                            listen: false)
-                                        .getUserId)
-                                    .collection("favorites")
-                                    .doc(video!.id)
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return Center(
-                                        child: CircularProgressIndicator());
-                                  } else {
-                                    if (snapshot.data!.exists) {
-                                      return IconButton(
-                                        onPressed: () async {
-                                          await firebaseOperations
-                                              .removeFromFavs(
-                                                  video: video!,
-                                                  context: context);
-                                        },
-                                        icon: Icon(
-                                          FontAwesomeIcons.solidStar,
-                                          color: Colors.black,
-                                        ),
-                                      );
-                                    } else {
-                                      return IconButton(
-                                        onPressed: () async {
-                                          await firebaseOperations.addToFavs(
-                                              video: video!, context: context);
-                                        },
-                                        icon: Icon(
-                                          FontAwesomeIcons.star,
-                                          color: Colors.black,
-                                        ),
-                                      );
-                                    }
-                                  }
-                                }),
-                          ),
-                          SpeedDialChild(
-                            child: Container(
-                              height: 90,
-                              width: 90,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(40),
+                                borderRadius: BorderRadius.circular(30),
                                 image: DecorationImage(
                                   image: Image.network(video!.userimage).image,
                                   fit: BoxFit.cover,
                                 ),
                               ),
                             ),
-                            onTap: () {
-                              firebaseOperations.goToUserProfile(
-                                  userUid: video!.useruid, context: context);
-                            },
-                          ),
-                        ],
+                            Padding(
+                                padding: const EdgeInsets.only(left: 8),
+                                child: Row(
+                                  children: [
+                                    Stack(
+                                      children: <Widget>[
+                                        // Stroked text as border.
+                                        Text(
+                                          video!.username,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            foreground: Paint()
+                                              ..style = PaintingStyle.stroke
+                                              ..strokeWidth = 3
+                                              ..color = Colors.black,
+                                          ),
+                                        ),
+                                        // Solid text as fill.
+                                        Text(
+                                          video!.username,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Visibility(
+                                      visible: video!.verifiedUser ?? false,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: VerifiedMark(),
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ],
+                        ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10, top: 5),
+                        child: Stack(
+                          children: <Widget>[
+                            // Stroked text as border.
+                            Text(
+                              video!.videotitle,
+                              style: TextStyle(
+                                fontSize: 14,
+                                foreground: Paint()
+                                  ..style = PaintingStyle.stroke
+                                  ..strokeWidth = 3
+                                  ..color = Colors.black,
+                              ),
+                            ),
+                            // Solid text as fill.
+                            Text(
+                              video!.videotitle,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10, top: 5),
+                        child: Stack(
+                          children: <Widget>[
+                            ReadMoreText(
+                              video!.caption,
+                              trimLines: 2,
+                              colorClickableText: constantColors.navButton,
+                              trimMode: TrimMode.Line,
+                              moreStyle: TextStyle(
+                                shadows: outlinedText(
+                                  strokeColor: constantColors.whiteColor,
+                                ),
+                                color: constantColors.mainColor,
+                              ),
+                              lessStyle: TextStyle(
+                                shadows: outlinedText(
+                                  strokeColor: constantColors.whiteColor,
+                                ),
+                                color: constantColors.mainColor,
+                              ),
+                              trimCollapsedText: 'Show more',
+                              trimExpandedText: 'Show less',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                shadows: outlinedText(
+                                  strokeColor: constantColors.black,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 10, top: 5),
+                        child: Stack(
+                          children: <Widget>[
+                            // Stroked text as border.
+                            Text(
+                              timeago.format((video!.timestamp).toDate()),
+                              style: TextStyle(
+                                fontSize: 10,
+                                foreground: Paint()
+                                  ..style = PaintingStyle.stroke
+                                  ..strokeWidth = 3
+                                  ..color = Colors.black,
+                              ),
+                            ),
+                            // Solid text as fill.
+                            Text(
+                              timeago.format((video!.timestamp).toDate()),
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 10,
+                bottom: 10,
+                child: SpeedDial(
+                  backgroundColor: constantColors.navButton,
+
+                  childPadding: EdgeInsets.all(10),
+                  overlayOpacity: 0,
+                  // animatedIcon: AnimatedIcons.menu_close,
+
+                  animatedIcon: AnimatedIcons.menu_close,
+                  closeManually: false,
+                  children: [
+                    SpeedDialChild(
+                      // visible: video.isPaid,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: constantColors.whiteColor,
+                          image: DecorationImage(
+                            fit: BoxFit.fitHeight,
+                            image: AssetImage(
+                              "assets/icons/cat_icon.png",
+                            ),
+                          ),
+                        ),
+                      ),
+                      onTap: () => video!.isFree
+                          ? freeMaterialsBottomSheet(
+                              context,
+                            )
+                          : viewMaterials(
+                              context,
+                            ),
+                    ),
+                    SpeedDialChild(
+                      child: Icon(
+                        FontAwesomeIcons.shareAlt,
+                      ),
+                      onTap: () async {
+                        var generatedLink =
+                            await DynamicLinkService.createDynamicLink(
+                                video!.id,
+                                short: true);
+                        final String message = generatedLink.toString();
+
+                        bool canShareVal = false;
+
+                        if (video!.isPaid) {
+                          if (video!.boughtBy.contains(
+                              context.read<Authentication>().getUserId)) {
+                            canShareVal = true;
+                          }
+                          if (video!.useruid ==
+                              context.read<Authentication>().getUserId) {
+                            canShareVal == true;
+                          }
+                        } else {
+                          canShareVal = true;
+                        }
+
+                        Get.bottomSheet(
+                          ShareWidget(
+                            msg: message,
+                            urlPath: video!.videourl,
+                            videoOwnerName: video!.username,
+                            canShareToSocialMedia: canShareVal,
+                          ),
+                        );
+                      },
+                    ),
+                    SpeedDialChild(
+                      child: Icon(
+                        FontAwesomeIcons.paperPlane,
+                      ),
+                      onTap: () async {
+                        await Provider.of<FirebaseOperations>(context,
+                                listen: false)
+                            .messageUser(
+                                messagingUid: video!.useruid,
+                                messagingDocId: Provider.of<Authentication>(
+                                        context,
+                                        listen: false)
+                                    .getUserId,
+                                messagingData: {
+                                  'username': Provider.of<FirebaseOperations>(
+                                          context,
+                                          listen: false)
+                                      .getInitUserName,
+                                  'userimage': Provider.of<FirebaseOperations>(
+                                          context,
+                                          listen: false)
+                                      .getInitUserImage,
+                                  'useremail': Provider.of<FirebaseOperations>(
+                                          context,
+                                          listen: false)
+                                      .getInitUserEmail,
+                                  'useruid': Provider.of<Authentication>(
+                                          context,
+                                          listen: false)
+                                      .getUserId,
+                                  'time': Timestamp.now(),
+                                },
+                                messengerUid: Provider.of<Authentication>(
+                                        context,
+                                        listen: false)
+                                    .getUserId,
+                                messengerDocId: video!.useruid,
+                                messengerData: {
+                                  'username': video!.username,
+                                  'userimage': video!.userimage,
+                                  'useremail': 'test - remove later',
+                                  'useruid': video!.useruid,
+                                  'time': Timestamp.now(),
+                                })
+                            .whenComplete(() async {
+                          await FirebaseFirestore.instance
+                              .collection("users")
+                              .doc(video!.useruid)
+                              .get()
+                              .then((value) {
+                            if (value.exists) {
+                              try {
+                                UserModel user =
+                                    UserModel.fromMap(value.data()!);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PrivateMessage(
+                                      documentSnapshot: value,
+                                    ),
+                                  ),
+                                );
+                              } catch (e) {
+                                print(e.toString());
+                              }
+                            }
+                          });
+                        });
+                      },
+                    ),
+                    SpeedDialChild(
+                        child: StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection("posts")
+                                .doc(video!.id)
+                                .collection("likes")
+                                .doc(context.read<Authentication>().getUserId)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                if (snapshot.data!.exists) {
+                                  return IconButton(
+                                    onPressed: () {
+                                      context
+                                          .read<FirebaseOperations>()
+                                          .deleteLikePost(
+                                              postUid: video!.id,
+                                              userUid: context
+                                                  .read<Authentication>()
+                                                  .getUserId,
+                                              context: context);
+                                    },
+                                    icon: Icon(
+                                      Icons.favorite,
+                                      color: Colors.red,
+                                    ),
+                                  );
+                                } else {
+                                  return IconButton(
+                                      onPressed: () async {
+                                        await context
+                                            .read<FirebaseOperations>()
+                                            .likePost(
+                                              videoOwnerId: video!.useruid,
+                                              sendToUserToken:
+                                                  video!.ownerFcmToken!,
+                                              likerUsername: context
+                                                  .read<FirebaseOperations>()
+                                                  .initUserName,
+                                              postUid: video!.id,
+                                              userUid: context
+                                                  .read<Authentication>()
+                                                  .getUserId,
+                                              context: context,
+                                            )
+                                            .then((value) {
+                                          context
+                                              .read<FirebaseOperations>()
+                                              .addLikeNotification(
+                                                postId: video!.id,
+                                                userUid: context
+                                                    .read<Authentication>()
+                                                    .getUserId,
+                                                context: context,
+                                                videoOwnerUid: video!.useruid,
+                                              );
+                                        });
+                                      },
+                                      icon: Icon(
+                                        Icons.favorite_border,
+                                        color: Colors.red,
+                                      ));
+                                }
+                              } else {
+                                return Icon(
+                                  Icons.favorite_border,
+                                  color: Colors.red,
+                                );
+                              }
+                            }),
+                        onLongPress: () {
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  child: ShowLikesPage(
+                                    postId: video!.id,
+                                  ),
+                                  type: PageTransitionType.fade));
+                        }),
+                    SpeedDialChild(
+                      child: Icon(
+                        FontAwesomeIcons.comment,
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                child: ShowCommentsPage(
+                                  ownerFcmToken: video!.ownerFcmToken,
+                                  postOwnerId: video!.useruid,
+                                  postId: video!.id,
+                                ),
+                                type: PageTransitionType.fade));
+                      },
+                    ),
+                    SpeedDialChild(
+                      child: StreamBuilder<DocumentSnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection("users")
+                              .doc(Provider.of<Authentication>(context,
+                                      listen: false)
+                                  .getUserId)
+                              .collection("favorites")
+                              .doc(video!.id)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else {
+                              if (snapshot.data!.exists) {
+                                return IconButton(
+                                  onPressed: () async {
+                                    await context
+                                        .read<FirebaseOperations>()
+                                        .removeFromFavs(
+                                            video: video!, context: context);
+                                  },
+                                  icon: Icon(
+                                    FontAwesomeIcons.solidStar,
+                                    color: Colors.black,
+                                  ),
+                                );
+                              } else {
+                                return IconButton(
+                                  onPressed: () async {
+                                    await context
+                                        .read<FirebaseOperations>()
+                                        .addToFavs(
+                                            video: video!, context: context);
+                                  },
+                                  icon: Icon(
+                                    FontAwesomeIcons.star,
+                                    color: Colors.black,
+                                  ),
+                                );
+                              }
+                            }
+                          }),
+                    ),
+                    SpeedDialChild(
+                      child: Container(
+                        height: 90,
+                        width: 90,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(40),
+                          image: DecorationImage(
+                            image: Image.network(video!.userimage).image,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        context.read<FirebaseOperations>().goToUserProfile(
+                            userUid: video!.useruid, context: context);
+                      },
                     ),
                   ],
-                )
-              : Container(),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  dynamic viewMaterials(BuildContext context, Size size) async {
+  Widget paidVideoNotBought(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          height: 100.h,
+          width: 100.w,
+          child: ImageNetworkLoader(imageUrl: video!.thumbnailurl),
+        ),
+        Positioned(
+          child: Center(
+            child: BlurryContainer.expand(
+              blur: 8,
+              elevation: 0,
+              color: Colors.transparent,
+              padding: const EdgeInsets.all(8),
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 45),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 20.h,
+                        width: 100.w,
+                        child: ImageNetworkLoader(
+                          imageUrl: video!.thumbnailurl,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        height: 7.h,
+                        width: 100.w,
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            viewMaterials(context);
+                          },
+                          style: ButtonStyle(
+                            foregroundColor:
+                                MaterialStateProperty.all<Color>(Colors.black),
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                constantColors.black),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                          ),
+                          icon: Icon(
+                            Icons.lock_open,
+                            color: constantColors.whiteColor,
+                            size: 30,
+                          ),
+                          label: Text(
+                            "Purchase Content",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        // back button
+        Positioned(
+          top: 10.h,
+          left: 10,
+          child: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        Visibility(
+          visible: video!.useruid ==
+                  Provider.of<Authentication>(context, listen: false)
+                      .getUserId ||
+              adminUserId.contains(context.read<Authentication>().getUserId),
+          child: Positioned(
+            top: 10.h,
+            right: 10,
+            child: IconButton(
+              icon: Icon(
+                Icons.menu,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                //  ! options here
+                setState(() {
+                  _videoPlayerController.value.isPlaying
+                      ? _videoPlayerController.pause()
+                      : null;
+                });
+
+                otherUserOptionsMenu(context: context, video: video!);
+              },
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 10,
+          right: 20.w,
+          left: 5,
+          child: Container(
+            padding: EdgeInsets.all(5),
+            width: 100.w,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: () {
+                    context.read<FirebaseOperations>().goToUserProfile(
+                        userUid: video!.useruid, context: context);
+                  },
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          image: DecorationImage(
+                            image: Image.network(video!.userimage).image,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Row(
+                            children: [
+                              Stack(
+                                children: <Widget>[
+                                  // Stroked text as border.
+                                  Text(
+                                    video!.username,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      foreground: Paint()
+                                        ..style = PaintingStyle.stroke
+                                        ..strokeWidth = 3
+                                        ..color = Colors.black,
+                                    ),
+                                  ),
+                                  // Solid text as fill.
+                                  Text(
+                                    video!.username,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Visibility(
+                                visible: video!.verifiedUser ?? false,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: VerifiedMark(),
+                                ),
+                              ),
+                            ],
+                          )),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10, top: 5),
+                  child: Stack(
+                    children: <Widget>[
+                      // Stroked text as border.
+                      Text(
+                        video!.videotitle,
+                        style: TextStyle(
+                          fontSize: 14,
+                          foreground: Paint()
+                            ..style = PaintingStyle.stroke
+                            ..strokeWidth = 3
+                            ..color = Colors.black,
+                        ),
+                      ),
+                      // Solid text as fill.
+                      Text(
+                        video!.videotitle,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10, top: 5),
+                  child: Stack(
+                    children: <Widget>[
+                      ReadMoreText(
+                        video!.caption,
+                        trimLines: 2,
+                        colorClickableText: constantColors.navButton,
+                        trimMode: TrimMode.Line,
+                        moreStyle: TextStyle(
+                          shadows: outlinedText(
+                            strokeColor: constantColors.whiteColor,
+                          ),
+                          color: constantColors.mainColor,
+                        ),
+                        lessStyle: TextStyle(
+                          shadows: outlinedText(
+                            strokeColor: constantColors.whiteColor,
+                          ),
+                          color: constantColors.mainColor,
+                        ),
+                        trimCollapsedText: 'Show more',
+                        trimExpandedText: 'Show less',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                          shadows: outlinedText(
+                            strokeColor: constantColors.black,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 10, top: 5),
+                  child: Stack(
+                    children: <Widget>[
+                      // Stroked text as border.
+                      Text(
+                        timeago.format((video!.timestamp).toDate()),
+                        style: TextStyle(
+                          fontSize: 10,
+                          foreground: Paint()
+                            ..style = PaintingStyle.stroke
+                            ..strokeWidth = 3
+                            ..color = Colors.black,
+                        ),
+                      ),
+                      // Solid text as fill.
+                      Text(
+                        timeago.format((video!.timestamp).toDate()),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          right: 10,
+          bottom: 10,
+          child: SpeedDial(
+            backgroundColor: constantColors.navButton,
+
+            childPadding: EdgeInsets.all(10),
+            overlayOpacity: 0,
+            // animatedIcon: AnimatedIcons.menu_close,
+
+            animatedIcon: AnimatedIcons.menu_close,
+            closeManually: false,
+            children: [
+              SpeedDialChild(
+                // visible: video.isPaid,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: constantColors.whiteColor,
+                    image: DecorationImage(
+                      fit: BoxFit.fitHeight,
+                      image: AssetImage(
+                        "assets/icons/cat_icon.png",
+                      ),
+                    ),
+                  ),
+                ),
+                onTap: () => video!.isFree
+                    ? freeMaterialsBottomSheet(
+                        context,
+                      )
+                    : viewMaterials(
+                        context,
+                      ),
+              ),
+              SpeedDialChild(
+                child: Icon(
+                  FontAwesomeIcons.shareAlt,
+                ),
+                onTap: () async {
+                  var generatedLink =
+                      await DynamicLinkService.createDynamicLink(video!.id,
+                          short: true);
+                  final String message = generatedLink.toString();
+
+                  bool canShareVal = false;
+
+                  if (video!.isPaid) {
+                    if (video!.boughtBy
+                        .contains(context.read<Authentication>().getUserId)) {
+                      canShareVal = true;
+                    }
+                    if (video!.useruid ==
+                        context.read<Authentication>().getUserId) {
+                      canShareVal == true;
+                    }
+                  } else {
+                    canShareVal = true;
+                  }
+
+                  Get.bottomSheet(
+                    ShareWidget(
+                      msg: message,
+                      urlPath: video!.videourl,
+                      videoOwnerName: video!.username,
+                      canShareToSocialMedia: canShareVal,
+                    ),
+                  );
+                },
+              ),
+              SpeedDialChild(
+                child: Icon(
+                  FontAwesomeIcons.paperPlane,
+                ),
+                onTap: () async {
+                  await Provider.of<FirebaseOperations>(context, listen: false)
+                      .messageUser(
+                          messagingUid: video!.useruid,
+                          messagingDocId: Provider.of<Authentication>(context,
+                                  listen: false)
+                              .getUserId,
+                          messagingData: {
+                            'username': Provider.of<FirebaseOperations>(context,
+                                    listen: false)
+                                .getInitUserName,
+                            'userimage': Provider.of<FirebaseOperations>(
+                                    context,
+                                    listen: false)
+                                .getInitUserImage,
+                            'useremail': Provider.of<FirebaseOperations>(
+                                    context,
+                                    listen: false)
+                                .getInitUserEmail,
+                            'useruid': Provider.of<Authentication>(context,
+                                    listen: false)
+                                .getUserId,
+                            'time': Timestamp.now(),
+                          },
+                          messengerUid: Provider.of<Authentication>(context,
+                                  listen: false)
+                              .getUserId,
+                          messengerDocId: video!.useruid,
+                          messengerData: {
+                            'username': video!.username,
+                            'userimage': video!.userimage,
+                            'useremail': 'test - remove later',
+                            'useruid': video!.useruid,
+                            'time': Timestamp.now(),
+                          })
+                      .whenComplete(() async {
+                    await FirebaseFirestore.instance
+                        .collection("users")
+                        .doc(video!.useruid)
+                        .get()
+                        .then((value) {
+                      if (value.exists) {
+                        try {
+                          UserModel user = UserModel.fromMap(value.data()!);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PrivateMessage(
+                                documentSnapshot: value,
+                              ),
+                            ),
+                          );
+                        } catch (e) {
+                          print(e.toString());
+                        }
+                      }
+                    });
+                  });
+                },
+              ),
+              SpeedDialChild(
+                  child: StreamBuilder<DocumentSnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection("posts")
+                          .doc(video!.id)
+                          .collection("likes")
+                          .doc(context.read<Authentication>().getUserId)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data!.exists) {
+                            return IconButton(
+                              onPressed: () {
+                                context
+                                    .read<FirebaseOperations>()
+                                    .deleteLikePost(
+                                        postUid: video!.id,
+                                        userUid: context
+                                            .read<Authentication>()
+                                            .getUserId,
+                                        context: context);
+                              },
+                              icon: Icon(
+                                Icons.favorite,
+                                color: Colors.red,
+                              ),
+                            );
+                          } else {
+                            return IconButton(
+                                onPressed: () async {
+                                  await context
+                                      .read<FirebaseOperations>()
+                                      .likePost(
+                                        videoOwnerId: video!.useruid,
+                                        sendToUserToken: video!.ownerFcmToken!,
+                                        likerUsername: context
+                                            .read<FirebaseOperations>()
+                                            .initUserName,
+                                        postUid: video!.id,
+                                        userUid: context
+                                            .read<Authentication>()
+                                            .getUserId,
+                                        context: context,
+                                      )
+                                      .then((value) {
+                                    context
+                                        .read<FirebaseOperations>()
+                                        .addLikeNotification(
+                                          postId: video!.id,
+                                          userUid: context
+                                              .read<Authentication>()
+                                              .getUserId,
+                                          context: context,
+                                          videoOwnerUid: video!.useruid,
+                                        );
+                                  });
+                                },
+                                icon: Icon(
+                                  Icons.favorite_border,
+                                  color: Colors.red,
+                                ));
+                          }
+                        } else {
+                          return Icon(
+                            Icons.favorite_border,
+                            color: Colors.red,
+                          );
+                        }
+                      }),
+                  onLongPress: () {
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            child: ShowLikesPage(
+                              postId: video!.id,
+                            ),
+                            type: PageTransitionType.fade));
+                  }),
+              SpeedDialChild(
+                child: Icon(
+                  FontAwesomeIcons.comment,
+                ),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      PageTransition(
+                          child: ShowCommentsPage(
+                            ownerFcmToken: video!.ownerFcmToken,
+                            postOwnerId: video!.useruid,
+                            postId: video!.id,
+                          ),
+                          type: PageTransitionType.fade));
+                },
+              ),
+              SpeedDialChild(
+                child: StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("users")
+                        .doc(Provider.of<Authentication>(context, listen: false)
+                            .getUserId)
+                        .collection("favorites")
+                        .doc(video!.id)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else {
+                        if (snapshot.data!.exists) {
+                          return IconButton(
+                            onPressed: () async {
+                              await context
+                                  .read<FirebaseOperations>()
+                                  .removeFromFavs(
+                                      video: video!, context: context);
+                            },
+                            icon: Icon(
+                              FontAwesomeIcons.solidStar,
+                              color: Colors.black,
+                            ),
+                          );
+                        } else {
+                          return IconButton(
+                            onPressed: () async {
+                              await context
+                                  .read<FirebaseOperations>()
+                                  .addToFavs(video: video!, context: context);
+                            },
+                            icon: Icon(
+                              FontAwesomeIcons.star,
+                              color: Colors.black,
+                            ),
+                          );
+                        }
+                      }
+                    }),
+              ),
+              SpeedDialChild(
+                child: Container(
+                  height: 90,
+                  width: 90,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(40),
+                    image: DecorationImage(
+                      image: Image.network(video!.userimage).image,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                onTap: () {
+                  context.read<FirebaseOperations>().goToUserProfile(
+                      userUid: video!.useruid, context: context);
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  dynamic viewMaterials(BuildContext context) async {
     await showModalBottomSheet(
       backgroundColor: constantColors.navButton,
       context: context,
@@ -841,8 +1395,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
       builder: (context) {
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 15),
-          height: size.height * 0.5,
-          width: size.width,
+          height: 50.h,
+          width: 100.w,
           decoration: BoxDecoration(
             color: constantColors.navButton,
             borderRadius: BorderRadius.only(
@@ -870,8 +1424,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 ),
               ),
               Container(
-                height: size.height * 0.3,
-                width: size.width,
+                height: 30.h,
+                width: 100.w,
                 child: StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection("posts")
@@ -1433,7 +1987,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                               //       "Saving to your collection",
                               //   barrierDismissible: false,
                               // );
-                              // await firebaseOperations
+                              // await  context.read<FirebaseOperations>()
                               //     .addToMyCollection(
                               //   videoItem: videoModel,
                               //   isFree: video.isFree,
@@ -1460,8 +2014,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
     );
   }
 
-  dynamic freeMaterialsBottomSheet(BuildContext context, Size size,
-      FirebaseOperations firebaseOperations) async {
+  dynamic freeMaterialsBottomSheet(
+    BuildContext context,
+  ) async {
     await showModalBottomSheet(
       context: context,
       isDismissible: true,
@@ -1471,7 +2026,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
           bottom: Platform.isAndroid ? true : false,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 15),
-            width: size.width,
+            width: 100.w,
             height: 60.h,
             decoration: BoxDecoration(
               color: constantColors.navButton,
@@ -1500,7 +2055,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                   ),
                 ),
                 Container(
-                  width: size.width,
+                  width: 100.w,
                   child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection("posts")
@@ -1762,15 +2317,16 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                             text: "Saving to your collection",
                                             barrierDismissible: false,
                                           );
-                                          await firebaseOperations
+                                          await context
+                                              .read<FirebaseOperations>()
                                               .addToMyCollection(
-                                            videoOwnerId: video!.useruid,
-                                            videoItem: video!,
-                                            isFree: video!.isFree,
-                                            ctx: context,
-                                            videoId: video!.id,
-                                            materialIds: materialIds,
-                                          );
+                                                videoOwnerId: video!.useruid,
+                                                videoItem: video!,
+                                                isFree: video!.isFree,
+                                                ctx: context,
+                                                videoId: video!.id,
+                                                materialIds: materialIds,
+                                              );
                                         } else {
                                           await Get.dialog(
                                             SimpleDialog(
