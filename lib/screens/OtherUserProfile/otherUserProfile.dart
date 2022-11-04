@@ -700,6 +700,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                         context: context,
                                         builder: (context) {
                                           return Container(
+                                            height: size.height * 0.9,
                                             width: size.width,
                                             decoration: BoxDecoration(
                                               color: Colors.white,
