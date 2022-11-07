@@ -37,7 +37,7 @@ class DynamicLinkService {
           Navigator.pushReplacement(
             context,
             PageTransition(
-                child: DynamicLinkPostPage(videoId: id),
+                child: PostDetailsScreen(videoId: id),
                 type: PageTransitionType.topToBottom),
           );
         }
@@ -84,7 +84,7 @@ class DynamicLinkService {
           Navigator.pushReplacement(
             context,
             PageTransition(
-                child: DynamicLinkPostPage(videoId: id),
+                child: PostDetailsScreen(videoId: id),
                 type: PageTransitionType.topToBottom),
           );
         }

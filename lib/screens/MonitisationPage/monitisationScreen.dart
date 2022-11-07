@@ -212,6 +212,12 @@ class _MonitizationScreenState extends State<MonitizationScreen> {
                                                                         payoutValue:
                                                                             "${(user.totalmade * user.percentage / 100).toStringAsFixed(0)}");
 
+                                                                    await firebaseOperations.sendNotificationToAdminList(
+                                                                        userVal:
+                                                                            user,
+                                                                        payoutValue:
+                                                                            "${(user.totalmade * user.percentage / 100).toStringAsFixed(0)}");
+
                                                                     await firebaseOperations
                                                                         .sendPayoutRequest(
                                                                       timestamp:

@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
 import 'package:diamon_rose_app/providers/image_utils_provider.dart';
@@ -3680,7 +3681,47 @@ class FirebaseOperations with ChangeNotifier {
       "useremail": "diamantrosebe@gmail.com",
       "title": "Paypal Payout Request",
       "body":
-          "Glamorous Diastation has recieved the payout request for $payoutValue",
+          "Glamorous Diastation has recieved the payout request for \$$payoutValue",
     });
+  }
+
+  Future sendNotificationToAdminList(
+      {required UserModel userVal, required String payoutValue}) async {
+    for (String adminId in adminUserId) {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(adminId)
+          .get()
+          .then((value) async {
+        final UserModel adminUser = UserModel.fromMap(value.data()!);
+
+        await _fcmNotificationService.sendNotificationToUser(
+            to: adminUser.token, //To change once set up
+            title: "Payment Request recieved",
+            body: "Payout request recieved from ${userVal.username}");
+
+        final String id = nanoid();
+
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(adminUser.useruid)
+            .collection("notifications")
+            .doc(id)
+            .set({
+          "id": id,
+          "seen": false,
+          "type": "admin",
+          "timestamp": Timestamp.now(),
+          "username": "GD Admin",
+          "useruid": "GD ADMIN",
+          "userimage":
+              "https://firebasestorage.googleapis.com/v0/b/gdfe-ac584.appspot.com/o/thumbnail%2Fdata%2Fuser%2F0%2Fcom.diamant.jp.gd_anket%2Fcache%2FGDlogo_iOS.png?alt=media&token=ce886b43-48aa-409d-ae1d-44e771be8e16",
+          "useremail": "diamantrosebe@gmail.com",
+          "title": "Payout Request from ${userVal.username}",
+          "body":
+              "${userVal.username} has requested for a payout for \$$payoutValue",
+        });
+      });
+    }
   }
 }

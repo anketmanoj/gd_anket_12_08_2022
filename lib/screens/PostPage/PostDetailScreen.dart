@@ -519,7 +519,6 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 bottom: 10,
                 child: SpeedDial(
                   backgroundColor: constantColors.navButton,
-
                   childrenButtonSize: Size(20.w, 8.h),
                   childPadding: EdgeInsets.all(10),
                   overlayOpacity: 0,
@@ -1096,11 +1095,11 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
           bottom: 10,
           child: SpeedDial(
             backgroundColor: constantColors.navButton,
-
+            childrenButtonSize: Size(20.w, 8.h),
             childPadding: EdgeInsets.all(10),
             overlayOpacity: 0,
             // animatedIcon: AnimatedIcons.menu_close,
-
+            spacing: 0.01.h,
             animatedIcon: AnimatedIcons.menu_close,
             closeManually: false,
             children: [

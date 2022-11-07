@@ -9,9 +9,11 @@ import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:url_launcher/url_launcher.dart';
 
 class PrivateMessageHelper with ChangeNotifier {
   ConstantColors constantColors = ConstantColors();
@@ -121,13 +123,29 @@ class PrivateMessageHelper with ChangeNotifier {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     msgSnap['message'].toString().isNotEmpty
-                                        ? Text(
-                                            msgSnap['message'],
-                                            style: TextStyle(
-                                              color: constantColors.whiteColor,
-                                              fontSize: 14,
-                                            ),
+                                        ? SelectableLinkify(
+                                            onOpen: (link) async {
+                                              if (await canLaunch(link.url)) {
+                                                await launch(link.url);
+                                              } else {
+                                                throw 'Could not launch $link';
+                                              }
+                                            },
+                                            options:
+                                                LinkifyOptions(looseUrl: true),
+                                            text: msgSnap['message'],
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                            linkStyle:
+                                                TextStyle(color: Colors.white),
                                           )
+                                        //  Text(
+                                        //     msgSnap['message'],
+                                        //     style: TextStyle(
+                                        //       color: constantColors.whiteColor,
+                                        //       fontSize: 14,
+                                        //     ),
+                                        //   )
                                         : InkWell(
                                             onTap: () {
                                               Navigator.push(

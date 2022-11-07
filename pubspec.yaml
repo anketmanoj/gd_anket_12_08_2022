@@ -68,6 +68,7 @@ dependencies:
   flutter_easyloading: ^3.0.3
   flutter_facebook_auth: ^4.4.1+1
   flutter_gif: ^0.0.4
+  flutter_linkify: ^5.0.2
   flutter_local_notifications: 9.4.0
   flutter_localizations:
     sdk: flutter
