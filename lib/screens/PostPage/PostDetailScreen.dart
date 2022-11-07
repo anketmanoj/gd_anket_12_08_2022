@@ -520,10 +520,11 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 child: SpeedDial(
                   backgroundColor: constantColors.navButton,
 
+                  childrenButtonSize: Size(20.w, 8.h),
                   childPadding: EdgeInsets.all(10),
                   overlayOpacity: 0,
                   // animatedIcon: AnimatedIcons.menu_close,
-
+                  spacing: 0.01.h,
                   animatedIcon: AnimatedIcons.menu_close,
                   closeManually: false,
                   children: [
@@ -797,10 +798,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                     ),
                     SpeedDialChild(
                       child: Container(
-                        height: 90,
-                        width: 90,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(40),
+                          borderRadius: BorderRadius.circular(20),
                           image: DecorationImage(
                             image: Image.network(video!.userimage).image,
                             fit: BoxFit.cover,

@@ -824,10 +824,8 @@ class VideoWidget extends StatelessWidget {
                           ),
                           SpeedDialChild(
                             child: Container(
-                              height: 90,
-                              width: 90,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(40),
+                                borderRadius: BorderRadius.circular(20),
                                 image: DecorationImage(
                                   image: Image.network(video.userimage).image,
                                   fit: BoxFit.cover,
