@@ -538,6 +538,17 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
             final AudioPlayer? _player = AudioPlayer();
 
+            final List<String> _fullPathsOnline = [
+              "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
+            ];
+
+            final File musicFile = await saveMusicFiletoDevice(
+                fileBytes: audioFile.readAsBytesSync(),
+                fileName: audioFile.path);
+
+            final File arCutOutFile = await getImage(url: _fullPathsOnline[0]);
+            dev.log("ArCut out ois here  = ${arCutOutFile.path}");
+
             await _player!.setFilePath(audioFile.path);
             await _player.pause();
 
@@ -554,32 +565,31 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               width: 0,
               xPosition: 0,
               yPosition: 0,
-              pathsForVideoFrames: null,
+              pathsForVideoFrames: _fullPathsOnline,
               startingPositon: 0,
               endingPosition: 0,
               totalDuration: double.parse(durationString),
               showAr: ValueNotifier(false),
               audioPlayer: _player,
-              layerType: LayerType.AR,
+              layerType: LayerType.Music,
               arKey: containerKey,
               fromFirebase: true,
-              mainFile: null,
-              alphaFile: null,
               audioFlag: true,
               finishedCaching: ValueNotifier(true),
               ownerId: context.read<Authentication>().getUserId,
               ownerName: context.read<FirebaseOperations>().initUserName,
               selectedMaterial: ValueNotifier<bool>(true),
+              musicFile: musicFile,
             ));
 
             _controllerSeekTo(0);
             if (!mounted) return;
 
-            arIndexVal.value += 1;
+            // arIndexVal.value += 1;
 
-            dev.log("list AR ${arIndexVal.value} | index counter == $arVal");
+            // dev.log("list AR ${arIndexVal.value} | index counter == $arVal");
             Get.back();
-            Get.back();
+            // Get.back();
             setState(() {});
           });
         });
@@ -589,6 +599,21 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     } else if (await Permission.storage.request().isDenied) {
       await openAppSettings();
     }
+  }
+
+  Future<File> saveMusicFiletoDevice(
+      {required String fileName, required Uint8List fileBytes}) async {
+    final Directory appDir = await getApplicationDocumentsDirectory();
+
+    /// Generate Image Name
+    final String imageName = fileName.split('/').last;
+    final String timeNow = Timestamp.now().millisecondsSinceEpoch.toString();
+
+    /// Create Empty File in app dir & fill with new image
+    final File file = File(path.join(appDir.path, timeNow + imageName));
+    file.writeAsBytesSync(fileBytes);
+
+    return file;
   }
 
   Future<File> getImage({required String url}) async {
@@ -1392,8 +1417,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                   true
                                                               ? arVal
                                                                   .endingPosition
-                                                              : size.width *
-                                                                  0.3,
+                                                              : 30.w,
                                                           decoration:
                                                               BoxDecoration(
                                                             color: arVal.layerType ==
@@ -1801,7 +1825,41 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                         );
 
                                                         if (file != null) {
-                                                          dev.log("here now");
+                                                          if (list.value
+                                                              .isNotEmpty) {
+                                                            list.value.last
+                                                                        .layerType ==
+                                                                    LayerType.AR
+                                                                ? indexCounter
+                                                                        .value =
+                                                                    indexCounter
+                                                                            .value +
+                                                                        2
+                                                                : indexCounter
+                                                                        .value =
+                                                                    indexCounter
+                                                                            .value +
+                                                                        1;
+                                                          } else {
+                                                            indexCounter.value =
+                                                                1;
+                                                          }
+
+                                                          if (indexCounter
+                                                                  .value <=
+                                                              0) {
+                                                            indexCounter.value =
+                                                                1;
+                                                          }
+
+                                                          await runFFmpegForAudioOnlyFiles(
+                                                            arVal: indexCounter
+                                                                .value,
+                                                            audioFile: File(file
+                                                                .files
+                                                                .single
+                                                                .path!),
+                                                          );
                                                         }
                                                       },
                                                       child: Row(
@@ -2302,7 +2360,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                         size: 25,
                       ),
                       onPressed: list.value.isNotEmpty
-                          ? arIndexVal.value <= 0
+                          ? list.value.any((element) =>
+                                      element.layerType == LayerType.AR) ==
+                                  false
                               ? () {
                                   Get.dialog(
                                     SimpleDialog(
@@ -2480,12 +2540,20 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                     print(
                                         "ar point x $finalArContainerPointX | screen height $videoContainerHeight");
 
-                                    if (arElement.layerType == LayerType.AR) {
-                                      ffmpegInputList.add(
-                                          " -i ${arElement.mainFile} -i ${arElement.alphaFile}");
-                                    } else {
-                                      ffmpegInputList
-                                          .add(" -i ${arElement.gifFilePath!}");
+                                    switch (arElement.layerType!) {
+                                      case LayerType.AR:
+                                        ffmpegInputList.add(
+                                            " -i ${arElement.mainFile} -i ${arElement.alphaFile}");
+
+                                        break;
+                                      case LayerType.Effect:
+                                        ffmpegInputList.add(
+                                            " -i ${arElement.gifFilePath!}");
+                                        break;
+                                      case LayerType.Music:
+                                        ffmpegInputList.add(
+                                            " -i ${arElement.musicFile!.path}");
+                                        break;
                                     }
 
                                     if (arElement.layerType == LayerType.AR) {
@@ -2493,27 +2561,55 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                           "[${arElement.arIndex! + 1}][${arElement.arIndex}]scale2ref[mask][main];[main][mask]alphamerge[vid${arElement.arIndex}];");
                                     }
 
-                                    if (arElement.layerType == LayerType.AR) {
-                                      ffmpegStartPointList.add(
-                                          "[vid${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(10)}/TB[top${arElement.arIndex}];");
-                                    } else {
-                                      ffmpegStartPointList.add(
-                                          "[${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
+                                    switch (arElement.layerType!) {
+                                      case LayerType.AR:
+                                        ffmpegStartPointList.add(
+                                            "[vid${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(10)}/TB[top${arElement.arIndex}];");
+
+                                        ffmpegArFiltercomplex.add(
+                                            "[top${arElement.arIndex}]rotate=${arElement.rotation! * 180 / pi}*PI/180:c=none:ow=rotw(${arElement.rotation! * 180 / pi}*PI/180):oh=roth(${arElement.rotation! * 180 / pi}*PI/180),scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
+
+                                        if (arElement.arIndex == 1) {
+                                          ffmpegOverlay.add(
+                                              "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(10)}\"\\,\"${arEndTime.toStringAsFixed(10)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                          lastVal.value = arElement.arIndex!;
+                                        } else {
+                                          ffmpegOverlay.add(
+                                              "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(10)}\"\\,\"${arEndTime.toStringAsFixed(10)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                          lastVal.value = arElement.arIndex!;
+                                        }
+                                        break;
+                                      case LayerType.Effect:
+                                        ffmpegStartPointList.add(
+                                            "[${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
+                                        ffmpegArFiltercomplex.add(
+                                            "[top${arElement.arIndex}]rotate=${arElement.rotation! * 180 / pi}*PI/180:c=none:ow=rotw(${arElement.rotation! * 180 / pi}*PI/180):oh=roth(${arElement.rotation! * 180 / pi}*PI/180),scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
+
+                                        if (arElement.arIndex == 1) {
+                                          ffmpegOverlay.add(
+                                              "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(10)}\"\\,\"${arEndTime.toStringAsFixed(10)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                          lastVal.value = arElement.arIndex!;
+                                        } else {
+                                          ffmpegOverlay.add(
+                                              "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(10)}\"\\,\"${arEndTime.toStringAsFixed(10)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                          lastVal.value = arElement.arIndex!;
+                                        }
+
+                                        break;
+                                      case LayerType.Music:
+                                        break;
                                     }
 
-                                    ffmpegArFiltercomplex.add(
-                                        "[top${arElement.arIndex}]rotate=${arElement.rotation! * 180 / pi}*PI/180:c=none:ow=rotw(${arElement.rotation! * 180 / pi}*PI/180):oh=roth(${arElement.rotation! * 180 / pi}*PI/180),scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
-
-                                    if (arElement.arIndex == 1) {
-                                      ffmpegOverlay.add(
-                                          "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(10)}\"\\,\"${arEndTime.toStringAsFixed(10)}\")':eof_action=pass[${arElement.arIndex}out];");
-                                      lastVal.value = arElement.arIndex!;
-                                    } else {
-                                      ffmpegOverlay.add(
-                                          "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(10)}\"\\,\"${arEndTime.toStringAsFixed(10)}\")':eof_action=pass[${arElement.arIndex}out];");
-                                      lastVal.value = arElement.arIndex!;
-                                    }
                                     if (arElement.layerType == LayerType.AR &&
+                                        arElement.audioFlag == true) {
+                                      ffmpegVolumeList.add(
+                                          "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(10)}s:all=1[a${arElement.arIndex}];");
+                                      ffmpegSoundInputs
+                                          .add("[a${arElement.arIndex}]");
+                                    }
+
+                                    if (arElement.layerType ==
+                                            LayerType.Music &&
                                         arElement.audioFlag == true) {
                                       ffmpegVolumeList.add(
                                           "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(10)}s:all=1[a${arElement.arIndex}];");

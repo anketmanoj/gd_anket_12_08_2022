@@ -42,6 +42,7 @@ class ARList {
   ValueNotifier<bool>? selectedMaterial = ValueNotifier<bool>(true);
   ValueNotifier<Matrix4>? notifier = ValueNotifier(Matrix4.identity());
   File? arCutOutFile;
+  File? musicFile;
 
   ARList({
     this.arIndex,
@@ -75,5 +76,6 @@ class ARList {
     this.selectedMaterial,
     this.notifier,
     this.arCutOutFile,
+    this.musicFile,
   });
 }
