@@ -50,6 +50,7 @@ import 'package:get/get.dart' hide Trans;
 import 'package:giphy_get/giphy_get.dart';
 import 'package:helpers/helpers/transition.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:nanoid/nanoid.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -491,6 +492,95 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             // print("folder name $folderName");
 
             //! #############################################################
+          });
+        });
+      } catch (e) {
+        print("FFmpeg Error ==== ${e.toString()}");
+      }
+    } else if (await Permission.storage.request().isDenied) {
+      await openAppSettings();
+    }
+  }
+
+  // * running ffmpeg to get video with no background
+  Future<void> runFFmpegForAudioOnlyFiles({
+    required int arVal,
+    required File audioFile,
+  }) async {
+    if (await Permission.storage.request().isGranted) {
+      dev.log("AR INDEX == $arVal");
+      // ignore: unawaited_futures
+      CoolAlert.show(
+        context: context,
+        type: CoolAlertType.loading,
+        barrierDismissible: false,
+        text: "Loading Music file",
+      );
+      // Form matte file
+
+      try {
+        await FFprobeKit.execute(
+                '-i ${audioFile.path} -show_entries format=duration -v quiet -of json')
+            .then((value) {
+          value.getOutput().then((mapOutput) async {
+            final Map<String, dynamic> json = jsonDecode(mapOutput!);
+
+            final String durationString = json['format']['duration'];
+
+            print("durationString: $durationString");
+
+            final String setDuration = double.parse(durationString) >=
+                    _controller.video.value.duration.inSeconds
+                ? _controller.video.value.duration.inSeconds.toString()
+                : durationString;
+
+            //! #############################################################
+
+            final AudioPlayer? _player = AudioPlayer();
+
+            await _player!.setFilePath(audioFile.path);
+            await _player.pause();
+
+            final containerKey = GlobalKey();
+
+            final String idValue = nanoid();
+
+            list.value.add(ARList(
+              arId: idValue,
+              arIndex: arVal,
+              height: 0,
+              rotation: 0,
+              scale: 1,
+              width: 0,
+              xPosition: 0,
+              yPosition: 0,
+              pathsForVideoFrames: null,
+              startingPositon: 0,
+              endingPosition: 0,
+              totalDuration: double.parse(durationString),
+              showAr: ValueNotifier(false),
+              audioPlayer: _player,
+              layerType: LayerType.AR,
+              arKey: containerKey,
+              fromFirebase: true,
+              mainFile: null,
+              alphaFile: null,
+              audioFlag: true,
+              finishedCaching: ValueNotifier(true),
+              ownerId: context.read<Authentication>().getUserId,
+              ownerName: context.read<FirebaseOperations>().initUserName,
+              selectedMaterial: ValueNotifier<bool>(true),
+            ));
+
+            _controllerSeekTo(0);
+            if (!mounted) return;
+
+            arIndexVal.value += 1;
+
+            dev.log("list AR ${arIndexVal.value} | index counter == $arVal");
+            Get.back();
+            Get.back();
+            setState(() {});
           });
         });
       } catch (e) {
@@ -973,203 +1063,208 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                     return ValueListenableBuilder<Object>(
                                         valueListenable: value.showAr!,
                                         builder: (context, boolVal, _) {
-                                          return Opacity(
-                                            opacity: boolVal == true ? 1 : 0,
-                                            child: GestureDetector(
-                                              onScaleStart: (details) {
-                                                if (value == null) return;
-                                                _initPos = details.focalPoint;
-                                                _currentPos = Offset(
-                                                    value.xPosition!,
-                                                    value.yPosition!);
-                                                _currentScale = value.scale;
-                                                _currentRotation =
-                                                    value.rotation;
-                                              },
-                                              onScaleUpdate: (details) {
-                                                if (value == null) return;
-                                                final delta =
-                                                    details.focalPoint -
-                                                        _initPos!;
-                                                final left =
-                                                    (delta.dx / screen!.width) +
-                                                        _currentPos!.dx;
-                                                final top = (delta.dy /
-                                                        screen!.height) +
-                                                    _currentPos!.dy;
+                                          return value.pathsForVideoFrames !=
+                                                  null
+                                              ? Opacity(
+                                                  opacity:
+                                                      boolVal == true ? 1 : 0,
+                                                  child: GestureDetector(
+                                                    onScaleStart: (details) {
+                                                      if (value == null) return;
+                                                      _initPos =
+                                                          details.focalPoint;
+                                                      _currentPos = Offset(
+                                                          value.xPosition!,
+                                                          value.yPosition!);
+                                                      _currentScale =
+                                                          value.scale;
+                                                      _currentRotation =
+                                                          value.rotation;
+                                                    },
+                                                    onScaleUpdate: (details) {
+                                                      if (value == null) return;
+                                                      final delta =
+                                                          details.focalPoint -
+                                                              _initPos!;
+                                                      final left = (delta.dx /
+                                                              screen!.width) +
+                                                          _currentPos!.dx;
+                                                      final top = (delta.dy /
+                                                              screen!.height) +
+                                                          _currentPos!.dy;
 
-                                                setState(() {
-                                                  value.xPosition =
-                                                      Offset(left, top).dx;
-                                                  value.yPosition =
-                                                      Offset(left, top).dy;
-                                                  value.rotation =
-                                                      details.rotation +
-                                                          _currentRotation!;
-                                                  value.scale = details.scale *
-                                                      _currentScale!;
-                                                });
+                                                      setState(() {
+                                                        value.xPosition =
+                                                            Offset(left, top)
+                                                                .dx;
+                                                        value.yPosition =
+                                                            Offset(left, top)
+                                                                .dy;
+                                                        value.rotation = details
+                                                                .rotation +
+                                                            _currentRotation!;
+                                                        value.scale =
+                                                            details.scale *
+                                                                _currentScale!;
+                                                      });
 
-                                                // !Found rotation in degrees here
-                                                dev.log(
-                                                    "scale == ${value.scale}");
-                                                dev.log(
-                                                    "rot = ${value.rotation! * 180 / pi}");
-                                              },
-                                              child: Stack(
-                                                children: [
-                                                  Positioned(
-                                                    right: -value.xPosition! *
-                                                        screen!.width,
-                                                    bottom: -value.yPosition! *
-                                                        screen!.height,
-                                                    child: Transform.scale(
-                                                      scale: value.scale,
-                                                      child: Transform.rotate(
-                                                        angle: value.rotation!,
-                                                        child: Container(
-                                                          key: value.arKey,
-                                                          height: value.height,
-                                                          width: value.width,
-                                                          child: FittedBox(
-                                                            fit: BoxFit.cover,
-                                                            child: Listener(
-                                                              onPointerDown:
-                                                                  (details) {
-                                                                // _initPos = details.position;
-                                                                // _currentPos = Offset(
-                                                                //     value.xPosition!, value.yPosition!);
-                                                                // _currentScale = value.scale;
-                                                                // _currentRotation = value.rotation;
-                                                                // print(" _initPos = ${_initPos!.dx}");
-                                                                setState(() {
-                                                                  _controller
-                                                                      .video
-                                                                      .pause();
-
-                                                                  selected =
-                                                                      value;
-
-                                                                  for (ARList arPlaying
-                                                                      in list
-                                                                          .value) {
-                                                                    if (arPlaying
-                                                                            .showAr!
-                                                                            .value ==
-                                                                        true) {
-                                                                      arPlaying
-                                                                          .arState!
-                                                                          .pause();
-                                                                      if (arPlaying
-                                                                              .audioFlag ==
-                                                                          true) {
-                                                                        arPlaying
-                                                                            .audioPlayer!
-                                                                            .pause();
-                                                                      }
-                                                                    }
-                                                                  }
-                                                                });
-                                                              },
-                                                              onPointerUp:
-                                                                  (details) {
-                                                                _initPos = details
-                                                                    .position;
-                                                                _currentPos = Offset(
-                                                                    value
-                                                                        .xPosition!,
-                                                                    value
-                                                                        .yPosition!);
-                                                                _currentScale =
-                                                                    value.scale;
-                                                                _currentRotation =
-                                                                    value
-                                                                        .rotation;
-                                                              },
-                                                              child: InkWell(
-                                                                onTap: () {},
+                                                      // !Found rotation in degrees here
+                                                      dev.log(
+                                                          "scale == ${value.scale}");
+                                                      dev.log(
+                                                          "rot = ${value.rotation! * 180 / pi}");
+                                                    },
+                                                    child: Stack(
+                                                      children: [
+                                                        Positioned(
+                                                          right: -value
+                                                                  .xPosition! *
+                                                              screen!.width,
+                                                          bottom: -value
+                                                                  .yPosition! *
+                                                              screen!.height,
+                                                          child:
+                                                              Transform.scale(
+                                                            scale: value.scale,
+                                                            child: Transform
+                                                                .rotate(
+                                                              angle: value
+                                                                  .rotation!,
+                                                              child: Container(
+                                                                key:
+                                                                    value.arKey,
+                                                                height: value
+                                                                    .height,
+                                                                width:
+                                                                    value.width,
                                                                 child:
-                                                                    Container(
-                                                                  height: value
-                                                                      .height,
-                                                                  width: value
-                                                                      .width,
+                                                                    FittedBox(
+                                                                  fit: BoxFit
+                                                                      .cover,
                                                                   child:
-                                                                      ImageSequenceAnimator(
-                                                                    "",
-                                                                    "imgSeq",
-                                                                    1,
-                                                                    0,
-                                                                    "png",
-                                                                    30,
-                                                                    isOnline: value.layerType ==
-                                                                            LayerType.AR
-                                                                        ? true
-                                                                        : false,
-                                                                    key: value.layerType ==
-                                                                            LayerType
-                                                                                .AR
-                                                                        ? Key(
-                                                                            "online")
-                                                                        : Key(
-                                                                            "offline"),
-                                                                    fullPaths: value
-                                                                        .pathsForVideoFrames,
-                                                                    onReadyToPlay:
-                                                                        (ImageSequenceAnimatorState
-                                                                            _imageSequenceAnimator) {
-                                                                      dev.log(
-                                                                          "Its ready now lad!");
-                                                                      value.arState =
-                                                                          _imageSequenceAnimator;
-                                                                      if (value
-                                                                              .layerType ==
-                                                                          LayerType
-                                                                              .AR)
-                                                                        value.finishedCaching =
-                                                                            ValueNotifier(true);
+                                                                      Listener(
+                                                                    onPointerDown:
+                                                                        (details) {
+                                                                      // _initPos = details.position;
+                                                                      // _currentPos = Offset(
+                                                                      //     value.xPosition!, value.yPosition!);
+                                                                      // _currentScale = value.scale;
+                                                                      // _currentRotation = value.rotation;
+                                                                      // print(" _initPos = ${_initPos!.dx}");
+                                                                      setState(
+                                                                          () {
+                                                                        _controller
+                                                                            .video
+                                                                            .pause();
+
+                                                                        selected =
+                                                                            value;
+
+                                                                        for (ARList arPlaying
+                                                                            in list.value) {
+                                                                          if (arPlaying.showAr!.value ==
+                                                                              true) {
+                                                                            arPlaying.arState!.pause();
+                                                                            if (arPlaying.audioFlag ==
+                                                                                true) {
+                                                                              arPlaying.audioPlayer!.pause();
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      });
                                                                     },
-                                                                    // cacheProgressIndicatorBuilder:
-                                                                    //     (context,
-                                                                    //         progress) {
-                                                                    //   return CircularProgressIndicator(
-                                                                    //     value: progress !=
-                                                                    //             null
-                                                                    //         ? progress
-                                                                    //         : 1,
-                                                                    //     backgroundColor:
-                                                                    //         constantColors.navButton,
-                                                                    //   );
-                                                                    // },
-                                                                    waitUntilCacheIsComplete:
-                                                                        true,
-                                                                    fps: 35,
-                                                                    frameHeight:
-                                                                        value
-                                                                            .height!,
-                                                                    frameWidth:
-                                                                        value
-                                                                            .width!,
-                                                                    isAutoPlay:
-                                                                        false,
-                                                                    onPlaying: value.layerType ==
-                                                                            LayerType.AR
-                                                                        ? onOnlinePlaying
-                                                                        : null,
+                                                                    onPointerUp:
+                                                                        (details) {
+                                                                      _initPos =
+                                                                          details
+                                                                              .position;
+                                                                      _currentPos = Offset(
+                                                                          value
+                                                                              .xPosition!,
+                                                                          value
+                                                                              .yPosition!);
+                                                                      _currentScale =
+                                                                          value
+                                                                              .scale;
+                                                                      _currentRotation =
+                                                                          value
+                                                                              .rotation;
+                                                                    },
+                                                                    child:
+                                                                        InkWell(
+                                                                      onTap:
+                                                                          () {},
+                                                                      child:
+                                                                          Container(
+                                                                        height:
+                                                                            value.height,
+                                                                        width: value
+                                                                            .width,
+                                                                        child:
+                                                                            ImageSequenceAnimator(
+                                                                          "",
+                                                                          "imgSeq",
+                                                                          1,
+                                                                          0,
+                                                                          "png",
+                                                                          30,
+                                                                          isOnline: value.layerType == LayerType.AR
+                                                                              ? true
+                                                                              : false,
+                                                                          key: value.layerType == LayerType.AR
+                                                                              ? Key("online")
+                                                                              : Key("offline"),
+                                                                          fullPaths:
+                                                                              value.pathsForVideoFrames,
+                                                                          onReadyToPlay:
+                                                                              (ImageSequenceAnimatorState _imageSequenceAnimator) {
+                                                                            dev.log("Its ready now lad!");
+                                                                            value.arState =
+                                                                                _imageSequenceAnimator;
+                                                                            if (value.layerType ==
+                                                                                LayerType.AR)
+                                                                              value.finishedCaching = ValueNotifier(true);
+                                                                          },
+                                                                          // cacheProgressIndicatorBuilder:
+                                                                          //     (context,
+                                                                          //         progress) {
+                                                                          //   return CircularProgressIndicator(
+                                                                          //     value: progress !=
+                                                                          //             null
+                                                                          //         ? progress
+                                                                          //         : 1,
+                                                                          //     backgroundColor:
+                                                                          //         constantColors.navButton,
+                                                                          //   );
+                                                                          // },
+                                                                          waitUntilCacheIsComplete:
+                                                                              true,
+                                                                          fps:
+                                                                              35,
+                                                                          frameHeight:
+                                                                              value.height!,
+                                                                          frameWidth:
+                                                                              value.width!,
+                                                                          isAutoPlay:
+                                                                              false,
+                                                                          onPlaying: value.layerType == LayerType.AR
+                                                                              ? onOnlinePlaying
+                                                                              : null,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    // child: Image.network(value.name),
                                                                   ),
                                                                 ),
                                                               ),
-                                                              // child: Image.network(value.name),
                                                             ),
                                                           ),
                                                         ),
-                                                      ),
+                                                      ],
                                                     ),
                                                   ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
+                                                )
+                                              : SizedBox();
                                         });
                                   }).toList(),
                                 );
