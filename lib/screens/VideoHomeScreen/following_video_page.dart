@@ -321,39 +321,52 @@ class _FollowingVideoPageState extends State<FollowingVideoPage>
               },
             );
           case HomeScreenOptions.Both:
-            log("We're here follwing in Both!");
+            log("We're here follwing in Both this onnnneeeee!");
 
-            return PageView.builder(
-              itemCount: state.urls.length,
-              scrollDirection: Axis.vertical,
-              onPageChanged: (index) =>
-                  BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
-                      .add(FollowingPreloadEvent.onVideoIndexChanged(index)),
-              itemBuilder: (context, index) {
-                log("here in following now");
-                // Is at end and isLoading
-                final bool _isLoading =
-                    state.isLoading && index == state.urls.length - 1;
+            return RefreshIndicator(
+              onRefresh: () async {
+                BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
+                    .add(FollowingPreloadEvent.setLoading(true));
+                BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
+                    .add(FollowingPreloadEvent.filterBetweenFreePaid(
+                        HomeScreenOptions.Both));
 
-                bool showIcon = false;
-                if (index % 5 == 0 && index != 0) {
-                  showIcon = true;
-                } else {
-                  showIcon = false;
-                }
-
-                return state.focusedIndex == index
-                    ? VideoWidget(
-                        showIconNow: showIcon,
-                        video: state.urls[index],
-                        isLoading: _isLoading,
-                        controller: state.controllers[index]!,
-                      )
-                    : Container(
-                        height: 200,
-                        width: 200,
-                      );
+                BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
+                    .add(FollowingPreloadEvent.onVideoIndexChanged(0));
               },
+              child: PageView.builder(
+                itemCount: state.urls.length,
+                scrollDirection: Axis.vertical,
+                onPageChanged: (index) => BlocProvider.of<FollowingPreloadBloc>(
+                        context,
+                        listen: false)
+                    .add(FollowingPreloadEvent.onVideoIndexChanged(index)),
+                itemBuilder: (context, index) {
+                  log("here in following now");
+                  // Is at end and isLoading
+                  final bool _isLoading =
+                      state.isLoading && index == state.urls.length - 1;
+
+                  bool showIcon = false;
+                  if (index % 5 == 0 && index != 0) {
+                    showIcon = true;
+                  } else {
+                    showIcon = false;
+                  }
+
+                  return state.focusedIndex == index
+                      ? VideoWidget(
+                          showIconNow: showIcon,
+                          video: state.urls[index],
+                          isLoading: _isLoading,
+                          controller: state.controllers[index]!,
+                        )
+                      : Container(
+                          height: 200,
+                          width: 200,
+                        );
+                },
+              ),
             );
         }
 

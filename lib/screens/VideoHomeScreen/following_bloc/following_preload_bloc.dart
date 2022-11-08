@@ -114,6 +114,7 @@ class FollowingPreloadBloc
             final List<Video> _urls = await ApiService.getFollowingVideos();
 
             state.urls.addAll(_urls);
+            state.urls.shuffle();
             log("################# len = ${state.urls.length}");
 
             log("here no in both | ${state.urls.length}");
