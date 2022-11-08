@@ -1835,65 +1835,83 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                       onPressed: () async {
                                                         if (list
                                                             .value.isNotEmpty) {
-                                                          setState(() {
-                                                            _controller.video
-                                                                .pause();
-                                                          });
+                                                          if (musicIndexVal
+                                                                  .value <=
+                                                              1) {
+                                                            dev.log(musicIndexVal
+                                                                .value
+                                                                .toString());
+                                                            setState(() {
+                                                              _controller.video
+                                                                  .pause();
+                                                            });
 
-                                                          FilePickerResult?
-                                                              file =
-                                                              await FilePicker
-                                                                  .platform
-                                                                  .pickFiles(
-                                                            type:
-                                                                FileType.custom,
-                                                            allowedExtensions: [
-                                                              'mp3'
-                                                            ],
-                                                            allowMultiple:
-                                                                false,
-                                                            allowCompression:
-                                                                true,
-                                                          );
+                                                            FilePickerResult?
+                                                                file =
+                                                                await FilePicker
+                                                                    .platform
+                                                                    .pickFiles(
+                                                              type: FileType
+                                                                  .custom,
+                                                              allowedExtensions: [
+                                                                'mp3'
+                                                              ],
+                                                              allowMultiple:
+                                                                  false,
+                                                              allowCompression:
+                                                                  true,
+                                                            );
 
-                                                          if (file != null) {
-                                                            if (list.value
-                                                                .isNotEmpty) {
-                                                              list.value.last
-                                                                          .layerType ==
-                                                                      LayerType
-                                                                          .AR
-                                                                  ? indexCounter
-                                                                          .value =
-                                                                      indexCounter
-                                                                              .value +
-                                                                          2
-                                                                  : indexCounter
-                                                                          .value =
-                                                                      indexCounter
-                                                                              .value +
-                                                                          1;
-                                                            } else {
-                                                              indexCounter
-                                                                  .value = 1;
+                                                            if (file != null) {
+                                                              if (list.value
+                                                                  .isNotEmpty) {
+                                                                list.value.last.layerType ==
+                                                                        LayerType
+                                                                            .AR
+                                                                    ? indexCounter
+                                                                            .value =
+                                                                        indexCounter.value +
+                                                                            2
+                                                                    : indexCounter
+                                                                            .value =
+                                                                        indexCounter.value +
+                                                                            1;
+                                                              } else {
+                                                                indexCounter
+                                                                    .value = 1;
+                                                              }
+
+                                                              if (indexCounter
+                                                                      .value <=
+                                                                  0) {
+                                                                indexCounter
+                                                                    .value = 1;
+                                                              }
+
+                                                              await runFFmpegForAudioOnlyFiles(
+                                                                arVal:
+                                                                    indexCounter
+                                                                        .value,
+                                                                audioFile: File(
+                                                                    file
+                                                                        .files
+                                                                        .single
+                                                                        .path!),
+                                                              );
                                                             }
-
-                                                            if (indexCounter
-                                                                    .value <=
-                                                                0) {
-                                                              indexCounter
-                                                                  .value = 1;
-                                                            }
-
-                                                            await runFFmpegForAudioOnlyFiles(
-                                                              arVal:
-                                                                  indexCounter
-                                                                      .value,
-                                                              audioFile: File(
-                                                                  file
-                                                                      .files
-                                                                      .single
-                                                                      .path!),
+                                                          } else {
+                                                            await Get.dialog(
+                                                              SimpleDialog(
+                                                                children: [
+                                                                  Padding(
+                                                                    padding:
+                                                                        EdgeInsets.all(
+                                                                            10),
+                                                                    child: Text(
+                                                                        "You can only add 2 Music Layers"),
+                                                                  ),
+                                                                ],
+                                                              ),
                                                             );
                                                           }
                                                         } else {

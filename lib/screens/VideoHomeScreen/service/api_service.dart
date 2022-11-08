@@ -275,23 +275,24 @@ class ApiService extends ChangeNotifier {
         SharedPreferencesHelper.getListString("followersList");
 
     log("following users list = ${followingUsers.length}");
-    await FirebaseFirestore.instance
-        .collection("posts")
-        .orderBy("timestamp", descending: true)
-        .where("useruid",
-            whereIn: followingUsers.map((e) => "$e").toList().sublist(
-                0, followingUsers.length > 10 ? 10 : followingUsers.length))
-        .get()
-        .then((value) {
-      value.docs.forEach((element) {
-        if (element.data().containsKey("views") &&
-            element.data().containsKey("totalBilled") &&
-            element.data().containsKey("verifiedUser")) {
-          Video video = Video.fromJson(element.data());
-          _following_videos.add(video);
-        }
+
+    for (String followingID in followingUsers) {
+      await FirebaseFirestore.instance
+          .collection("posts")
+          .orderBy("timestamp", descending: true)
+          .where("useruid", isEqualTo: followingID)
+          .get()
+          .then((value) {
+        value.docs.forEach((element) {
+          if (element.data().containsKey("views") &&
+              element.data().containsKey("totalBilled") &&
+              element.data().containsKey("verifiedUser")) {
+            Video video = Video.fromJson(element.data());
+            _following_videos.add(video);
+          }
+        });
       });
-    });
+    }
 
     log("done loading all following videos ${_following_videos.length} ");
   }

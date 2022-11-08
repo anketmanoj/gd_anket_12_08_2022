@@ -149,6 +149,7 @@ class FollowingPreloadBloc
         await ApiService.loadFollowingVideos();
         final List<Video> _urls = await ApiService.getFollowingVideos();
         state.urls.addAll(_urls);
+        state.urls.shuffle();
 
         yield state.copyWith(isLoadingFilter: false);
 
