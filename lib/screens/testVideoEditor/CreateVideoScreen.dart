@@ -1424,8 +1424,13 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                     LayerType.AR
                                                                 ? constantColors
                                                                     .mainColor
-                                                                : constantColors
-                                                                    .darkColor,
+                                                                : arVal.layerType ==
+                                                                        LayerType
+                                                                            .Effect
+                                                                    ? constantColors
+                                                                        .darkColor
+                                                                    : constantColors
+                                                                        .lightBlueColor,
                                                             border: Border.all(
                                                               color:
                                                                   Colors.white,
@@ -1454,10 +1459,29 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                         File(arVal
                                                                             .pathsForVideoFrames![1]),
                                                                       )
-                                                                    : Center(
-                                                                        child:
-                                                                            CircularProgressIndicator(),
-                                                                      ),
+                                                                    : arVal.layerType ==
+                                                                            LayerType.Music
+                                                                        ? Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.only(left: 10),
+                                                                            child:
+                                                                                Row(
+                                                                              children: [
+                                                                                Text(
+                                                                                  "Music Layer",
+                                                                                  style: TextStyle(color: constantColors.whiteColor),
+                                                                                ),
+                                                                                SizedBox(
+                                                                                  width: 10,
+                                                                                ),
+                                                                                Icon(FontAwesomeIcons.music, color: constantColors.whiteColor)
+                                                                              ],
+                                                                            ),
+                                                                          )
+                                                                        : Center(
+                                                                            child:
+                                                                                CircularProgressIndicator(),
+                                                                          ),
                                                           ),
                                                         ),
                                                       ),
@@ -1806,59 +1830,83 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                         ),
                                                       ),
                                                       onPressed: () async {
-                                                        setState(() {
-                                                          _controller.video
-                                                              .pause();
-                                                        });
+                                                        if (list
+                                                            .value.isNotEmpty) {
+                                                          setState(() {
+                                                            _controller.video
+                                                                .pause();
+                                                          });
 
-                                                        FilePickerResult? file =
-                                                            await FilePicker
-                                                                .platform
-                                                                .pickFiles(
-                                                          type: FileType.custom,
-                                                          allowedExtensions: [
-                                                            'mp3'
-                                                          ],
-                                                          allowMultiple: false,
-                                                          allowCompression:
-                                                              true,
-                                                        );
+                                                          FilePickerResult?
+                                                              file =
+                                                              await FilePicker
+                                                                  .platform
+                                                                  .pickFiles(
+                                                            type:
+                                                                FileType.custom,
+                                                            allowedExtensions: [
+                                                              'mp3'
+                                                            ],
+                                                            allowMultiple:
+                                                                false,
+                                                            allowCompression:
+                                                                true,
+                                                          );
 
-                                                        if (file != null) {
-                                                          if (list.value
-                                                              .isNotEmpty) {
-                                                            list.value.last
-                                                                        .layerType ==
-                                                                    LayerType.AR
-                                                                ? indexCounter
-                                                                        .value =
-                                                                    indexCounter
-                                                                            .value +
-                                                                        2
-                                                                : indexCounter
-                                                                        .value =
-                                                                    indexCounter
-                                                                            .value +
-                                                                        1;
-                                                          } else {
-                                                            indexCounter.value =
-                                                                1;
+                                                          if (file != null) {
+                                                            if (list.value
+                                                                .isNotEmpty) {
+                                                              list.value.last
+                                                                          .layerType ==
+                                                                      LayerType
+                                                                          .AR
+                                                                  ? indexCounter
+                                                                          .value =
+                                                                      indexCounter
+                                                                              .value +
+                                                                          2
+                                                                  : indexCounter
+                                                                          .value =
+                                                                      indexCounter
+                                                                              .value +
+                                                                          1;
+                                                            } else {
+                                                              indexCounter
+                                                                  .value = 1;
+                                                            }
+
+                                                            if (indexCounter
+                                                                    .value <=
+                                                                0) {
+                                                              indexCounter
+                                                                  .value = 1;
+                                                            }
+
+                                                            await runFFmpegForAudioOnlyFiles(
+                                                              arVal:
+                                                                  indexCounter
+                                                                      .value,
+                                                              audioFile: File(
+                                                                  file
+                                                                      .files
+                                                                      .single
+                                                                      .path!),
+                                                            );
                                                           }
-
-                                                          if (indexCounter
-                                                                  .value <=
-                                                              0) {
-                                                            indexCounter.value =
-                                                                1;
-                                                          }
-
-                                                          await runFFmpegForAudioOnlyFiles(
-                                                            arVal: indexCounter
-                                                                .value,
-                                                            audioFile: File(file
-                                                                .files
-                                                                .single
-                                                                .path!),
+                                                        } else {
+                                                          await Get.dialog(
+                                                            SimpleDialog(
+                                                              children: [
+                                                                Padding(
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .all(
+                                                                              10),
+                                                                  child: Text(
+                                                                      "Please add an AR or Effect first before adding the Music Layer"),
+                                                                ),
+                                                              ],
+                                                            ),
                                                           );
                                                         }
                                                       },
@@ -2191,7 +2239,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                             context: context,
                             type: CoolAlertType.warning,
                             title:
-                                "Delete ${selected!.layerType == LayerType.Effect ? 'Effect' : 'AR'}?",
+                                "Delete ${selected!.layerType == LayerType.Effect ? 'Effect' : selected!.layerType == LayerType.AR ? 'AR' : 'Music'}?",
                             showCancelBtn: true,
                             onConfirmBtnTap: () async {
                               dev.log(
@@ -3123,7 +3171,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text(
-        LocaleKeys.arvolume.tr(),
+        ar.layerType == LayerType.AR
+            ? LocaleKeys.arvolume.tr()
+            : "Music Volume",
       ),
       content: Row(
         children: [
