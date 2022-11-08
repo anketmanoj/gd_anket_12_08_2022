@@ -1654,6 +1654,81 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                               ),
                                             ),
                                           ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            child: Container(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Expanded(
+                                                    child: ElevatedButton(
+                                                      style: ButtonStyle(
+                                                        foregroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    Colors
+                                                                        .white),
+                                                        backgroundColor:
+                                                            MaterialStateProperty.all<
+                                                                    Color>(
+                                                                constantColors
+                                                                    .navButton),
+                                                        shape: MaterialStateProperty
+                                                            .all<
+                                                                RoundedRectangleBorder>(
+                                                          RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      onPressed: () async {
+                                                        setState(() {
+                                                          _controller.video
+                                                              .pause();
+                                                        });
+
+                                                        FilePickerResult? file =
+                                                            await FilePicker
+                                                                .platform
+                                                                .pickFiles(
+                                                          type: FileType.custom,
+                                                          allowedExtensions: [
+                                                            'mp3'
+                                                          ],
+                                                          allowMultiple: false,
+                                                          allowCompression:
+                                                              true,
+                                                        );
+
+                                                        if (file != null) {
+                                                          dev.log("here now");
+                                                        }
+                                                      },
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Icon(
+                                                            Icons.add,
+                                                            color: Colors.white,
+                                                          ),
+                                                          Text(
+                                                            "Add Music",
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       );
 
