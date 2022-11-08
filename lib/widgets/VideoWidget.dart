@@ -169,19 +169,6 @@ class VideoWidget extends StatelessWidget {
           ),
         ),
         // back button
-        Positioned(
-          top: 10.h,
-          left: 10,
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
 
         Positioned(
           bottom: 10,

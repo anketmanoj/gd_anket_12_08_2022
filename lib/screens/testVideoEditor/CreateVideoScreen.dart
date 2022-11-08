@@ -2698,7 +2698,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
         ffmpegArCommand +
         " -crf 30 -preset faster ${outputPath}";
 
-    print("command : $commandToExecute");
+    dev.log("command : $commandToExecute");
 
     try {
       final result = await InternetAddress.lookup('google.com');
