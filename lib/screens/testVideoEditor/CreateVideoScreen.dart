@@ -115,6 +115,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
   Size? screen;
   bool onFinishedPlaying = false;
   ValueNotifier<int> arIndexVal = ValueNotifier<int>(0);
+  ValueNotifier<int> musicIndexVal = ValueNotifier<int>(0);
 
   // * for effects
   File? _selectedGifFile;
@@ -585,9 +586,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             _controllerSeekTo(0);
             if (!mounted) return;
 
-            // arIndexVal.value += 1;
+            musicIndexVal.value += 1;
 
-            // dev.log("list AR ${arIndexVal.value} | index counter == $arVal");
+            dev.log(
+                "list Music ${musicIndexVal.value} | index counter == $arVal");
             Get.back();
             // Get.back();
             setState(() {});
@@ -1726,6 +1728,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                             Listenable.merge([
                                                           effectIndexVal,
                                                           arIndexVal,
+                                                          musicIndexVal,
                                                         ]),
                                                         builder: (context, _) {
                                                           return ElevatedButton(
@@ -2307,6 +2310,14 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                           "arIndex == ${element.arIndex! - 1} || ar type == ${element.layerType} === moved (after moving)");
 
                                       break;
+                                    case LayerType.Music:
+                                      dev.log(
+                                          "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === move - 1 place (before moving)");
+                                      element.arIndex = element.arIndex! - 1;
+                                      dev.log(
+                                          "arIndex == ${element.arIndex! - 1} || ar type == ${element.layerType} === moved (after moving)");
+
+                                      break;
                                   }
                                 }
 
@@ -2361,6 +2372,23 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                       selected!.pathsForVideoFrames!);
                                   dev.log(
                                       "EFFECT INDEX NOW = ${effectIndexVal.value} | indexCounter.value = ${indexCounter.value}");
+                                  break;
+                                case LayerType.Music:
+                                  dev.log(
+                                      "MUSIC INDEX BEFORE = ${musicIndexVal.value}");
+                                  if (list.value.first.layerType ==
+                                          LayerType.AR &&
+                                      list.value.last == selected &&
+                                      list.value.length == 2) {
+                                    indexCounter.value = indexCounter.value - 2;
+                                  } else {
+                                    indexCounter.value = indexCounter.value - 1;
+                                  }
+                                  musicIndexVal.value -= 1;
+                                  await deleteFile(
+                                      selected!.pathsForVideoFrames!);
+                                  dev.log(
+                                      "Music INDEX NOW = ${musicIndexVal.value} | indexCounter.value = ${indexCounter.value}");
                                   break;
                               }
 
