@@ -511,6 +511,10 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                 valueListenable:
                                     selectMaterials[index].selectedMaterial!,
                                 builder: (context, selected, _) {
+                                  if (selectMaterials[index].layerType ==
+                                      LayerType.Music) {
+                                    return SizedBox();
+                                  }
                                   switch (index) {
                                     case 0:
                                       return Column(

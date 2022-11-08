@@ -579,7 +579,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               finishedCaching: ValueNotifier(true),
               ownerId: context.read<Authentication>().getUserId,
               ownerName: context.read<FirebaseOperations>().initUserName,
-              selectedMaterial: ValueNotifier<bool>(true),
+              selectedMaterial: ValueNotifier<bool>(false),
               musicFile: musicFile,
             ));
 
