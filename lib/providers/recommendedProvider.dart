@@ -95,7 +95,6 @@ class RecommendedProvider extends ChangeNotifier {
           log("loaded recommended vids");
         }
         notifyListeners();
-        await ApiService.loadFollowingVideos();
       } else {
         BlocProvider.of<FollowingPreloadBloc>(context, listen: false)
             .add(FollowingPreloadEvent.userFollowsNoOne(true));

@@ -283,18 +283,18 @@ class ApiService extends ChangeNotifier {
           .where("useruid", isEqualTo: followingID)
           .get()
           .then((value) {
-        value.docs.forEach((element) {
+        for (var element in value.docs) {
           if (element.data().containsKey("views") &&
               element.data().containsKey("totalBilled") &&
               element.data().containsKey("verifiedUser")) {
             Video video = Video.fromJson(element.data());
             _following_videos.add(video);
           }
-        });
+        }
       });
     }
 
-    log("done loading all following videos ${_following_videos.length} ");
+    log("done loading all following videos ${_following_videos.length} 123");
   }
 
   static loadFollowingFreeVideos() async {

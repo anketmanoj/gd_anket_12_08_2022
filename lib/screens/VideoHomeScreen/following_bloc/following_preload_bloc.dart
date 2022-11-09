@@ -114,7 +114,8 @@ class FollowingPreloadBloc
             final List<Video> _urls = await ApiService.getFollowingVideos();
 
             state.urls.addAll(_urls);
-            state.urls.shuffle();
+            state.urls.sort((a, b) => b.timestamp.millisecondsSinceEpoch
+                .compareTo(a.timestamp.millisecondsSinceEpoch));
             log("################# len = ${state.urls.length}");
 
             log("here no in both | ${state.urls.length}");
@@ -146,17 +147,23 @@ class FollowingPreloadBloc
         }
       },
       getVideosFromApi: (e) async* {
-        /// Fetch first 5 videos from api
+        yield state.copyWith(isLoading: true);
+        state.urls.clear();
         await ApiService.loadFollowingVideos();
         final List<Video> _urls = await ApiService.getFollowingVideos();
-        state.urls.addAll(_urls);
-        state.urls.shuffle();
+        _urls.sort((a, b) => b.timestamp.millisecondsSinceEpoch
+            .compareTo(a.timestamp.millisecondsSinceEpoch));
 
-        yield state.copyWith(isLoadingFilter: false);
+        state.urls.addAll(_urls);
+        log("################# len = ${state.urls.length}");
+
+        log("here no in both | ${state.urls.length}");
 
         if (state.urls.isNotEmpty) {
+          log("not empty following val");
           yield state.copyWith(noFollowingVideos: false);
         } else {
+          log(" empty following val");
           yield state.copyWith(noFollowingVideos: true);
         }
 
@@ -170,7 +177,10 @@ class FollowingPreloadBloc
         await _initializeControllerAtIndex(1);
 
         yield state.copyWith(
-            reloadCounter: state.reloadCounter + 1, isLoading: false);
+            userFollowsNoOne: _urls.isNotEmpty ? false : true,
+            noFollowingVideos: _urls.isNotEmpty ? false : true,
+            isLoadingFilter: false,
+            isLoading: false);
       },
       // initialize: (e) async* {},
       onVideoIndexChanged: (e) async* {
