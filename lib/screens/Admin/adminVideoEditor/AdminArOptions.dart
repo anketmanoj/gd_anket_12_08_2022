@@ -75,7 +75,7 @@ class AdminArOptions extends StatelessWidget {
               context,
               MaterialPageRoute<void>(
                   builder: (BuildContext context) =>
-                      InitAdminVideoEditorScreen(file: File(file.path))));
+                      InitAdminVideoEditorScreen()));
           break;
         default:
           CoolAlert.show(

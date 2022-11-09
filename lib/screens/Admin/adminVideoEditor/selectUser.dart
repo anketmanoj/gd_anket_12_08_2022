@@ -47,10 +47,10 @@ class SelectUserVideoEditor extends StatelessWidget {
         .then((value) {
       return value.getOutput().then((output) {
         if (output!.isEmpty) {
-          ArVideoCreation().setArAudioFlagGeneral(0);
-          return 0;
+          context.read<ArVideoCreation>().setArAudioFlagGeneral(0);
+          return 1;
         } else {
-          ArVideoCreation().setArAudioFlagGeneral(1);
+          context.read<ArVideoCreation>().setArAudioFlagGeneral(1);
           return 1;
         }
       });
@@ -73,7 +73,7 @@ class SelectUserVideoEditor extends StatelessWidget {
               context,
               MaterialPageRoute<void>(
                   builder: (BuildContext context) =>
-                      InitAdminVideoEditorScreen(file: File(file.path))));
+                      InitAdminVideoEditorScreen()));
           break;
         default:
           CoolAlert.show(

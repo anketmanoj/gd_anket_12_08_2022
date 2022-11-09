@@ -29,10 +29,7 @@ import 'package:helpers/helpers.dart'
     show OpacityTransition, SwipeTransition, AnimatedInteractiveViewer;
 
 class InitAdminVideoEditorScreen extends StatefulWidget {
-  const InitAdminVideoEditorScreen({Key? key, required this.file})
-      : super(key: key);
-
-  final File file;
+  const InitAdminVideoEditorScreen({Key? key}) : super(key: key);
 
   @override
   _InitAdminVideoEditorScreenState createState() =>
@@ -52,7 +49,7 @@ class _InitAdminVideoEditorScreenState
   @override
   void initState() {
     _controller = VideoEditorController.file(
-      widget.file,
+      context.read<VideoEditorProvider>().getBackgroundVideoFile,
       maxDuration: const Duration(seconds: 60),
       trimStyle: TrimSliderStyle(),
     )..initialize().then((_) => setState(() {}));
