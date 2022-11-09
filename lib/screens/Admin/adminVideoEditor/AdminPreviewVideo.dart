@@ -16,6 +16,8 @@ import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminThumbnailPre
 import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
+import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
+import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
 import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/services/mux/mux_video_stream.dart';
@@ -414,6 +416,10 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                 valueListenable:
                                     selectMaterials[index].selectedMaterial!,
                                 builder: (context, selected, _) {
+                                  if (selectMaterials[index].layerType ==
+                                      LayerType.Music) {
+                                    return SizedBox();
+                                  }
                                   switch (index) {
                                     case 0:
                                       return Column(
@@ -422,29 +428,84 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                             trailing: Switch(
                                               activeColor:
                                                   constantColors.navButton,
-                                              value: bgVal,
+                                              value: context
+                                                          .read<
+                                                              ArVideoCreation>()
+                                                          .getFromPexel ||
+                                                      context
+                                                              .read<
+                                                                  VideoEditorProvider>()
+                                                              .getBackgroundVideoId !=
+                                                          null
+                                                  ? true
+                                                  : bgVal,
                                               onChanged: (val) {
-                                                bgSelected.value = val;
+                                                if (context
+                                                        .read<ArVideoCreation>()
+                                                        .getFromPexel ||
+                                                    context
+                                                            .read<
+                                                                VideoEditorProvider>()
+                                                            .getBackgroundVideoId !=
+                                                        null) {
+                                                  bgSelected.value = true;
+                                                } else {
+                                                  bgSelected.value = val;
+                                                }
+
+                                                log(bgSelected.value
+                                                    .toString());
                                               },
                                             ),
                                             leading: Container(
                                               height: 50,
                                               width: 50,
-                                              decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                  image: Image.memory(
-                                                    Uint8List.fromList(
-                                                      widget
-                                                          .bgMaterialThumnailFile
-                                                          .readAsBytesSync(),
-                                                    ),
-                                                  ).image,
-                                                  fit: BoxFit.contain,
+                                              child: Image.memory(
+                                                Uint8List.fromList(
+                                                  widget.bgMaterialThumnailFile
+                                                      .readAsBytesSync(),
                                                 ),
                                               ),
                                             ),
                                             title: Text(
                                               "Background",
+                                            ),
+                                            //  context
+                                            //                       .read<
+                                            //                           VideoEditorProvider>()
+                                            subtitle: Builder(
+                                              builder: (context) {
+                                                switch (context
+                                                    .read<ArVideoCreation>()
+                                                    .getFromPexel) {
+                                                  case true:
+                                                    return Text(
+                                                        "Background is from Pexel so you cant hide it");
+
+                                                  case false:
+                                                    switch (context
+                                                                .read<
+                                                                    VideoEditorProvider>()
+                                                                .getBackgroundVideoId !=
+                                                            null &&
+                                                        context
+                                                                .read<
+                                                                    VideoEditorProvider>()
+                                                                .getBackgroundVideoId!
+                                                                .ownerId !=
+                                                            context
+                                                                .read<
+                                                                    Authentication>()
+                                                                .getUserId) {
+                                                      case true:
+                                                        return Text(
+                                                            "Background is from ${context.read<VideoEditorProvider>().getBackgroundVideoId!.ownerName} so you cant hide it");
+                                                      case false:
+                                                        return Container();
+                                                    }
+                                                }
+                                                return SizedBox();
+                                              },
                                             ),
                                           ),
                                           ListTile(
@@ -474,30 +535,23 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                                 ? Container(
                                                     height: 50,
                                                     width: 50,
-                                                    decoration: BoxDecoration(
-                                                      image: DecorationImage(
-                                                          image: Image.memory(
-                                                        Uint8List.fromList(
-                                                          selectMaterials[index]
-                                                              .arCutOutFile!
-                                                              .readAsBytesSync(),
-                                                        ),
-                                                      ).image),
+                                                    child: Image.memory(
+                                                      Uint8List.fromList(
+                                                        selectMaterials[index]
+                                                            .arCutOutFile!
+                                                            .readAsBytesSync(),
+                                                      ),
                                                     ),
                                                   )
                                                 : Container(
                                                     height: 50,
                                                     width: 50,
-                                                    decoration: BoxDecoration(
-                                                      image: DecorationImage(
-                                                        image: Image.memory(
-                                                          Uint8List.fromList(
-                                                            File(selectMaterials[
-                                                                        index]
-                                                                    .gifFilePath!)
-                                                                .readAsBytesSync(),
-                                                          ),
-                                                        ).image,
+                                                    child: Image.memory(
+                                                      Uint8List.fromList(
+                                                        File(selectMaterials[
+                                                                    index]
+                                                                .gifFilePath!)
+                                                            .readAsBytesSync(),
                                                       ),
                                                     ),
                                                   ),
@@ -508,6 +562,12 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                                   ? "AR Cut out"
                                                   : "Effect Added",
                                             ),
+                                            subtitle: selectMaterials[index]
+                                                        .layerType ==
+                                                    LayerType.Effect
+                                                ? Text(
+                                                    "Effect picked from GIPHY so you cant hide it")
+                                                : null,
                                           ),
                                         ],
                                       );
@@ -518,9 +578,17 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                           activeColor: constantColors.navButton,
                                           value: selected,
                                           onChanged: (val) {
-                                            selectMaterials[index]
-                                                .selectedMaterial!
-                                                .value = val;
+                                            if (selectMaterials[index]
+                                                    .layerType ==
+                                                LayerType.Effect) {
+                                              selectMaterials[index]
+                                                  .selectedMaterial!
+                                                  .value = true;
+                                            } else {
+                                              selectMaterials[index]
+                                                  .selectedMaterial!
+                                                  .value = val;
+                                            }
 
                                             log(selectMaterials
                                                 .where((element) =>
@@ -538,31 +606,22 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                             ? Container(
                                                 height: 50,
                                                 width: 50,
-                                                decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                    image: Image.memory(
-                                                      Uint8List.fromList(
-                                                        selectMaterials[index]
-                                                            .arCutOutFile!
-                                                            .readAsBytesSync(),
-                                                      ),
-                                                    ).image,
+                                                child: Image.memory(
+                                                  Uint8List.fromList(
+                                                    selectMaterials[index]
+                                                        .arCutOutFile!
+                                                        .readAsBytesSync(),
                                                   ),
                                                 ),
                                               )
                                             : Container(
                                                 height: 50,
                                                 width: 50,
-                                                decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                    image: Image.memory(
-                                                      Uint8List.fromList(
-                                                        File(selectMaterials[
-                                                                    index]
-                                                                .gifFilePath!)
-                                                            .readAsBytesSync(),
-                                                      ),
-                                                    ).image,
+                                                child: Image.memory(
+                                                  Uint8List.fromList(
+                                                    File(selectMaterials[index]
+                                                            .gifFilePath!)
+                                                        .readAsBytesSync(),
                                                   ),
                                                 ),
                                               ),
@@ -572,6 +631,12 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                               ? "AR Cut out"
                                               : "Effect Added",
                                         ),
+                                        subtitle: selectMaterials[index]
+                                                    .layerType ==
+                                                LayerType.Effect
+                                            ? Text(
+                                                "Effect picked from GIPHY so you cant hide it")
+                                            : null,
                                       );
                                   }
                                 });

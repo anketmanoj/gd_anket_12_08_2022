@@ -24,6 +24,8 @@ import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/video_editor.d
 import 'package:diamon_rose_app/screens/testVideoEditor/VideoThumbnailSelectionScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/testingVideoOutput.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
+import 'package:diamon_rose_app/services/FirebaseOperations.dart';
+import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/img_seq_animator.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
@@ -48,6 +50,7 @@ import 'package:get/get.dart' hide Trans;
 import 'package:giphy_get/giphy_get.dart';
 import 'package:helpers/helpers/transition.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:nanoid/nanoid.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -109,6 +112,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
   Size? screen;
   bool onFinishedPlaying = false;
   ValueNotifier<int> arIndexVal = ValueNotifier<int>(0);
+  ValueNotifier<int> musicIndexVal = ValueNotifier<int>(0);
 
   // * for effects
   File? _selectedGifFile;
@@ -339,6 +343,121 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
 
   @override
   bool get wantKeepAlive => true;
+
+  // * running ffmpeg to get video with no background
+  Future<void> runFFmpegForAudioOnlyFiles({
+    required int arVal,
+    required File audioFile,
+  }) async {
+    if (await Permission.storage.request().isGranted) {
+      dev.log("AR INDEX == $arVal");
+      // ignore: unawaited_futures
+      CoolAlert.show(
+        context: context,
+        type: CoolAlertType.loading,
+        barrierDismissible: false,
+        text: "Loading Music file",
+      );
+      // Form matte file
+
+      try {
+        await FFprobeKit.execute(
+                '-i ${audioFile.path} -show_entries format=duration -v quiet -of json')
+            .then((value) {
+          value.getOutput().then((mapOutput) async {
+            final Map<String, dynamic> json = jsonDecode(mapOutput!);
+
+            final String durationString = json['format']['duration'];
+
+            print("durationString: $durationString");
+
+            final String setDuration = double.parse(durationString) >=
+                    _controller.video.value.duration.inSeconds
+                ? _controller.video.value.duration.inSeconds.toString()
+                : durationString;
+
+            //! #############################################################
+
+            final AudioPlayer? _player = AudioPlayer();
+
+            final List<String> _fullPathsOnline = [
+              "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
+            ];
+
+            final File musicFile = await saveMusicFiletoDevice(
+                fileBytes: audioFile.readAsBytesSync(),
+                fileName: audioFile.path);
+
+            final File arCutOutFile = await getImage(url: _fullPathsOnline[0]);
+            dev.log("ArCut out ois here  = ${arCutOutFile.path}");
+
+            await _player!.setFilePath(audioFile.path);
+            await _player.pause();
+
+            final containerKey = GlobalKey();
+
+            final String idValue = nanoid();
+
+            list.value.add(ARList(
+              arId: idValue,
+              arIndex: arVal,
+              height: 0,
+              rotation: 0,
+              scale: 1,
+              width: 0,
+              xPosition: 0,
+              yPosition: 0,
+              pathsForVideoFrames: _fullPathsOnline,
+              startingPositon: 0,
+              endingPosition: 0,
+              totalDuration: double.parse(durationString),
+              showAr: ValueNotifier(false),
+              audioPlayer: _player,
+              layerType: LayerType.Music,
+              arKey: containerKey,
+              fromFirebase: true,
+              audioFlag: true,
+              finishedCaching: ValueNotifier(true),
+              ownerId: context.read<Authentication>().getUserId,
+              ownerName: context.read<FirebaseOperations>().initUserName,
+              selectedMaterial: ValueNotifier<bool>(false),
+              musicFile: musicFile,
+            ));
+
+            _controllerSeekTo(0);
+            if (!mounted) return;
+
+            musicIndexVal.value += 1;
+
+            dev.log(
+                "list Music ${musicIndexVal.value} | index counter == $arVal");
+            Get.back();
+            // Get.back();
+            setState(() {});
+          });
+        });
+      } catch (e) {
+        print("FFmpeg Error ==== ${e.toString()}");
+      }
+    } else if (await Permission.storage.request().isDenied) {
+      await openAppSettings();
+    }
+  }
+
+  Future<File> saveMusicFiletoDevice(
+      {required String fileName, required Uint8List fileBytes}) async {
+    final Directory appDir = await getApplicationDocumentsDirectory();
+
+    /// Generate Image Name
+    final String imageName = fileName.split('/').last;
+    final String timeNow = Timestamp.now().millisecondsSinceEpoch.toString();
+
+    /// Create Empty File in app dir & fill with new image
+    final File file = File(path.join(appDir.path, timeNow + imageName));
+    file.writeAsBytesSync(fileBytes);
+
+    return file;
+  }
 
   // * running ffmpeg to get video with no background
   Future<void> runFFmpegCommand({
@@ -1269,8 +1388,13 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                                     LayerType.AR
                                                                 ? constantColors
                                                                     .mainColor
-                                                                : constantColors
-                                                                    .darkColor,
+                                                                : arVal.layerType ==
+                                                                        LayerType
+                                                                            .Effect
+                                                                    ? constantColors
+                                                                        .darkColor
+                                                                    : constantColors
+                                                                        .lightBlueColor,
                                                             border: Border.all(
                                                               color:
                                                                   Colors.white,
@@ -1297,12 +1421,31 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                                     ? Image
                                                                         .file(
                                                                         File(arVal
-                                                                            .pathsForVideoFrames![0]),
+                                                                            .pathsForVideoFrames![1]),
                                                                       )
-                                                                    : Center(
-                                                                        child:
-                                                                            CircularProgressIndicator(),
-                                                                      ),
+                                                                    : arVal.layerType ==
+                                                                            LayerType.Music
+                                                                        ? Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.only(left: 10),
+                                                                            child:
+                                                                                Row(
+                                                                              children: [
+                                                                                Text(
+                                                                                  "Music Layer",
+                                                                                  style: TextStyle(color: constantColors.whiteColor),
+                                                                                ),
+                                                                                SizedBox(
+                                                                                  width: 10,
+                                                                                ),
+                                                                                Icon(FontAwesomeIcons.music, color: constantColors.whiteColor)
+                                                                              ],
+                                                                            ),
+                                                                          )
+                                                                        : Center(
+                                                                            child:
+                                                                                CircularProgressIndicator(),
+                                                                          ),
                                                           ),
                                                         ),
                                                       ),
@@ -1508,7 +1651,158 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                 ],
                                               ),
                                             ),
-                                          )
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            child: Container(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Expanded(
+                                                    child: ElevatedButton(
+                                                      style: ButtonStyle(
+                                                        foregroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    Colors
+                                                                        .white),
+                                                        backgroundColor:
+                                                            MaterialStateProperty.all<
+                                                                    Color>(
+                                                                constantColors
+                                                                    .navButton),
+                                                        shape: MaterialStateProperty
+                                                            .all<
+                                                                RoundedRectangleBorder>(
+                                                          RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      onPressed: () async {
+                                                        if (list
+                                                            .value.isNotEmpty) {
+                                                          if (musicIndexVal
+                                                                  .value <=
+                                                              1) {
+                                                            dev.log(musicIndexVal
+                                                                .value
+                                                                .toString());
+                                                            setState(() {
+                                                              _controller.video
+                                                                  .pause();
+                                                            });
+
+                                                            FilePickerResult?
+                                                                file =
+                                                                await FilePicker
+                                                                    .platform
+                                                                    .pickFiles(
+                                                              type: FileType
+                                                                  .custom,
+                                                              allowedExtensions: [
+                                                                'mp3'
+                                                              ],
+                                                              allowMultiple:
+                                                                  false,
+                                                              allowCompression:
+                                                                  true,
+                                                            );
+
+                                                            if (file != null) {
+                                                              if (list.value
+                                                                  .isNotEmpty) {
+                                                                list.value.last.layerType ==
+                                                                        LayerType
+                                                                            .AR
+                                                                    ? indexCounter
+                                                                            .value =
+                                                                        indexCounter.value +
+                                                                            2
+                                                                    : indexCounter
+                                                                            .value =
+                                                                        indexCounter.value +
+                                                                            1;
+                                                              } else {
+                                                                indexCounter
+                                                                    .value = 1;
+                                                              }
+
+                                                              if (indexCounter
+                                                                      .value <=
+                                                                  0) {
+                                                                indexCounter
+                                                                    .value = 1;
+                                                              }
+
+                                                              await runFFmpegForAudioOnlyFiles(
+                                                                arVal:
+                                                                    indexCounter
+                                                                        .value,
+                                                                audioFile: File(
+                                                                    file
+                                                                        .files
+                                                                        .single
+                                                                        .path!),
+                                                              );
+                                                            }
+                                                          } else {
+                                                            await Get.dialog(
+                                                              SimpleDialog(
+                                                                children: [
+                                                                  Padding(
+                                                                    padding:
+                                                                        EdgeInsets.all(
+                                                                            10),
+                                                                    child: Text(
+                                                                        "You can only add 2 Music Layers"),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            );
+                                                          }
+                                                        } else {
+                                                          await Get.dialog(
+                                                            SimpleDialog(
+                                                              children: [
+                                                                Padding(
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .all(
+                                                                              10),
+                                                                  child: Text(
+                                                                      "Please add an AR or Effect first before adding the Music Layer"),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          );
+                                                        }
+                                                      },
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Icon(
+                                                            Icons.add,
+                                                            color: Colors.white,
+                                                          ),
+                                                          Text(
+                                                            "Add Music",
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       );
 
@@ -1816,7 +2110,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                             context: context,
                             type: CoolAlertType.warning,
                             title:
-                                "Delete ${selected!.layerType == LayerType.Effect ? 'Effect' : 'AR'}?",
+                                "Delete ${selected!.layerType == LayerType.Effect ? 'Effect' : selected!.layerType == LayerType.AR ? 'AR' : 'Music'}?",
                             showCancelBtn: true,
                             onConfirmBtnTap: () async {
                               dev.log(
@@ -1884,6 +2178,14 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                           "arIndex == ${element.arIndex! - 1} || ar type == ${element.layerType} === moved (after moving)");
 
                                       break;
+                                    case LayerType.Music:
+                                      dev.log(
+                                          "arIndex == ${element.arIndex!} || ar type == ${element.layerType} === move - 1 place (before moving)");
+                                      element.arIndex = element.arIndex! - 1;
+                                      dev.log(
+                                          "arIndex == ${element.arIndex! - 1} || ar type == ${element.layerType} === moved (after moving)");
+
+                                      break;
                                   }
                                 }
 
@@ -1939,6 +2241,23 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                   dev.log(
                                       "EFFECT INDEX NOW = ${effectIndexVal.value} | indexCounter.value = ${indexCounter.value}");
                                   break;
+                                case LayerType.Music:
+                                  dev.log(
+                                      "MUSIC INDEX BEFORE = ${musicIndexVal.value}");
+                                  if (list.value.first.layerType ==
+                                          LayerType.AR &&
+                                      list.value.last == selected &&
+                                      list.value.length == 2) {
+                                    indexCounter.value = indexCounter.value - 2;
+                                  } else {
+                                    indexCounter.value = indexCounter.value - 1;
+                                  }
+                                  musicIndexVal.value -= 1;
+                                  await deleteFile(
+                                      selected!.pathsForVideoFrames!);
+                                  dev.log(
+                                      "Music INDEX NOW = ${musicIndexVal.value} | indexCounter.value = ${indexCounter.value}");
+                                  break;
                               }
 
                               // var appDir = (await getTemporaryDirectory()).path;
@@ -1985,370 +2304,499 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                         size: 25,
                       ),
                       onPressed: list.value.isNotEmpty
-                          ? () async {
-                              await _controller.video.seekTo(Duration.zero);
-                              await _controller.video.pause();
-                              // ! for x = W - w (and the final bit for Ar position on screen)
-                              double finalVideoContainerPointX =
-                                  videoContainerKey
-                                      .globalPaintBounds!.bottomRight.dx;
-                              double finalVideoContainerPointY =
-                                  videoContainerKey
-                                      .globalPaintBounds!.bottomRight.dy;
-
-                              // * to calculate videoContainer Height
-                              double videoContainerHeight =
-                                  videoContainerKey.globalPaintBounds!.height;
-
-                              // * to calculate videoContainer Width
-                              double videoContainerWidth =
-                                  videoContainerKey.globalPaintBounds!.width;
-
-                              // *ffmpeg list string
-                              List<String> ffmpegInputList = [];
-                              List<String> alphaTransparencyLayer = [];
-                              List<String> ffmpegStartPointList = [];
-                              List<String> ffmpegArFiltercomplex = [];
-                              List<String> ffmpegOverlay = [];
-                              List<String> ffmpegVolumeList = [];
-                              List<String> ffmpegSoundInputs = [];
-                              ValueNotifier<int> lastVal =
-                                  ValueNotifier<int>(0);
-
-                              for (ARList arElement in list.value) {
-                                double finalArContainerPointX = arElement
-                                    .arKey!.globalPaintBounds!.bottomRight.dx;
-                                double finalArContainerPointY = arElement
-                                    .arKey!.globalPaintBounds!.bottomRight.dy;
-                                // print(
-                                //     "arIndexhere = ${arElement.arIndex} |finalVideoContainerPointX $finalVideoContainerPointX | finalVideoContainerPointY $finalVideoContainerPointY");
-                                // print(
-                                //     "arIndex = ${arElement.arIndex} |finalArContainerPointX $finalArContainerPointX | finalArContainerPointY $finalArContainerPointY");
-                                // * move x pixels to the right (minus) / left (plus) from left border of video
-                                double x = ((finalVideoContainerPointX -
-                                        finalArContainerPointX) *
-                                    (1080 / videoContainerWidth) *
-                                    -1);
-                                // print("ar ${arElement.arIndex} x = $x");
-                                // * move y pixels to the top (minus) / bottom (plus) from bottom border of video
-                                double y = ((finalVideoContainerPointY -
-                                        finalArContainerPointY) *
-                                    (1920 / videoContainerHeight) *
-                                    -1);
-
-                                //  videoContainerHeight (322.5) = 1920
-                                // videoContainerWidth (177.375) = 1080
-                                // (finalVideoContainerPointX - finalArContainerPointX) is x =
-
-                                // ar start time
-                                double arStartTime = (arElement
-                                            .startingPositon! /
-                                        _fullLayout.width) *
-                                    _videoController.value.duration.inSeconds;
-
-                                // ar end time
-                                double arEndTime =
-                                    (arElement.totalDuration!) + arStartTime;
-
-                                // * to calculate arContainer Height & Width
-
-                                double arScaleWidth =
-                                    (arElement.width! * arElement.scale!)
-                                        .floorToDouble();
-                                double arScaleHeigth =
-                                    (arElement.height! * arElement.scale!)
-                                        .floorToDouble();
-
-                                double arContainerHeight =
-                                    arElement.arKey!.globalPaintBounds!.height;
-
-                                double arScaleHeightVal = arContainerHeight *
-                                    1920 /
-                                    videoContainerHeight;
-
-                                double arContainerWidth =
-                                    arElement.arKey!.globalPaintBounds!.width;
-
-                                double arScaleWidthVal = arContainerWidth *
-                                    1080 /
-                                    videoContainerWidth;
-                                print("x = $x | y = $y");
-                                print(
-                                    "ar point x $finalArContainerPointX | screen height $videoContainerHeight");
-
-                                if (arElement.layerType == LayerType.AR) {
-                                  ffmpegInputList.add(
-                                      " -i ${arElement.mainFile} -i ${arElement.alphaFile}");
-                                } else {
-                                  ffmpegInputList
-                                      .add(" -i ${arElement.gifFilePath!}");
-                                }
-
-                                if (arElement.layerType == LayerType.AR) {
-                                  alphaTransparencyLayer.add(
-                                      "[${arElement.arIndex! + 1}][${arElement.arIndex}]scale2ref[mask][main];[main][mask]alphamerge[vid${arElement.arIndex}];");
-                                }
-
-                                if (arElement.layerType == LayerType.AR) {
-                                  ffmpegStartPointList.add(
-                                      "[vid${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
-                                } else {
-                                  ffmpegStartPointList.add(
-                                      "[${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
-                                }
-
-                                ffmpegArFiltercomplex.add(
-                                    "[top${arElement.arIndex}]rotate=${arElement.rotation! * 180 / pi}*PI/180:c=none:ow=rotw(${arElement.rotation! * 180 / pi}*PI/180):oh=roth(${arElement.rotation! * 180 / pi}*PI/180),scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
-
-                                if (arElement.arIndex == 1) {
-                                  ffmpegOverlay.add(
-                                      "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(0)}\"\\,\"${arEndTime.toStringAsFixed(0)}\")':eof_action=pass[${arElement.arIndex}out];");
-                                  lastVal.value = arElement.arIndex!;
-                                } else {
-                                  ffmpegOverlay.add(
-                                      "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(0)}\"\\,\"${arEndTime.toStringAsFixed(0)}\")':eof_action=pass[${arElement.arIndex}out];");
-                                  lastVal.value = arElement.arIndex!;
-                                }
-                                if (arElement.layerType == LayerType.AR &&
-                                    arElement.audioFlag == true) {
-                                  ffmpegVolumeList.add(
-                                      "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(0)}s:all=1[a${arElement.arIndex}];");
-                                  ffmpegSoundInputs
-                                      .add("[a${arElement.arIndex}]");
-                                }
-
-                                if (arElement.finishedCaching!.value == true)
-                                  arElement.arState!.skip(0);
-                                arElement.arState!.pause();
-                                if (arElement.audioFlag == true)
-                                  arElement.audioPlayer!
-                                      .seek(Duration(milliseconds: 0));
-                                arElement.audioPlayer!.pause();
-
-                                // print("arIndex = ${arElement.arIndex} | x = $x | y = $y");
-                              }
-
-                              String commandNoBgAudio =
-                                  "${ffmpegInputList.join()} -t ${_videoController.value.duration} -filter_complex \"${alphaTransparencyLayer.join()}${ffmpegStartPointList.join()}[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];${ffmpegArFiltercomplex.join()}${ffmpegOverlay.join()}${ffmpegVolumeList.join()}${ffmpegSoundInputs.join()}${ffmpegSoundInputs.isEmpty ? '' : 'amix=inputs=${ffmpegSoundInputs.length + 1}[a]'}\" -map ''[${lastVal.value}out]'' ${ffmpegSoundInputs.isEmpty ? '' : '-map ' '[a]' ''} -y ";
-
-                              String command =
-                                  "${ffmpegInputList.join()} -t ${_videoController.value.duration} -filter_complex \"${alphaTransparencyLayer.join()}${ffmpegStartPointList.join()}[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];${ffmpegArFiltercomplex.join()}${ffmpegOverlay.join()}${ffmpegVolumeList.join()}[0:a]volume=${_controller.video.value.volume}[a0];[a0]${ffmpegSoundInputs.join()}amix=inputs=${ffmpegSoundInputs.length + 1}[a]\" -map ''[${lastVal.value}out]'' -map ''[a]'' -y ";
-
-                              dev.log(arVideoCreation.getArAudioFlagGeneral == 1
-                                  ? command
-                                  : commandNoBgAudio);
-                              // * for combining Ar with BG
-                              // ignore: unawaited_futures
-                              CoolAlert.show(
-                                context: context,
-                                type: CoolAlertType.loading,
-                                text: LocaleKeys.processingvideo.tr(),
-                                barrierDismissible: false,
-                              );
-                              try {
-                                await combineBgAr(
-                                  bgVideoFile: context
-                                      .read<VideoEditorProvider>()
-                                      .getBackgroundVideoFile,
-                                  ffmpegArCommand:
-                                      arVideoCreation.getArAudioFlagGeneral == 1
-                                          ? command
-                                          : commandNoBgAudio,
-                                  bgVideoDuartion:
-                                      _videoController.value.duration,
-                                  onProgress: (stats, value) =>
-                                      _exportingProgress.value = value,
-                                  onCompleted: (file) async {
-                                    if (file != null) {
-                                      await context
-                                          .read<VideoEditorProvider>()
-                                          .setAfterEditorVideoController(file);
-
-                                      dev.log("Done!!!!!");
-
-                                      await context
-                                          .read<VideoEditorProvider>()
-                                          .setBgMaterialThumnailFile();
-
-                                      dev.log("we're here now");
-
-                                      dev.log("Send!");
-                                      Get.back();
-
-                                      await Get.to(
-                                        () => AdminVideothumbnailSelector(
-                                          arList: list.value,
+                          ? list.value.any((element) =>
+                                      element.layerType == LayerType.AR) ==
+                                  false
+                              ? () {
+                                  Get.dialog(
+                                    SimpleDialog(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(10),
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                "No AR has been detected",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: constantColors.black,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              Text(
+                                                "In order to create content, please include at least 1 AR in your video!",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: constantColors.black,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              ElevatedButton(
+                                                style: ButtonStyle(
+                                                  foregroundColor:
+                                                      MaterialStateProperty.all<
+                                                          Color>(Colors.white),
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all<
+                                                              Color>(
+                                                          constantColors
+                                                              .navButton),
+                                                  shape:
+                                                      MaterialStateProperty.all<
+                                                          RoundedRectangleBorder>(
+                                                    RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                    ),
+                                                  ),
+                                                ),
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.check,
+                                                      color: Colors.white,
+                                                    ),
+                                                    Text(
+                                                      LocaleKeys.understood
+                                                          .tr(),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      );
+                                      ],
+                                    ),
+                                  );
+                                }
+                              : () async {
+                                  await _controller.video.seekTo(Duration.zero);
+                                  await _controller.video.pause();
+                                  // ! for x = W - w (and the final bit for Ar position on screen)
+                                  double finalVideoContainerPointX =
+                                      videoContainerKey
+                                          .globalPaintBounds!.bottomRight.dx;
+                                  double finalVideoContainerPointY =
+                                      videoContainerKey
+                                          .globalPaintBounds!.bottomRight.dy;
 
-                                      // Navigator.pushReplacement(
-                                      //     context,
-                                      //     PageTransition(
-                                      //         child: VideothumbnailSelector(
-                                      //           arList: list.value,
-                                      //           file: file,
-                                      //           bgMaterialThumnailFile:
-                                      //               bgMaterialThumnailFile,
-                                      //         ),
-                                      //         type: PageTransitionType.fade));
+                                  // * to calculate videoContainer Height
+                                  double videoContainerHeight =
+                                      videoContainerKey
+                                          .globalPaintBounds!.height;
 
-                                      dev.log("we're here?");
-                                    } else {
-                                      Navigator.pop(context);
-                                      CoolAlert.show(
-                                        context: context,
-                                        type: CoolAlertType.error,
-                                        title: LocaleKeys.errorprocessingvideo
-                                            .tr(),
-                                        text:
-                                            "Device RAM issue. Please free up space on your phone to be able to process the video properly",
-                                      );
-                                      dev.log("hello ?? ");
+                                  // * to calculate videoContainer Width
+                                  double videoContainerWidth = videoContainerKey
+                                      .globalPaintBounds!.width;
+
+                                  // *ffmpeg list string
+                                  List<String> ffmpegInputList = [];
+                                  List<String> alphaTransparencyLayer = [];
+                                  List<String> ffmpegStartPointList = [];
+                                  List<String> ffmpegArFiltercomplex = [];
+                                  List<String> ffmpegOverlay = [];
+                                  List<String> ffmpegVolumeList = [];
+                                  List<String> ffmpegSoundInputs = [];
+                                  ValueNotifier<int> lastVal =
+                                      ValueNotifier<int>(0);
+
+                                  for (ARList arElement in list.value) {
+                                    dev.log(
+                                        "rotations for ${arElement.arId} = rot = ${arElement.rotation}");
+                                    double finalArContainerPointX = arElement
+                                        .arKey!
+                                        .globalPaintBounds!
+                                        .bottomRight
+                                        .dx;
+                                    double finalArContainerPointY = arElement
+                                        .arKey!
+                                        .globalPaintBounds!
+                                        .bottomRight
+                                        .dy;
+                                    // print(
+                                    //     "arIndexhere = ${arElement.arIndex} |finalVideoContainerPointX $finalVideoContainerPointX | finalVideoContainerPointY $finalVideoContainerPointY");
+                                    // print(
+                                    //     "arIndex = ${arElement.arIndex} |finalArContainerPointX $finalArContainerPointX | finalArContainerPointY $finalArContainerPointY");
+                                    // * move x pixels to the right (minus) / left (plus) from left border of video
+                                    double x = ((finalVideoContainerPointX -
+                                            finalArContainerPointX) *
+                                        (1080 / videoContainerWidth) *
+                                        -1);
+                                    // print("ar ${arElement.arIndex} x = $x");
+                                    // * move y pixels to the top (minus) / bottom (plus) from bottom border of video
+                                    double y = ((finalVideoContainerPointY -
+                                            finalArContainerPointY) *
+                                        (1920 / videoContainerHeight) *
+                                        -1);
+
+                                    //  videoContainerHeight (322.5) = 1920
+                                    // videoContainerWidth (177.375) = 1080
+                                    // (finalVideoContainerPointX - finalArContainerPointX) is x =
+
+                                    // ar start time
+                                    double arStartTime =
+                                        (arElement.startingPositon! /
+                                                _fullLayout.width) *
+                                            _videoController
+                                                .value.duration.inSeconds;
+
+                                    // ar end time
+                                    double arEndTime =
+                                        (arElement.totalDuration!) +
+                                            arStartTime;
+
+                                    // * to calculate arContainer Height & Width
+
+                                    double arScaleWidth =
+                                        (arElement.width! * arElement.scale!)
+                                            .floorToDouble();
+                                    double arScaleHeigth =
+                                        (arElement.height! * arElement.scale!)
+                                            .floorToDouble();
+
+                                    double arContainerHeight = arElement
+                                        .arKey!.globalPaintBounds!.height;
+
+                                    double arScaleHeightVal =
+                                        arContainerHeight *
+                                            1920 /
+                                            videoContainerHeight;
+
+                                    double arContainerWidth = arElement
+                                        .arKey!.globalPaintBounds!.width;
+
+                                    double arScaleWidthVal = arContainerWidth *
+                                        1080 /
+                                        videoContainerWidth;
+                                    print("x = $x | y = $y");
+                                    print(
+                                        "ar point x $finalArContainerPointX | screen height $videoContainerHeight");
+
+                                    switch (arElement.layerType!) {
+                                      case LayerType.AR:
+                                        ffmpegInputList.add(
+                                            " -i ${arElement.mainFile} -i ${arElement.alphaFile}");
+
+                                        break;
+                                      case LayerType.Effect:
+                                        ffmpegInputList.add(
+                                            " -i ${arElement.gifFilePath!}");
+                                        break;
+                                      case LayerType.Music:
+                                        ffmpegInputList.add(
+                                            " -i ${arElement.musicFile!.path}");
+                                        break;
                                     }
 
-                                    setState(() => _exported = true);
-                                    Future.delayed(
-                                        const Duration(seconds: 2),
-                                        () =>
-                                            setState(() => _exported = false));
-                                  },
-                                );
-                              } catch (e) {
-                                Navigator.pop(context);
-                                CoolAlert.show(
-                                  context: context,
-                                  type: CoolAlertType.error,
-                                  title: "Error processing video",
-                                  text: e.toString(),
-                                );
-                              }
+                                    if (arElement.layerType == LayerType.AR) {
+                                      alphaTransparencyLayer.add(
+                                          "[${arElement.arIndex! + 1}][${arElement.arIndex}]scale2ref[mask][main];[main][mask]alphamerge[vid${arElement.arIndex}];");
+                                    }
 
-                              // * for combining effect with BG
-                              // await combineBgEffect(
-                              //   bgVideoFile: widget.file,
-                              //   effectFile: File(selectedFile!.path!),
-                              //   arScaleWidth: "${arScaleWidthVal.floor()}",
-                              //   arScaleHeight: "${arScaleHeightVal.floor()}",
-                              //   arXCoordinate: x < 0 ? "-$x" : "+$x",
-                              //   arYCoordinate: y < 0 ? "-$y" : "+$y",
-                              //   arStartTime: arStartTime.toString(),
-                              //   arEndTime: "${arEndTime + arStartTime}",
-                              //   bgVideoDuartion: _videoController.value.duration,
-                              //   onProgress: (stats, value) =>
-                              //       _exportingProgress.value = value,
-                              //   onCompleted: (file) async {
-                              //     _isExporting.value = false;
-                              //     if (!mounted) return;
-                              //     if (file != null) {
-                              //       final VideoPlayerController _videoController =
-                              //           VideoPlayerController.file(file);
+                                    switch (arElement.layerType!) {
+                                      case LayerType.AR:
+                                        ffmpegStartPointList.add(
+                                            "[vid${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(10)}/TB[top${arElement.arIndex}];");
 
-                              //       // ignore: unawaited_futures
-                              //       _videoController.initialize().then((value) async {
-                              //         setState(() {});
+                                        ffmpegArFiltercomplex.add(
+                                            "[top${arElement.arIndex}]rotate=${arElement.rotation! * 180 / pi}*PI/180:c=none:ow=rotw(${arElement.rotation! * 180 / pi}*PI/180):oh=roth(${arElement.rotation! * 180 / pi}*PI/180),scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
 
-                              //         _videoController.setLooping(true);
-                              //         await showDialog(
-                              //           context: context,
-                              //           builder: (_) => Padding(
-                              //             padding: const EdgeInsets.all(30),
-                              //             child: Container(
-                              //               color: Colors.black,
-                              //               child: Column(
-                              //                 children: [
-                              //                   Container(
-                              //                     height: 50,
-                              //                     color: Colors.white,
-                              //                     child: Row(
-                              //                       mainAxisAlignment:
-                              //                           MainAxisAlignment.center,
-                              //                       children: [
-                              //                         Text(
-                              //                           "Preview",
-                              //                           style: TextStyle(
-                              //                             color: Colors.black,
-                              //                             fontSize: 20,
-                              //                           ),
-                              //                         ),
-                              //                       ],
-                              //                     ),
-                              //                   ),
-                              //                   Container(
-                              //                     height:
-                              //                         MediaQuery.of(context).size.height *
-                              //                             0.6,
-                              //                     child: Center(
-                              //                       child: GestureDetector(
-                              //                         onTap: () {
-                              //                           _videoController.value.isPlaying
-                              //                               ? _videoController.pause()
-                              //                               : _videoController.play();
-                              //                         },
-                              //                         child: AspectRatio(
-                              //                           aspectRatio: _videoController
-                              //                               .value.aspectRatio,
-                              //                           child:
-                              //                               VideoPlayer(_videoController),
-                              //                         ),
-                              //                       ),
-                              //                     ),
-                              //                   ),
-                              //                   Container(
-                              //                     color: Colors.white,
-                              //                     child: Row(
-                              //                       mainAxisAlignment:
-                              //                           MainAxisAlignment.spaceEvenly,
-                              //                       children: [
-                              //                         ElevatedButton(
-                              //                           onPressed: () {
-                              //                             Navigator.pop(context);
-                              //                           },
-                              //                           child: Text(
-                              //                             "Cancel",
-                              //                           ),
-                              //                         ),
-                              //                         ElevatedButton(
-                              //                           onPressed: () {
-                              //                             Navigator.push(
-                              //                                 context,
-                              //                                 PageTransition(
-                              //                                     child: PreviewVideoScreen(
-                              //                                         thumbnailFile:
-                              //                                             thumbnailfile,
-                              //                                         videoFile:
-                              //                                             File(file.path),
-                              //                                         videoPlayerController:
-                              //                                             _videoController),
-                              //                                     type: PageTransitionType
-                              //                                         .fade));
-                              //                           },
-                              //                           child: Text(
-                              //                             "Next",
-                              //                           ),
-                              //                         ),
-                              //                       ],
-                              //                     ),
-                              //                   ),
-                              //                 ],
-                              //               ),
-                              //             ),
-                              //           ),
-                              //         );
-                              //         await _videoController.pause();
-                              //         _videoController.dispose();
-                              //       });
+                                        if (arElement.arIndex == 1) {
+                                          ffmpegOverlay.add(
+                                              "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(10)}\"\\,\"${arEndTime.toStringAsFixed(10)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                          lastVal.value = arElement.arIndex!;
+                                        } else {
+                                          ffmpegOverlay.add(
+                                              "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(10)}\"\\,\"${arEndTime.toStringAsFixed(10)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                          lastVal.value = arElement.arIndex!;
+                                        }
+                                        break;
+                                      case LayerType.Effect:
+                                        ffmpegStartPointList.add(
+                                            "[${arElement.arIndex}]setpts=PTS-STARTPTS+${arStartTime.toStringAsFixed(0)}/TB[top${arElement.arIndex}];");
+                                        ffmpegArFiltercomplex.add(
+                                            "[top${arElement.arIndex}]rotate=${arElement.rotation! * 180 / pi}*PI/180:c=none:ow=rotw(${arElement.rotation! * 180 / pi}*PI/180):oh=roth(${arElement.rotation! * 180 / pi}*PI/180),scale=${arScaleWidthVal}:${arScaleHeightVal}:force_original_aspect_ratio=decrease[${arElement.arIndex}ol_vid];");
 
-                              //       _exportText = "Video success export!";
-                              //     } else {
-                              //       _exportText = "Error on export video :(";
-                              //     }
+                                        if (arElement.arIndex == 1) {
+                                          ffmpegOverlay.add(
+                                              "[bg_vid][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(10)}\"\\,\"${arEndTime.toStringAsFixed(10)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                          lastVal.value = arElement.arIndex!;
+                                        } else {
+                                          ffmpegOverlay.add(
+                                              "[${lastVal.value}out][${arElement.arIndex}ol_vid]overlay=x=(W-w)${x <= 0 ? "$x" : "+${x}"}:y=(H-h)${y <= 0 ? "$y" : "+${y}"}:enable='between(t\\,\"${arStartTime.toStringAsFixed(10)}\"\\,\"${arEndTime.toStringAsFixed(10)}\")':eof_action=pass[${arElement.arIndex}out];");
+                                          lastVal.value = arElement.arIndex!;
+                                        }
 
-                              //     setState(() => _exported = true);
-                              //     Future.delayed(const Duration(seconds: 2),
-                              //         () => setState(() => _exported = false));
-                              //   },
-                              // );
-                            }
+                                        break;
+                                      case LayerType.Music:
+                                        break;
+                                    }
+
+                                    if (arElement.layerType == LayerType.AR &&
+                                        arElement.audioFlag == true) {
+                                      ffmpegVolumeList.add(
+                                          "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(10)}s:all=1[a${arElement.arIndex}];");
+                                      ffmpegSoundInputs
+                                          .add("[a${arElement.arIndex}]");
+                                    }
+
+                                    if (arElement.layerType ==
+                                            LayerType.Music &&
+                                        arElement.audioFlag == true) {
+                                      ffmpegVolumeList.add(
+                                          "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(10)}s:all=1[a${arElement.arIndex}];");
+                                      ffmpegSoundInputs
+                                          .add("[a${arElement.arIndex}]");
+                                    }
+
+                                    if (arElement.finishedCaching!.value ==
+                                        true) arElement.arState!.skip(0);
+                                    arElement.arState!.pause();
+                                    if (arElement.audioFlag == true)
+                                      arElement.audioPlayer!
+                                          .seek(Duration(milliseconds: 0));
+                                    arElement.audioPlayer!.pause();
+
+                                    // print("arIndex = ${arElement.arIndex} | x = $x | y = $y");
+
+                                  }
+
+                                  // list.value.forEach((arElement) {
+                                  // });
+
+                                  String commandNoBgAudio =
+                                      "${ffmpegInputList.join()} -t ${_videoController.value.duration} -filter_complex \"${alphaTransparencyLayer.join()}${ffmpegStartPointList.join()}[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];${ffmpegArFiltercomplex.join()}${ffmpegOverlay.join()}${ffmpegVolumeList.join()}${ffmpegSoundInputs.join()}${ffmpegSoundInputs.isEmpty ? '' : 'amix=inputs=${ffmpegSoundInputs.length + 1}[a]'}\" -map ''[${lastVal.value}out]'' ${ffmpegSoundInputs.isEmpty ? '' : '-map ' '[a]' ''} -y ";
+
+                                  String command =
+                                      "${ffmpegInputList.join()} -t ${_videoController.value.duration} -filter_complex \"${alphaTransparencyLayer.join()}${ffmpegStartPointList.join()}[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1[bg_vid];${ffmpegArFiltercomplex.join()}${ffmpegOverlay.join()}${ffmpegVolumeList.join()}[0:a]volume=${_controller.video.value.volume}[a0];[a0]${ffmpegSoundInputs.join()}amix=inputs=${ffmpegSoundInputs.length + 1}[a]\" -map ''[${lastVal.value}out]'' -map ''[a]'' -y ";
+
+                                  dev.log(command);
+                                  // * for combining Ar with BG
+                                  // ignore: unawaited_futures
+                                  CoolAlert.show(
+                                    context: context,
+                                    type: CoolAlertType.loading,
+                                    text: LocaleKeys.processingvideo.tr(),
+                                    barrierDismissible: false,
+                                  );
+                                  try {
+                                    await combineBgAr(
+                                      bgVideoFile: context
+                                          .read<VideoEditorProvider>()
+                                          .getBackgroundVideoFile,
+                                      ffmpegArCommand: command,
+                                      bgVideoDuartion:
+                                          _videoController.value.duration,
+                                      onProgress: (stats, value) =>
+                                          _exportingProgress.value = value,
+                                      onCompleted: (file) async {
+                                        if (file != null) {
+                                          dev.log("we're here now");
+
+                                          await context
+                                              .read<VideoEditorProvider>()
+                                              .setAfterEditorVideoController(
+                                                  file);
+
+                                          dev.log("Done!!!!!");
+
+                                          await context
+                                              .read<VideoEditorProvider>()
+                                              .setBgMaterialThumnailFile();
+
+                                          // context
+                                          //     .read<VideoEditorProvider>()
+                                          //     .setBackgroundVideoFile(file);
+
+                                          dev.log("Send!");
+                                          Get.back();
+                                          await Get.to(
+                                            () => AdminVideothumbnailSelector(
+                                              arList: list.value,
+                                            ),
+                                          );
+
+                                          // Navigator.pushReplacement(
+                                          //     context,
+                                          //     PageTransition(
+                                          //         child: VideothumbnailSelector(
+                                          //           arList: list.value,
+                                          //           file: file,
+                                          //           bgMaterialThumnailFile:
+                                          //               bgMaterialThumnailFile,
+                                          //         ),
+                                          //         type: PageTransitionType.fade));
+
+                                          dev.log("we're here?");
+                                        } else {
+                                          Navigator.pop(context);
+                                          CoolAlert.show(
+                                            context: context,
+                                            type: CoolAlertType.error,
+                                            title: LocaleKeys
+                                                .errorprocessingvideo
+                                                .tr(),
+                                            text:
+                                                "Device RAM issue. Main Please free up space on your phone to be able to process the video properly",
+                                          );
+                                          dev.log("hello ?? ");
+                                        }
+
+                                        setState(() => _exported = true);
+                                        Future.delayed(
+                                            const Duration(seconds: 2),
+                                            () => setState(
+                                                () => _exported = false));
+                                      },
+                                    );
+                                  } catch (e) {
+                                    Navigator.pop(context);
+                                    CoolAlert.show(
+                                      context: context,
+                                      type: CoolAlertType.error,
+                                      title: "Error processing video",
+                                      text: e.toString(),
+                                    );
+                                  }
+
+                                  // * for combining effect with BG
+                                  // await combineBgEffect(
+                                  //   bgVideoFile: widget.file,
+                                  //   effectFile: File(selectedFile!.path!),
+                                  //   arScaleWidth: "${arScaleWidthVal.floor()}",
+                                  //   arScaleHeight: "${arScaleHeightVal.floor()}",
+                                  //   arXCoordinate: x < 0 ? "-$x" : "+$x",
+                                  //   arYCoordinate: y < 0 ? "-$y" : "+$y",
+                                  //   arStartTime: arStartTime.toString(),
+                                  //   arEndTime: "${arEndTime + arStartTime}",
+                                  //   bgVideoDuartion: _videoController.value.duration,
+                                  //   onProgress: (stats, value) =>
+                                  //       _exportingProgress.value = value,
+                                  //   onCompleted: (file) async {
+                                  //     _isExporting.value = false;
+                                  //     if (!mounted) return;
+                                  //     if (file != null) {
+                                  //       final VideoPlayerController _videoController =
+                                  //           VideoPlayerController.file(file);
+
+                                  //       // ignore: unawaited_futures
+                                  //       _videoController.initialize().then((value) async {
+                                  //         setState(() {});
+
+                                  //         _videoController.setLooping(true);
+                                  //         await showDialog(
+                                  //           context: context,
+                                  //           builder: (_) => Padding(
+                                  //             padding: const EdgeInsets.all(30),
+                                  //             child: Container(
+                                  //               color: Colors.black,
+                                  //               child: Column(
+                                  //                 children: [
+                                  //                   Container(
+                                  //                     height: 50,
+                                  //                     color: Colors.white,
+                                  //                     child: Row(
+                                  //                       mainAxisAlignment:
+                                  //                           MainAxisAlignment.center,
+                                  //                       children: [
+                                  //                         Text(
+                                  //                           "Preview",
+                                  //                           style: TextStyle(
+                                  //                             color: Colors.black,
+                                  //                             fontSize: 20,
+                                  //                           ),
+                                  //                         ),
+                                  //                       ],
+                                  //                     ),
+                                  //                   ),
+                                  //                   Container(
+                                  //                     height:
+                                  //                         MediaQuery.of(context).size.height *
+                                  //                             0.6,
+                                  //                     child: Center(
+                                  //                       child: GestureDetector(
+                                  //                         onTap: () {
+                                  //                           _videoController.value.isPlaying
+                                  //                               ? _videoController.pause()
+                                  //                               : _videoController.play();
+                                  //                         },
+                                  //                         child: AspectRatio(
+                                  //                           aspectRatio: _videoController
+                                  //                               .value.aspectRatio,
+                                  //                           child:
+                                  //                               VideoPlayer(_videoController),
+                                  //                         ),
+                                  //                       ),
+                                  //                     ),
+                                  //                   ),
+                                  //                   Container(
+                                  //                     color: Colors.white,
+                                  //                     child: Row(
+                                  //                       mainAxisAlignment:
+                                  //                           MainAxisAlignment.spaceEvenly,
+                                  //                       children: [
+                                  //                         ElevatedButton(
+                                  //                           onPressed: () {
+                                  //                             Navigator.pop(context);
+                                  //                           },
+                                  //                           child: Text(
+                                  //                             "Cancel",
+                                  //                           ),
+                                  //                         ),
+                                  //                         ElevatedButton(
+                                  //                           onPressed: () {
+                                  //                             Navigator.push(
+                                  //                                 context,
+                                  //                                 PageTransition(
+                                  //                                     child: PreviewVideoScreen(
+                                  //                                         thumbnailFile:
+                                  //                                             thumbnailfile,
+                                  //                                         videoFile:
+                                  //                                             File(file.path),
+                                  //                                         videoPlayerController:
+                                  //                                             _videoController),
+                                  //                                     type: PageTransitionType
+                                  //                                         .fade));
+                                  //                           },
+                                  //                           child: Text(
+                                  //                             "Next",
+                                  //                           ),
+                                  //                         ),
+                                  //                       ],
+                                  //                     ),
+                                  //                   ),
+                                  //                 ],
+                                  //               ),
+                                  //             ),
+                                  //           ),
+                                  //         );
+                                  //         await _videoController.pause();
+                                  //         _videoController.dispose();
+                                  //       });
+
+                                  //       _exportText = "Video success export!";
+                                  //     } else {
+                                  //       _exportText = "Error on export video :(";
+                                  //     }
+
+                                  //     setState(() => _exported = true);
+                                  //     Future.delayed(const Duration(seconds: 2),
+                                  //         () => setState(() => _exported = false));
+                                  //   },
+                                  // );
+                                }
                           : () {
                               Get.snackbar(
                                 LocaleKeys.noareffectadded.tr(),
@@ -2410,17 +2858,20 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
           final code = await value.getReturnCode();
           final failStackTrace = await value.getFailStackTrace();
 
+          dev.log("OUTPUT! ==  ${await value.getOutput()}");
+
           debugPrint(
               "FFmpeg process exited with state $state and return code $code.${(failStackTrace == null) ? "" : "\\n" + failStackTrace}");
+          dev.log("code value == ${code!.isValueSuccess()}");
 
-          if (code!.isValueError()) {
+          if (code.isValueError()) {
             Navigator.pop(context);
             CoolAlert.show(
               context: context,
               type: CoolAlertType.error,
               title: LocaleKeys.errorprocessingvideo.tr(),
               text:
-                  "Device RAM issue. Please free up space on your phone to be able to process the video properly",
+                  "Device RAM issue. FFMPEG Please free up space on your phone to be able to process the video properly",
             );
           }
 
@@ -2551,7 +3002,9 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text(
-        LocaleKeys.arvolume.tr(),
+        ar.layerType == LayerType.AR
+            ? LocaleKeys.arvolume.tr()
+            : "Music Volume",
       ),
       content: Row(
         children: [
@@ -2686,6 +3139,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                   .collection("MyCollection")
                                   .where("layerType", isEqualTo: "AR")
                                   .where("usage", isEqualTo: "Material")
+                                  .orderBy("timestamp", descending: true)
                                   .get(),
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
@@ -2785,6 +3239,8 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                             );
                                           }
                                         } else {
+                                          dev.log(
+                                              "myArCollection.id = ${myArCollection.id}");
                                           await Get.dialog(
                                             SimpleDialog(
                                               children: [

@@ -74,30 +74,32 @@ class _InitAdminVideoEditorScreenState
     log("now");
     _exportingProgress.value = 0;
     _isExporting.value = true;
+    final int? audioCheckVal =
+        context.read<ArVideoCreation>().getArAudioFlagGeneral;
     // NOTE: To use `-crf 1` and [VideoExportPreset] you need `ffmpeg_kit_flutter_min_gpl` package (with `ffmpeg_kit` only it won't work)
     await _controller.exportVideo(
       playbackSpeed: _controller.video.value.playbackSpeed,
+      audioCheckVal: audioCheckVal!,
       // preset: VideoExportPreset.medium,
       onProgress: (stats, value) => _exportingProgress.value = value,
       onCompleted: (file, endDuration) async {
         _isExporting.value = false;
         if (!mounted) return;
         if (file != null) {
+          // log("end duration == ${endDuration.toString()}");
           context.read<VideoEditorProvider>().setBackgroundVideoFile(file);
           context.read<VideoEditorProvider>().setBackgroundVideoController();
           context.read<VideoEditorProvider>().setVideoPlayerController();
+          await Provider.of<ArVideoCreation>(context, listen: false).audioCheck(
+            videoUrl: file.path,
+          );
+          _exportText = "Video success export!";
 
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => AdminCreateVideoScreen(),
               ));
-
-          await Provider.of<ArVideoCreation>(context, listen: false).audioCheck(
-            videoUrl: file.path,
-          );
-
-          _exportText = "Video success export!";
         } else {
           _exportText = "Error on export video :(";
         }
