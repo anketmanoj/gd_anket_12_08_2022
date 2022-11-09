@@ -31,6 +31,7 @@ class UserModel {
     required this.totalmade,
     this.paypal,
     required this.percentage,
+    this.userCarats: 0,
   });
 
   String? address;
@@ -54,6 +55,7 @@ class UserModel {
   int totalmade;
   String? paypal;
   int percentage;
+  int userCarats;
 
   factory UserModel.fromJson(String str) => UserModel.fromMap(json.decode(str));
 
@@ -81,6 +83,7 @@ class UserModel {
         totalmade: json["totalmade"],
         paypal: json["paypal"],
         percentage: json["percentage"],
+        userCarats: json["carats"] ?? 0,
       );
 
   Map<String, dynamic> toMap() => {

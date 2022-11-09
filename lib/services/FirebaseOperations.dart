@@ -70,6 +70,7 @@ class FirebaseOperations with ChangeNotifier {
   String usercountrycode = "";
 
   late List<dynamic> usersearchindex;
+  late int userCarats;
   late Timestamp userdob;
 
   int? get getUnReadMsgs => unReadMsgs;
@@ -347,6 +348,7 @@ class FirebaseOperations with ChangeNotifier {
       log("checking carats");
       if (doc.data()!.containsKey("carats")) {
         log("contains carats");
+        userCarats = doc['carats'];
         context.read<CaratProvider>().setCarats(doc['carats']);
         log("carats now == ${context.read<CaratProvider>().getCarats}");
       }
@@ -3319,10 +3321,12 @@ class FirebaseOperations with ChangeNotifier {
   Future updateUserDetailsAdmin(
       {required bool isVerified,
       required int percentage,
-      required String useruid}) async {
+      required String useruid,
+      required int carats}) async {
     await FirebaseFirestore.instance.collection("users").doc(useruid).update({
       'percentage': percentage,
       "isverified": isVerified,
+      "carats": carats,
     });
 
     log("isVerified == $isVerified");

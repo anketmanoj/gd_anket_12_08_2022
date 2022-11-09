@@ -38,6 +38,7 @@ class _UserDataAdminControlState extends State<UserDataAdminControl> {
       ValueNotifier<UserModel?>(null);
   final _formKey = GlobalKey<FormState>();
   TextEditingController _userPercentageController = TextEditingController();
+  TextEditingController _userCaratsController = TextEditingController();
   final ValueNotifier<bool> _isVerified = ValueNotifier<bool>(true);
 
   @override
@@ -89,6 +90,8 @@ class _UserDataAdminControlState extends State<UserDataAdminControl> {
                                 _userPercentageController.text =
                                     data!.percentage.toString();
                                 _isVerified.value = data.isverified!;
+                                _userCaratsController.text =
+                                    data.userCarats.toString();
                               },
                               dropdownBuilder: _customDropDownExample,
                               popupItemBuilder: _customPopupItemBuilderExample2,
@@ -112,6 +115,24 @@ class _UserDataAdminControlState extends State<UserDataAdminControl> {
                                             controller:
                                                 _userPercentageController,
                                             labelText: "User Percentage",
+                                            keyboardTypeVal:
+                                                TextInputType.number,
+                                            onSubmit: (val) {},
+                                            validator: (val) {
+                                              if (val!.isEmpty) {
+                                                return "Please Enter a Percentage Amount";
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Container(
+                                          child: ProfileUserDetails(
+                                            controller: _userCaratsController,
+                                            labelText: "User Carats",
                                             keyboardTypeVal:
                                                 TextInputType.number,
                                             onSubmit: (val) {},
@@ -147,13 +168,16 @@ class _UserDataAdminControlState extends State<UserDataAdminControl> {
                                       function: () async {
                                         if (_formKey.currentState!.validate()) {
                                           try {
-                                            log("values = ${_isVerified.value} | ${_userPercentageController.text}%");
+                                            log("values = ${_isVerified.value} | ${_userPercentageController.text}% | Carats = ${_userCaratsController.text}");
                                             await firebaseOperations
                                                 .updateUserDetailsAdmin(
                                                     isVerified:
                                                         _isVerified.value,
                                                     percentage: int.parse(
                                                         _userPercentageController
+                                                            .text),
+                                                    carats: int.parse(
+                                                        _userCaratsController
                                                             .text),
                                                     useruid: selectedUser
                                                         .value!.useruid);
