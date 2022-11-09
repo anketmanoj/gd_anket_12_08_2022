@@ -55,9 +55,11 @@ class _SignUpEmailState extends State<SignUpEmail> {
       ssl: true,
     );
 
+    dev.log("send email to ${_emailController.text.toLowerCase()}");
+
     final equivalentMessage = Message()
       ..from = Address(username, 'Glamorous Diastation')
-      ..recipients.add(Address(_emailController.text))
+      ..recipients.add(Address(_emailController.text.toLowerCase()))
       ..subject = 'Email Verification OTP | Glamorous Diastation'
       ..html =
           """<p>Account verification code I requested to receive an account verification code.</p>

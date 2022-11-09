@@ -7,6 +7,7 @@ import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:page_transition/page_transition.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
@@ -24,9 +25,43 @@ class _SignUpOTPState extends State<SignUpOTP> {
   final focusNode = FocusNode();
 
   @override
+  void initState() {
+    Future.delayed(Duration.zero, () {
+      Get.dialog(
+        SimpleDialog(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  Text(
+                    "Email has been sent to: ${widget.email}. Please make sure to check your Spam / Junk folder as well!",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SubmitButton(
+                    function: () {
+                      Navigator.pop(context);
+                    },
+                    text: "Understood!",
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+    super.initState();
+  }
+
+  @override
   void dispose() {
     pinController.dispose();
     focusNode.dispose();
+
     super.dispose();
   }
 
