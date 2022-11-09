@@ -362,9 +362,10 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
 
       try {
         await FFprobeKit.execute(
-                '-i ${audioFile.path} -show_entries format=duration -v quiet -of json')
-            .then((value) {
-          value.getOutput().then((mapOutput) async {
+                '-i \'${audioFile.path}\' -show_entries format=duration -v quiet -of json')
+            .then((value) async {
+          dev.log("OUTPUT! ==  ${await value.getOutput()}");
+          await value.getOutput().then((mapOutput) async {
             final Map<String, dynamic> json = jsonDecode(mapOutput!);
 
             final String durationString = json['format']['duration'];
