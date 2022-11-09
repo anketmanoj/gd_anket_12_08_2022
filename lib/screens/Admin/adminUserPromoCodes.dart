@@ -205,6 +205,8 @@ class _AdminUserPromoScreenState extends State<AdminUserPromoScreen>
                             children: [
                               Expanded(
                                 child: DropdownSearch<UserModel>(
+                                  showSearchBox: true,
+                                  itemAsString: (UserModel? u) => u!.username,
                                   showSelectedItems: true,
                                   compareFn: (i, s) => i == s,
                                   dropdownSearchDecoration: InputDecoration(
