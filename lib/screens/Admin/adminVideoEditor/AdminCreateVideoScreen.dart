@@ -2493,11 +2493,11 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                         break;
                                       case LayerType.Effect:
                                         ffmpegInputList.add(
-                                            " -i ${arElement.gifFilePath!}");
+                                            " -i '${arElement.gifFilePath!}'");
                                         break;
                                       case LayerType.Music:
                                         ffmpegInputList.add(
-                                            " -i ${arElement.musicFile!.path}");
+                                            " -i '${arElement.musicFile!.path}'");
                                         break;
                                     }
 
