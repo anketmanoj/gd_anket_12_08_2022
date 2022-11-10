@@ -43,6 +43,8 @@ class ARList {
   ValueNotifier<Matrix4>? notifier = ValueNotifier(Matrix4.identity());
   File? arCutOutFile;
   File? musicFile;
+  double? xOffset;
+  double? yOffset;
 
   ARList({
     this.arIndex,
@@ -77,5 +79,7 @@ class ARList {
     this.notifier,
     this.arCutOutFile,
     this.musicFile,
+    this.xOffset,
+    this.yOffset,
   });
 }

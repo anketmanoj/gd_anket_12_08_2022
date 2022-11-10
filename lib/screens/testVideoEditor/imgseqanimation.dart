@@ -4,7 +4,11 @@ import 'dart:math' as math;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/main.dart';
+import 'package:diamon_rose_app/screens/GiphyTest/get_giphy_gifs.dart';
+import 'package:diamon_rose_app/screens/GiphyTest/gigphy_get_anket.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/VideoCreationOptionsScreen.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
@@ -17,10 +21,13 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:diamon_rose_app/services/img_seq_animator.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:screen_capture_event/screen_capture_event.dart';
 import 'package:sizer/sizer.dart';
 import 'package:spring_button/spring_button.dart';
 import 'package:xl/xl.dart';
+import 'package:dio/dio.dart' as dio;
+import 'package:path/path.dart' as path;
 
 class ImageSeqAniScreen extends StatefulWidget {
   const ImageSeqAniScreen(
@@ -50,6 +57,12 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
   Size? screen;
   AudioPlayer? _player = AudioPlayer();
   CameraController? controller;
+  GiphyGif? currentGif;
+  // Giphy Client
+  GiphyClient? client;
+  // Random ID
+  String randomId = "";
+  String giphyApiKey = "0X2ffUW2nnfVcPUc2C7alPhfdrj2tA6M";
 
   ImageSequenceAnimatorState? get imageSequenceAnimator =>
       onlineImageSequenceAnimator;
@@ -67,6 +80,29 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
 
   final ScreenCaptureEvent screenListener = ScreenCaptureEvent();
 
+  Future<File> getImage({required String url}) async {
+    /// Get Image from server
+    final dio.Response res = await dio.Dio().get<List<int>>(
+      url,
+      options: dio.Options(
+        responseType: dio.ResponseType.bytes,
+      ),
+    );
+
+    /// Get App local storage
+    final Directory appDir = await getApplicationDocumentsDirectory();
+
+    /// Generate Image Name
+    final String imageName = url.split('/').last;
+    final String timeNow = Timestamp.now().millisecondsSinceEpoch.toString();
+
+    /// Create Empty File in app dir & fill with new image
+    final File file = File(path.join(appDir.path, timeNow + imageName));
+    file.writeAsBytesSync(res.data as List<int>);
+
+    return file;
+  }
+
   @override
   void initState() {
     log("init Ar");
@@ -79,7 +115,17 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
       xPosition: 0,
       yPosition: 0,
       pathsForVideoFrames: widget.MyAR.imgSeq,
+      xOffset: 50,
+      yOffset: 50,
     ));
+    client = GiphyClient(apiKey: giphyApiKey, randomId: '');
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      client!.getRandomId().then((value) {
+        setState(() {
+          randomId = value;
+        });
+      });
+    });
     _init();
 
     log("usage is == ${widget.MyAR.usage}");
@@ -306,434 +352,449 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
         if (widget.MyAR.audioFlag == true) _player!.stop();
       },
     ];
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: constantColors.navButton,
-        actions: [
-          IconButton(
-            onPressed: () {
-              Get.dialog(
-                SimpleDialog(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Text(
-                        "${LocaleKeys.requiresStableConnection.tr()}\n\n${LocaleKeys.ensureStableConnection.tr()}",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: constantColors.navButton,
-                          fontSize: 16,
-                        ),
+    return AnketGiphyGetWrapper(
+        giphy_api_key: giphyApiKey,
+        builder: (stream, giphyGetWrapper) {
+          stream.listen((gif) async {
+            // ! USe this link format https://i.giphy.com/media/${URL_PART}/giphy.gif
+            CoolAlert.show(
+                context: context,
+                type: CoolAlertType.loading,
+                barrierDismissible: false,
+                text: "Connecting Giphy ");
+
+            final File gifFile = await getImage(
+                url: "https://i.giphy.com/media/${gif.id}/giphy.gif");
+
+            list.add(ARList(
+              height: 200.0,
+              width: 200.0,
+              rotation: 0.0,
+              scale: 1.0,
+              xPosition: 0.2,
+              yPosition: 0.2,
+              gifFilePath: "https://i.giphy.com/media/${gif.id}/giphy.gif",
+              xOffset: list.last.xOffset! + 50,
+              yOffset: list.last.xOffset! + 50,
+            ));
+            Get.back();
+
+            // setState(() {
+            //   currentGif = gif;
+            // });
+          });
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: constantColors.navButton,
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    Get.dialog(
+                      SimpleDialog(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Text(
+                              "${LocaleKeys.requiresStableConnection.tr()}\n\n${LocaleKeys.ensureStableConnection.tr()}",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: constantColors.navButton,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    );
+                  },
+                  icon: Icon(Icons.info_outline),
                 ),
-              );
-            },
-            icon: Icon(Icons.info_outline),
-          ),
-        ],
-        title: Text(widget.arViewerScreen ? "Ar Viewer" : "Material Viewer"),
-        leading: IconButton(
-          onPressed: () async {
-            await DefaultCacheManager().emptyCache();
+                IconButton(
+                  onPressed: () {
+                    giphyGetWrapper.getGif(
+                      '',
+                      context,
+                    );
+                  },
+                  icon: Icon(Icons.edit),
+                ),
+              ],
+              title:
+                  Text(widget.arViewerScreen ? "Ar Viewer" : "Material Viewer"),
+              leading: IconButton(
+                onPressed: () async {
+                  await DefaultCacheManager().emptyCache();
 
-            // imageSequenceAnimator!.dispose();
-            // _player!.dispose();
-            // controller!.dispose();
-            // super.dispose();
-            // log("disposed");
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back_ios),
-        ),
-      ),
-      body: SafeArea(
-        bottom: Platform.isAndroid ? true : false,
-        child: Column(
-          children: [
-            Expanded(
-              flex: 4,
-              child: Stack(
+                  // imageSequenceAnimator!.dispose();
+                  // _player!.dispose();
+                  // controller!.dispose();
+                  // super.dispose();
+                  // log("disposed");
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.arrow_back_ios),
+              ),
+            ),
+            body: SafeArea(
+              bottom: Platform.isAndroid ? true : false,
+              child: Column(
                 children: [
-                  showCamera
-                      ? SizedBox(
-                          height: MediaQuery.of(context).size.height,
-                          width: MediaQuery.of(context).size.width,
-                          child: CameraPreview(
-                            controller!,
-                          ),
-                        )
-                      : SizedBox(
-                          height: MediaQuery.of(context).size.height,
-                          width: MediaQuery.of(context).size.width,
-                          child: Image.asset(
-                            "assets/arViewer/bg.png",
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
+                  Expanded(
+                    flex: 4,
                     child: Stack(
-                      children: list.map((value) {
-                        return GestureDetector(
-                          onScaleStart: (details) {
-                            if (value == null) return;
-                            _initPos = details.focalPoint;
-                            _currentPos =
-                                Offset(value.xPosition!, value.yPosition!);
-                            _currentScale = value.scale;
-                            _currentRotation = value.rotation;
-                          },
-                          onScaleUpdate: (details) {
-                            if (value == null) return;
-                            final delta = details.focalPoint - _initPos!;
-                            final left =
-                                (delta.dx / screen!.width) + _currentPos!.dx;
-                            final top =
-                                (delta.dy / screen!.height) + _currentPos!.dy;
+                      children: [
+                        showCamera
+                            ? SizedBox(
+                                height: MediaQuery.of(context).size.height,
+                                width: MediaQuery.of(context).size.width,
+                                child: CameraPreview(
+                                  controller!,
+                                ),
+                              )
+                            : SizedBox(
+                                height: MediaQuery.of(context).size.height,
+                                width: MediaQuery.of(context).size.width,
+                                child: Image.asset(
+                                  "assets/arViewer/bg.png",
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                        XL(
+                          sharesPointer: false,
+                          sharesSensors: true,
+                          layers: list.map((value) {
+                            if (value.gifFilePath == null) {
+                              return XLayer(
+                                xRotation: 1,
+                                yRotation: 1,
+                                xOffset: value.xOffset!,
+                                yOffset: value.yOffset!,
+                                child: GestureDetector(
+                                  onScaleStart: (details) {
+                                    if (value == null) return;
+                                    _initPos = details.focalPoint;
+                                    _currentPos = Offset(
+                                        value.xPosition!, value.yPosition!);
+                                    _currentScale = value.scale;
+                                    _currentRotation = value.rotation;
+                                  },
+                                  onScaleUpdate: (details) {
+                                    if (value == null) return;
+                                    final delta =
+                                        details.focalPoint - _initPos!;
+                                    final left = (delta.dx / screen!.width) +
+                                        _currentPos!.dx;
+                                    final top = (delta.dy / screen!.height) +
+                                        _currentPos!.dy;
 
-                            setState(() {
-                              value.xPosition = Offset(left, top).dx;
-                              value.yPosition = Offset(left, top).dy;
-                              value.rotation =
-                                  details.rotation + _currentRotation!;
-                              value.scale = details.scale * _currentScale!;
-                            });
+                                    setState(() {
+                                      value.xPosition = Offset(left, top).dx;
+                                      value.yPosition = Offset(left, top).dy;
+                                      value.rotation =
+                                          details.rotation + _currentRotation!;
+                                      value.scale =
+                                          details.scale * _currentScale!;
+                                    });
 
-                            log("current rotation == ${_currentRotation! * math.pi / 180}");
-                          },
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                right: -value.xPosition! * screen!.width,
-                                bottom: -value.yPosition! * screen!.height,
-                                child: Transform.scale(
-                                  scale: value.scale,
-                                  child: Transform.rotate(
-                                    angle: value.rotation!,
-                                    child: Container(
-                                      height: value.height,
-                                      width: value.width,
-                                      child: FittedBox(
-                                        fit: BoxFit.cover,
-                                        child: Listener(
-                                          onPointerDown: (details) {
-                                            // _initPos = details.position;
-                                            // _currentPos = Offset(
-                                            //     value.xPosition!, value.yPosition!);
-                                            // _currentScale = value.scale;
-                                            // _currentRotation = value.rotation;
-                                            // print(" _initPos = ${_initPos!.dx}");
-                                          },
-                                          onPointerUp: (details) {
-                                            _initPos = details.position;
-                                            _currentPos = Offset(
-                                                value.xPosition!,
-                                                value.yPosition!);
-                                            _currentScale = value.scale;
-                                            _currentRotation = value.rotation;
-                                            // log("rotation == ${value.rotation! * 3.14 / 180}");
-                                          },
-                                          child: InkWell(
+                                    log("current rotation == ${_currentRotation! * math.pi / 180}");
+                                  },
+                                  child: Stack(
+                                    children: [
+                                      Positioned(
+                                        right:
+                                            -value.xPosition! * screen!.width,
+                                        bottom:
+                                            -value.yPosition! * screen!.height,
+                                        child: Transform.scale(
+                                          scale: value.scale,
+                                          child: Transform.rotate(
+                                            angle: value.rotation!,
                                             child: Container(
-                                                height: value.height,
-                                                width: value.width,
-                                                child: ImageSequenceAnimator(
-                                                  "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/imgSeqServer/imgSeq",
-                                                  "imgSeq",
-                                                  1,
-                                                  0,
-                                                  "png",
-                                                  30,
-                                                  key: Key(
-                                                      "online+${widget.MyAR.id}"),
-                                                  isAutoPlay: true,
-                                                  isOnline: true,
-                                                  fps: 28,
-                                                  waitUntilCacheIsComplete:
-                                                      true,
-                                                  fullPaths: widget.MyAR.imgSeq,
-                                                  cacheProgressIndicatorBuilder:
-                                                      (context, progress) {
-                                                    return CircularProgressIndicator(
-                                                      value: progress != null
-                                                          ? progress
-                                                          : 1,
-                                                      backgroundColor: color1,
-                                                    );
+                                              height: value.height,
+                                              width: value.width,
+                                              child: FittedBox(
+                                                fit: BoxFit.cover,
+                                                child: Listener(
+                                                  onPointerDown: (details) {
+                                                    // _initPos = details.position;
+                                                    // _currentPos = Offset(
+                                                    //     value.xPosition!, value.yPosition!);
+                                                    // _currentScale = value.scale;
+                                                    // _currentRotation = value.rotation;
+                                                    // print(" _initPos = ${_initPos!.dx}");
                                                   },
-                                                  onReadyToPlay:
-                                                      onOnlineReadyToPlay,
-                                                  onPlaying: onOnlinePlaying,
-                                                  onStartPlaying: (s) {
-                                                    if (widget.MyAR.audioFlag ==
-                                                        true) {
-                                                      _player!.play();
-                                                    }
+                                                  onPointerUp: (details) {
+                                                    _initPos = details.position;
+                                                    _currentPos = Offset(
+                                                        value.xPosition!,
+                                                        value.yPosition!);
+                                                    _currentScale = value.scale;
+                                                    _currentRotation =
+                                                        value.rotation;
+                                                    // log("rotation == ${value.rotation! * 3.14 / 180}");
                                                   },
-                                                )
-                                                // color: constantColors.bioBg,
+                                                  child: InkWell(
+                                                    child: Container(
+                                                        height: value.height,
+                                                        width: value.width,
+                                                        child:
+                                                            ImageSequenceAnimator(
+                                                          "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/imgSeqServer/imgSeq",
+                                                          "imgSeq",
+                                                          1,
+                                                          0,
+                                                          "png",
+                                                          30,
+                                                          key: Key(
+                                                              "online+${widget.MyAR.id}"),
+                                                          isAutoPlay: true,
+                                                          isOnline: true,
+                                                          fps: 28,
+                                                          waitUntilCacheIsComplete:
+                                                              true,
+                                                          fullPaths: widget
+                                                              .MyAR.imgSeq,
+                                                          cacheProgressIndicatorBuilder:
+                                                              (context,
+                                                                  progress) {
+                                                            return CircularProgressIndicator(
+                                                              value: progress !=
+                                                                      null
+                                                                  ? progress
+                                                                  : 1,
+                                                              backgroundColor:
+                                                                  color1,
+                                                            );
+                                                          },
+                                                          onReadyToPlay:
+                                                              onOnlineReadyToPlay,
+                                                          onPlaying:
+                                                              onOnlinePlaying,
+                                                          onStartPlaying: (s) {
+                                                            if (widget.MyAR
+                                                                    .audioFlag ==
+                                                                true) {
+                                                              _player!.play();
+                                                            }
+                                                          },
+                                                        )
+                                                        // color: constantColors.bioBg,
+                                                        ),
+                                                  ),
+                                                  // child: Image.network(value.name),
                                                 ),
+                                              ),
+                                            ),
                                           ),
-                                          // child: Image.network(value.name),
                                         ),
                                       ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return XLayer(
+                                xRotation: 1,
+                                yRotation: 1,
+                                xOffset: value.xOffset!,
+                                yOffset: value.yOffset!,
+                                child: GestureDetector(
+                                  onScaleStart: (details) {
+                                    if (value == null) return;
+                                    _initPos = details.focalPoint;
+                                    _currentPos = Offset(
+                                        value.xPosition!, value.yPosition!);
+                                    _currentScale = value.scale;
+                                    _currentRotation = value.rotation;
+                                  },
+                                  onScaleUpdate: (details) {
+                                    if (value == null) return;
+                                    final delta =
+                                        details.focalPoint - _initPos!;
+                                    final left = (delta.dx / screen!.width) +
+                                        _currentPos!.dx;
+                                    final top = (delta.dy / screen!.height) +
+                                        _currentPos!.dy;
+
+                                    setState(() {
+                                      value.xPosition = Offset(left, top).dx;
+                                      value.yPosition = Offset(left, top).dy;
+                                      value.rotation =
+                                          details.rotation + _currentRotation!;
+                                      value.scale =
+                                          details.scale * _currentScale!;
+                                    });
+                                  },
+                                  child: Stack(
+                                    children: [
+                                      Positioned(
+                                        left: value.xPosition! * screen!.width,
+                                        top: value.yPosition! * screen!.height,
+                                        child: Transform.scale(
+                                          scale: value.scale,
+                                          child: Transform.rotate(
+                                            angle: value.rotation!,
+                                            child: Container(
+                                              height: value.height,
+                                              width: value.width,
+                                              child: FittedBox(
+                                                fit: BoxFit.fill,
+                                                child: Listener(
+                                                  onPointerDown: (details) {
+                                                    // if (_inAction) return;
+                                                    // _inAction = true;
+                                                    // _activeItem = val;
+                                                    _initPos = details.position;
+                                                    _currentPos = Offset(
+                                                        value.xPosition!,
+                                                        value.yPosition!);
+                                                    _currentScale = value.scale;
+                                                    _currentRotation =
+                                                        value.rotation;
+                                                  },
+                                                  onPointerUp: (details) {
+                                                    // _inAction = false;
+                                                  },
+                                                  child: Container(
+                                                    height: value.height,
+                                                    width: value.width,
+                                                    child: Image.network(
+                                                      value.gifFilePath!,
+                                                      fit: BoxFit.contain,
+                                                    ),
+                                                  ),
+                                                  // child: Image.network(value.name),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 60,
+                          child: ListView.separated(
+                            separatorBuilder: (context, index) => SizedBox(
+                              height: 10,
+                            ),
+                            scrollDirection: Axis.horizontal,
+                            physics: BouncingScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: widget.arViewerScreen
+                                ? iconsList.length
+                                : iconsMaterialList.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(3.0),
+                                child: InkWell(
+                                  onTap: widget.arViewerScreen
+                                      ? functionList[index]
+                                      : functionMaterialList[index],
+                                  child: Container(
+                                    width: 100.w / 8,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: constantColors.bioBg,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      widget.arViewerScreen
+                                          ? iconsList[index]
+                                          : iconsMaterialList[index],
+                                      color: constantColors.bioBg,
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              );
+                            },
                           ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  // AutoXL.pane(
-                  //   supportsPointer: false,
-                  //   supportsSensors: true,
-                  //   layers: [
-                  //     Container(
-                  //       width: MediaQuery.of(context).size.width,
-                  //       child: Stack(
-                  //         children: list.map((value) {
-                  //           return GestureDetector(
-                  //             onScaleStart: (details) {
-                  //               if (value == null) return;
-                  //               _initPos = details.focalPoint;
-                  //               _currentPos =
-                  //                   Offset(value.xPosition!, value.yPosition!);
-                  //               _currentScale = value.scale;
-                  //               _currentRotation = value.rotation;
-                  //             },
-                  //             onScaleUpdate: (details) {
-                  //               if (value == null) return;
-                  //               final delta = details.focalPoint - _initPos!;
-                  //               final left = (delta.dx / screen!.width) +
-                  //                   _currentPos!.dx;
-                  //               final top = (delta.dy / screen!.height) +
-                  //                   _currentPos!.dy;
-
-                  //               setState(() {
-                  //                 value.xPosition = Offset(left, top).dx;
-                  //                 value.yPosition = Offset(left, top).dy;
-                  //                 value.rotation =
-                  //                     details.rotation + _currentRotation!;
-                  //                 value.scale = details.scale * _currentScale!;
-                  //               });
-
-                  //               log("current rotation == ${_currentRotation! * math.pi / 180}");
-                  //             },
-                  //             child: Stack(
-                  //               children: [
-                  //                 Positioned(
-                  //                   right: -value.xPosition! * screen!.width,
-                  //                   bottom: -value.yPosition! * screen!.height,
-                  //                   child: Transform.scale(
-                  //                     scale: value.scale,
-                  //                     child: Transform.rotate(
-                  //                       angle: value.rotation!,
-                  //                       child: Container(
-                  //                         height: value.height,
-                  //                         width: value.width,
-                  //                         child: FittedBox(
-                  //                           fit: BoxFit.cover,
-                  //                           child: Listener(
-                  //                             onPointerDown: (details) {
-                  //                               // _initPos = details.position;
-                  //                               // _currentPos = Offset(
-                  //                               //     value.xPosition!, value.yPosition!);
-                  //                               // _currentScale = value.scale;
-                  //                               // _currentRotation = value.rotation;
-                  //                               // print(" _initPos = ${_initPos!.dx}");
-                  //                             },
-                  //                             onPointerUp: (details) {
-                  //                               _initPos = details.position;
-                  //                               _currentPos = Offset(
-                  //                                   value.xPosition!,
-                  //                                   value.yPosition!);
-                  //                               _currentScale = value.scale;
-                  //                               _currentRotation =
-                  //                                   value.rotation;
-                  //                               // log("rotation == ${value.rotation! * 3.14 / 180}");
-                  //                             },
-                  //                             child: InkWell(
-                  //                               child: Container(
-                  //                                   height: value.height,
-                  //                                   width: value.width,
-                  //                                   child:
-                  //                                       ImageSequenceAnimator(
-                  //                                     "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/imgSeqServer/imgSeq",
-                  //                                     "imgSeq",
-                  //                                     1,
-                  //                                     0,
-                  //                                     "png",
-                  //                                     30,
-                  //                                     key: Key(
-                  //                                         "online+${widget.MyAR.id}"),
-                  //                                     isAutoPlay: true,
-                  //                                     isOnline: true,
-                  //                                     fps: 28,
-                  //                                     waitUntilCacheIsComplete:
-                  //                                         true,
-                  //                                     fullPaths:
-                  //                                         widget.MyAR.imgSeq,
-                  //                                     cacheProgressIndicatorBuilder:
-                  //                                         (context, progress) {
-                  //                                       return CircularProgressIndicator(
-                  //                                         value:
-                  //                                             progress != null
-                  //                                                 ? progress
-                  //                                                 : 1,
-                  //                                         backgroundColor:
-                  //                                             color1,
-                  //                                       );
-                  //                                     },
-                  //                                     onReadyToPlay:
-                  //                                         onOnlineReadyToPlay,
-                  //                                     onPlaying:
-                  //                                         onOnlinePlaying,
-                  //                                     onStartPlaying: (s) {
-                  //                                       if (widget.MyAR
-                  //                                               .audioFlag ==
-                  //                                           true) {
-                  //                                         _player!.play();
-                  //                                       }
-                  //                                     },
-                  //                                   )
-                  //                                   // color: constantColors.bioBg,
-                  //                                   ),
-                  //                             ),
-                  //                             // child: Image.network(value.name),
-                  //                           ),
-                  //                         ),
-                  //                       ),
-                  //                     ),
-                  //                   ),
-                  //                 ),
-                  //               ],
-                  //             ),
-                  //           );
-                  //         }).toList(),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  Container(
-                    height: 60,
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) => SizedBox(
-                        height: 10,
-                      ),
-                      scrollDirection: Axis.horizontal,
-                      physics: BouncingScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: widget.arViewerScreen
-                          ? iconsList.length
-                          : iconsMaterialList.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(3.0),
-                          child: InkWell(
-                            onTap: widget.arViewerScreen
-                                ? functionList[index]
-                                : functionMaterialList[index],
-                            child: Container(
-                              width: 100.w / 8,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: constantColors.bioBg,
-                                  width: 1,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 4,
+                              child: CupertinoSlider(
+                                value: imageSequenceAnimator == null
+                                    ? 0.0
+                                    : imageSequenceAnimator!.currentProgress,
+                                min: 0.0,
+                                max: imageSequenceAnimator == null
+                                    ? 100.0
+                                    : imageSequenceAnimator!.totalProgress,
+                                onChangeStart: (double value) async {
+                                  wasPlaying = imageSequenceAnimator!.isPlaying;
+                                  imageSequenceAnimator!.pause();
+                                  if (widget.MyAR.audioFlag == true) {
+                                    await _player!.pause();
+                                  }
+                                },
+                                onChanged: (double value) async {
+                                  imageSequenceAnimator!.skip(value);
+                                  if (widget.MyAR.audioFlag == true) {
+                                    await _player!.seek(Duration(
+                                      milliseconds: int.parse(
+                                          imageSequenceAnimator!.currentTime
+                                              .toStringAsFixed(0)),
+                                    ));
+                                  }
+                                },
+                                onChangeEnd: (double value) async {
+                                  if (wasPlaying) {
+                                    if (widget.MyAR.audioFlag == true) {
+                                      imageSequenceAnimator!.play();
+                                      await _player!.play();
+                                    } else {
+                                      imageSequenceAnimator!.play();
+                                    }
+                                  }
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: Center(
+                                child: Text(
+                                  imageSequenceAnimator == null
+                                      ? "0.0"
+                                      : ((imageSequenceAnimator!.currentTime
+                                                      .ceil() /
+                                                  1000)
+                                              .toStringAsFixed(0) +
+                                          "/" +
+                                          (imageSequenceAnimator!.totalTime
+                                                      .ceil() /
+                                                  1000)
+                                              .toStringAsFixed(0)),
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 12.5,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                              child: Icon(
-                                widget.arViewerScreen
-                                    ? iconsList[index]
-                                    : iconsMaterialList[index],
-                                color: constantColors.bioBg,
-                              ),
                             ),
-                          ),
-                        );
-                      },
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 4,
-                        child: CupertinoSlider(
-                          value: imageSequenceAnimator == null
-                              ? 0.0
-                              : imageSequenceAnimator!.currentProgress,
-                          min: 0.0,
-                          max: imageSequenceAnimator == null
-                              ? 100.0
-                              : imageSequenceAnimator!.totalProgress,
-                          onChangeStart: (double value) async {
-                            wasPlaying = imageSequenceAnimator!.isPlaying;
-                            imageSequenceAnimator!.pause();
-                            if (widget.MyAR.audioFlag == true) {
-                              await _player!.pause();
-                            }
-                          },
-                          onChanged: (double value) async {
-                            imageSequenceAnimator!.skip(value);
-                            if (widget.MyAR.audioFlag == true) {
-                              await _player!.seek(Duration(
-                                milliseconds: int.parse(imageSequenceAnimator!
-                                    .currentTime
-                                    .toStringAsFixed(0)),
-                              ));
-                            }
-                          },
-                          onChangeEnd: (double value) async {
-                            if (wasPlaying) {
-                              if (widget.MyAR.audioFlag == true) {
-                                imageSequenceAnimator!.play();
-                                await _player!.play();
-                              } else {
-                                imageSequenceAnimator!.play();
-                              }
-                            }
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            imageSequenceAnimator == null
-                                ? "0.0"
-                                : ((imageSequenceAnimator!.currentTime.ceil() /
-                                            1000)
-                                        .toStringAsFixed(0) +
-                                    "/" +
-                                    (imageSequenceAnimator!.totalTime.ceil() /
-                                            1000)
-                                        .toStringAsFixed(0)),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 12.5,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 }

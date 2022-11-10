@@ -884,20 +884,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.help.tr(),
                 ),
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                          child: ArViewTest(),
-                          type: PageTransitionType.rightToLeft),
-                    );
-                  },
-                  leadingIcon: Icons.help_outline,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: LocaleKeys.help.tr(),
-                ),
+
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () {
