@@ -25,6 +25,7 @@ import 'package:diamon_rose_app/screens/HelpScreen/helpScreen.dart';
 import 'package:diamon_rose_app/screens/MonitisationPage/monitisationScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ArViewerScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/PostRecommendation.dart';
+import 'package:diamon_rose_app/screens/ProfilePage/arViewTest.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/buyCaratScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/changeLanguageScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/parallaxTest.dart';
@@ -876,6 +877,20 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                       context,
                       PageTransition(
                           child: HelpScreen(),
+                          type: PageTransitionType.rightToLeft),
+                    );
+                  },
+                  leadingIcon: Icons.help_outline,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: LocaleKeys.help.tr(),
+                ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          child: ArViewTest(),
                           type: PageTransitionType.rightToLeft),
                     );
                   },
