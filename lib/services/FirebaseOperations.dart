@@ -1601,7 +1601,9 @@ class FirebaseOperations with ChangeNotifier {
       "layerType": "AR",
       "valueType": "myItems",
       "timestamp": Timestamp.now(),
-      "id": idVal,
+      "id": asMaterialAlso == false
+          ? "${idVal}${videoId}"
+          : "${idVal}${videoId}asMaterialAlso",
       "imgSeq": imgSeqList,
       "audioFlag": audioFlag == 1 ? true : false,
       "ownerId": useruid,

@@ -2441,7 +2441,10 @@ class VideoWidget extends StatelessWidget {
                                               .toList()
                                               .forEach((element) {
                                             materialIds.add(element.id);
+                                            log(element.id);
                                           });
+
+                                          log("items added");
                                           // // ignore: unawaited_futures
                                           CoolAlert.show(
                                             context: context,
