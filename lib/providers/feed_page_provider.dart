@@ -33,58 +33,66 @@ class FeedPageHelpers with ChangeNotifier {
         items: [
           CustomNavigationBarItem(icon: const Icon(EvaIcons.homeOutline)),
           CustomNavigationBarItem(icon: const Icon(EvaIcons.search)),
-          if (context.read<Authentication>().getIsAnon == false)
-            CustomNavigationBarItem(
-              icon: Container(),
-            ),
-          if (context.read<Authentication>().getIsAnon == false)
-            CustomNavigationBarItem(
-                icon: Stack(
-              children: [
-                Container(
-                  child: Icon(EvaIcons.messageSquare),
-                ),
-                StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection("users")
-                        .doc(Provider.of<Authentication>(context, listen: false)
-                            .getUserId)
-                        .collection("notifications")
-                        .where("seen", isEqualTo: false)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Container();
-                      }
+          CustomNavigationBarItem(
+            icon: Container(),
+          ),
+          context.read<Authentication>().getIsAnon == false
+              ? CustomNavigationBarItem(
+                  icon: Stack(
+                    children: [
+                      Container(
+                        child: Icon(EvaIcons.messageSquare),
+                      ),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection("users")
+                            .doc(Provider.of<Authentication>(context,
+                                    listen: false)
+                                .getUserId)
+                            .collection("notifications")
+                            .where("seen", isEqualTo: false)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Container();
+                          }
 
-                      if (snapshot.data!.docs.length == 0) {
-                        return Container();
-                      }
+                          if (snapshot.data!.docs.length == 0) {
+                            return Container();
+                          }
 
-                      return Positioned(
-                        top: 0,
-                        right: 0,
-                        child: Container(
-                          width: 15,
-                          height: 17,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Center(
-                            child: Text(
-                              snapshot.data!.docs.length.toString(),
-                              style: TextStyle(
-                                color: constantColors.whiteColor,
-                                fontSize: 10,
+                          return Positioned(
+                            top: 0,
+                            right: 0,
+                            child: Container(
+                              width: 15,
+                              height: 17,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  snapshot.data!.docs.length.toString(),
+                                  style: TextStyle(
+                                    color: constantColors.whiteColor,
+                                    fontSize: 10,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      );
-                    })
-              ],
-            )),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                )
+              : CustomNavigationBarItem(
+                  icon: Container(
+                    child: Icon(EvaIcons.messageSquare),
+                  ),
+                ),
           CustomNavigationBarItem(icon: const Icon(EvaIcons.person)),
         ],
       ),

@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/video_editor_provider.dart';
+import 'package:diamon_rose_app/screens/ForAnonUsers/AnonUserSignUprequired.dart';
 import 'package:diamon_rose_app/screens/HelpScreen/tutorialVideos.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/MyCollectionHome.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/MyCollectionMiddleNav.dart';
@@ -137,22 +138,30 @@ class VideoCreationOptionsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               VideoOptions(
-                onTap: () {
-                  createVideoOptionsSheet(context);
-                },
+                onTap: context.read<Authentication>().getIsAnon == false
+                    ? () {
+                        createVideoOptionsSheet(context);
+                      }
+                    : () {
+                        SignUpRequired(context);
+                      },
                 icon: Icons.video_settings_outlined,
                 text: LocaleKeys.createVideo.tr(),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: VideoOptions(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                            builder: (BuildContext context) =>
-                                MyCollectionMiddleNav()));
-                  },
+                  onTap: context.read<Authentication>().getIsAnon == false
+                      ? () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                  builder: (BuildContext context) =>
+                                      MyCollectionMiddleNav()));
+                        }
+                      : () {
+                          SignUpRequired(context);
+                        },
                   icon: Icons.collections_sharp,
                   text: LocaleKeys.myMaterials.tr(),
                 ),
@@ -160,9 +169,13 @@ class VideoCreationOptionsScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: VideoOptions(
-                  onTap: () {
-                    selectVideoOptionsSheet(context);
-                  },
+                  onTap: context.read<Authentication>().getIsAnon == false
+                      ? () {
+                          selectVideoOptionsSheet(context);
+                        }
+                      : () {
+                          SignUpRequired(context);
+                        },
                   icon: Icons.video_file_outlined,
                   text: LocaleKeys.arOptions.tr(),
                 ),
