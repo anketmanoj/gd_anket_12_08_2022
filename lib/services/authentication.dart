@@ -73,6 +73,11 @@ class Authentication with ChangeNotifier {
     }
   }
 
+  void setIsAnon(bool value) {
+    isAnon = value;
+    notifyListeners();
+  }
+
   Future loginIntoAccount(String email, String password) async {
     UserCredential userCredential = await firebaseAuth
         .signInWithEmailAndPassword(email: email, password: password);

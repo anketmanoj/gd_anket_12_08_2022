@@ -55,19 +55,23 @@ class _SplashScreenState extends State<SplashScreen> {
               SharedPreferencesHelper.setString("login", "facebook");
             }
           });
+          context.read<Authentication>().setIsAnon(false);
           Navigator.pushReplacement(context,
               PageTransition(child: FeedPage(), type: PageTransitionType.fade));
           // signed in
         } else {
           log("anket here -- user doesntr");
+
           // ignore: unawaited_futures
           Navigator.pushReplacement(context,
               PageTransition(child: MainPage(), type: PageTransitionType.fade));
         }
       } else {
+        log("User should be anon");
+        context.read<Authentication>().setIsAnon(true);
         // ignore: unawaited_futures
         Navigator.pushReplacement(context,
-            PageTransition(child: MainPage(), type: PageTransitionType.fade));
+            PageTransition(child: FeedPage(), type: PageTransitionType.fade));
       }
     });
     super.initState();

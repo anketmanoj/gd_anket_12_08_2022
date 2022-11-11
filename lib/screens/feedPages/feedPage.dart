@@ -108,26 +108,33 @@ class _FeedPageState extends State<FeedPage> {
 
   @override
   void initState() {
-    Future.delayed(Duration.zero, () async {
-      SystemChrome.setEnabledSystemUIOverlays([]);
+    Future.delayed(
+        Duration.zero,
+        context.read<Authentication>().getIsAnon
+            ? () {
+                log("IS anon user!");
+              }
+            : () async {
+                SystemChrome.setEnabledSystemUIOverlays([]);
 
-      checkPage(widget.pageIndexValue);
-      await load();
-      await Provider.of<FirebaseOperations>(context, listen: false)
-          .initUserData(context)
-          .whenComplete(() async {
-        await Provider.of<FirebaseOperations>(context, listen: false)
-            .initSocialMediaLinks(
-          context: context,
-          uid: Provider.of<Authentication>(context, listen: false).getUserId,
-        );
-        setState(() {});
-        print(
-            'initUserData completed, user data is now ready to be used || ${Provider.of<FirebaseOperations>(context, listen: false).fcmToken}');
-      });
+                checkPage(widget.pageIndexValue);
+                await load();
+                await Provider.of<FirebaseOperations>(context, listen: false)
+                    .initUserData(context)
+                    .whenComplete(() async {
+                  await Provider.of<FirebaseOperations>(context, listen: false)
+                      .initSocialMediaLinks(
+                    context: context,
+                    uid: Provider.of<Authentication>(context, listen: false)
+                        .getUserId,
+                  );
+                  setState(() {});
+                  print(
+                      'initUserData completed, user data is now ready to be used || ${Provider.of<FirebaseOperations>(context, listen: false).fcmToken}');
+                });
 
-      await DefaultCacheManager().emptyCache();
-    });
+                await DefaultCacheManager().emptyCache();
+              });
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       DynamicLinkService.retrieveDynamicLink(context);
     });
@@ -219,115 +226,117 @@ class _FeedPageState extends State<FeedPage> {
         Provider.of<HomeScreenProvider>(context, listen: false);
 
     return ValueListenableBuilder<int>(
-        valueListenable: pageIndex,
-        builder: (context, page, _) {
-          return SafeArea(
-            top: false,
-            bottom: Platform.isIOS ? false : true,
-            child: WillPopScope(
-              onWillPop: () async {
-                if (pageIndex == 0) {
-                  return false;
-                } else {
-                  homepageController.animateToPage(
-                    0,
-                    duration: Duration(milliseconds: 500),
-                    curve: Curves.easeInOut,
-                  );
-                  return false;
-                }
-              },
-              child: Scaffold(
-                backgroundColor: Colors.black,
-                body: PageView(
-                  controller: homepageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  onPageChanged: (page) async {
-                    pageIndex.value = page;
-                    // log("value == $page");
+      valueListenable: pageIndex,
+      builder: (context, page, _) {
+        return SafeArea(
+          top: false,
+          bottom: Platform.isIOS ? false : true,
+          child: WillPopScope(
+            onWillPop: () async {
+              if (pageIndex == 0) {
+                return false;
+              } else {
+                homepageController.animateToPage(
+                  0,
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.easeInOut,
+                );
+                return false;
+              }
+            },
+            child: Scaffold(
+              backgroundColor: Colors.black,
+              body: PageView(
+                controller: homepageController,
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (page) async {
+                  pageIndex.value = page;
+                  // log("value == $page");
 
-                    if (pageIndex.value == 0) {
-                      homeScreenProvider.setHomeScreen(true);
-                    } else {
-                      homeScreenProvider.setHomeScreen(false);
-                    }
+                  if (pageIndex.value == 0) {
+                    homeScreenProvider.setHomeScreen(true);
+                  } else {
+                    homeScreenProvider.setHomeScreen(false);
+                  }
 
-                    if (pageIndex.value == 2) {
-                      showConnectionMsg();
-                    }
-                  },
-                  children: [
-                    // * testing out new way to load videos
-                    // VideoFeedScreen(),
-                    // VideoPage(),
-                    HomeScreen(),
-                    SearchScreen(),
-                    // PostScreen(),
-                    // TestVideoEditor(),
-                    // SelectModelScreen(),
+                  if (pageIndex.value == 2) {
+                    showConnectionMsg();
+                  }
+                },
+                children: [
+                  // * testing out new way to load videos
+                  // VideoFeedScreen(),
+                  // VideoPage(),
+                  HomeScreen(),
+                  SearchScreen(),
+                  // PostScreen(),
+                  // TestVideoEditor(),
+                  // SelectModelScreen(),
+                  if (context.read<Authentication>().getIsAnon == false)
                     VideoCreationOptionsScreen(),
-                    // ImgServerTest(
-                    //   title: "Test",
-                    // ),
+                  // ImgServerTest(
+                  //   title: "Test",
+                  // ),
+                  if (context.read<Authentication>().getIsAnon == false)
                     NotificationsTab(),
-                    ProfileScreen(),
-                  ],
-                ),
-                bottomNavigationBar: Stack(
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.08,
-                      width: MediaQuery.of(context).size.width,
+                  ProfileScreen(),
+                ],
+              ),
+              bottomNavigationBar: Stack(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.08,
+                    width: MediaQuery.of(context).size.width,
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    child: Provider.of<FeedPageHelpers>(context, listen: false)
+                        .bottomNavBar(
+                      context,
+                      pageIndex.value,
+                      homepageController,
                     ),
-                    Positioned(
-                      bottom: 0,
-                      child:
-                          Provider.of<FeedPageHelpers>(context, listen: false)
-                              .bottomNavBar(
-                        context,
-                        pageIndex.value,
-                        homepageController,
-                      ),
-                    ),
-                    Positioned(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              homepageController.jumpToPage(2);
-                            },
-                            child: Container(
-                              height: 50,
-                              width: 50,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  stops: const [0.0, 0.5, 0.9],
-                                  colors: [
-                                    Color(0xFF760380),
-                                    Color(0xFFE6ADFF),
-                                    Colors.white,
-                                  ],
-                                ),
-                              ),
-                              child: Icon(
-                                EvaIcons.plusCircleOutline,
-                                size: 35,
-                                color: Colors.white,
+                  ),
+                  Positioned(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            homepageController.jumpToPage(2);
+                          },
+                          child: Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                stops: const [0.0, 0.5, 0.9],
+                                colors: [
+                                  Color(0xFF760380),
+                                  Color(0xFFE6ADFF),
+                                  Colors.white,
+                                ],
                               ),
                             ),
+                            child: Icon(
+                              EvaIcons.plusCircleOutline,
+                              size: 35,
+                              color: Colors.white,
+                            ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 }

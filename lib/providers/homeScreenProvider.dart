@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/promoCodeModel.dart';
+import 'package:diamon_rose_app/screens/VideoHomeScreen/core/build_context.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/following_bloc/following_preload_bloc.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
@@ -42,7 +43,8 @@ class HomeScreenProvider with ChangeNotifier {
             ToggleSwitch(
               initialLabelIndex: index,
               minWidth: 40.w,
-              totalSwitches: 2,
+              totalSwitches:
+                  context.read<Authentication>().getIsAnon == false ? 2 : 1,
               activeBgColor: [
                 constantColors.navButton,
                 constantColors.navButton,
