@@ -12,6 +12,7 @@ import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
 import 'package:diamon_rose_app/screens/Admin/adminMassNotification.dart';
 import 'package:diamon_rose_app/screens/Admin/adminUserPromoCodes.dart';
+import 'package:diamon_rose_app/screens/Admin/adminUserRegistration.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminArOptions.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/selectUser.dart';
 import 'package:diamon_rose_app/screens/Admin/set_user_data_admin.dart';
@@ -1113,6 +1114,28 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         },
                         title: Text(
                           LocaleKeys.adminUserPromocodes.tr(),
+                          style: TextStyle(
+                            color: Colors.yellow,
+                            fontSize: 16,
+                          ),
+                        ),
+                        leading: Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.yellow,
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: AdminRegisterUser(),
+                              type: PageTransitionType.fade,
+                            ),
+                          );
+                        },
+                        title: Text(
+                          "Admin Register Users",
                           style: TextStyle(
                             color: Colors.yellow,
                             fontSize: 16,

@@ -322,6 +322,16 @@ class FirebaseOperations with ChangeNotifier {
         .set(data);
   }
 
+  Future adminCreateUserCollection(
+      {required BuildContext context,
+      required dynamic data,
+      required String userUid}) async {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(userUid)
+        .set(data);
+  }
+
   Future initUserData(BuildContext context) async {
     return FirebaseFirestore.instance
         .collection("users")

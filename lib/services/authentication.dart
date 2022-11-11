@@ -102,6 +102,15 @@ class Authentication with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<User?> adminCreateAccount(String email, String password) async {
+    final UserCredential userCredential = await firebaseAuth
+        .createUserWithEmailAndPassword(email: email, password: password);
+
+    final User? adminCreatedUser = userCredential.user;
+
+    return adminCreatedUser;
+  }
+
   Future logOutViaEmail() {
     emailAuth = false;
     notifyListeners();
