@@ -69,7 +69,6 @@ class _TrackListState extends State<TrackList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(text: "Youtube Search API", context: context),
       body: SearchFunction(
           liveSearch: false,
           controller: _controller,
