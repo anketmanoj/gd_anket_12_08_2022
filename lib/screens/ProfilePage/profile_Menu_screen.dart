@@ -45,6 +45,7 @@ import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage_helpers.dart';
 import 'package:diamon_rose_app/screens/searchPage/searchPageWidgets.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/demo.dart';
+import 'package:diamon_rose_app/screens/youtubeTest/youtubeTest.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/adminUserModels.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
@@ -898,6 +899,20 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   leadingIcon: Icons.language_outlined,
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.changeLanguage.tr(),
+                ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          child: YoutubeTestScreen(),
+                          type: PageTransitionType.rightToLeft),
+                    );
+                  },
+                  leadingIcon: Icons.language_outlined,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Youtube test",
                 ),
                 ListTileOption(
                   constantColors: constantColors,
