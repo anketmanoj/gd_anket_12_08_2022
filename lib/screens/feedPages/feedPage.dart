@@ -6,6 +6,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/providers/feed_page_provider.dart';
 import 'package:diamon_rose_app/providers/homeScreenProvider.dart';
 import 'package:diamon_rose_app/providers/recommendedProvider.dart';
+import 'package:diamon_rose_app/screens/ForAnonUsers/AnonProfilePage.dart';
 import 'package:diamon_rose_app/screens/NotificationPage/notificationScreen.dart';
 import 'package:diamon_rose_app/screens/PostPage/postScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/profile_screen.dart';
@@ -279,7 +280,9 @@ class _FeedPageState extends State<FeedPage> {
                   // ),
                   if (context.read<Authentication>().getIsAnon == false)
                     NotificationsTab(),
-                  ProfileScreen(),
+                  context.read<Authentication>().getIsAnon == false
+                      ? ProfileScreen()
+                      : AnonProfilePage(),
                 ],
               ),
               bottomNavigationBar: Stack(
