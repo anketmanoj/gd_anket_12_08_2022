@@ -916,6 +916,20 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 ),
                 ListTileOption(
                   constantColors: constantColors,
+                  onTap: () {
+                    // Navigator.push(
+                    //   context,
+                    //   PageTransition(
+                    //       child: YoutubeTestScreen(),
+                    //       type: PageTransitionType.rightToLeft),
+                    // );
+                  },
+                  leadingIcon: Icons.language_outlined,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Youtube Search test",
+                ),
+                ListTileOption(
+                  constantColors: constantColors,
                   onTap: () async {
                     final generatedLink =
                         await DynamicLinkService.createUserProfileDynamicLink(
