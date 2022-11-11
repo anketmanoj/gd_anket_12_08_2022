@@ -45,6 +45,7 @@ import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage_helpers.dart';
 import 'package:diamon_rose_app/screens/searchPage/searchPageWidgets.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/demo.dart';
+import 'package:diamon_rose_app/screens/youtubeSearchApi/trackList.dart';
 import 'package:diamon_rose_app/screens/youtubeTest/youtubeTest.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/adminUserModels.dart';
@@ -917,12 +918,26 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   PageTransition(
-                    //       child: YoutubeTestScreen(),
-                    //       type: PageTransitionType.rightToLeft),
-                    // );
+                    Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    TrackList(songQuery: ""),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.fastLinearToSlowEaseIn;
+
+                              var tween = Tween(begin: begin, end: end)
+                                  .chain(CurveTween(curve: curve));
+
+                              return SlideTransition(
+                                position: animation.drive(tween),
+                                child: child,
+                              );
+                            }));
                   },
                   leadingIcon: Icons.language_outlined,
                   trailingIcon: Icons.arrow_forward_ios,
