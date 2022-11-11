@@ -12,6 +12,7 @@ import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:email_auth/email_auth.dart';
@@ -72,6 +73,39 @@ class _SignUpEmailState extends State<SignUpEmail> {
       <p>Created by Diamond Rose.</p>""";
 
     await send(equivalentMessage, smtpServer);
+  }
+
+  @override
+  void initState() {
+    Future.delayed(Duration.zero, () {
+      Get.dialog(
+        SimpleDialog(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  Text(
+                    "Please make sure your internet connection is stable before proceeding",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SubmitButton(
+                    function: () {
+                      Navigator.pop(context);
+                    },
+                    text: "Understood!",
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+    super.initState();
   }
 
   @override

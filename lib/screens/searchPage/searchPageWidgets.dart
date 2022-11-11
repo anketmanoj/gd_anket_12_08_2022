@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
+import 'package:diamon_rose_app/screens/ForAnonUsers/AnonUserSignUprequired.dart';
 import 'package:diamon_rose_app/screens/OtherUserProfile/otherUserProfile.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateMessage.dart';
@@ -428,15 +429,19 @@ class _VideoSearchState extends State<VideoSearch> {
                           videoSnap.data()! as Map<String, dynamic>);
 
                       return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              PageTransition(
-                                  child: PostDetailsScreen(
-                                    videoId: video.id,
-                                  ),
-                                  type: PageTransitionType.fade));
-                        },
+                        onTap: context.read<Authentication>().getIsAnon == false
+                            ? () {
+                                Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        child: PostDetailsScreen(
+                                          videoId: video.id,
+                                        ),
+                                        type: PageTransitionType.fade));
+                              }
+                            : () {
+                                SignUpRequired(context);
+                              },
                         child: video.isFree
                             ? GridTile(
                                 child: ClipRRect(

@@ -35,7 +35,7 @@ class _SignUpOTPState extends State<SignUpOTP> {
               child: Column(
                 children: [
                   Text(
-                    "Email has been sent to: ${widget.email}. Please make sure to check your Spam / Junk folder as well!",
+                    "Email has been sent to: ${widget.email}. Please make sure to check your Spam / Junk folder as well!\nPlease make sure your internet connection is stable before proceeding",
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(

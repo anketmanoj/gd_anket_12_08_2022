@@ -297,40 +297,41 @@ class _FeedPageState extends State<FeedPage> {
                       homepageController,
                     ),
                   ),
-                  Positioned(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            homepageController.jumpToPage(2);
-                          },
-                          child: Container(
-                            height: 50,
-                            width: 50,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                stops: const [0.0, 0.5, 0.9],
-                                colors: [
-                                  Color(0xFF760380),
-                                  Color(0xFFE6ADFF),
-                                  Colors.white,
-                                ],
+                  if (context.read<Authentication>().getIsAnon == false)
+                    Positioned(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              homepageController.jumpToPage(2);
+                            },
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  stops: const [0.0, 0.5, 0.9],
+                                  colors: [
+                                    Color(0xFF760380),
+                                    Color(0xFFE6ADFF),
+                                    Colors.white,
+                                  ],
+                                ),
+                              ),
+                              child: Icon(
+                                EvaIcons.plusCircleOutline,
+                                size: 35,
+                                color: Colors.white,
                               ),
                             ),
-                            child: Icon(
-                              EvaIcons.plusCircleOutline,
-                              size: 35,
-                              color: Colors.white,
-                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),

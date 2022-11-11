@@ -33,9 +33,10 @@ class FeedPageHelpers with ChangeNotifier {
         items: [
           CustomNavigationBarItem(icon: const Icon(EvaIcons.homeOutline)),
           CustomNavigationBarItem(icon: const Icon(EvaIcons.search)),
-          CustomNavigationBarItem(
-            icon: Container(),
-          ),
+          if (context.read<Authentication>().getIsAnon == false)
+            CustomNavigationBarItem(
+              icon: Container(),
+            ),
           if (context.read<Authentication>().getIsAnon == false)
             CustomNavigationBarItem(
                 icon: Stack(
