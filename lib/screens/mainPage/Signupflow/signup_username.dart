@@ -184,6 +184,7 @@ class SignUpUsername extends StatelessWidget {
                             'percentage': 33,
                           },
                         ).whenComplete(() {
+                          context.read<Authentication>().setIsAnon(false);
                           Navigator.push(
                               context,
                               PageTransition(

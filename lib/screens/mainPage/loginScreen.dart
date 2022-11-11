@@ -169,6 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               _emailController.text, _passwordController.text);
 
                       SharedPreferencesHelper.setString("login", "email");
+                      context.read<Authentication>().setIsAnon(false);
 
                       Navigator.pushReplacement(
                         context,
@@ -325,6 +326,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 });
                               }
 
+                              context.read<Authentication>().setIsAnon(false);
+
                               Navigator.pushReplacement(
                                   context,
                                   PageTransition(
@@ -440,6 +443,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 });
                               }
 
+                              context.read<Authentication>().setIsAnon(false);
+
                               Navigator.pushReplacement(
                                   context,
                                   PageTransition(
@@ -546,6 +551,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   'percentage': 33,
                                 });
                               }
+
+                              context.read<Authentication>().setIsAnon(false);
 
                               Navigator.pushReplacement(
                                   context,

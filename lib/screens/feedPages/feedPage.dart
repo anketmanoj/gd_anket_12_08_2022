@@ -135,10 +135,11 @@ class _FeedPageState extends State<FeedPage> {
                 });
 
                 await DefaultCacheManager().emptyCache();
+
+                WidgetsBinding.instance!.addPostFrameCallback((_) {
+                  DynamicLinkService.retrieveDynamicLink(context);
+                });
               });
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      DynamicLinkService.retrieveDynamicLink(context);
-    });
 
     super.initState();
   }

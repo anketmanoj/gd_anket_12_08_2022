@@ -944,10 +944,15 @@ class VideoWidget extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            onTap: () => video.isFree
-                                ? freeMaterialsBottomSheet(
-                                    context, context.read<FirebaseOperations>())
-                                : viewMaterials(context),
+                            onTap: context.read<Authentication>().getIsAnon ==
+                                    false
+                                ? () => video.isFree
+                                    ? freeMaterialsBottomSheet(context,
+                                        context.read<FirebaseOperations>())
+                                    : viewMaterials(context)
+                                : () {
+                                    SignUpRequired(context);
+                                  },
                           ),
                           SpeedDialChild(
                             child: Icon(
@@ -1525,15 +1530,24 @@ class VideoWidget extends StatelessWidget {
                                             // _inAction = false;
                                           },
                                           child: InkWell(
-                                            onTap: () {
-                                              controller.pause();
-                                              Navigator.push(
-                                                  context,
-                                                  PageTransition(
-                                                      child: BuyCaratScreen(),
-                                                      type: PageTransitionType
-                                                          .fade));
-                                            },
+                                            onTap: context
+                                                        .read<Authentication>()
+                                                        .getIsAnon ==
+                                                    false
+                                                ? () {
+                                                    controller.pause();
+                                                    Navigator.push(
+                                                        context,
+                                                        PageTransition(
+                                                            child:
+                                                                BuyCaratScreen(),
+                                                            type:
+                                                                PageTransitionType
+                                                                    .fade));
+                                                  }
+                                                : () {
+                                                    SignUpRequired(context);
+                                                  },
                                             child: Image.asset(
                                               "assets/images/getDiamonds.png",
                                               fit: BoxFit.cover,

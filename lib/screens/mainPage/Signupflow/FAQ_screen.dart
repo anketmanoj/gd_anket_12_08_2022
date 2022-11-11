@@ -230,6 +230,10 @@ class FAQScreen extends StatelessWidget {
                                             });
                                           }
 
+                                          context
+                                              .read<Authentication>()
+                                              .setIsAnon(false);
+
                                           Navigator.pushReplacement(
                                               context,
                                               PageTransition(
@@ -363,6 +367,10 @@ class FAQScreen extends StatelessWidget {
                                             });
                                           }
 
+                                          context
+                                              .read<Authentication>()
+                                              .setIsAnon(false);
+
                                           Navigator.pushReplacement(
                                               context,
                                               PageTransition(
@@ -486,6 +494,10 @@ class FAQScreen extends StatelessWidget {
                                               'percentage': 33,
                                             });
                                           }
+
+                                          context
+                                              .read<Authentication>()
+                                              .setIsAnon(false);
 
                                           Navigator.pushReplacement(
                                               context,

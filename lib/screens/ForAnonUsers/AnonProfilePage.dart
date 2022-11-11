@@ -30,7 +30,7 @@ class AnonProfilePage extends StatelessWidget {
                   height: 10,
                 ),
                 Text(
-                  "Sign Up Required!",
+                  "Login Required!",
                   style: TextStyle(
                     color: constantColors.black,
                     fontSize: 20,

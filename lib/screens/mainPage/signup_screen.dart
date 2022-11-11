@@ -146,6 +146,8 @@ class SignUpscreen extends StatelessWidget {
                               });
                             }
 
+                            context.read<Authentication>().setIsAnon(false);
+
                             Navigator.pushReplacement(
                                 context,
                                 PageTransition(
@@ -256,6 +258,8 @@ class SignUpscreen extends StatelessWidget {
                                   'percentage': 33,
                                 });
                               }
+
+                              context.read<Authentication>().setIsAnon(false);
 
                               Navigator.pushReplacement(
                                   context,
@@ -372,6 +376,8 @@ class SignUpscreen extends StatelessWidget {
                                   'percentage': 33,
                                 });
                               }
+
+                              context.read<Authentication>().setIsAnon(false);
 
                               Navigator.pushReplacement(
                                   context,

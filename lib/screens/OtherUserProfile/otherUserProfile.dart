@@ -584,30 +584,62 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                   ],
                                 ),
                               )
-                            : InkWell(
-                                onTap: () {
-                                  SignUpRequired(context);
-                                },
-                                child: Container(
-                                  height: 35,
-                                  width: double.maxFinite,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: Image.asset(
-                                                "assets/images/follow_Bg.jpg")
-                                            .image,
-                                        fit: BoxFit.cover),
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: Text(
-                                    LocaleKeys.follow.tr(),
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
+                            : Column(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      SignUpRequired(context);
+                                    },
+                                    child: Container(
+                                      height: 35,
+                                      width: double.maxFinite,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: Image.asset(
+                                                    "assets/images/follow_Bg.jpg")
+                                                .image,
+                                            fit: BoxFit.cover),
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      child: Text(
+                                        LocaleKeys.follow.tr(),
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      SignUpRequired(context);
+                                    },
+                                    child: Container(
+                                      height: 35,
+                                      width: double.maxFinite,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: Image.asset(
+                                                    "assets/images/follow_Bg.jpg")
+                                                .image,
+                                            fit: BoxFit.cover),
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      child: Text(
+                                        "Message",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                       ),
                     ],
