@@ -280,8 +280,7 @@ class MyCollectionMiddleNav extends StatelessWidget {
                                             height: 50,
                                             width: 50,
                                             child: ImageNetworkLoader(
-                                                imageUrl:
-                                                    arSnap["gif"].toString()),
+                                                imageUrl: arSnap["imgSeq"][0]),
                                           ),
                                         ),
                                       ),

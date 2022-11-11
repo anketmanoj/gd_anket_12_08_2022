@@ -409,15 +409,15 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                   },
                   icon: Icon(Icons.info_outline),
                 ),
-                IconButton(
-                  onPressed: () {
-                    giphyGetWrapper.getGif(
-                      '',
-                      context,
-                    );
-                  },
-                  icon: Icon(Icons.edit),
-                ),
+                // IconButton(
+                //   onPressed: () {
+                //     giphyGetWrapper.getGif(
+                //       '',
+                //       context,
+                //     );
+                //   },
+                //   icon: Icon(Icons.edit),
+                // ),
               ],
               title:
                   Text(widget.arViewerScreen ? "Ar Viewer" : "Material Viewer"),

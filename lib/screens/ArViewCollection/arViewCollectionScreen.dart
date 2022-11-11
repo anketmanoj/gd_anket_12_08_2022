@@ -238,7 +238,7 @@ class ArViewcollectionScreen extends StatelessWidget {
                                       height: 50,
                                       width: 50,
                                       child: Image.network(
-                                        arSnap["gif"].toString(),
+                                        arSnap["imgSeq"][0],
                                         loadingBuilder: (BuildContext context,
                                             Widget child,
                                             ImageChunkEvent? loadingProgress) {
@@ -379,7 +379,7 @@ class ArViewcollectionScreen extends StatelessWidget {
                                       height: 50,
                                       width: 50,
                                       child: Image.network(
-                                        arSnap["gif"].toString(),
+                                        arSnap["imgSeq"][0],
                                         loadingBuilder: (BuildContext context,
                                             Widget child,
                                             ImageChunkEvent? loadingProgress) {
@@ -520,7 +520,7 @@ class ArViewcollectionScreen extends StatelessWidget {
                                       height: 50,
                                       width: 50,
                                       child: Image.network(
-                                        arSnap["gif"].toString(),
+                                        arSnap["imgSeq"][0],
                                         loadingBuilder: (BuildContext context,
                                             Widget child,
                                             ImageChunkEvent? loadingProgress) {
