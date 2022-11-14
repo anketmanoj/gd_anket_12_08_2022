@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -118,6 +119,71 @@ class YoutubeUtil {
     } catch (e) {
       print("Something went wrong.");
       return false;
+    }
+  }
+
+  Future<File?> downloadMP3File() async {
+    try {
+      // Get the video manifest and audio streams
+      var manifest = await _yt.videos.streamsClient.getManifest(url);
+      print(manifest.audioOnly);
+      var audioStream = manifest.audioOnly.last;
+
+      // Build the directory.
+      var downloadsDirectory = await getApplicationDocumentsDirectory();
+
+      var filePath = path.join(downloadsDirectory!.path,
+          '${video.title}.${audioStream.container.name}');
+
+      filePath = filePath.replaceAll(' ', '');
+      filePath = filePath.replaceAll("'", '');
+      filePath = filePath.replaceAll('"', '');
+      print(filePath);
+
+      // Open the file to write.
+      var file = File(filePath);
+      var fileStream = file.openWrite();
+      late String outputFilePath;
+
+      // Pipe all the content of the stream into our file.
+      await _yt.videos.streamsClient.get(audioStream).pipe(fileStream);
+
+      // Close the file.
+      await fileStream.flush();
+      await fileStream.close();
+
+      // Convert webm or mp4 format to mp3
+      print("starting convertion");
+      List<String> arguments = [];
+      if (filePath.endsWith('.mp4')) {
+        arguments = ["-i", filePath, filePath.replaceAll('.mp4', '.mp3')];
+        outputFilePath = filePath.replaceAll('.mp4', '.mp3');
+      } else if (filePath.endsWith('.webm')) {
+        arguments = ["-i", filePath, filePath.replaceAll('.webm', '.mp3')];
+        outputFilePath = filePath.replaceAll('.webm', '.mp3');
+      } else if (filePath.endsWith('.mp3')) {
+        print('Already .mp3');
+        outputFilePath = filePath;
+        return File(outputFilePath);
+      } else {
+        print('Unknown format to convert.');
+        return null;
+      }
+      await FFmpegKit.executeWithArguments(arguments).then((rc) {
+        print("FFmpeg process exited with rc $rc");
+        log("command : ${rc.getCommand()!}");
+      });
+
+      //delete webm format
+      if (filePath.endsWith('.webm') || filePath.endsWith('.mp4')) {
+        file.delete();
+      }
+
+      print("Everything is fine!");
+      return File(outputFilePath);
+    } catch (e) {
+      print("Something went wrong.");
+      return null;
     }
   }
 }

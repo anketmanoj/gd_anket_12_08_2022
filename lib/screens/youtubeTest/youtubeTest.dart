@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:diamon_rose_app/screens/youtubeTest/download_status.dart';
 import 'package:diamon_rose_app/screens/youtubeTest/text_input.dart';
 import 'package:diamon_rose_app/screens/youtubeTest/youtubeData.dart';
@@ -216,8 +219,13 @@ class _YoutubeTestScreenState extends State<YoutubeTestScreen>
                         downloadStatus != DownloadStatus.success) {
                       await Permission.storage.request();
                       startDownloading();
-                      final bool success = await youtubeHandler.downloadMP3();
-                      changeDownloading(success);
+                      // final bool success = await youtubeHandler.downloadMP3();
+                      final File? success =
+                          await youtubeHandler.downloadMP3File();
+                      if (success != null) {
+                        log("DONE == ${success.path}");
+                      }
+                      changeDownloading(success != null ? true : false);
                     }
                   },
                   child: (downloadStatus == DownloadStatus.downloading)

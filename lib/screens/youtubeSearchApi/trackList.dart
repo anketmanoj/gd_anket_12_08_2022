@@ -1,11 +1,15 @@
 //Track list for infinite Pagination with search
 
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:diamon_rose_app/screens/youtubeSearchApi/loading_widget.dart';
 import 'package:diamon_rose_app/screens/youtubeSearchApi/search.dart';
 
 import 'package:diamon_rose_app/screens/youtubeSearchApi/searchResults/searchresultsservice.dart';
+import 'package:diamon_rose_app/screens/youtubeTest/download_status.dart';
+import 'package:diamon_rose_app/screens/youtubeTest/youtubeData.dart';
+import 'package:diamon_rose_app/screens/youtubeTest/youtube_utils.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
@@ -162,6 +166,8 @@ class TrackListItem extends StatefulWidget {
 }
 
 class _TrackListItemState extends State<TrackListItem> {
+  YoutubeUtil youtubeHandler = YoutubeUtil();
+
   @override
   Widget build(BuildContext context) {
     const spacer = SizedBox(width: 10.0);
@@ -176,6 +182,14 @@ class _TrackListItemState extends State<TrackListItem> {
           log("Youtube URL == https://www.youtube.com/watch?v=${widget.songs.videoId}");
           log("widget.songs.title == ${widget.songs.title}");
           log("widget.songs.artists![0].name == ${widget.songs.artists![0].name}");
+
+          await youtubeHandler.loadVideo(widget.songs.videoId);
+
+          final File? success = await youtubeHandler.downloadMP3File();
+
+          if (success != null) {
+            log("DONE! == ${success.path}");
+          }
           // await context.read<ActiveAudioData>().songDetails(
           //     widget.songs.videoId,
           //     widget.songs.videoId,
