@@ -88,6 +88,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
   bool openList = false;
   bool accountInfo = false;
   bool profileDrop = false;
+  bool adminDrop = false;
   bool subscriptionDrop = false;
   final GlobalKey webViewKey = GlobalKey();
 
@@ -902,58 +903,58 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.changeLanguage.tr(),
                 ),
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                          child: YoutubeTestScreen(),
-                          type: PageTransitionType.rightToLeft),
-                    );
-                  },
-                  leadingIcon: Icons.language_outlined,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: "Youtube test",
-                ),
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     PageRouteBuilder(
-                    //         pageBuilder:
-                    //             (context, animation, secondaryAnimation) =>
-                    //                 TrackList(songQuery: ""),
-                    //         transitionsBuilder: (context, animation,
-                    //             secondaryAnimation, child) {
-                    //           const begin = Offset(1.0, 0.0);
-                    //           const end = Offset.zero;
-                    //           const curve = Curves.fastLinearToSlowEaseIn;
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () {
+                //     Navigator.push(
+                //       context,
+                //       PageTransition(
+                //           child: YoutubeTestScreen(),
+                //           type: PageTransitionType.rightToLeft),
+                //     );
+                //   },
+                //   leadingIcon: Icons.language_outlined,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "Youtube test",
+                // ),
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () {
+                //     // Navigator.push(
+                //     //     context,
+                //     //     PageRouteBuilder(
+                //     //         pageBuilder:
+                //     //             (context, animation, secondaryAnimation) =>
+                //     //                 TrackList(songQuery: ""),
+                //     //         transitionsBuilder: (context, animation,
+                //     //             secondaryAnimation, child) {
+                //     //           const begin = Offset(1.0, 0.0);
+                //     //           const end = Offset.zero;
+                //     //           const curve = Curves.fastLinearToSlowEaseIn;
 
-                    //           var tween = Tween(begin: begin, end: end)
-                    //               .chain(CurveTween(curve: curve));
+                //     //           var tween = Tween(begin: begin, end: end)
+                //     //               .chain(CurveTween(curve: curve));
 
-                    //           return SlideTransition(
-                    //             position: animation.drive(tween),
-                    //             child: child,
-                    //           );
-                    //         }));
+                //     //           return SlideTransition(
+                //     //             position: animation.drive(tween),
+                //     //             child: child,
+                //     //           );
+                //     //         }));
 
-                    Get.bottomSheet(
-                        Container(
-                          height: 80.h,
-                          color: constantColors.whiteColor,
-                          child: TrackList(songQuery: ""),
-                        ),
-                        isDismissible: true,
-                        isScrollControlled: true,
-                        enableDrag: true);
-                  },
-                  leadingIcon: Icons.language_outlined,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: "Youtube Search test",
-                ),
+                //     Get.bottomSheet(
+                //         Container(
+                //           height: 80.h,
+                //           color: constantColors.whiteColor,
+                //           child: TrackList(songQuery: ""),
+                //         ),
+                //         isDismissible: true,
+                //         isScrollControlled: true,
+                //         enableDrag: true);
+                //   },
+                //   leadingIcon: Icons.language_outlined,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "Youtube Search test",
+                // ),
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () async {
@@ -1082,16 +1083,12 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     children: [
                       ListTile(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              child: UploadVideoScreen(),
-                              type: PageTransitionType.fade,
-                            ),
-                          );
+                          setState(() {
+                            adminDrop = !adminDrop;
+                          });
                         },
                         title: Text(
-                          LocaleKeys.adminupload.tr(),
+                          "Admin Controls",
                           style: TextStyle(
                             color: Colors.yellow,
                             fontSize: 16,
@@ -1099,161 +1096,213 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                         ),
                         leading: Icon(
                           Icons.admin_panel_settings,
+                          color: Colors.yellow,
+                        ),
+                        trailing: Icon(
+                          adminDrop == false
+                              ? Icons.arrow_forward_ios
+                              : Icons.arrow_downward,
                           color: Colors.yellow,
                         ),
                       ),
-                      ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              child: AdminUserPromoScreen(),
-                              type: PageTransitionType.fade,
+                      Visibility(
+                        visible: adminDrop,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: UploadVideoScreen(),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          title: Text(
+                            LocaleKeys.adminupload.tr(),
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
                             ),
-                          );
-                        },
-                        title: Text(
-                          LocaleKeys.adminUserPromocodes.tr(),
-                          style: TextStyle(
-                            color: Colors.yellow,
-                            fontSize: 16,
                           ),
-                        ),
-                        leading: Icon(
-                          Icons.admin_panel_settings,
-                          color: Colors.yellow,
+                          leading: Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.yellow,
+                          ),
                         ),
                       ),
-                      ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              child: AdminRegisterUser(),
-                              type: PageTransitionType.fade,
+                      Visibility(
+                        visible: adminDrop,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: AdminUserPromoScreen(),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          title: Text(
+                            LocaleKeys.adminUserPromocodes.tr(),
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
                             ),
-                          );
-                        },
-                        title: Text(
-                          "Admin Register Users",
-                          style: TextStyle(
-                            color: Colors.yellow,
-                            fontSize: 16,
                           ),
-                        ),
-                        leading: Icon(
-                          Icons.admin_panel_settings,
-                          color: Colors.yellow,
+                          leading: Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.yellow,
+                          ),
                         ),
                       ),
-                      ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              child: AdminMassNotificationScreen(),
-                              type: PageTransitionType.fade,
+                      Visibility(
+                        visible: adminDrop,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: AdminRegisterUser(),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          title: Text(
+                            "Admin Register Users",
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
                             ),
-                          );
-                        },
-                        title: Text(
-                          "Admin Mass Notification",
-                          style: TextStyle(
-                            color: Colors.yellow,
-                            fontSize: 16,
                           ),
-                        ),
-                        leading: Icon(
-                          Icons.admin_panel_settings,
-                          color: Colors.yellow,
+                          leading: Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.yellow,
+                          ),
                         ),
                       ),
-                      ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              child: SelectUserVideoEditor(),
-                              type: PageTransitionType.fade,
+                      Visibility(
+                        visible: adminDrop,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: AdminMassNotificationScreen(),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          title: Text(
+                            "Admin Mass Notification",
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
                             ),
-                          );
-                        },
-                        title: Text(
-                          LocaleKeys.adminVideoEditor.tr(),
-                          style: TextStyle(
-                            color: Colors.yellow,
-                            fontSize: 16,
                           ),
-                        ),
-                        leading: Icon(
-                          Icons.admin_panel_settings,
-                          color: Colors.yellow,
+                          leading: Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.yellow,
+                          ),
                         ),
                       ),
-                      ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              child: PayoutScreen(),
-                              type: PageTransitionType.fade,
+                      Visibility(
+                        visible: adminDrop,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: SelectUserVideoEditor(),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          title: Text(
+                            LocaleKeys.adminVideoEditor.tr(),
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
                             ),
-                          );
-                        },
-                        title: Text(
-                          "Payout Requests",
-                          style: TextStyle(
-                            color: Colors.yellow,
-                            fontSize: 16,
                           ),
-                        ),
-                        leading: Icon(
-                          Icons.admin_panel_settings,
-                          color: Colors.yellow,
+                          leading: Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.yellow,
+                          ),
                         ),
                       ),
-                      ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              child: AdminArOptions(),
-                              type: PageTransitionType.fade,
+                      Visibility(
+                        visible: adminDrop,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: PayoutScreen(),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          title: Text(
+                            "Payout Requests",
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
                             ),
-                          );
-                        },
-                        title: Text(
-                          LocaleKeys.adminAROptions.tr(),
-                          style: TextStyle(
-                            color: Colors.yellow,
-                            fontSize: 16,
                           ),
-                        ),
-                        leading: Icon(
-                          Icons.admin_panel_settings,
-                          color: Colors.yellow,
+                          leading: Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.yellow,
+                          ),
                         ),
                       ),
-                      ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              child: UserDataAdminControl(),
-                              type: PageTransitionType.fade,
+                      Visibility(
+                        visible: adminDrop,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: AdminArOptions(),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          title: Text(
+                            LocaleKeys.adminAROptions.tr(),
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
                             ),
-                          );
-                        },
-                        title: Text(
-                          LocaleKeys.adminUserControl.tr(),
-                          style: TextStyle(
+                          ),
+                          leading: Icon(
+                            Icons.admin_panel_settings,
                             color: Colors.yellow,
-                            fontSize: 16,
                           ),
                         ),
-                        leading: Icon(
-                          Icons.admin_panel_settings,
-                          color: Colors.yellow,
+                      ),
+                      Visibility(
+                        visible: adminDrop,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: UserDataAdminControl(),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          title: Text(
+                            LocaleKeys.adminUserControl.tr(),
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.yellow,
+                          ),
                         ),
                       ),
                     ],
