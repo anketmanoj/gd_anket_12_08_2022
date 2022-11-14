@@ -10,6 +10,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
+import 'package:diamon_rose_app/screens/Admin/adminDeleteUsers.dart';
 import 'package:diamon_rose_app/screens/Admin/adminMassNotification.dart';
 import 'package:diamon_rose_app/screens/Admin/adminUserPromoCodes.dart';
 import 'package:diamon_rose_app/screens/Admin/adminUserRegistration.dart';
@@ -1169,6 +1170,31 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                           },
                           title: Text(
                             "Admin Register Users",
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.yellow,
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: adminDrop,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: AdminDeleteUsers(),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          title: Text(
+                            "Admin Delete Users",
                             style: TextStyle(
                               color: Colors.yellow,
                               fontSize: 16,
