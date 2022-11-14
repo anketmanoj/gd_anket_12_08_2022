@@ -987,7 +987,7 @@ class FirebaseOperations with ChangeNotifier {
       final String id = nanoid().toString();
 
       print("length of arListVal: ${arListVal!.length}");
-      arListVal.forEach((arVal) async {
+      for (var arVal in arListVal) {
         print("ar index ${arVal.arIndex}");
         if (arVal.layerType == LayerType.Effect) {
           // final String idValForEffect = await uploadEffects(
@@ -1026,6 +1026,37 @@ class FirebaseOperations with ChangeNotifier {
           arIdsVal.add(idVal);
 
           notifyListeners();
+        } else if (arVal.layerType == LayerType.Music) {
+          // final String idValForEffect = await uploadEffects(
+          //   userUid: userUid,
+          //   gifFile: File(arVal.gifFilePath!),
+          // );
+
+          String idVal = nanoid();
+
+          await FirebaseFirestore.instance
+              .collection("users")
+              .doc(userUid)
+              .collection("MyCollection")
+              .doc(idVal)
+              .set({
+            'id': idVal,
+            'gif': arVal.youtubeAlbumCover,
+            'layerType': 'Music',
+            'timestamp': Timestamp.now(),
+            'valueType': "myItems",
+            'songArtist': arVal.youtubeArtistName,
+            'songUrl': arVal.youtubeUrl,
+            'songName': arVal.youtubeTitle,
+            "ownerId": userUid,
+            "ownerName": arVal.youtubeArtistName,
+            "hideItem": false,
+          });
+
+          log("id for music == $idVal");
+          arIdsVal.add(idVal);
+
+          notifyListeners();
         } else {
           arIdsVal.add(arVal.arId!);
           notifyListeners();
@@ -1033,7 +1064,7 @@ class FirebaseOperations with ChangeNotifier {
 
         print(
             "added arId: ${arVal.arIndex} to list arIdsVal |  ${arIdsVal.length}");
-      });
+      }
 
       log("total length == ${arIdsVal.length}");
 
@@ -1158,6 +1189,29 @@ class FirebaseOperations with ChangeNotifier {
                   "videoId": id,
                 });
                 log("effect added now");
+                break;
+              case "Music":
+                log("adding Music now");
+                await FirebaseFirestore.instance
+                    .collection("posts")
+                    .doc(id)
+                    .collection("materials")
+                    .doc("${arUidVal}${id}")
+                    .set({
+                  "id": "${arSnapshot.data()!['id']}${id}",
+                  'gif': arSnapshot.data()!['gif'],
+                  'layerType': 'Music',
+                  'timestamp': Timestamp.now(),
+                  'valueType': "myItems",
+                  'songArtist': arSnapshot.data()!['songArtist'],
+                  'songUrl': arSnapshot.data()!['songUrl'],
+                  'songName': arSnapshot.data()!['songName'],
+                  "ownerId": userUid,
+                  "ownerName": arSnapshot.data()!['ownerName'],
+                  "hideItem": false,
+                  "videoId": id,
+                });
+                log("music added now");
                 break;
               case "Background":
                 log("adding Background to Materials");
