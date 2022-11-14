@@ -45,6 +45,10 @@ class ARList {
   File? musicFile;
   double? xOffset;
   double? yOffset;
+  String? youtubeUrl;
+  String? youtubeArtistName;
+  String? youtubeTitle;
+  String? youtubeAlbumCover;
 
   ARList({
     this.arIndex,
@@ -81,5 +85,9 @@ class ARList {
     this.musicFile,
     this.xOffset,
     this.yOffset,
+    this.youtubeArtistName,
+    this.youtubeTitle,
+    this.youtubeUrl,
+    this.youtubeAlbumCover,
   });
 }

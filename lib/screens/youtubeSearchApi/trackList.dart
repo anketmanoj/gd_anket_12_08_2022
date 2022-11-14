@@ -74,82 +74,83 @@ class _TrackListState extends State<TrackList> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SearchFunction(
-          liveSearch: false,
-          controller: _controller,
-          onSubmitted: (searchQuery) async {
-            query = searchQuery;
+        liveSearch: false,
+        controller: _controller,
+        onSubmitted: (searchQuery) async {
+          query = searchQuery;
 
-            _pagingController.refresh();
-            // setState(() {
-            //
-            // });
-          },
-          body: Center(
-            child: RefreshIndicator(
-              onRefresh: () => Future.sync(
-                () => _pagingController.refresh(),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CustomScrollView(
-                  slivers: [
-                    const SliverToBoxAdapter(child: SizedBox(height: 50)),
-                    SliverToBoxAdapter(
-                        child: Text(
-                      query,
+          _pagingController.refresh();
+          // setState(() {
+          //
+          // });
+        },
+        body: Center(
+          child: RefreshIndicator(
+            onRefresh: () => Future.sync(
+              () => _pagingController.refresh(),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CustomScrollView(
+                slivers: [
+                  const SliverToBoxAdapter(child: SizedBox(height: 50)),
+                  SliverToBoxAdapter(
+                      child: Text(
+                    query,
 
-                      // widget.songQuery == ''
-                      //   ? '  Results for \"${query}\"'
-                      //   : '  Results for \"${widget.songQuery}\"',
+                    // widget.songQuery == ''
+                    //   ? '  Results for \"${query}\"'
+                    //   : '  Results for \"${widget.songQuery}\"',
 
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    )),
-                    const SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: 15,
-                      ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  )),
+                  const SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 15,
                     ),
-                    AnimationLimiter(
-                      child: PagedSliverList.separated(
-                        //physics: BouncingScrollPhysics(),
+                  ),
+                  AnimationLimiter(
+                    child: PagedSliverList.separated(
+                      //physics: BouncingScrollPhysics(),
 
-                        pagingController: _pagingController,
-                        // padding: const EdgeInsets.all(10),
-                        separatorBuilder: (context, index) => const SizedBox(
-                          height: 10,
+                      pagingController: _pagingController,
+                      // padding: const EdgeInsets.all(10),
+                      separatorBuilder: (context, index) => const SizedBox(
+                        height: 10,
+                      ),
+                      builderDelegate: PagedChildBuilderDelegate<Songs>(
+                        animateTransitions: true,
+                        transitionDuration: const Duration(milliseconds: 200),
+                        firstPageProgressIndicatorBuilder: (_) => Center(
+                          child: loadingWidget(context),
                         ),
-                        builderDelegate: PagedChildBuilderDelegate<Songs>(
-                          animateTransitions: true,
-                          transitionDuration: const Duration(milliseconds: 200),
-                          firstPageProgressIndicatorBuilder: (_) => Center(
-                            child: loadingWidget(context),
-                          ),
-                          newPageProgressIndicatorBuilder: (_) =>
-                              Center(child: loadingWidget(context)),
-                          itemBuilder: (context, songs, index) =>
-                              AnimationConfiguration.staggeredList(
-                            position: index,
-                            duration: const Duration(milliseconds: 370),
-                            child: SlideAnimation(
-                              verticalOffset: 50.0,
-                              child: FadeInAnimation(
-                                child: TrackListItem(
-                                  songs: songs,
-                                  color: constantColors.bioBg,
-                                ),
+                        newPageProgressIndicatorBuilder: (_) =>
+                            Center(child: loadingWidget(context)),
+                        itemBuilder: (context, songs, index) =>
+                            AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 370),
+                          child: SlideAnimation(
+                            verticalOffset: 50.0,
+                            child: FadeInAnimation(
+                              child: TrackListItem(
+                                songs: songs,
+                                color: constantColors.bioBg,
                               ),
                             ),
                           ),
-                          // firstPageErrorIndicatorBuilder: (context) =>
                         ),
+                        // firstPageErrorIndicatorBuilder: (context) =>
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

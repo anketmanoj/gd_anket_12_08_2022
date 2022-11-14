@@ -549,7 +549,7 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                                                               "online+${widget.MyAR.id}"),
                                                           isAutoPlay: true,
                                                           isOnline: true,
-                                                          fps: 28,
+                                                          fps: 35,
                                                           waitUntilCacheIsComplete:
                                                               true,
                                                           fullPaths: widget

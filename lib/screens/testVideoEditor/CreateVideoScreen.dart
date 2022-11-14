@@ -22,6 +22,10 @@ import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/ui/video_viewe
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/video_editor.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/VideoThumbnailSelectionScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/testingVideoOutput.dart';
+import 'package:diamon_rose_app/screens/youtubeSearchApi/loading_widget.dart';
+import 'package:diamon_rose_app/screens/youtubeSearchApi/search.dart';
+import 'package:diamon_rose_app/screens/youtubeSearchApi/searchResults/searchresultsservice.dart';
+import 'package:diamon_rose_app/screens/youtubeTest/youtube_utils.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
@@ -45,11 +49,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:giphy_get/giphy_get.dart';
 import 'package:helpers/helpers/transition.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:nanoid/nanoid.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
@@ -59,6 +66,8 @@ import 'package:sizer/sizer.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
+
+import '../youtubeSearchApi/searchResults/songsdataclass.dart';
 
 enum _FrameBoundaries { left, right, inside, progress, none }
 
@@ -124,6 +133,319 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
   late File thumbnailFile;
 
   ValueNotifier<int> indexCounter = ValueNotifier<int>(1);
+
+  // !############################### for Youtube Search API
+
+  String query = 'Drake';
+  static const _pageSize = 20;
+
+  final FloatingSearchBarController _searchBarController =
+      FloatingSearchBarController();
+
+  final _pagingController = PagingController<int, Songs>(
+    // 2
+    firstPageKey: 1,
+  );
+
+  Future<void> fetchSongs(int pageKey) async {
+    try {
+      final List<Songs> newItems =
+          await SearchMusic.getOnlySongs(query, _pageSize);
+      final isLastPage = newItems.length < _pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(newItems);
+      } else {
+        final nextPageKey = pageKey + newItems.length;
+        _pagingController.appendPage(newItems, nextPageKey);
+      }
+    } catch (error) {
+      _pagingController.error = error;
+    }
+  }
+
+  final spacer = SizedBox(width: 10);
+  final biggerSpacer = SizedBox(width: 40);
+
+  YoutubeUtil youtubeHandler = YoutubeUtil();
+
+  _showYoutubeBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+      isDismissible: true,
+      isScrollControlled: true,
+      enableDrag: true,
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          height: 90.h,
+          width: 100.w,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+          ),
+          child: Scaffold(
+            body: SearchFunction(
+              liveSearch: false,
+              controller: _searchBarController,
+              onSubmitted: (searchQuery) async {
+                query = searchQuery;
+
+                _pagingController.refresh();
+                // setState(() {
+                //
+                // });
+              },
+              body: Center(
+                child: RefreshIndicator(
+                  onRefresh: () => Future.sync(
+                    () => _pagingController.refresh(),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CustomScrollView(
+                      slivers: [
+                        const SliverToBoxAdapter(child: SizedBox(height: 50)),
+                        SliverToBoxAdapter(
+                            child: Text(
+                          query,
+
+                          // widget.songQuery == ''
+                          //   ? '  Results for \"${query}\"'
+                          //   : '  Results for \"${widget.songQuery}\"',
+
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        )),
+                        const SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: 15,
+                          ),
+                        ),
+                        AnimationLimiter(
+                          child: PagedSliverList.separated(
+                            //physics: BouncingScrollPhysics(),
+
+                            pagingController: _pagingController,
+                            // padding: const EdgeInsets.all(10),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(
+                              height: 10,
+                            ),
+                            builderDelegate: PagedChildBuilderDelegate<Songs>(
+                              animateTransitions: true,
+                              transitionDuration:
+                                  const Duration(milliseconds: 200),
+                              firstPageProgressIndicatorBuilder: (_) => Center(
+                                child: loadingWidget(context),
+                              ),
+                              newPageProgressIndicatorBuilder: (_) =>
+                                  Center(child: loadingWidget(context)),
+                              itemBuilder: (context, songs, index) =>
+                                  AnimationConfiguration.staggeredList(
+                                position: index,
+                                duration: const Duration(milliseconds: 370),
+                                child: SlideAnimation(
+                                  verticalOffset: 50.0,
+                                  child: FadeInAnimation(
+                                      child: Material(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: constantColors.bioBg,
+                                    child: InkWell(
+                                      onTap: () async {
+                                        CoolAlert.show(
+                                            context: context,
+                                            type: CoolAlertType.loading,
+                                            barrierDismissible: false);
+                                        //playerAlerts.buffering = t
+                                        dev.log(
+                                            "songs.videoId == ${songs.videoId}");
+                                        dev.log(
+                                            "Youtube URL == https://www.youtube.com/watch?v=${songs.videoId}");
+                                        dev.log(
+                                            "songs.title == ${songs.title}");
+                                        dev.log(
+                                            "songs.artists![0].name == ${songs.artists![0].name}");
+
+                                        await youtubeHandler
+                                            .loadVideo(songs.videoId);
+
+                                        final File? file = await youtubeHandler
+                                            .downloadMP3File();
+
+                                        if (file != null) {
+                                          dev.log("DONE! == ${file.path}");
+
+                                          if (list.value.isNotEmpty) {
+                                            list.value.last.layerType ==
+                                                    LayerType.AR
+                                                ? indexCounter.value =
+                                                    indexCounter.value + 2
+                                                : indexCounter.value =
+                                                    indexCounter.value + 1;
+                                          } else {
+                                            indexCounter.value = 1;
+                                          }
+
+                                          if (indexCounter.value <= 0) {
+                                            indexCounter.value = 1;
+                                          }
+
+                                          Get.back();
+
+                                          await runFFmpegForAudioOnlyFiles(
+                                            arVal: indexCounter.value,
+                                            audioFile: file,
+                                            songTitle: songs.title,
+                                            songArtist: songs.artists![0].name,
+                                            songAlbumCover:
+                                                songs.thumbnails[0].url,
+                                            songUrl:
+                                                "https://www.youtube.com/watch?v=${songs.videoId}",
+                                          );
+                                        }
+                                        // await context.read<ActiveAudioData>().songDetails(
+                                        //     songs.videoId,
+                                        //     songs.videoId,
+                                        //     songs.artists![0].name,
+                                        //     songs.title,
+                                        //     songs.thumbnails[0].url,
+                                        //     //songs.thumbnails.map((e) => ThumbnailLocal(height: e.height, url: e.url.toString(), width: e.width)).toList(),
+                                        //     songs.thumbnails.last.url.toString());
+
+                                        // await AudioControlClass.play(
+                                        //   videoId: songs.videoId.toString(),
+                                        //   context: context,
+                                        // );
+                                      },
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            5, 5, 5, 5),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            FadeInImage(
+                                                placeholder: const AssetImage(
+                                                    'assets/images/GDlogo.png'),
+                                                width: 40,
+                                                height: 40,
+                                                fit: BoxFit.cover,
+                                                image: NetworkImage(
+                                                  songs.thumbnails.first.url
+                                                      .toString(),
+                                                )),
+                                            // CachedNetworkImage(
+                                            //   memCacheHeight: 40,
+                                            //   memCacheWidth: 40,
+                                            //   width: 40,
+                                            //   height: 40,
+                                            //   imageBuilder: (context, imageProvider) => CircleAvatar(
+                                            //     backgroundColor: Colors.transparent,
+                                            //     foregroundColor: Colors.transparent,
+                                            //     radius: 100,
+                                            //     backgroundImage: imageProvider,
+                                            //   ),
+                                            //   fit: BoxFit.cover,
+                                            //   errorWidget: (context, _, __) => const Image(
+                                            //     fit: BoxFit.cover,
+                                            //     image: AssetImage('assets/cover.jpg'),
+                                            //   ),
+                                            //   imageUrl: songs.thumbnails.first.url.toString(),
+                                            //   placeholder: (context, url) => const Image(
+                                            //       fit: BoxFit.cover,
+                                            //       image: AssetImage('assets/cover.jpg')),
+                                            // ),
+                                            spacer,
+
+                                            SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  1 /
+                                                  4,
+                                              child: Text(
+                                                songs.title.toString(),
+                                                // widget.isFromPrimarySearchPage ? songs[index].title.toString() : 'Kuch is tarah',
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            spacer,
+                                            SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  1 /
+                                                  8,
+                                              child: Text(
+                                                songs.artists![0].name
+                                                    .toString(),
+                                                // widget.isFromPrimarySearchPage ? songs[index].artists![0].name.toString() : 'Atif',
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            spacer,
+                                            if (MediaQuery.of(context)
+                                                    .size
+                                                    .width >
+                                                500)
+                                              SizedBox(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    1 /
+                                                    8,
+                                                child: Text(
+                                                  songs.album!.name.toString(),
+                                                  //  widget.isFromPrimarySearchPage ? songs[index].album!.name.toString() : 'The jal band',
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  1 /
+                                                  15,
+                                              child: Text(
+                                                songs.duration.toString(),
+                                                //widget.isFromPrimarySearchPage ? songs[index].duration.toString() : '5:25',
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            biggerSpacer,
+                                            const Icon(Icons.more_vert)
+                                            // mat.IconButton(
+                                            //     iconSize : 10,
+                                            //     onPressed: () {}, icon: Icon(FluentIcons.play))
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  )),
+                                ),
+                              ),
+                              // firstPageErrorIndicatorBuilder: (context) =>
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // !############################### for Youtube Search API
 
   _openFileManager() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -198,6 +520,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
   @override
   void dispose() {
     disposeScreen();
+    _pagingController.dispose();
     super.dispose();
   }
 
@@ -237,6 +560,11 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
   @override
   void initState() {
     screen = Size(50, 50);
+
+    // 3
+    _pagingController.addPageRequestListener((pageKey) {
+      fetchSongs(pageKey);
+    });
 
     // _videoPath =
     //     context.read<VideoEditorProvider>().getBackgroundVideoFile.path;
@@ -507,6 +835,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
   Future<void> runFFmpegForAudioOnlyFiles({
     required int arVal,
     required File audioFile,
+    required String songTitle,
+    required String songArtist,
+    required String songUrl,
+    required String songAlbumCover,
   }) async {
     if (await Permission.storage.request().isGranted) {
       dev.log("AR INDEX == $arVal");
@@ -580,8 +912,12 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               finishedCaching: ValueNotifier(true),
               ownerId: context.read<Authentication>().getUserId,
               ownerName: context.read<FirebaseOperations>().initUserName,
-              selectedMaterial: ValueNotifier<bool>(false),
+              selectedMaterial: ValueNotifier<bool>(true),
               musicFile: musicFile,
+              youtubeArtistName: songArtist,
+              youtubeTitle: songTitle,
+              youtubeUrl: songUrl,
+              youtubeAlbumCover: songAlbumCover,
             ));
 
             _controllerSeekTo(0);
@@ -592,7 +928,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             dev.log(
                 "list Music ${musicIndexVal.value} | index counter == $arVal");
             Get.back();
-            // Get.back();
+            Get.back();
             setState(() {});
           });
         });
@@ -1433,7 +1769,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                     ? constantColors
                                                                         .darkColor
                                                                     : constantColors
-                                                                        .lightBlueColor,
+                                                                        .black,
                                                             border: Border.all(
                                                               color:
                                                                   Colors.white,
@@ -1464,22 +1800,20 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                       )
                                                                     : arVal.layerType ==
                                                                             LayerType.Music
-                                                                        ? Padding(
-                                                                            padding:
-                                                                                const EdgeInsets.only(left: 10),
-                                                                            child:
-                                                                                Row(
-                                                                              children: [
-                                                                                Text(
-                                                                                  "Music Layer",
-                                                                                  style: TextStyle(color: constantColors.whiteColor),
-                                                                                ),
-                                                                                SizedBox(
-                                                                                  width: 10,
-                                                                                ),
-                                                                                Icon(FontAwesomeIcons.music, color: constantColors.whiteColor)
-                                                                              ],
-                                                                            ),
+                                                                        ? Row(
+                                                                            children: [
+                                                                              Container(
+                                                                                width: 50,
+                                                                                child: ImageNetworkLoader(imageUrl: arVal.youtubeAlbumCover!),
+                                                                              ),
+                                                                              SizedBox(
+                                                                                width: 10,
+                                                                              ),
+                                                                              Text(
+                                                                                "${arVal.youtubeArtistName} - ${arVal.youtubeTitle!}",
+                                                                                style: TextStyle(color: constantColors.whiteColor),
+                                                                              ),
+                                                                            ],
                                                                           )
                                                                         : Center(
                                                                             child:
@@ -1847,59 +2181,64 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                   .pause();
                                                             });
 
-                                                            FilePickerResult?
-                                                                file =
-                                                                await FilePicker
-                                                                    .platform
-                                                                    .pickFiles(
-                                                              type: FileType
-                                                                  .custom,
-                                                              allowedExtensions: [
-                                                                'mp3'
-                                                              ],
-                                                              allowMultiple:
-                                                                  false,
-                                                              allowCompression:
-                                                                  true,
-                                                            );
+                                                            _showYoutubeBottomSheet(
+                                                                context);
 
-                                                            if (file != null) {
-                                                              if (list.value
-                                                                  .isNotEmpty) {
-                                                                list.value.last.layerType ==
-                                                                        LayerType
-                                                                            .AR
-                                                                    ? indexCounter
-                                                                            .value =
-                                                                        indexCounter.value +
-                                                                            2
-                                                                    : indexCounter
-                                                                            .value =
-                                                                        indexCounter.value +
-                                                                            1;
-                                                              } else {
-                                                                indexCounter
-                                                                    .value = 1;
-                                                              }
+                                                            // ! For picking music file from users device
 
-                                                              if (indexCounter
-                                                                      .value <=
-                                                                  0) {
-                                                                indexCounter
-                                                                    .value = 1;
-                                                              }
+                                                            // FilePickerResult?
+                                                            //     file =
+                                                            //     await FilePicker
+                                                            //         .platform
+                                                            //         .pickFiles(
+                                                            //   type: FileType
+                                                            //       .custom,
+                                                            //   allowedExtensions: [
+                                                            //     'mp3'
+                                                            //   ],
+                                                            //   allowMultiple:
+                                                            //       false,
+                                                            //   allowCompression:
+                                                            //       true,
+                                                            // );
 
-                                                              await runFFmpegForAudioOnlyFiles(
-                                                                arVal:
-                                                                    indexCounter
-                                                                        .value,
-                                                                audioFile: File(
-                                                                    file
-                                                                        .files
-                                                                        .single
-                                                                        .path!),
-                                                              );
-                                                            }
+                                                            // if (file != null) {
+                                                            //   if (list.value
+                                                            //       .isNotEmpty) {
+                                                            //     list.value.last.layerType ==
+                                                            //             LayerType
+                                                            //                 .AR
+                                                            //         ? indexCounter
+                                                            //                 .value =
+                                                            //             indexCounter.value +
+                                                            //                 2
+                                                            //         : indexCounter
+                                                            //                 .value =
+                                                            //             indexCounter.value +
+                                                            //                 1;
+                                                            //   } else {
+                                                            //     indexCounter
+                                                            //         .value = 1;
+                                                            //   }
+
+                                                            //   if (indexCounter
+                                                            //           .value <=
+                                                            //       0) {
+                                                            //     indexCounter
+                                                            //         .value = 1;
+                                                            //   }
+
+                                                            //   await runFFmpegForAudioOnlyFiles(
+                                                            //     arVal:
+                                                            //         indexCounter
+                                                            //             .value,
+                                                            //     audioFile: File(
+                                                            //         file
+                                                            //             .files
+                                                            //             .single
+                                                            //             .path!),
+                                                            //   );
+                                                            // }
                                                           } else {
                                                             await Get.dialog(
                                                               SimpleDialog(

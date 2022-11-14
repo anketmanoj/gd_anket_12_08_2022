@@ -171,96 +171,128 @@ class ArViewcollectionScreen extends StatelessWidget {
                               MyArCollection myAr = MyArCollection.fromJson(
                                   arSnap.data() as Map<String, dynamic>);
 
-                              return InkWell(
-                                onTap: () {
-                                  log("name == ${myAr.id}");
-                                  runARCommand(myAr: myAr, context: context);
-                                },
-                                child: GridTile(
-                                  header: deleteItems.value == true
-                                      ? InkWell(
-                                          onTap: () {
-                                            CoolAlert.show(
-                                                context: context,
-                                                type: CoolAlertType.info,
-                                                title: "Delete Item?",
-                                                text:
-                                                    "Are you sure you want to delete this?",
-                                                showCancelBtn: true,
-                                                onConfirmBtnTap: () async {
-                                                  await context
-                                                      .read<
-                                                          FirebaseOperations>()
-                                                      .deleteItemFromMyCollection(
-                                                        arID: arSnap.id,
-                                                        useruid: context
-                                                            .read<
-                                                                Authentication>()
-                                                            .getUserId,
-                                                      );
+                              return Stack(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      log("name == ${myAr.id}");
+                                      runARCommand(
+                                          myAr: myAr, context: context);
+                                    },
+                                    child: GridTile(
+                                      header: deleteItems.value == true
+                                          ? InkWell(
+                                              onTap: () {
+                                                CoolAlert.show(
+                                                    context: context,
+                                                    type: CoolAlertType.info,
+                                                    title: "Delete Item?",
+                                                    text:
+                                                        "Are you sure you want to delete this?",
+                                                    showCancelBtn: true,
+                                                    onConfirmBtnTap: () async {
+                                                      await context
+                                                          .read<
+                                                              FirebaseOperations>()
+                                                          .deleteItemFromMyCollection(
+                                                            arID: arSnap.id,
+                                                            useruid: context
+                                                                .read<
+                                                                    Authentication>()
+                                                                .getUserId,
+                                                          );
 
-                                                  Navigator.pop(context);
-                                                });
-                                          },
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              Container(
-                                                padding: EdgeInsets.all(5),
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      constantColors.redColor,
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                ),
-                                                child: Text(
-                                                  "Delete",
-                                                  style: TextStyle(
+                                                      Navigator.pop(context);
+                                                    });
+                                              },
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  Container(
+                                                    padding: EdgeInsets.all(5),
+                                                    decoration: BoxDecoration(
                                                       color: constantColors
-                                                          .whiteColor),
-                                                ),
+                                                          .redColor,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                    ),
+                                                    child: Text(
+                                                      "Delete",
+                                                      style: TextStyle(
+                                                          color: constantColors
+                                                              .whiteColor),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
+                                            )
+                                          : null,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(20),
+                                          topRight: Radius.circular(20),
+                                        ),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: Image.asset(
+                                                    "assets/arViewer/bg.png")
+                                                .image,
+                                          )),
+                                          height: 100.h,
+                                          width: 100.w,
+                                          child: Image.network(
+                                            arSnap["imgSeq"][0],
+                                            loadingBuilder:
+                                                (BuildContext context,
+                                                    Widget child,
+                                                    ImageChunkEvent?
+                                                        loadingProgress) {
+                                              if (loadingProgress == null)
+                                                return child;
+                                              return Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  value: loadingProgress
+                                                              .expectedTotalBytes !=
+                                                          null
+                                                      ? loadingProgress
+                                                              .cumulativeBytesLoaded /
+                                                          loadingProgress
+                                                              .expectedTotalBytes!
+                                                      : null,
+                                                ),
+                                              );
+                                            },
                                           ),
-                                        )
-                                      : null,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(30),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                        fit: BoxFit.cover,
-                                        image: Image.asset(
-                                                "assets/arViewer/bg.png")
-                                            .image,
-                                      )),
-                                      height: 50,
-                                      width: 50,
-                                      child: Image.network(
-                                        arSnap["imgSeq"][0],
-                                        loadingBuilder: (BuildContext context,
-                                            Widget child,
-                                            ImageChunkEvent? loadingProgress) {
-                                          if (loadingProgress == null)
-                                            return child;
-                                          return Center(
-                                            child: CircularProgressIndicator(
-                                              value: loadingProgress
-                                                          .expectedTotalBytes !=
-                                                      null
-                                                  ? loadingProgress
-                                                          .cumulativeBytesLoaded /
-                                                      loadingProgress
-                                                          .expectedTotalBytes!
-                                                  : null,
-                                            ),
-                                          );
-                                        },
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    left: 0,
+                                    child: Container(
+                                      padding: EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                          color: myAr.usage == "Material" ||
+                                                  myAr.usage == null
+                                              ? constantColors.greyColor
+                                                  .withOpacity(0.7)
+                                              : constantColors.navButton
+                                                  .withOpacity(0.7)),
+                                      child: Text(
+                                        myAr.usage ?? "Material",
+                                        style: TextStyle(
+                                            color: constantColors.whiteColor),
+                                      ),
+                                    ),
+                                  )
+                                ],
                               );
                             },
                           );
