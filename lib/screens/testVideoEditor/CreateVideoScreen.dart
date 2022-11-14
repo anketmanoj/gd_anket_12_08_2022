@@ -255,6 +255,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                     color: constantColors.bioBg,
                                     child: InkWell(
                                       onTap: () async {
+                                        await Permission.storage.request();
                                         CoolAlert.show(
                                             context: context,
                                             type: CoolAlertType.loading,
@@ -304,6 +305,20 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                 songs.thumbnails[0].url,
                                             songUrl:
                                                 "https://www.youtube.com/watch?v=${songs.videoId}",
+                                          );
+                                        } else {
+                                          Get.back();
+                                          Get.back();
+                                          Get.dialog(
+                                            SimpleDialog(
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.all(10),
+                                                  child: Text(
+                                                      "Error Loading this music video, it has been locked by the owner!"),
+                                                ),
+                                              ],
+                                            ),
                                           );
                                         }
                                         // await context.read<ActiveAudioData>().songDetails(

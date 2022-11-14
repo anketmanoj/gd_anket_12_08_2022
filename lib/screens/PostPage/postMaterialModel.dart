@@ -17,6 +17,9 @@ class PostMaterialModel {
     required this.layerType,
     required this.selected,
     this.imgSeq,
+    this.songArtist,
+    this.songTitle,
+    this.songUrl,
   });
 
   String gif;
@@ -28,6 +31,9 @@ class PostMaterialModel {
   String layerType;
   ValueNotifier<bool> selected = ValueNotifier<bool>(false);
   List<dynamic>? imgSeq;
+  String? songUrl;
+  String? songArtist;
+  String? songTitle;
 
   factory PostMaterialModel.fromJson(String str) =>
       PostMaterialModel.fromMap(json.decode(str));
@@ -43,6 +49,9 @@ class PostMaterialModel {
         usage: json["usage"],
         videoId: json["videoId"],
         layerType: json["layerType"],
+        songUrl: json["songUrl"],
+        songArtist: json["songArtist"],
+        songTitle: json["songName"],
         selected: ValueNotifier<bool>(false),
         imgSeq: json["imgSeq"] ?? [],
       );

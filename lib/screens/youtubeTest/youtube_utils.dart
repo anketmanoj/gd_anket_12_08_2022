@@ -59,19 +59,20 @@ class YoutubeUtil {
   }
 
   Future<String> getSaveLocation() async {
-    var downloadsDirectory = await getApplicationDocumentsDirectory();
+    final downloadsDirectory = await getApplicationDocumentsDirectory();
     return downloadsDirectory.toString();
   }
 
   Future<bool> downloadMP3() async {
     try {
       // Get the video manifest and audio streams
-      var manifest = await _yt.videos.streamsClient.getManifest(url);
+      final manifest = await _yt.videos.streamsClient.getManifest(url);
+      log("Here now?");
       print(manifest.audioOnly);
-      var audioStream = manifest.audioOnly.last;
+      final audioStream = manifest.audioOnly.last;
 
       // Build the directory.
-      var downloadsDirectory = await getApplicationDocumentsDirectory();
+      final downloadsDirectory = await getApplicationDocumentsDirectory();
 
       var filePath = path.join(downloadsDirectory!.path,
           '${video.title}.${audioStream.container.name}');
@@ -82,8 +83,8 @@ class YoutubeUtil {
       print(filePath);
 
       // Open the file to write.
-      var file = File(filePath);
-      var fileStream = file.openWrite();
+      final file = File(filePath);
+      final fileStream = file.openWrite();
 
       // Pipe all the content of the stream into our file.
       await _yt.videos.streamsClient.get(audioStream).pipe(fileStream);
@@ -125,12 +126,13 @@ class YoutubeUtil {
   Future<File?> downloadMP3File() async {
     try {
       // Get the video manifest and audio streams
-      var manifest = await _yt.videos.streamsClient.getManifest(url);
+      final manifest = await _yt.videos.streamsClient.getManifest(url);
+      log("Here now?");
       print(manifest.audioOnly);
-      var audioStream = manifest.audioOnly.last;
+      final audioStream = manifest.audioOnly.last;
 
       // Build the directory.
-      var downloadsDirectory = await getApplicationDocumentsDirectory();
+      final downloadsDirectory = await getApplicationDocumentsDirectory();
 
       var filePath = path.join(downloadsDirectory!.path,
           '${video.title}.${audioStream.container.name}');
@@ -141,8 +143,8 @@ class YoutubeUtil {
       print(filePath);
 
       // Open the file to write.
-      var file = File(filePath);
-      var fileStream = file.openWrite();
+      final file = File(filePath);
+      final fileStream = file.openWrite();
       late String outputFilePath;
 
       // Pipe all the content of the stream into our file.
@@ -182,7 +184,7 @@ class YoutubeUtil {
       print("Everything is fine!");
       return File(outputFilePath);
     } catch (e) {
-      print("Something went wrong.");
+      print("Something went wrong");
       return null;
     }
   }
