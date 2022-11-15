@@ -902,6 +902,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             dev.log("ArCut out ois here  = ${arCutOutFile.path}");
 
             await _player!.setFilePath(audioFile.path);
+            await _player.setClip(
+                start: Duration(seconds: 0), end: _controller.videoDuration);
             await _player.pause();
 
             final containerKey = GlobalKey();
@@ -1746,10 +1748,17 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                   });
                                                 },
                                                 onTap: () {
-                                                  if (arVal.audioFlag == true)
+                                                  if (arVal.audioFlag == true &&
+                                                      arVal.layerType !=
+                                                          LayerType.Music) {
                                                     showAlertDialog(
                                                         context: context,
                                                         ar: arVal);
+                                                  } else {
+                                                    showMusicAdjustBottomSheet(
+                                                        context: context,
+                                                        ar: arVal);
+                                                  }
                                                 },
                                                 child: Container(
                                                   width: fullLayout.width,
@@ -3389,6 +3398,79 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             ),
           );
         });
+  }
+
+  Future<dynamic> showMusicAdjustBottomSheet(
+      {required BuildContext context, required ARList ar}) {
+    final point = ValueNotifier<double>(ar.audioPlayer!.volume);
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          width: 100.w,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              color: constantColors.whiteColor),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 150),
+                child: Divider(
+                  thickness: 4,
+                  color: constantColors.greyColor,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text("Set Music Volume"),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Icon(Icons.volume_down),
+                  Expanded(
+                    child: ValueListenableBuilder<double>(
+                      valueListenable: point,
+                      builder: (context, mark, _) {
+                        return CupertinoSlider(
+                          value: mark,
+                          min: 0,
+                          max: 1,
+                          onChanged: (double value) async {
+                            point.value = value;
+                            print(point.value);
+                            await ar.audioPlayer!.setVolume(point.value);
+                            // await ar.audioPlayer!.setVolume(value);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  Icon(Icons.volume_up_rounded),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text("Select clip from music layer"),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [],
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> combineBgAr({
