@@ -2412,7 +2412,7 @@ class FlutterSliderHandler {
 }
 
 class FlutterSliderTooltip {
-  Widget Function(dynamic value)? custom;
+  Widget Function(double value)? custom;
   String Function(String value)? format;
   TextStyle? textStyle;
   FlutterSliderTooltipBox? boxStyle;

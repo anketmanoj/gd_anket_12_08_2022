@@ -16,6 +16,7 @@ import 'package:diamon_rose_app/screens/GiphyTest/get_giphy_gifs.dart';
 import 'package:diamon_rose_app/screens/PostPage/previewVideo.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
+import 'package:diamon_rose_app/screens/testVideoEditor/GD_custom_range_slider.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/ui/frame/frame_slider_painter.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/ui/frame/frame_thumbnail_slider.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/ui/video_viewer.dart';
@@ -939,7 +940,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 audioStart: 0,
                 audioEnd: _player.duration!.inSeconds));
 
-            _controllerSeekTo(0);
+            _controllerSeekTo(1);
             if (!mounted) return;
 
             musicIndexVal.value += 1;
@@ -3399,15 +3400,35 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
         });
   }
 
+  customHandler(IconData icon) {
+    return FlutterSliderHandler(
+      decoration: BoxDecoration(),
+      child: Container(
+        height: 60,
+        width: 5,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+                color: Colors.blue.withOpacity(0.3),
+                spreadRadius: 0.05,
+                blurRadius: 5,
+                offset: Offset(0, 1))
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<dynamic> showMusicAdjustBottomSheet(
       {required BuildContext context, required ARList ar}) async {
     final point = ValueNotifier<double>(ar.audioPlayer!.volume);
     await ar.audioPlayer!.setClip(start: null, end: null);
     final Duration maxAudioDuration = ar.audioPlayer!.duration!;
 
-    final ValueNotifier<RangeValues> _currentRangeValues =
-        ValueNotifier<RangeValues>(
-            RangeValues(0, maxAudioDuration.inSeconds.toDouble()));
+    final ValueNotifier<List<double>> _currentRangeValues =
+        ValueNotifier<List<double>>(
+            [ar.audioStart!.toDouble(), ar.audioEnd!.toDouble()]);
 
     final ValueNotifier<bool> audioPlaying =
         ValueNotifier<bool>(ar.audioPlayer!.playing);
@@ -3450,6 +3471,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                       valueListenable: point,
                       builder: (context, mark, _) {
                         return CupertinoSlider(
+                          activeColor: constantColors.navButton,
                           value: mark,
                           min: 0,
                           max: 1,
@@ -3473,95 +3495,90 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               SizedBox(
                 height: 10,
               ),
-              ValueListenableBuilder<RangeValues>(
+              ValueListenableBuilder<List<double>>(
                 valueListenable: _currentRangeValues,
                 builder: (context, rangeVal, _) {
-                  return Stack(
-                    children: [
-                      Container(
-                        height: 80,
-                        width: 100.w,
-                        margin: EdgeInsets.symmetric(horizontal: 10),
-                        color: constantColors.black,
-                        child: ListView.separated(
-                          controller: _scrollController,
-                          itemCount: 40,
-                          separatorBuilder: (_, __) => const Divider(
-                            indent: 1,
-                          ),
-                          itemBuilder: (_, index) => Container(
-                            child: Image.network(ar.youtubeAlbumCover!),
-                            height: 50,
-                          ),
-                          scrollDirection: Axis.horizontal,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        left: 0,
-                        child: RangeSlider(
-                          values: _currentRangeValues.value,
-                          max: maxAudioDuration.inSeconds.toDouble(),
-                          divisions: maxAudioDuration.inSeconds,
-                          min: 0,
-                          labels: RangeLabels(
-                            formatter(Duration(
-                                seconds:
-                                    _currentRangeValues.value.start.round())),
-                            formatter(Duration(
-                                seconds:
-                                    _currentRangeValues.value.end.round())),
-                            // _currentRangeValues.value.start.round().toString(),
-                            // _currentRangeValues.value.end.round().toString(),
-                          ),
-                          onChanged: (RangeValues values) {
-                            if (_currentRangeValues.value.start.truncate() +
-                                    20 <
-                                _currentRangeValues.value.end.truncate()) {
-                              _currentRangeValues.value = values;
-                              ar.audioPlayer!.setClip(
-                                start: Duration(
-                                    seconds: _currentRangeValues.value.start
-                                        .truncate()),
-                                end: Duration(
-                                    seconds: _currentRangeValues.value.end
-                                        .truncate()),
-                              );
+                  return Container(
+                      alignment: Alignment.centerLeft,
+                      child: FlutterSlider(
+                        values: _currentRangeValues.value,
+                        rangeSlider: true,
+//rtl: true,
 
-                              ar.audioStart =
-                                  _currentRangeValues.value.start.truncate();
-                              ar.audioEnd =
-                                  _currentRangeValues.value.end.truncate();
-                              dev.log(
-                                  "ar start == ${ar.audioStart} | end == ${ar.audioEnd}");
-                            } else {
-                              _currentRangeValues.value = RangeValues(
-                                  _currentRangeValues.value.start,
-                                  _currentRangeValues.value.start + 30);
-                              ar.audioPlayer!.setClip(
-                                start: Duration(
-                                    seconds: _currentRangeValues.value.start
-                                        .truncate()),
-                                end: Duration(
-                                    seconds: _currentRangeValues.value.start
-                                            .truncate() +
-                                        _controller
-                                            .video.value.duration.inSeconds),
-                              );
-
-                              ar.audioStart =
-                                  _currentRangeValues.value.start.truncate();
-                              ar.audioEnd =
-                                  _currentRangeValues.value.end.truncate();
-                              dev.log(
-                                  "ar start == ${ar.audioStart} | end == ${ar.audioEnd}");
-                            }
-                          },
+//                ignoreSteps: [
+//                  FlutterSliderIgnoreSteps(from: 8000, to: 12000),
+//                  FlutterSliderIgnoreSteps(from: 18000, to: 22000),
+//                ],
+                        max: maxAudioDuration.inSeconds.toDouble(),
+                        min: 0,
+                        step: FlutterSliderStep(step: 1),
+                        jump: true,
+                        trackBar: FlutterSliderTrackBar(
+                          inactiveTrackBarHeight: 2,
+                          activeTrackBarHeight: 60,
+                          activeTrackBar: BoxDecoration(
+                            color: constantColors.bioBg.withOpacity(0.5),
+                          ),
+                          centralWidget: Container(
+                            height: 80,
+                            width: 100.w,
+                            margin: EdgeInsets.symmetric(horizontal: 10),
+                            color: constantColors.navButton,
+                            child: ListView.separated(
+                              controller: _scrollController,
+                              itemCount: 40,
+                              separatorBuilder: (_, __) => const Divider(
+                                indent: 1,
+                              ),
+                              itemBuilder: (_, index) => Container(
+                                child: Image.network(ar.youtubeAlbumCover!),
+                                height: 50,
+                              ),
+                              scrollDirection: Axis.horizontal,
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
-                  );
+
+                        disabled: false,
+
+                        handler: customHandler(Icons.chevron_right),
+                        rightHandler: customHandler(Icons.chevron_left),
+                        tooltip: FlutterSliderTooltip(
+                            custom: (value) {
+                              // dev.log("value is $value");
+                              // int valueChange = int.parse(value.toString());
+                              // dev.log(valueChange.toString());
+                              return Text(
+                                  formatter(Duration(seconds: value.toInt())));
+                            },
+                            textStyle:
+                                TextStyle(fontSize: 17, color: Colors.white),
+                            boxStyle: FlutterSliderTooltipBox(
+                                decoration: BoxDecoration(
+                                    color: Colors.redAccent.withOpacity(0.7)))),
+
+                        minimumDistance: _controller
+                            .video.value.duration.inSeconds
+                            .toDouble(),
+                        onDragging: (handlerIndex, lowerValue, upperValue) {
+                          dev.log("lower - $lowerValue");
+                          dev.log("upper - $upperValue");
+
+                          ar.audioPlayer!.setClip(
+                            start: Duration(seconds: lowerValue.truncate()),
+                            end: Duration(seconds: upperValue.truncate()),
+                          );
+
+                          ar.audioStart = lowerValue.truncate();
+                          ar.audioEnd = upperValue.truncate();
+                          dev.log(
+                              "ar start == ${ar.audioStart} | end == ${ar.audioEnd}");
+
+                          // _lowerValue = lowerValue;
+                          // _upperValue = upperValue;
+                          // setState(() {});
+                        },
+                      ));
                 },
               ),
               SizedBox(
@@ -3767,7 +3784,12 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     final point = ValueNotifier<double>(ar.audioPlayer!.volume);
     // set up the button
     Widget okButton = TextButton(
-      child: Text("OK"),
+      child: Text(
+        "OK",
+        style: TextStyle(
+          color: constantColors.navButton,
+        ),
+      ),
       onPressed: () async {
         print(point.value);
         await ar.audioPlayer!.setVolume(point.value);
@@ -3789,6 +3811,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             valueListenable: point,
             builder: (context, mark, _) {
               return CupertinoSlider(
+                activeColor: constantColors.navButton,
                 value: mark,
                 min: 0,
                 max: 1,
@@ -3824,7 +3847,12 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     final point = ValueNotifier<double>(controller.video.value.volume);
     // set up the button
     Widget okButton = TextButton(
-      child: Text("OK"),
+      child: Text(
+        "OK",
+        style: TextStyle(
+          color: constantColors.navButton,
+        ),
+      ),
       onPressed: () async {
         print(point.value);
         await controller.video.setVolume(point.value);
@@ -3844,6 +3872,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             valueListenable: point,
             builder: (context, mark, _) {
               return CupertinoSlider(
+                activeColor: constantColors.navButton,
                 value: mark,
                 min: 0,
                 max: 1,
