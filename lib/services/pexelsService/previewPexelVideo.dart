@@ -96,10 +96,11 @@ class _PreviewPexelVideoScreenState extends State<PreviewPexelVideoScreen> {
           AppBarWidget(text: "Preview Pexel Video", context: context, actions: [
         IconButton(
           onPressed: () async {
+            _controller.pause();
             CoolAlert.show(
-              context: context,
-              type: CoolAlertType.loading,
-            );
+                context: context,
+                type: CoolAlertType.loading,
+                barrierDismissible: false);
             final int audioFlag = await audioCheck(
                 videoUrl: widget.pexelVideoUrl, context: context);
 

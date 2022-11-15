@@ -145,7 +145,9 @@ class SelectUserVideoEditor extends StatelessWidget {
                             padding: EdgeInsets.only(top: 50),
                             child: ElevatedButton(
                               child: Text("Create Video"),
-                              onPressed: () => {_pickVideo(context: context)},
+                              onPressed: () => {
+                                _pickVideo(context: context),
+                              },
                             ),
                           )
                         : Container(),

@@ -42,6 +42,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -2424,23 +2425,60 @@ class VideoWidget extends StatelessWidget {
                                                     : myItems[index].gif,
                                               ),
                                             ),
-                                            trailing: Checkbox(
-                                              value:
-                                                  myItems[index].selected.value,
-                                              onChanged: (val) {
-                                                myItems[index].selected.value =
-                                                    val!;
+                                            trailing: myItems[index]
+                                                        .layerType !=
+                                                    "Music"
+                                                ? Checkbox(
+                                                    value: myItems[index]
+                                                        .selected
+                                                        .value,
+                                                    onChanged: (val) {
+                                                      myItems[index]
+                                                          .selected
+                                                          .value = val!;
 
-                                                log(myItems
-                                                    .where((element) =>
-                                                        element
-                                                            .selected.value ==
-                                                        true)
-                                                    .toList()
-                                                    .length
-                                                    .toString());
-                                              },
-                                            ),
+                                                      log(myItems
+                                                          .where((element) =>
+                                                              element.selected
+                                                                  .value ==
+                                                              true)
+                                                          .toList()
+                                                          .length
+                                                          .toString());
+                                                    },
+                                                  )
+                                                : InkWell(
+                                                    onTap: () async {
+                                                      final url = myItems[index]
+                                                          .songUrl!;
+                                                      if (await canLaunch(
+                                                          url)) {
+                                                        await launch(
+                                                          url,
+                                                          forceSafariVC: false,
+                                                        );
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      padding:
+                                                          EdgeInsets.all(15),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.black,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20),
+                                                      ),
+                                                      child: Text(
+                                                        "Youtube",
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
                                             title: Text(
                                               // !Found this here;
                                               "${myItems[index].layerType} by ${myItems[index].ownerName}",

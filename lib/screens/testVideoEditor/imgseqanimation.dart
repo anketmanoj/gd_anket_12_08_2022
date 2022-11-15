@@ -11,6 +11,7 @@ import 'package:diamon_rose_app/screens/GiphyTest/get_giphy_gifs.dart';
 import 'package:diamon_rose_app/screens/GiphyTest/gigphy_get_anket.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/VideoCreationOptionsScreen.dart';
+import 'package:diamon_rose_app/screens/testVideoEditor/ViewerScreenModel.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
@@ -65,6 +66,7 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
   // Random ID
   String randomId = "";
   String giphyApiKey = "0X2ffUW2nnfVcPUc2C7alPhfdrj2tA6M";
+  bool allowParallax = false;
 
   ImageSequenceAnimatorState? get imageSequenceAnimator =>
       onlineImageSequenceAnimator;
@@ -145,25 +147,25 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
     screenListener.watch();
     super.initState();
 
-    if (widget.arViewerScreen) {
-      controller = CameraController(
-        cameras![0],
-        ResolutionPreset.low,
-        imageFormatGroup: ImageFormatGroup.yuv420,
-      );
-      controller!.initialize().then((_) {
-        if (!mounted) {
-          return;
-        }
-        controller!.startImageStream(
-          (CameraImage image) {},
-        );
+    // if (widget.arViewerScreen) {
+    //   controller = CameraController(
+    //     cameras![0],
+    //     ResolutionPreset.low,
+    //     imageFormatGroup: ImageFormatGroup.yuv420,
+    //   );
+    //   controller!.initialize().then((_) {
+    //     if (!mounted) {
+    //       return;
+    //     }
+    //     controller!.startImageStream(
+    //       (CameraImage image) {},
+    //     );
 
-        setState(() {
-          showCamera = true;
-        });
-      });
-    }
+    //     setState(() {
+    //       showCamera = true;
+    //     });
+    //   });
+    // }
   }
 
   @override
@@ -222,138 +224,171 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
     );
   }
 
-  List<IconData> iconsList = [
-    Icons.play_arrow,
-    Icons.pause,
-    Icons.stop,
-    Icons.restart_alt,
-    Icons.fast_rewind,
-    Icons.loop,
-    Icons.low_priority,
-  ];
-
-  List<IconData> iconsMaterialList = [
-    Icons.play_arrow,
-    Icons.pause,
-    Icons.stop,
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final List<void Function()> functionList = [
-      () {
-        // setState(() {
-        imageSequenceAnimator!.play();
-        if (widget.MyAR.audioFlag == true) _player!.play();
-        // });
-      },
-      () {
-        // setState(() {
-        if (imageSequenceAnimator!.isPlaying) {
-          if (widget.MyAR.audioFlag == true) _player!.pause();
-          imageSequenceAnimator!.pause();
-        }
-        // });
-      },
-      () {
-        imageSequenceAnimator!.stop();
-        if (widget.MyAR.audioFlag == true) _player!.stop();
-      },
-      () async {
-        if (widget.MyAR.audioFlag == true) {
-          await _player!.seek(Duration.zero);
-          await _player!.play();
-        }
-        imageSequenceAnimator!.restart();
-      },
-      () {
-        imageSequenceAnimator!.rewind();
-      },
-      () async {
-        switch (widget.MyAR.audioFlag) {
-          case true:
-            imageSequenceAnimator!.skip(0);
-
-            setState(() {
-              loopText =
-                  imageSequenceAnimator!.isLooping ? "Start Loop" : "Stop Loop";
-              boomerangText = "Start Boomerang";
-              imageSequenceAnimator!
-                  .setIsLooping(!imageSequenceAnimator!.isLooping);
-            });
-
+    final List<ViewScreenModel> forMaterialView = [
+      ViewScreenModel(
+        iconData: Icons.play_arrow,
+        function: () {
+          // setState(() {
+          imageSequenceAnimator!.play();
+          if (widget.MyAR.audioFlag == true) _player!.play();
+          // });
+        },
+      ),
+      ViewScreenModel(
+        iconData: Icons.pause,
+        function: () {
+          // setState(() {
+          if (imageSequenceAnimator!.isPlaying) {
+            if (widget.MyAR.audioFlag == true) _player!.pause();
+            imageSequenceAnimator!.pause();
+          }
+          // });
+        },
+      ),
+      ViewScreenModel(
+        iconData: Icons.stop,
+        function: () {
+          imageSequenceAnimator!.stop();
+          if (widget.MyAR.audioFlag == true) _player!.stop();
+        },
+      ),
+    ];
+    final List<ViewScreenModel> forArView = [
+      ViewScreenModel(
+        iconData: Icons.play_arrow,
+        function: () {
+          // setState(() {
+          imageSequenceAnimator!.play();
+          if (widget.MyAR.audioFlag == true) _player!.play();
+          // });
+        },
+      ),
+      ViewScreenModel(
+        iconData: Icons.pause,
+        function: () {
+          // setState(() {
+          if (imageSequenceAnimator!.isPlaying) {
+            if (widget.MyAR.audioFlag == true) _player!.pause();
+            imageSequenceAnimator!.pause();
+          }
+          // });
+        },
+      ),
+      ViewScreenModel(
+        iconData: Icons.stop,
+        function: () {
+          imageSequenceAnimator!.stop();
+          if (widget.MyAR.audioFlag == true) _player!.stop();
+        },
+      ),
+      ViewScreenModel(
+        iconData: Icons.restart_alt,
+        function: () async {
+          if (widget.MyAR.audioFlag == true) {
             await _player!.seek(Duration.zero);
-            await _player!.setLoopMode(!imageSequenceAnimator!.isLooping == true
-                ? LoopMode.off
-                : LoopMode.all);
             await _player!.play();
-            imageSequenceAnimator!.play();
+          }
+          imageSequenceAnimator!.restart();
+        },
+      ),
+      ViewScreenModel(
+        iconData: Icons.fast_rewind,
+        function: () {
+          imageSequenceAnimator!.rewind();
+        },
+      ),
+      ViewScreenModel(
+        iconData: Icons.loop,
+        function: () async {
+          switch (widget.MyAR.audioFlag) {
+            case true:
+              imageSequenceAnimator!.skip(0);
 
-            // Navigator.pop(context);
+              setState(() {
+                loopText = imageSequenceAnimator!.isLooping
+                    ? "Start Loop"
+                    : "Stop Loop";
+                boomerangText = "Start Boomerang";
+                imageSequenceAnimator!
+                    .setIsLooping(!imageSequenceAnimator!.isLooping);
+              });
 
-            break;
-          case false:
-            imageSequenceAnimator!.skip(0);
+              await _player!.seek(Duration.zero);
+              await _player!.setLoopMode(
+                  !imageSequenceAnimator!.isLooping == true
+                      ? LoopMode.off
+                      : LoopMode.all);
+              await _player!.play();
+              imageSequenceAnimator!.play();
 
-            setState(() {
-              loopText =
-                  imageSequenceAnimator!.isLooping ? "Start Loop" : "Stop Loop";
-              boomerangText = "Start Boomerang";
-              imageSequenceAnimator!
-                  .setIsLooping(!imageSequenceAnimator!.isLooping);
-            });
+              // Navigator.pop(context);
 
-            imageSequenceAnimator!.play();
+              break;
+            case false:
+              imageSequenceAnimator!.skip(0);
 
-            // Navigator.pop(context);
+              setState(() {
+                loopText = imageSequenceAnimator!.isLooping
+                    ? "Start Loop"
+                    : "Stop Loop";
+                boomerangText = "Start Boomerang";
+                imageSequenceAnimator!
+                    .setIsLooping(!imageSequenceAnimator!.isLooping);
+              });
 
-            break;
-        }
-      },
-      () async {
-        setState(() {
-          loopText = "Start Loop";
-          boomerangText = imageSequenceAnimator!.isBoomerang
-              ? "Start Boomerang"
-              : "Stop Boomerang";
-          imageSequenceAnimator!
-              .setIsBoomerang(!imageSequenceAnimator!.isBoomerang);
-        });
+              imageSequenceAnimator!.play();
 
-        // Navigator.pop(context);
-        Get.snackbar(
-          'Boomerang is only applicable to video',
-          "In Boomerang mode, no audio will be played. Only the video will be played in boomerang mode.",
-          duration: Duration(seconds: 5),
-          overlayColor: constantColors.navButton,
-          colorText: constantColors.black,
-          snackPosition: SnackPosition.TOP,
-          forwardAnimationCurve: Curves.elasticInOut,
-          reverseAnimationCurve: Curves.easeOut,
-          backgroundColor: constantColors.navButton.withOpacity(0.6),
-        );
-      },
+              // Navigator.pop(context);
+
+              break;
+          }
+        },
+      ),
+      ViewScreenModel(
+        iconData: Icons.low_priority,
+        function: () async {
+          setState(() {
+            loopText = "Start Loop";
+            boomerangText = imageSequenceAnimator!.isBoomerang
+                ? "Start Boomerang"
+                : "Stop Boomerang";
+            imageSequenceAnimator!
+                .setIsBoomerang(!imageSequenceAnimator!.isBoomerang);
+          });
+
+          // Navigator.pop(context);
+          Get.snackbar(
+            'Boomerang is only applicable to video',
+            "In Boomerang mode, no audio will be played. Only the video will be played in boomerang mode.",
+            duration: Duration(seconds: 5),
+            overlayColor: constantColors.navButton,
+            colorText: constantColors.black,
+            snackPosition: SnackPosition.TOP,
+            forwardAnimationCurve: Curves.elasticInOut,
+            reverseAnimationCurve: Curves.easeOut,
+            backgroundColor: constantColors.navButton.withOpacity(0.6),
+          );
+        },
+      ),
+      ViewScreenModel(
+        image: "assets/images/parallaxIcon.png",
+        iconData: Icons.abc,
+        function: () async {
+          setState(() {
+            allowParallax = !allowParallax;
+          });
+
+          allowParallax == true
+              ? Get.snackbar("Parallax Activated",
+                  "Parallax has been activated, the AR will tilt with your phone now!")
+              : Get.snackbar(
+                  "Parallax Deactivated", "Parallax has been deactivated");
+        },
+      ),
     ];
-    final List<void Function()> functionMaterialList = [
-      () {
-        // setState(() {
-        imageSequenceAnimator!.play();
-        if (widget.MyAR.audioFlag == true) _player!.play();
-        // });
-      },
-      () {
-        // setState(() {
-        if (imageSequenceAnimator!.isPlaying) {
-          if (widget.MyAR.audioFlag == true) _player!.pause();
-          imageSequenceAnimator!.pause();
-        }
-        // });
-      },
-      () {
-        imageSequenceAnimator!.stop();
-        if (widget.MyAR.audioFlag == true) _player!.stop();
-      },
-    ];
+
     return AnketGiphyGetWrapper(
         giphy_api_key: giphyApiKey,
         builder: (stream, giphyGetWrapper) {
@@ -463,7 +498,7 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                               ),
                         XL(
                           sharesPointer: false,
-                          sharesSensors: true,
+                          sharesSensors: allowParallax,
                           layers: list.map((value) {
                             if (value.gifFilePath == null) {
                               return XLayer(
@@ -695,31 +730,54 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                             physics: BouncingScrollPhysics(),
                             shrinkWrap: true,
                             itemCount: widget.arViewerScreen
-                                ? iconsList.length
-                                : iconsMaterialList.length,
+                                ? forArView.length
+                                : forMaterialView.length,
                             itemBuilder: (context, index) {
                               return Padding(
                                 padding: const EdgeInsets.all(3.0),
                                 child: InkWell(
                                   onTap: widget.arViewerScreen
-                                      ? functionList[index]
-                                      : functionMaterialList[index],
-                                  child: Container(
-                                    width: 100.w / 8,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: constantColors.bioBg,
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      widget.arViewerScreen
-                                          ? iconsList[index]
-                                          : iconsMaterialList[index],
-                                      color: constantColors.bioBg,
-                                    ),
-                                  ),
+                                      ? forArView[index].function
+                                      : forMaterialView[index].function,
+                                  child: widget.arViewerScreen &&
+                                          forArView[index].image != null
+                                      ? Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color: constantColors.bioBg,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: Image.asset(
+                                              forArView[index].image!,
+                                              fit: BoxFit.contain,
+                                              height: 20,
+                                              width: 30,
+                                            ),
+                                          ),
+                                        )
+                                      : Container(
+                                          width: 100.w / 8,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color: constantColors.bioBg,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            widget.arViewerScreen
+                                                ? forArView[index].iconData
+                                                : forMaterialView[index]
+                                                    .iconData,
+                                            color: constantColors.bioBg,
+                                          ),
+                                        ),
                                 ),
                               );
                             },
