@@ -514,28 +514,31 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       if (element.gifFilePath != null) {
         await deleteFile([element.gifFilePath!]);
       }
+
       // await deleteFile(element.pathsForVideoFrames!);
       if (element.arState != null) {
-        element.arState?.dispose();
+        element.arState!.dispose();
         if (element.audioFlag == true) element.audioPlayer!.dispose();
       }
     }
     await DefaultCacheManager().emptyCache();
-    if (list.value.isNotEmpty) {
-      _exportingProgress.dispose();
-      _isExporting.dispose();
+    _exportingProgress.dispose();
+    _isExporting.dispose();
 
-      // for (ARList arVal in list.value) {
-      //   await deleteFile(arVal.pathsForVideoFrames!);
-      // }
-    }
     _controller.dispose();
   }
 
   @override
   void dispose() {
+    list.value
+        .where((element) => element.audioPlayer != null)
+        .toList()
+        .forEach((element) {
+      element.audioPlayer!.dispose();
+    });
     disposeScreen();
     _pagingController.dispose();
+
     super.dispose();
   }
 

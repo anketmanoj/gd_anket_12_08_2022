@@ -77,7 +77,7 @@ class _VideothumbnailSelectorState extends State<VideothumbnailSelector> {
         _isExporting.value = false;
         if (!mounted) return;
         if (videoFileNew != null) {
-          Navigator.pushReplacement(
+          Navigator.push(
               context,
               PageTransition(
                   child: PreviewVideoScreen(

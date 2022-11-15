@@ -35,11 +35,13 @@ class ImageSeqAniScreen extends StatefulWidget {
       required this.folderName,
       required this.fileName,
       required this.MyAR,
-      this.arViewerScreen = false})
+      this.arViewerScreen = false,
+      this.videoFPS = 30})
       : super(key: key);
 
   final String folderName;
   final String fileName;
+  final double videoFPS;
 
   final MyArCollection MyAR;
   final bool arViewerScreen;
@@ -549,23 +551,23 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                                                               "online+${widget.MyAR.id}"),
                                                           isAutoPlay: true,
                                                           isOnline: true,
-                                                          fps: 35,
+                                                          fps: widget.videoFPS,
                                                           waitUntilCacheIsComplete:
                                                               true,
                                                           fullPaths: widget
                                                               .MyAR.imgSeq,
-                                                          cacheProgressIndicatorBuilder:
-                                                              (context,
-                                                                  progress) {
-                                                            return CircularProgressIndicator(
-                                                              value: progress !=
-                                                                      null
-                                                                  ? progress
-                                                                  : 1,
-                                                              backgroundColor:
-                                                                  color1,
-                                                            );
-                                                          },
+                                                          // cacheProgressIndicatorBuilder:
+                                                          //     (context,
+                                                          //         progress) {
+                                                          //   return CircularProgressIndicator(
+                                                          //     value: progress !=
+                                                          //             null
+                                                          //         ? progress
+                                                          //         : 1,
+                                                          //     backgroundColor:
+                                                          //         color1,
+                                                          //   );
+                                                          // },
                                                           onReadyToPlay:
                                                               onOnlineReadyToPlay,
                                                           onPlaying:

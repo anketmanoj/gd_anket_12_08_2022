@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -31,18 +32,46 @@ class MyCollectionMiddleNav extends StatelessWidget {
   MyCollectionMiddleNav({Key? key, this.goToMaterial = 0}) : super(key: key);
   final int goToMaterial;
 
-  void runARCommand({required MyArCollection myAr}) {
+  void runARCommand({required MyArCollection myAr}) async {
     final String audioFile = myAr.audioFile;
 
     // ignore: cascade_invocations
     final String folderName = audioFile.split(myAr.id).toList()[0];
     final String fileName = "${myAr.id}imgSeq";
 
+    Get.dialog(
+      SimpleDialog(
+        children: [
+          Center(
+            child: CircularProgressIndicator(),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
+
+    final value = await FFprobeKit.execute(
+        "-show_entries stream=r_frame_rate -v quiet -of json ${myAr.main}");
+
+    log("value == ${value}");
+
+    final String? mapOutput = await value.getOutput();
+
+    final Map<String, dynamic> json = jsonDecode(mapOutput!);
+
+    List<String> fpsString = json['streams'][0]['r_frame_rate'].split("/");
+    double fpsCount = double.parse(fpsString[0]) / double.parse(fpsString[1]);
+
+    log("durationString final : $fpsCount");
+
+    Get.back();
+
     Get.to(
       () => ImageSeqAniScreen(
         folderName: folderName,
         fileName: fileName,
         MyAR: myAr,
+        videoFPS: fpsCount,
       ),
     );
   }
