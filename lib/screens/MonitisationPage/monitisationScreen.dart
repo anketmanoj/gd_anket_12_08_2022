@@ -540,6 +540,13 @@ class _MonitizationScreenState extends State<MonitizationScreen> {
         ));
       }
     });
+
+    if (randomData.isEmpty) {
+      randomData.add(ChartSampleData(
+        x: DateTime.now(),
+        y: 0,
+      ));
+    }
   }
 
   // /// Method to update the selected zoom type in the chart on change.

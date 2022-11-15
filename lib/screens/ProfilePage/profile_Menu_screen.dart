@@ -904,58 +904,58 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.changeLanguage.tr(),
                 ),
-                // ListTileOption(
-                //   constantColors: constantColors,
-                //   onTap: () {
-                //     Navigator.push(
-                //       context,
-                //       PageTransition(
-                //           child: YoutubeTestScreen(),
-                //           type: PageTransitionType.rightToLeft),
-                //     );
-                //   },
-                //   leadingIcon: Icons.language_outlined,
-                //   trailingIcon: Icons.arrow_forward_ios,
-                //   text: "Youtube test",
-                // ),
-                // ListTileOption(
-                //   constantColors: constantColors,
-                //   onTap: () {
-                //     // Navigator.push(
-                //     //     context,
-                //     //     PageRouteBuilder(
-                //     //         pageBuilder:
-                //     //             (context, animation, secondaryAnimation) =>
-                //     //                 TrackList(songQuery: ""),
-                //     //         transitionsBuilder: (context, animation,
-                //     //             secondaryAnimation, child) {
-                //     //           const begin = Offset(1.0, 0.0);
-                //     //           const end = Offset.zero;
-                //     //           const curve = Curves.fastLinearToSlowEaseIn;
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          child: YoutubeTestScreen(),
+                          type: PageTransitionType.rightToLeft),
+                    );
+                  },
+                  leadingIcon: Icons.language_outlined,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Youtube test",
+                ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {
+                    // Navigator.push(
+                    //     context,
+                    //     PageRouteBuilder(
+                    //         pageBuilder:
+                    //             (context, animation, secondaryAnimation) =>
+                    //                 TrackList(songQuery: ""),
+                    //         transitionsBuilder: (context, animation,
+                    //             secondaryAnimation, child) {
+                    //           const begin = Offset(1.0, 0.0);
+                    //           const end = Offset.zero;
+                    //           const curve = Curves.fastLinearToSlowEaseIn;
 
-                //     //           var tween = Tween(begin: begin, end: end)
-                //     //               .chain(CurveTween(curve: curve));
+                    //           var tween = Tween(begin: begin, end: end)
+                    //               .chain(CurveTween(curve: curve));
 
-                //     //           return SlideTransition(
-                //     //             position: animation.drive(tween),
-                //     //             child: child,
-                //     //           );
-                //     //         }));
+                    //           return SlideTransition(
+                    //             position: animation.drive(tween),
+                    //             child: child,
+                    //           );
+                    //         }));
 
-                //     Get.bottomSheet(
-                //         Container(
-                //           height: 80.h,
-                //           color: constantColors.whiteColor,
-                //           child: TrackList(songQuery: ""),
-                //         ),
-                //         isDismissible: true,
-                //         isScrollControlled: true,
-                //         enableDrag: true);
-                //   },
-                //   leadingIcon: Icons.language_outlined,
-                //   trailingIcon: Icons.arrow_forward_ios,
-                //   text: "Youtube Search test",
-                // ),
+                    Get.bottomSheet(
+                        Container(
+                          height: 80.h,
+                          color: constantColors.whiteColor,
+                          child: TrackList(songQuery: ""),
+                        ),
+                        isDismissible: true,
+                        isScrollControlled: true,
+                        enableDrag: true);
+                  },
+                  leadingIcon: Icons.language_outlined,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Youtube Search test",
+                ),
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () async {

@@ -150,26 +150,26 @@ class _SearchFunctionState extends State<SearchFunction>
             transition: CircularFloatingSearchBarTransition(),
             physics: const BouncingScrollPhysics(),
             title: Text(selectedTerm),
-            hint: "Let's Play.....",
+            hint: "Search ...",
             actions: [
               // FloatingSearchBarAction.()
 
               FloatingSearchBarAction.searchToClear()
             ],
-            onQueryChanged: (query) async {
-              setState(() {
-                //for liveSearch//
-                selectedTerm = query;
-                widget.onSubmitted(query);
+            // onQueryChanged: (query) async {
+            //   setState(() {
+            //     //for liveSearch//
+            //     selectedTerm = query;
+            //     widget.onSubmitted(query);
 
-                filteredSearchHistory = filterSearchTerms(filter: query);
-              });
-              await ApiYouTube()
-                  .searchSuggestions(searchQuery: query)
-                  .then((value) {
-                searchSuggestions.value = value;
-              });
-            },
+            //     filteredSearchHistory = filterSearchTerms(filter: query);
+            //   });
+            //   await ApiYouTube()
+            //       .searchSuggestions(searchQuery: query)
+            //       .then((value) {
+            //     searchSuggestions.value = value;
+            //   });
+            // },
             onSubmitted: (query) async {
               // selectedTerm = query;
               // widget.onSubmitted(query);
@@ -192,145 +192,145 @@ class _SearchFunctionState extends State<SearchFunction>
                   color: Colors.white,
                   elevation: 4,
                   child: Builder(builder: (context) {
-                    if (searchSuggestions.value.isNotEmpty) {
-                      return
+                    // if (searchSuggestions.value.isNotEmpty) {
+                    //   return
 
-                          //   FutureBuilder(
-                          //   future: ApiYouTube()
-                          //       .searchSuggestions(searchQuery: selectedTerm)
-                          //       ,
-                          //   builder: (context, AsyncSnapshot<List> snapshot) {
-                          //     if (snapshot.connectionState == ConnectionState.done) {
-                          //       print('lol');
-                          //       // If we got an error
-                          //       if (snapshot.hasError) {
-                          //         return Center(
-                          //           child: Text(
-                          //             '${snapshot.error} occured',
-                          //             style: TextStyle(fontSize: 18),
-                          //           ),
-                          //         );
-                          //
-                          //         // if we got our data
-                          //       } else if (snapshot.hasData) {
-                          //         // Extracting data from snapshot object
-                          //        // final data = snapshot.data as String;
-                          //         return Column(
-                          //           children:  snapshot.data!.map((e) => InkWell(
-                          //             onTap: () async {
-                          //               setState(() {
-                          //                 widget.controller.query = e;
-                          //
-                          //                 putSearchTermFirst(e);
-                          //                 // selectedTerm = term;
-                          //               });
-                          //               floatController.close();
-                          //             },
-                          //             child: ListTile(
-                          //               title: Text(
-                          //                   e.toString()
-                          //               ),
-                          //
-                          //
-                          //             ),
-                          //           )
-                          //
-                          //           ).toList(),
-                          //         );
-                          //       }
-                          //     }
-                          //
-                          //     // Displaying LoadingSpinner to indicate waiting state
-                          //     return Center(
-                          //       child: CircularProgressIndicator(),
-                          //     );
-                          //   },
-                          // );
+                    //       //   FutureBuilder(
+                    //       //   future: ApiYouTube()
+                    //       //       .searchSuggestions(searchQuery: selectedTerm)
+                    //       //       ,
+                    //       //   builder: (context, AsyncSnapshot<List> snapshot) {
+                    //       //     if (snapshot.connectionState == ConnectionState.done) {
+                    //       //       print('lol');
+                    //       //       // If we got an error
+                    //       //       if (snapshot.hasError) {
+                    //       //         return Center(
+                    //       //           child: Text(
+                    //       //             '${snapshot.error} occured',
+                    //       //             style: TextStyle(fontSize: 18),
+                    //       //           ),
+                    //       //         );
+                    //       //
+                    //       //         // if we got our data
+                    //       //       } else if (snapshot.hasData) {
+                    //       //         // Extracting data from snapshot object
+                    //       //        // final data = snapshot.data as String;
+                    //       //         return Column(
+                    //       //           children:  snapshot.data!.map((e) => InkWell(
+                    //       //             onTap: () async {
+                    //       //               setState(() {
+                    //       //                 widget.controller.query = e;
+                    //       //
+                    //       //                 putSearchTermFirst(e);
+                    //       //                 // selectedTerm = term;
+                    //       //               });
+                    //       //               floatController.close();
+                    //       //             },
+                    //       //             child: ListTile(
+                    //       //               title: Text(
+                    //       //                   e.toString()
+                    //       //               ),
+                    //       //
+                    //       //
+                    //       //             ),
+                    //       //           )
+                    //       //
+                    //       //           ).toList(),
+                    //       //         );
+                    //       //       }
+                    //       //     }
+                    //       //
+                    //       //     // Displaying LoadingSpinner to indicate waiting state
+                    //       //     return Center(
+                    //       //       child: CircularProgressIndicator(),
+                    //       //     );
+                    //       //   },
+                    //       // );
 
-                          Container(
-                              //height: 50,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8)),
-                              alignment: Alignment.center,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: searchSuggestions.value
-                                    .map((e) => InkWell(
-                                          onTap: () async {
-                                            setState(() {
-                                              widget.controller.query = e;
-                                              addSearchTerm(
-                                                  floatController.query);
+                    //       Container(
+                    //           //height: 50,
+                    //           width: double.infinity,
+                    //           decoration: BoxDecoration(
+                    //               borderRadius: BorderRadius.circular(8)),
+                    //           alignment: Alignment.center,
+                    //           child: Column(
+                    //             mainAxisSize: MainAxisSize.min,
+                    //             children: searchSuggestions.value
+                    //                 .map((e) => InkWell(
+                    //                       onTap: () async {
+                    //                         setState(() {
+                    //                           widget.controller.query = e;
+                    //                           addSearchTerm(
+                    //                               floatController.query);
 
-                                              putSearchTermFirst(e);
-                                              // selectedTerm = term;
-                                            });
-                                            floatController.hide();
-                                          },
-                                          child: ListTile(
-                                            title: Text(
-                                              e.toString(),
-                                            ),
-                                          ),
-                                        ))
-                                    .toList(),
-                              ));
-                    } else if (filteredSearchHistory.isNotEmpty &&
-                        floatController.query.isEmpty) {
-                      return Container(
-                          //height: 50,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8)),
-                          alignment: Alignment.center,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: filteredSearchHistory
-                                .map(
-                                  (term) => ListTile(
-                                    title: Text(
-                                      term,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    leading: const Icon(Icons.history),
-                                    trailing: IconButton(
-                                      icon: const Icon(Icons.clear),
-                                      onPressed: () {
-                                        setState(() {
-                                          deleteSearchTerm(term);
-                                        });
-                                      },
-                                    ),
-                                    onTap: () async {
+                    //                           putSearchTermFirst(e);
+                    //                           // selectedTerm = term;
+                    //                         });
+                    //                         floatController.hide();
+                    //                       },
+                    //                       child: ListTile(
+                    //                         title: Text(
+                    //                           e.toString(),
+                    //                         ),
+                    //                       ),
+                    //                     ))
+                    //                 .toList(),
+                    //           ));
+                    // } else if (filteredSearchHistory.isNotEmpty &&
+                    //     floatController.query.isEmpty) {
+                    return Container(
+                        //height: 50,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8)),
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: filteredSearchHistory
+                              .map(
+                                (term) => ListTile(
+                                  title: Text(
+                                    term,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  leading: const Icon(Icons.history),
+                                  trailing: IconButton(
+                                    icon: const Icon(Icons.clear),
+                                    onPressed: () {
                                       setState(() {
-                                        widget.controller.query = term;
-
-                                        putSearchTermFirst(term);
-                                        // selectedTerm = term;
+                                        deleteSearchTerm(term);
                                       });
-                                      floatController.close();
                                     },
                                   ),
-                                )
-                                .toList(),
-                          ));
-                    } else if (filteredSearchHistory.isEmpty) {
-                      return ListTile(
-                        title: Text(floatController.query),
-                        leading: const Icon(Icons.search),
-                        onTap: () {
-                          setState(() {
-                            addSearchTerm(floatController.query);
-                            selectedTerm = floatController.query;
-                          });
-                          floatController.close();
-                        },
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
+                                  onTap: () async {
+                                    setState(() {
+                                      widget.controller.query = term;
+
+                                      putSearchTermFirst(term);
+                                      // selectedTerm = term;
+                                    });
+                                    floatController.close();
+                                  },
+                                ),
+                              )
+                              .toList(),
+                        ));
+                    // } else if (filteredSearchHistory.isEmpty) {
+                    //   return ListTile(
+                    //     title: Text(floatController.query),
+                    //     leading: const Icon(Icons.search),
+                    //     onTap: () {
+                    //       setState(() {
+                    //         addSearchTerm(floatController.query);
+                    //         selectedTerm = floatController.query;
+                    //       });
+                    //       floatController.close();
+                    //     },
+                    //   );
+                    // } else {
+                    //   return const SizedBox.shrink();
+                    // }
                   }),
                 ),
               );
