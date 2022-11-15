@@ -3503,7 +3503,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                         child: RangeSlider(
                           values: _currentRangeValues.value,
                           max: maxAudioDuration.inSeconds.toDouble(),
-                          divisions: ar.audioPlayer!.duration!.inSeconds,
+                          divisions: maxAudioDuration.inSeconds,
+                          min: 0,
                           labels: RangeLabels(
                             formatter(Duration(
                                 seconds:
@@ -3515,22 +3516,47 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                             // _currentRangeValues.value.end.round().toString(),
                           ),
                           onChanged: (RangeValues values) {
-                            _currentRangeValues.value = values;
-                            ar.audioPlayer!.setClip(
-                              start: Duration(
-                                  seconds: _currentRangeValues.value.start
-                                      .truncate()),
-                              end: Duration(
-                                  seconds:
-                                      _currentRangeValues.value.end.truncate()),
-                            );
+                            if (_currentRangeValues.value.start.truncate() +
+                                    20 <
+                                _currentRangeValues.value.end.truncate()) {
+                              _currentRangeValues.value = values;
+                              ar.audioPlayer!.setClip(
+                                start: Duration(
+                                    seconds: _currentRangeValues.value.start
+                                        .truncate()),
+                                end: Duration(
+                                    seconds: _currentRangeValues.value.end
+                                        .truncate()),
+                              );
 
-                            ar.audioStart =
-                                _currentRangeValues.value.start.truncate();
-                            ar.audioEnd =
-                                _currentRangeValues.value.end.truncate();
-                            dev.log(
-                                "ar start == ${ar.audioStart} | end == ${ar.audioEnd}");
+                              ar.audioStart =
+                                  _currentRangeValues.value.start.truncate();
+                              ar.audioEnd =
+                                  _currentRangeValues.value.end.truncate();
+                              dev.log(
+                                  "ar start == ${ar.audioStart} | end == ${ar.audioEnd}");
+                            } else {
+                              _currentRangeValues.value = RangeValues(
+                                  _currentRangeValues.value.start,
+                                  _currentRangeValues.value.start + 30);
+                              ar.audioPlayer!.setClip(
+                                start: Duration(
+                                    seconds: _currentRangeValues.value.start
+                                        .truncate()),
+                                end: Duration(
+                                    seconds: _currentRangeValues.value.start
+                                            .truncate() +
+                                        _controller
+                                            .video.value.duration.inSeconds),
+                              );
+
+                              ar.audioStart =
+                                  _currentRangeValues.value.start.truncate();
+                              ar.audioEnd =
+                                  _currentRangeValues.value.end.truncate();
+                              dev.log(
+                                  "ar start == ${ar.audioStart} | end == ${ar.audioEnd}");
+                            }
                           },
                         ),
                       ),
@@ -3542,17 +3568,19 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 height: 10,
               ),
               StatefulBuilder(builder: (context, innerState) {
-                return IconButton(
-                    onPressed: () {
-                      innerState(() {
-                        ar.audioPlayer!.playing
-                            ? ar.audioPlayer!.pause()
-                            : ar.audioPlayer!.play();
-                      });
-                    },
-                    icon: Icon(ar.audioPlayer!.playing
-                        ? Icons.pause
-                        : Icons.play_arrow));
+                return Center(
+                  child: IconButton(
+                      onPressed: () {
+                        innerState(() {
+                          ar.audioPlayer!.playing
+                              ? ar.audioPlayer!.pause()
+                              : ar.audioPlayer!.play();
+                        });
+                      },
+                      icon: Icon(ar.audioPlayer!.playing
+                          ? Icons.pause
+                          : Icons.play_arrow)),
+                );
               })
             ],
           ),
