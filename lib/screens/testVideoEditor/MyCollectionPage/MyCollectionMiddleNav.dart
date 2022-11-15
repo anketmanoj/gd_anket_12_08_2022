@@ -39,6 +39,9 @@ class MyCollectionMiddleNav extends StatelessWidget {
     final String folderName = audioFile.split(myAr.id).toList()[0];
     final String fileName = "${myAr.id}imgSeq";
 
+    myAr.imgSeq =
+        myAr.imgSeq.map((e) => e.replaceAll("https:", "http:")).toList();
+
     Get.dialog(
       SimpleDialog(
         children: [

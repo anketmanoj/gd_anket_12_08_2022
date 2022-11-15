@@ -110,6 +110,7 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
   @override
   void initState() {
     log("init Ar");
+    log("myAr == ${widget.MyAR.imgSeq[4]}");
     screen = Size(400, 500);
     list.add(ARList(
       height: 400,
@@ -147,32 +148,32 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
     screenListener.watch();
     super.initState();
 
-    // if (widget.arViewerScreen) {
-    //   controller = CameraController(
-    //     cameras![0],
-    //     ResolutionPreset.low,
-    //     imageFormatGroup: ImageFormatGroup.yuv420,
-    //   );
-    //   controller!.initialize().then((_) {
-    //     if (!mounted) {
-    //       return;
-    //     }
-    //     controller!.startImageStream(
-    //       (CameraImage image) {},
-    //     );
+    if (widget.arViewerScreen) {
+      controller = CameraController(
+        cameras![0],
+        ResolutionPreset.low,
+        imageFormatGroup: ImageFormatGroup.yuv420,
+      );
+      controller!.initialize().then((_) {
+        if (!mounted) {
+          return;
+        }
+        controller!.startImageStream(
+          (CameraImage image) {},
+        );
 
-    //     setState(() {
-    //       showCamera = true;
-    //     });
-    //   });
-    // }
+        setState(() {
+          showCamera = true;
+        });
+      });
+    }
   }
 
   @override
-  void dispose() async {
-    await _player!.dispose();
+  void dispose() {
+    _player!.dispose();
     screenListener.dispose();
-    if (widget.arViewerScreen) await controller!.dispose();
+    if (widget.arViewerScreen) controller!.dispose();
     // imageSequenceAnimator!.stop();
     // imageSequenceAnimator!.dispose();
     log("disposed");
@@ -372,21 +373,19 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
           );
         },
       ),
-      ViewScreenModel(
-        image: "assets/images/parallaxIcon.png",
-        iconData: Icons.abc,
-        function: () async {
-          setState(() {
-            allowParallax = !allowParallax;
-          });
+      // ViewScreenModel(
+      //   image: "assets/images/parallaxIcon.png",
+      //   iconData: Icons.abc,
+      //   function: () async {
+      //     allowParallax = !allowParallax;
 
-          allowParallax == true
-              ? Get.snackbar("Parallax Activated",
-                  "Parallax has been activated, the AR will tilt with your phone now!")
-              : Get.snackbar(
-                  "Parallax Deactivated", "Parallax has been deactivated");
-        },
-      ),
+      //     allowParallax == true
+      //         ? Get.snackbar("Parallax Activated",
+      //             "Parallax has been activated, the AR will tilt with your phone now!")
+      //         : Get.snackbar(
+      //             "Parallax Deactivated", "Parallax has been deactivated");
+      //   },
+      // ),
     ];
 
     return AnketGiphyGetWrapper(
@@ -496,219 +495,203 @@ class _ImageSeqAniScreenState extends State<ImageSeqAniScreen> {
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                        XL(
-                          sharesPointer: false,
-                          sharesSensors: allowParallax,
-                          layers: list.map((value) {
+                        Stack(
+                          children: list.map((value) {
                             if (value.gifFilePath == null) {
-                              return XLayer(
-                                xRotation: 1,
-                                yRotation: 1,
-                                xOffset: value.xOffset!,
-                                yOffset: value.yOffset!,
-                                child: GestureDetector(
-                                  onScaleStart: (details) {
-                                    if (value == null) return;
-                                    _initPos = details.focalPoint;
-                                    _currentPos = Offset(
-                                        value.xPosition!, value.yPosition!);
-                                    _currentScale = value.scale;
-                                    _currentRotation = value.rotation;
-                                  },
-                                  onScaleUpdate: (details) {
-                                    if (value == null) return;
-                                    final delta =
-                                        details.focalPoint - _initPos!;
-                                    final left = (delta.dx / screen!.width) +
-                                        _currentPos!.dx;
-                                    final top = (delta.dy / screen!.height) +
-                                        _currentPos!.dy;
+                              return GestureDetector(
+                                onScaleStart: (details) {
+                                  if (value == null) return;
+                                  _initPos = details.focalPoint;
+                                  _currentPos = Offset(
+                                      value.xPosition!, value.yPosition!);
+                                  _currentScale = value.scale;
+                                  _currentRotation = value.rotation;
+                                },
+                                onScaleUpdate: (details) {
+                                  if (value == null) return;
+                                  final delta = details.focalPoint - _initPos!;
+                                  final left = (delta.dx / screen!.width) +
+                                      _currentPos!.dx;
+                                  final top = (delta.dy / screen!.height) +
+                                      _currentPos!.dy;
 
-                                    setState(() {
-                                      value.xPosition = Offset(left, top).dx;
-                                      value.yPosition = Offset(left, top).dy;
-                                      value.rotation =
-                                          details.rotation + _currentRotation!;
-                                      value.scale =
-                                          details.scale * _currentScale!;
-                                    });
+                                  setState(() {
+                                    value.xPosition = Offset(left, top).dx;
+                                    value.yPosition = Offset(left, top).dy;
+                                    value.rotation =
+                                        details.rotation + _currentRotation!;
+                                    value.scale =
+                                        details.scale * _currentScale!;
+                                  });
 
-                                    log("current rotation == ${_currentRotation! * math.pi / 180}");
-                                  },
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        right:
-                                            -value.xPosition! * screen!.width,
-                                        bottom:
-                                            -value.yPosition! * screen!.height,
-                                        child: Transform.scale(
-                                          scale: value.scale,
-                                          child: Transform.rotate(
-                                            angle: value.rotation!,
-                                            child: Container(
-                                              height: value.height,
-                                              width: value.width,
-                                              child: FittedBox(
-                                                fit: BoxFit.cover,
-                                                child: Listener(
-                                                  onPointerDown: (details) {
-                                                    // _initPos = details.position;
-                                                    // _currentPos = Offset(
-                                                    //     value.xPosition!, value.yPosition!);
-                                                    // _currentScale = value.scale;
-                                                    // _currentRotation = value.rotation;
-                                                    // print(" _initPos = ${_initPos!.dx}");
-                                                  },
-                                                  onPointerUp: (details) {
-                                                    _initPos = details.position;
-                                                    _currentPos = Offset(
-                                                        value.xPosition!,
-                                                        value.yPosition!);
-                                                    _currentScale = value.scale;
-                                                    _currentRotation =
-                                                        value.rotation;
-                                                    // log("rotation == ${value.rotation! * 3.14 / 180}");
-                                                  },
-                                                  child: InkWell(
-                                                    child: Container(
-                                                        height: value.height,
-                                                        width: value.width,
-                                                        child:
-                                                            ImageSequenceAnimator(
-                                                          "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/imgSeqServer/imgSeq",
-                                                          "imgSeq",
-                                                          1,
-                                                          0,
-                                                          "png",
-                                                          30,
-                                                          key: Key(
-                                                              "online+${widget.MyAR.id}"),
-                                                          isAutoPlay: true,
-                                                          isOnline: true,
-                                                          fps: widget.videoFPS,
-                                                          waitUntilCacheIsComplete:
-                                                              true,
-                                                          fullPaths: widget
-                                                              .MyAR.imgSeq,
-                                                          // cacheProgressIndicatorBuilder:
-                                                          //     (context,
-                                                          //         progress) {
-                                                          //   return CircularProgressIndicator(
-                                                          //     value: progress !=
-                                                          //             null
-                                                          //         ? progress
-                                                          //         : 1,
-                                                          //     backgroundColor:
-                                                          //         color1,
-                                                          //   );
-                                                          // },
-                                                          onReadyToPlay:
-                                                              onOnlineReadyToPlay,
-                                                          onPlaying:
-                                                              onOnlinePlaying,
-                                                          onStartPlaying: (s) {
-                                                            if (widget.MyAR
-                                                                    .audioFlag ==
-                                                                true) {
-                                                              _player!.play();
-                                                            }
-                                                          },
-                                                        )
-                                                        // color: constantColors.bioBg,
-                                                        ),
-                                                  ),
-                                                  // child: Image.network(value.name),
+                                  log("current rotation == ${_currentRotation! * math.pi / 180}");
+                                },
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                      right: -value.xPosition! * screen!.width,
+                                      bottom:
+                                          -value.yPosition! * screen!.height,
+                                      child: Transform.scale(
+                                        scale: value.scale,
+                                        child: Transform.rotate(
+                                          angle: value.rotation!,
+                                          child: Container(
+                                            height: value.height,
+                                            width: value.width,
+                                            child: FittedBox(
+                                              fit: BoxFit.cover,
+                                              child: Listener(
+                                                onPointerDown: (details) {
+                                                  // _initPos = details.position;
+                                                  // _currentPos = Offset(
+                                                  //     value.xPosition!, value.yPosition!);
+                                                  // _currentScale = value.scale;
+                                                  // _currentRotation = value.rotation;
+                                                  // print(" _initPos = ${_initPos!.dx}");
+                                                },
+                                                onPointerUp: (details) {
+                                                  _initPos = details.position;
+                                                  _currentPos = Offset(
+                                                      value.xPosition!,
+                                                      value.yPosition!);
+                                                  _currentScale = value.scale;
+                                                  _currentRotation =
+                                                      value.rotation;
+                                                  // log("rotation == ${value.rotation! * 3.14 / 180}");
+                                                },
+                                                child: InkWell(
+                                                  child: Container(
+                                                      height: value.height,
+                                                      width: value.width,
+                                                      child:
+                                                          ImageSequenceAnimator(
+                                                        "https://anketvideobucket.s3.amazonaws.com/LZF1TxU9TabQ3hhbUXZH6uC22dH3/imgSeqServer/imgSeq",
+                                                        "imgSeq",
+                                                        1,
+                                                        0,
+                                                        "png",
+                                                        30,
+                                                        key: Key(
+                                                            "online+${widget.MyAR.id}"),
+                                                        isAutoPlay: true,
+                                                        isOnline: true,
+                                                        fps: widget.videoFPS,
+                                                        waitUntilCacheIsComplete:
+                                                            true,
+                                                        fullPaths:
+                                                            widget.MyAR.imgSeq,
+                                                        // cacheProgressIndicatorBuilder:
+                                                        //     (context,
+                                                        //         progress) {
+                                                        //   return CircularProgressIndicator(
+                                                        //     value: progress !=
+                                                        //             null
+                                                        //         ? progress
+                                                        //         : 1,
+                                                        //     backgroundColor:
+                                                        //         color1,
+                                                        //   );
+                                                        // },
+
+                                                        onReadyToPlay:
+                                                            onOnlineReadyToPlay,
+                                                        onPlaying:
+                                                            onOnlinePlaying,
+                                                        onStartPlaying: (s) {
+                                                          if (widget.MyAR
+                                                                  .audioFlag ==
+                                                              true) {
+                                                            _player!.play();
+                                                          }
+                                                        },
+                                                      )
+                                                      // color: constantColors.bioBg,
+                                                      ),
                                                 ),
+                                                // child: Image.network(value.name),
                                               ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               );
                             } else {
-                              return XLayer(
-                                xRotation: 1,
-                                yRotation: 1,
-                                xOffset: value.xOffset!,
-                                yOffset: value.yOffset!,
-                                child: GestureDetector(
-                                  onScaleStart: (details) {
-                                    if (value == null) return;
-                                    _initPos = details.focalPoint;
-                                    _currentPos = Offset(
-                                        value.xPosition!, value.yPosition!);
-                                    _currentScale = value.scale;
-                                    _currentRotation = value.rotation;
-                                  },
-                                  onScaleUpdate: (details) {
-                                    if (value == null) return;
-                                    final delta =
-                                        details.focalPoint - _initPos!;
-                                    final left = (delta.dx / screen!.width) +
-                                        _currentPos!.dx;
-                                    final top = (delta.dy / screen!.height) +
-                                        _currentPos!.dy;
+                              return GestureDetector(
+                                onScaleStart: (details) {
+                                  if (value == null) return;
+                                  _initPos = details.focalPoint;
+                                  _currentPos = Offset(
+                                      value.xPosition!, value.yPosition!);
+                                  _currentScale = value.scale;
+                                  _currentRotation = value.rotation;
+                                },
+                                onScaleUpdate: (details) {
+                                  if (value == null) return;
+                                  final delta = details.focalPoint - _initPos!;
+                                  final left = (delta.dx / screen!.width) +
+                                      _currentPos!.dx;
+                                  final top = (delta.dy / screen!.height) +
+                                      _currentPos!.dy;
 
-                                    setState(() {
-                                      value.xPosition = Offset(left, top).dx;
-                                      value.yPosition = Offset(left, top).dy;
-                                      value.rotation =
-                                          details.rotation + _currentRotation!;
-                                      value.scale =
-                                          details.scale * _currentScale!;
-                                    });
-                                  },
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        left: value.xPosition! * screen!.width,
-                                        top: value.yPosition! * screen!.height,
-                                        child: Transform.scale(
-                                          scale: value.scale,
-                                          child: Transform.rotate(
-                                            angle: value.rotation!,
-                                            child: Container(
-                                              height: value.height,
-                                              width: value.width,
-                                              child: FittedBox(
-                                                fit: BoxFit.fill,
-                                                child: Listener(
-                                                  onPointerDown: (details) {
-                                                    // if (_inAction) return;
-                                                    // _inAction = true;
-                                                    // _activeItem = val;
-                                                    _initPos = details.position;
-                                                    _currentPos = Offset(
-                                                        value.xPosition!,
-                                                        value.yPosition!);
-                                                    _currentScale = value.scale;
-                                                    _currentRotation =
-                                                        value.rotation;
-                                                  },
-                                                  onPointerUp: (details) {
-                                                    // _inAction = false;
-                                                  },
-                                                  child: Container(
-                                                    height: value.height,
-                                                    width: value.width,
-                                                    child: Image.network(
-                                                      value.gifFilePath!,
-                                                      fit: BoxFit.contain,
-                                                    ),
+                                  setState(() {
+                                    value.xPosition = Offset(left, top).dx;
+                                    value.yPosition = Offset(left, top).dy;
+                                    value.rotation =
+                                        details.rotation + _currentRotation!;
+                                    value.scale =
+                                        details.scale * _currentScale!;
+                                  });
+                                },
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                      left: value.xPosition! * screen!.width,
+                                      top: value.yPosition! * screen!.height,
+                                      child: Transform.scale(
+                                        scale: value.scale,
+                                        child: Transform.rotate(
+                                          angle: value.rotation!,
+                                          child: Container(
+                                            height: value.height,
+                                            width: value.width,
+                                            child: FittedBox(
+                                              fit: BoxFit.fill,
+                                              child: Listener(
+                                                onPointerDown: (details) {
+                                                  // if (_inAction) return;
+                                                  // _inAction = true;
+                                                  // _activeItem = val;
+                                                  _initPos = details.position;
+                                                  _currentPos = Offset(
+                                                      value.xPosition!,
+                                                      value.yPosition!);
+                                                  _currentScale = value.scale;
+                                                  _currentRotation =
+                                                      value.rotation;
+                                                },
+                                                onPointerUp: (details) {
+                                                  // _inAction = false;
+                                                },
+                                                child: Container(
+                                                  height: value.height,
+                                                  width: value.width,
+                                                  child: Image.network(
+                                                    value.gifFilePath!,
+                                                    fit: BoxFit.contain,
                                                   ),
-                                                  // child: Image.network(value.name),
                                                 ),
+                                                // child: Image.network(value.name),
                                               ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               );
                             }

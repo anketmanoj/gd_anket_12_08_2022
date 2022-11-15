@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -13,6 +14,7 @@ import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:provider/provider.dart';
@@ -23,23 +25,63 @@ class ArViewcollectionScreen extends StatelessWidget {
   final ConstantColors constantColors = ConstantColors();
 
   void runARCommand(
-      {required MyArCollection myAr, required BuildContext context}) {
+      {required MyArCollection myAr, required BuildContext context}) async {
     final String audioFile = myAr.audioFile;
 
     // ignore: cascade_invocations
     final String folderName = audioFile.split(myAr.id).toList()[0];
     final String fileName = "${myAr.id}imgSeq";
 
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ImageSeqAniScreen(
-          arViewerScreen: true,
-          folderName: folderName,
-          fileName: fileName,
-          MyAR: myAr,
-        ),
+    myAr.imgSeq =
+        myAr.imgSeq.map((e) => e.replaceAll("https:", "http:")).toList();
+
+    Get.dialog(
+      SimpleDialog(
+        children: [
+          Center(
+            child: CircularProgressIndicator(),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
+
+    final value = await FFprobeKit.execute(
+        "-show_entries stream=r_frame_rate -v quiet -of json ${myAr.main}");
+
+    log("value == ${value}");
+
+    final String? mapOutput = await value.getOutput();
+
+    final Map<String, dynamic> json = jsonDecode(mapOutput!);
+
+    List<String> fpsString = json['streams'][0]['r_frame_rate'].split("/");
+    double fpsCount = double.parse(fpsString[0]) / double.parse(fpsString[1]);
+
+    log("durationString final : $fpsCount");
+
+    Get.back();
+
+    Get.to(
+      () => ImageSeqAniScreen(
+        folderName: folderName,
+        fileName: fileName,
+        MyAR: myAr,
+        videoFPS: fpsCount,
+        arViewerScreen: true,
       ),
     );
+
+    // Navigator.of(context).push(
+    //   MaterialPageRoute(
+    //     builder: (context) => ImageSeqAniScreen(
+    //       arViewerScreen: true,
+    //       folderName: folderName,
+    //       fileName: fileName,
+    //       MyAR: myAr,
+    //     ),
+    //   ),
+    // );
   }
 
   ValueNotifier<bool> deleteItems = ValueNotifier<bool>(false);
