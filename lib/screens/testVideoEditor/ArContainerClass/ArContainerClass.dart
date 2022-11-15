@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/video_editor.dart';
 import 'package:diamon_rose_app/services/img_seq_animator.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
@@ -49,6 +50,8 @@ class ARList {
   String? youtubeArtistName;
   String? youtubeTitle;
   String? youtubeAlbumCover;
+  int? audioStart;
+  int? audioEnd;
 
   ARList({
     this.arIndex,
@@ -89,5 +92,7 @@ class ARList {
     this.youtubeTitle,
     this.youtubeUrl,
     this.youtubeAlbumCover,
+    this.audioStart,
+    this.audioEnd,
   });
 }

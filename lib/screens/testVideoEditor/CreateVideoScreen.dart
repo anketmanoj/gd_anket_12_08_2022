@@ -25,6 +25,7 @@ import 'package:diamon_rose_app/screens/testVideoEditor/testingVideoOutput.dart'
 import 'package:diamon_rose_app/screens/youtubeSearchApi/loading_widget.dart';
 import 'package:diamon_rose_app/screens/youtubeSearchApi/search.dart';
 import 'package:diamon_rose_app/screens/youtubeSearchApi/searchResults/searchresultsservice.dart';
+import 'package:diamon_rose_app/screens/youtubeTest/youtubeFileModel.dart';
 import 'package:diamon_rose_app/screens/youtubeTest/youtube_utils.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
@@ -890,9 +891,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
             final AudioPlayer? _player = AudioPlayer();
 
-            final List<String> _fullPathsOnline = [
-              "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
-            ];
+            final List<String> _fullPathsOnline = [songAlbumCover];
 
             final File musicFile = await saveMusicFiletoDevice(
                 fileBytes: audioFile.readAsBytesSync(),
@@ -902,8 +901,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             dev.log("ArCut out ois here  = ${arCutOutFile.path}");
 
             await _player!.setFilePath(audioFile.path);
-            await _player.setClip(
-                start: Duration(seconds: 0), end: _controller.videoDuration);
+
             await _player.pause();
 
             final containerKey = GlobalKey();
@@ -911,34 +909,35 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             final String idValue = nanoid();
 
             list.value.add(ARList(
-              arId: idValue,
-              arIndex: arVal,
-              height: 0,
-              rotation: 0,
-              scale: 1,
-              width: 0,
-              xPosition: 0,
-              yPosition: 0,
-              pathsForVideoFrames: _fullPathsOnline,
-              startingPositon: 0,
-              endingPosition: 0,
-              totalDuration: double.parse(durationString),
-              showAr: ValueNotifier(false),
-              audioPlayer: _player,
-              layerType: LayerType.Music,
-              arKey: containerKey,
-              fromFirebase: true,
-              audioFlag: true,
-              finishedCaching: ValueNotifier(true),
-              ownerId: context.read<Authentication>().getUserId,
-              ownerName: context.read<FirebaseOperations>().initUserName,
-              selectedMaterial: ValueNotifier<bool>(true),
-              musicFile: musicFile,
-              youtubeArtistName: songArtist,
-              youtubeTitle: songTitle,
-              youtubeUrl: songUrl,
-              youtubeAlbumCover: songAlbumCover,
-            ));
+                arId: idValue,
+                arIndex: arVal,
+                height: 0,
+                rotation: 0,
+                scale: 1,
+                width: 0,
+                xPosition: 0,
+                yPosition: 0,
+                pathsForVideoFrames: _fullPathsOnline,
+                startingPositon: 0,
+                endingPosition: 0,
+                totalDuration: double.parse(durationString),
+                showAr: ValueNotifier(false),
+                audioPlayer: _player,
+                layerType: LayerType.Music,
+                arKey: containerKey,
+                fromFirebase: true,
+                audioFlag: true,
+                finishedCaching: ValueNotifier(true),
+                ownerId: context.read<Authentication>().getUserId,
+                ownerName: context.read<FirebaseOperations>().initUserName,
+                selectedMaterial: ValueNotifier<bool>(true),
+                musicFile: musicFile,
+                youtubeArtistName: songArtist,
+                youtubeTitle: songTitle,
+                youtubeUrl: songUrl,
+                youtubeAlbumCover: songAlbumCover,
+                audioStart: 0,
+                audioEnd: _player.duration!.inSeconds));
 
             _controllerSeekTo(0);
             if (!mounted) return;
@@ -1747,7 +1746,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                     selected = arVal;
                                                   });
                                                 },
-                                                onTap: () {
+                                                onTap: () async {
                                                   if (arVal.audioFlag == true &&
                                                       arVal.layerType !=
                                                           LayerType.Music) {
@@ -1755,7 +1754,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                         context: context,
                                                         ar: arVal);
                                                   } else {
-                                                    showMusicAdjustBottomSheet(
+                                                    await showMusicAdjustBottomSheet(
                                                         context: context,
                                                         ar: arVal);
                                                   }
@@ -3073,7 +3072,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                             LayerType.Music &&
                                         arElement.audioFlag == true) {
                                       ffmpegVolumeList.add(
-                                          "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(10)}s:all=1[a${arElement.arIndex}];");
+                                          "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},atrim=start=${arElement.audioStart}:end=${arElement.audioEnd},asetpts=PTS-STARTPTS[a${arElement.arIndex}];");
                                       ffmpegSoundInputs
                                           .add("[a${arElement.arIndex}]");
                                     }
@@ -3401,8 +3400,19 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
   }
 
   Future<dynamic> showMusicAdjustBottomSheet(
-      {required BuildContext context, required ARList ar}) {
+      {required BuildContext context, required ARList ar}) async {
     final point = ValueNotifier<double>(ar.audioPlayer!.volume);
+    await ar.audioPlayer!.setClip(start: null, end: null);
+    final Duration maxAudioDuration = ar.audioPlayer!.duration!;
+
+    final ValueNotifier<RangeValues> _currentRangeValues =
+        ValueNotifier<RangeValues>(
+            RangeValues(0, maxAudioDuration.inSeconds.toDouble()));
+
+    final ValueNotifier<bool> audioPlaying =
+        ValueNotifier<bool>(ar.audioPlayer!.playing);
+
+    dev.log("audio duration == ${ar.audioPlayer!.duration!.inSeconds}");
     return showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -3463,15 +3473,98 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               SizedBox(
                 height: 10,
               ),
-              Row(
-                children: [],
+              ValueListenableBuilder<RangeValues>(
+                valueListenable: _currentRangeValues,
+                builder: (context, rangeVal, _) {
+                  return Stack(
+                    children: [
+                      Container(
+                        height: 80,
+                        width: 100.w,
+                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        color: constantColors.black,
+                        child: ListView.separated(
+                          controller: _scrollController,
+                          itemCount: 40,
+                          separatorBuilder: (_, __) => const Divider(
+                            indent: 1,
+                          ),
+                          itemBuilder: (_, index) => Container(
+                            child: Image.network(ar.youtubeAlbumCover!),
+                            height: 50,
+                          ),
+                          scrollDirection: Axis.horizontal,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        child: RangeSlider(
+                          values: _currentRangeValues.value,
+                          max: maxAudioDuration.inSeconds.toDouble(),
+                          divisions: ar.audioPlayer!.duration!.inSeconds,
+                          labels: RangeLabels(
+                            formatter(Duration(
+                                seconds:
+                                    _currentRangeValues.value.start.round())),
+                            formatter(Duration(
+                                seconds:
+                                    _currentRangeValues.value.end.round())),
+                            // _currentRangeValues.value.start.round().toString(),
+                            // _currentRangeValues.value.end.round().toString(),
+                          ),
+                          onChanged: (RangeValues values) {
+                            _currentRangeValues.value = values;
+                            ar.audioPlayer!.setClip(
+                              start: Duration(
+                                  seconds: _currentRangeValues.value.start
+                                      .truncate()),
+                              end: Duration(
+                                  seconds:
+                                      _currentRangeValues.value.end.truncate()),
+                            );
+
+                            ar.audioStart =
+                                _currentRangeValues.value.start.truncate();
+                            ar.audioEnd =
+                                _currentRangeValues.value.end.truncate();
+                            dev.log(
+                                "ar start == ${ar.audioStart} | end == ${ar.audioEnd}");
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
+              SizedBox(
+                height: 10,
+              ),
+              StatefulBuilder(builder: (context, innerState) {
+                return IconButton(
+                    onPressed: () {
+                      innerState(() {
+                        ar.audioPlayer!.playing
+                            ? ar.audioPlayer!.pause()
+                            : ar.audioPlayer!.play();
+                      });
+                    },
+                    icon: Icon(ar.audioPlayer!.playing
+                        ? Icons.pause
+                        : Icons.play_arrow));
+              })
             ],
           ),
         );
       },
     );
   }
+
+  String formatter(Duration duration) => [
+        duration.inMinutes.remainder(60).toString().padLeft(2, '0'),
+        duration.inSeconds.remainder(60).toString().padLeft(2, '0')
+      ].join(":");
 
   Future<void> combineBgAr({
     required File bgVideoFile,
