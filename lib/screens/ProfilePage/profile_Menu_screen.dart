@@ -15,6 +15,7 @@ import 'package:diamon_rose_app/screens/Admin/adminMassNotification.dart';
 import 'package:diamon_rose_app/screens/Admin/adminUserPromoCodes.dart';
 import 'package:diamon_rose_app/screens/Admin/adminUserRegistration.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminArOptions.dart';
+import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/adminSendUserNotification.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/selectUser.dart';
 import 'package:diamon_rose_app/screens/Admin/set_user_data_admin.dart';
 import 'package:diamon_rose_app/screens/Admin/upload_video_screen.dart';
@@ -1120,6 +1121,31 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                           },
                           title: Text(
                             LocaleKeys.adminupload.tr(),
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.yellow,
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: adminDrop,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: AdminSendUserNotification(),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          title: Text(
+                            "Admin Notify User",
                             style: TextStyle(
                               color: Colors.yellow,
                               fontSize: 16,

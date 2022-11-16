@@ -3674,6 +3674,22 @@ class FirebaseOperations with ChangeNotifier {
     );
   }
 
+  Future<void> adminSendNotificationToUser(
+      {required String title,
+      required String body,
+      required UserModel adminSelectedUser}) async {
+    await _fcmNotificationService.sendNotificationToUser(
+        to: adminSelectedUser.token, //To change once set up
+        title: title,
+        body: body);
+
+    await sendAdminNotification(
+      otherUserId: adminSelectedUser.useruid,
+      title: title,
+      body: body,
+    );
+  }
+
   Future sendAdminNotification({
     required String otherUserId,
     required String title,
