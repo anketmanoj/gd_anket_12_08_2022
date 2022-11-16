@@ -680,9 +680,9 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
 
                                     default:
                                       return ListTile(
-                                        trailing: selectMaterials[index]
-                                                    .layerType !=
-                                                LayerType.Music
+                                        trailing: !selectMaterials[index]
+                                                .youtubeUrl!
+                                                .contains("www.youtube.com")
                                             ? Switch(
                                                 activeColor:
                                                     constantColors.navButton,
@@ -1048,6 +1048,10 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                               );
 
                               log("now");
+
+                              selectMaterials.forEach((element) {
+                                log("Music added${element.layerType}");
+                              });
 
                               String? coverThumbnail = await AwsAnketS3.uploadFile(
                                   accessKey: "AKIATF76MVYR34JAVB7H",

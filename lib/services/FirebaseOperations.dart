@@ -1027,36 +1027,66 @@ class FirebaseOperations with ChangeNotifier {
 
           notifyListeners();
         } else if (arVal.layerType == LayerType.Music) {
-          // final String idValForEffect = await uploadEffects(
-          //   userUid: userUid,
-          //   gifFile: File(arVal.gifFilePath!),
-          // );
-
           String idVal = nanoid();
+          if (arVal.youtubeUrl!.contains("www.youtube.com")) {
+            await FirebaseFirestore.instance
+                .collection("users")
+                .doc(userUid)
+                .collection("MyCollection")
+                .doc(idVal)
+                .set({
+              'id': idVal,
+              'gif': arVal.youtubeAlbumCover,
+              'layerType': 'Music',
+              'timestamp': Timestamp.now(),
+              'valueType': "myItems",
+              'songArtist': arVal.youtubeArtistName,
+              'songUrl': arVal.youtubeUrl,
+              'songName': arVal.youtubeTitle,
+              "ownerId": userUid,
+              "ownerName": arVal.youtubeArtistName,
+              "hideItem": false,
+            });
 
-          await FirebaseFirestore.instance
-              .collection("users")
-              .doc(userUid)
-              .collection("MyCollection")
-              .doc(idVal)
-              .set({
-            'id': idVal,
-            'gif': arVal.youtubeAlbumCover,
-            'layerType': 'Music',
-            'timestamp': Timestamp.now(),
-            'valueType': "myItems",
-            'songArtist': arVal.youtubeArtistName,
-            'songUrl': arVal.youtubeUrl,
-            'songName': arVal.youtubeTitle,
-            "ownerId": userUid,
-            "ownerName": arVal.youtubeArtistName,
-            "hideItem": false,
-          });
+            log("id for music == $idVal");
+            arIdsVal.add(idVal);
 
-          log("id for music == $idVal");
-          arIdsVal.add(idVal);
+            notifyListeners();
+          } else {
+            final String? musicUrl = await AwsAnketS3.uploadFile(
+                accessKey: "AKIATF76MVYR34JAVB7H",
+                secretKey: "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",
+                bucket: "anketvideobucket",
+                file: File(arVal.musicFile!.path),
+                filename: "${Timestamp.now().millisecondsSinceEpoch}Music.mp3",
+                region: "us-east-1",
+                destDir: "${userUid}");
 
-          notifyListeners();
+            log("music url == $musicUrl");
+            await FirebaseFirestore.instance
+                .collection("users")
+                .doc(userUid)
+                .collection("MyCollection")
+                .doc(idVal)
+                .set({
+              'id': idVal,
+              'gif': arVal.youtubeAlbumCover,
+              'layerType': 'Music',
+              'timestamp': Timestamp.now(),
+              'valueType': "myItems",
+              'songArtist': arVal.youtubeArtistName,
+              'songUrl': musicUrl,
+              'songName': arVal.youtubeTitle,
+              "ownerId": userUid,
+              "ownerName": arVal.youtubeArtistName,
+              "hideItem": false,
+            });
+
+            log("id for music == $idVal");
+            arIdsVal.add(idVal);
+
+            notifyListeners();
+          }
         } else {
           arIdsVal.add(arVal.arId!);
           notifyListeners();

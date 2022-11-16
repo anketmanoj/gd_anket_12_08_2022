@@ -170,6 +170,104 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
 
   YoutubeUtil youtubeHandler = YoutubeUtil();
 
+  _selectAudioOption(BuildContext context) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            height: 20.h,
+            width: 100.w,
+            decoration: BoxDecoration(
+              color: constantColors.whiteColor,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: constantColors.greyColor,
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    MaterialButton(
+                      color: constantColors.navButton,
+                      child: Text(
+                        "Original Music",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      onPressed: () async {
+                        // Get.back();
+                        // ! For picking music file from users device
+
+                        FilePickerResult? file =
+                            await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: ['mp3'],
+                          allowMultiple: false,
+                          allowCompression: true,
+                        );
+
+                        if (file != null) {
+                          if (list.value.isNotEmpty) {
+                            list.value.last.layerType == LayerType.AR
+                                ? indexCounter.value = indexCounter.value + 2
+                                : indexCounter.value = indexCounter.value + 1;
+                          } else {
+                            indexCounter.value = 1;
+                          }
+
+                          if (indexCounter.value <= 0) {
+                            indexCounter.value = 1;
+                          }
+
+                          await runFFmpegForAudioOnlyFiles(
+                            arVal: indexCounter.value,
+                            audioFile: File(file.files.single.path!),
+                            songTitle: "Original Track",
+                            songArtist:
+                                context.read<FirebaseOperations>().initUserName,
+                            songUrl: "",
+                            songAlbumCover: context
+                                .read<FirebaseOperations>()
+                                .initUserImage,
+                          );
+                        }
+                      },
+                    ),
+                    MaterialButton(
+                      color: constantColors.navButton,
+                      child: Text(
+                        "Search Online",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      onPressed: () async {
+                        Get.back();
+                        _showYoutubeBottomSheet(context);
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
   _showYoutubeBottomSheet(BuildContext context) {
     return showModalBottomSheet(
       isDismissible: true,
@@ -2208,64 +2306,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                   .pause();
                                                             });
 
-                                                            _showYoutubeBottomSheet(
+                                                            _selectAudioOption(
                                                                 context);
-
-                                                            // ! For picking music file from users device
-
-                                                            // FilePickerResult?
-                                                            //     file =
-                                                            //     await FilePicker
-                                                            //         .platform
-                                                            //         .pickFiles(
-                                                            //   type: FileType
-                                                            //       .custom,
-                                                            //   allowedExtensions: [
-                                                            //     'mp3'
-                                                            //   ],
-                                                            //   allowMultiple:
-                                                            //       false,
-                                                            //   allowCompression:
-                                                            //       true,
-                                                            // );
-
-                                                            // if (file != null) {
-                                                            //   if (list.value
-                                                            //       .isNotEmpty) {
-                                                            //     list.value.last.layerType ==
-                                                            //             LayerType
-                                                            //                 .AR
-                                                            //         ? indexCounter
-                                                            //                 .value =
-                                                            //             indexCounter.value +
-                                                            //                 2
-                                                            //         : indexCounter
-                                                            //                 .value =
-                                                            //             indexCounter.value +
-                                                            //                 1;
-                                                            //   } else {
-                                                            //     indexCounter
-                                                            //         .value = 1;
-                                                            //   }
-
-                                                            //   if (indexCounter
-                                                            //           .value <=
-                                                            //       0) {
-                                                            //     indexCounter
-                                                            //         .value = 1;
-                                                            //   }
-
-                                                            //   await runFFmpegForAudioOnlyFiles(
-                                                            //     arVal:
-                                                            //         indexCounter
-                                                            //             .value,
-                                                            //     audioFile: File(
-                                                            //         file
-                                                            //             .files
-                                                            //             .single
-                                                            //             .path!),
-                                                            //   );
-                                                            // }
                                                           } else {
                                                             await Get.dialog(
                                                               SimpleDialog(
