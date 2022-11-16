@@ -7,6 +7,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/providers/adminCreateVideoProvider.dart';
 import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/InitAdminVideoEditorScreen.dart';
+import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/adminPexelsSearchScreen.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/core/build_context.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
@@ -145,8 +146,8 @@ class SelectUserVideoEditor extends StatelessWidget {
                             padding: EdgeInsets.only(top: 50),
                             child: ElevatedButton(
                               child: Text("Create Video"),
-                              onPressed: () => {
-                                _pickVideo(context: context),
+                              onPressed: () {
+                                _adminBgVideoSelection(context);
                               },
                             ),
                           )
@@ -159,6 +160,61 @@ class SelectUserVideoEditor extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _adminBgVideoSelection(BuildContext context) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            height: 30.h,
+            color: constantColors.whiteColor,
+            width: 100.w,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      MaterialButton(
+                        color: constantColors.navButton,
+                        child: Text(
+                          "From Gallery",
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        onPressed: () {
+                          _pickVideo(context: context);
+                        },
+                      ),
+                      MaterialButton(
+                        color: constantColors.navButton,
+                        child: Text(
+                          "Search Online",
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      AdminPexelsSearchScreen()));
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   Widget _customDropDownExample(BuildContext context, UserModel? item) {
