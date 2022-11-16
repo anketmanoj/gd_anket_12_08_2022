@@ -1853,6 +1853,23 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                         context: context,
                                                         ar: arVal);
                                                   } else {
+                                                    _controllerSeekTo(1);
+                                                    setState(() {
+                                                      _controller.video.pause();
+
+                                                      for (ARList arPlaying
+                                                          in list.value) {
+                                                        if (arPlaying.showAr!
+                                                                .value ==
+                                                            true) {
+                                                          arPlaying.arState!
+                                                              .pause();
+
+                                                          arPlaying.audioPlayer!
+                                                              .pause();
+                                                        }
+                                                      }
+                                                    });
                                                     await showMusicAdjustBottomSheet(
                                                         context: context,
                                                         ar: arVal);
@@ -3478,6 +3495,9 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     dev.log("audio duration == ${ar.audioPlayer!.duration!.inSeconds}");
     return showModalBottomSheet(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
+      isScrollControlled: false,
       builder: (context) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -3616,6 +3636,12 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                           dev.log(
                               "ar start == ${ar.audioStart} | end == ${ar.audioEnd}");
 
+                          if (ar.audioPlayer!.playing)
+                            setState(() {
+                              audioPlaying.value = false;
+                              ar.audioPlayer!.pause();
+                            });
+
                           // _lowerValue = lowerValue;
                           // _upperValue = upperValue;
                           // setState(() {});
@@ -3627,20 +3653,38 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 height: 10,
               ),
               StatefulBuilder(builder: (context, innerState) {
-                return Center(
-                  child: IconButton(
-                      onPressed: () {
-                        innerState(() {
-                          ar.audioPlayer!.playing
-                              ? ar.audioPlayer!.pause()
-                              : ar.audioPlayer!.play();
-                        });
-                      },
-                      icon: Icon(ar.audioPlayer!.playing
-                          ? Icons.pause
-                          : Icons.play_arrow)),
-                );
-              })
+                return ValueListenableBuilder<bool>(
+                    valueListenable: audioPlaying,
+                    builder: (context, playingAudio, _) {
+                      return Center(
+                        child: IconButton(
+                            onPressed: () {
+                              innerState(() {
+                                if (ar.audioPlayer!.playing) {
+                                  ar.audioPlayer!.pause();
+                                  audioPlaying.value = false;
+                                } else {
+                                  audioPlaying.value = true;
+                                  ar.audioPlayer!.play();
+                                }
+                              });
+                            },
+                            icon: Icon(
+                                playingAudio ? Icons.pause : Icons.play_arrow)),
+                      );
+                    });
+              }),
+              Expanded(
+                child: Center(
+                  child: SubmitButton(
+                    function: () {
+                      ar.audioPlayer!.pause();
+                      Navigator.pop(context);
+                    },
+                    text: "Done",
+                  ),
+                ),
+              ),
             ],
           ),
         );

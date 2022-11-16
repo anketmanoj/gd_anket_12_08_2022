@@ -37,19 +37,21 @@ class MyArCollection {
   factory MyArCollection.fromJson(Map<String, dynamic> json) {
     return MyArCollection(
       id: json['id'],
-      gif: json['gif'] as String,
-      main: json['main'] as String,
-      alpha: json['alpha'] as String,
+      gif: json['gif'] ?? "",
+      main: json['main'] ?? "",
+      alpha: json['alpha'] ?? "",
       audioFlag: json['audioFlag'] ?? false,
-      layerType: json['layerType'].toString(),
-      valueType: json['valueType'].toString(),
-      audioFile: json['audioFile'].toString(),
+      layerType: json['layerType'] ?? "",
+      valueType: json['valueType'] ?? "",
+      audioFile: json['audioFile'] ?? "",
       timestamp: json['timestamp'] as Timestamp,
-      ownerId: json['ownerId'].toString(),
-      ownerName: json['ownerName'].toString(),
+      ownerId: json['ownerId'] ?? "",
+      ownerName: json['ownerName'] ?? "",
       usage: json['usage'] as String?,
-      endDuration: json['endDuration'].toString(),
-      imgSeq: (json['imgSeq'] as List).map((item) => item as String).toList(),
+      endDuration: json['endDuration'] ?? "",
+      imgSeq: json['imgSeq'] != null
+          ? (json['imgSeq'] as List).map((item) => item as String).toList()
+          : [],
     );
   }
 
