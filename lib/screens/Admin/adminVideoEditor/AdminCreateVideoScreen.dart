@@ -16,18 +16,26 @@ import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminVideoThumbnailSelectionScreen.dart';
 import 'package:diamon_rose_app/screens/GiphyTest/get_giphy_gifs.dart';
 import 'package:diamon_rose_app/screens/PostPage/previewVideo.dart';
+import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/ArContainerClass/ArContainerClass.dart';
+import 'package:diamon_rose_app/screens/testVideoEditor/GD_custom_range_slider.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/ui/frame/frame_slider_painter.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/ui/frame/frame_thumbnail_slider.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/ui/video_viewer.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/video_editor.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/VideoThumbnailSelectionScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/testingVideoOutput.dart';
+import 'package:diamon_rose_app/screens/youtubeSearchApi/loading_widget.dart';
+import 'package:diamon_rose_app/screens/youtubeSearchApi/search.dart';
+import 'package:diamon_rose_app/screens/youtubeSearchApi/searchResults/searchresultsservice.dart';
+import 'package:diamon_rose_app/screens/youtubeTest/youtubeFileModel.dart';
+import 'package:diamon_rose_app/screens/youtubeTest/youtube_utils.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/img_seq_animator.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
+import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/extensions.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
@@ -45,17 +53,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:giphy_get/giphy_get.dart';
 import 'package:helpers/helpers/transition.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:nanoid/nanoid.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
 import 'package:video_player/video_player.dart';
+import 'package:diamon_rose_app/screens/youtubeSearchApi/searchResults/songsdataclass.dart';
 import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
 
@@ -121,6 +134,437 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
   late File thumbnailFile;
 
   ValueNotifier<int> indexCounter = ValueNotifier<int>(1);
+
+  // !############################### for Youtube Search API
+
+  String query = 'Drake';
+  static const _pageSize = 20;
+
+  final FloatingSearchBarController _searchBarController =
+      FloatingSearchBarController();
+
+  final _pagingController = PagingController<int, Songs>(
+    // 2
+    firstPageKey: 1,
+  );
+
+  Future<void> fetchSongs(int pageKey) async {
+    try {
+      final List<Songs> newItems =
+          await SearchMusic.getOnlySongs(query, _pageSize);
+      final isLastPage = newItems.length < _pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(newItems);
+      } else {
+        final nextPageKey = pageKey + newItems.length;
+        _pagingController.appendPage(newItems, nextPageKey);
+      }
+    } catch (error) {
+      _pagingController.error = error;
+    }
+  }
+
+  final spacer = SizedBox(width: 10);
+  final biggerSpacer = SizedBox(width: 40);
+
+  YoutubeUtil youtubeHandler = YoutubeUtil();
+
+  _selectAudioOption(BuildContext context) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            height: 20.h,
+            width: 100.w,
+            decoration: BoxDecoration(
+              color: constantColors.whiteColor,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: constantColors.greyColor,
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    MaterialButton(
+                      color: constantColors.navButton,
+                      child: Text(
+                        "Original Music",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      onPressed: () async {
+                        // Get.back();
+                        // ! For picking music file from users device
+
+                        FilePickerResult? file =
+                            await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: ['mp3'],
+                          allowMultiple: false,
+                          allowCompression: true,
+                        );
+
+                        if (file != null) {
+                          if (list.value.isNotEmpty) {
+                            list.value.last.layerType == LayerType.AR
+                                ? indexCounter.value = indexCounter.value + 2
+                                : indexCounter.value = indexCounter.value + 1;
+                          } else {
+                            indexCounter.value = 1;
+                          }
+
+                          if (indexCounter.value <= 0) {
+                            indexCounter.value = 1;
+                          }
+
+                          await runFFmpegForAudioOnlyFiles(
+                            arVal: indexCounter.value,
+                            audioFile: File(file.files.single.path!),
+                            songTitle: "Original Track",
+                            songArtist: context
+                                .read<AdminVideoCreator>()
+                                .getUserModel!
+                                .username,
+                            songUrl: "",
+                            songAlbumCover: context
+                                .read<AdminVideoCreator>()
+                                .getUserModel!
+                                .userimage,
+                          );
+                        }
+                      },
+                    ),
+                    MaterialButton(
+                      color: constantColors.navButton,
+                      child: Text(
+                        "Search Online",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      onPressed: () async {
+                        Get.back();
+                        _showYoutubeBottomSheet(context);
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  _showYoutubeBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+      isDismissible: true,
+      isScrollControlled: true,
+      enableDrag: true,
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          height: 90.h,
+          width: 100.w,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+          ),
+          child: Scaffold(
+            body: SearchFunction(
+              liveSearch: false,
+              controller: _searchBarController,
+              onSubmitted: (searchQuery) async {
+                query = searchQuery;
+
+                _pagingController.refresh();
+                // setState(() {
+                //
+                // });
+              },
+              body: Center(
+                child: RefreshIndicator(
+                  onRefresh: () => Future.sync(
+                    () => _pagingController.refresh(),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CustomScrollView(
+                      slivers: [
+                        const SliverToBoxAdapter(child: SizedBox(height: 50)),
+                        SliverToBoxAdapter(
+                            child: Text(
+                          query,
+
+                          // widget.songQuery == ''
+                          //   ? '  Results for \"${query}\"'
+                          //   : '  Results for \"${widget.songQuery}\"',
+
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        )),
+                        const SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: 15,
+                          ),
+                        ),
+                        AnimationLimiter(
+                          child: PagedSliverList.separated(
+                            //physics: BouncingScrollPhysics(),
+
+                            pagingController: _pagingController,
+                            // padding: const EdgeInsets.all(10),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(
+                              height: 10,
+                            ),
+                            builderDelegate: PagedChildBuilderDelegate<Songs>(
+                              animateTransitions: true,
+                              transitionDuration:
+                                  const Duration(milliseconds: 200),
+                              firstPageProgressIndicatorBuilder: (_) => Center(
+                                child: loadingWidget(context),
+
+                                // child: Text("Loading..."),
+                              ),
+                              newPageProgressIndicatorBuilder: (_) =>
+                                  Center(child: loadingWidget(context)),
+                              itemBuilder: (context, songs, index) =>
+                                  AnimationConfiguration.staggeredList(
+                                position: index,
+                                duration: const Duration(milliseconds: 370),
+                                child: SlideAnimation(
+                                  verticalOffset: 50.0,
+                                  child: FadeInAnimation(
+                                      child: Material(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: constantColors.bioBg,
+                                    child: InkWell(
+                                      onTap: () async {
+                                        await Permission.storage.request();
+                                        CoolAlert.show(
+                                            context: context,
+                                            type: CoolAlertType.loading,
+                                            barrierDismissible: false);
+                                        //playerAlerts.buffering = t
+                                        dev.log(
+                                            "songs.videoId == ${songs.videoId}");
+                                        dev.log(
+                                            "Youtube URL == https://www.youtube.com/watch?v=${songs.videoId}");
+                                        dev.log(
+                                            "songs.title == ${songs.title}");
+                                        dev.log(
+                                            "songs.artists![0].name == ${songs.artists![0].name}");
+
+                                        await youtubeHandler
+                                            .loadVideo(songs.videoId);
+
+                                        final File? file = await youtubeHandler
+                                            .downloadMP3File();
+
+                                        if (file != null) {
+                                          dev.log("DONE! == ${file.path}");
+
+                                          if (list.value.isNotEmpty) {
+                                            list.value.last.layerType ==
+                                                    LayerType.AR
+                                                ? indexCounter.value =
+                                                    indexCounter.value + 2
+                                                : indexCounter.value =
+                                                    indexCounter.value + 1;
+                                          } else {
+                                            indexCounter.value = 1;
+                                          }
+
+                                          if (indexCounter.value <= 0) {
+                                            indexCounter.value = 1;
+                                          }
+
+                                          Get.back();
+
+                                          await runFFmpegForAudioOnlyFiles(
+                                            arVal: indexCounter.value,
+                                            audioFile: file,
+                                            songTitle: songs.title,
+                                            songArtist: songs.artists![0].name,
+                                            songAlbumCover:
+                                                songs.thumbnails[0].url,
+                                            songUrl:
+                                                "https://www.youtube.com/watch?v=${songs.videoId}",
+                                          );
+                                        } else {
+                                          Get.back();
+                                          Get.back();
+                                          Get.dialog(
+                                            SimpleDialog(
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.all(10),
+                                                  child: Text(
+                                                      "Error Loading this music video, it has been locked by the owner!"),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }
+                                        // await context.read<ActiveAudioData>().songDetails(
+                                        //     songs.videoId,
+                                        //     songs.videoId,
+                                        //     songs.artists![0].name,
+                                        //     songs.title,
+                                        //     songs.thumbnails[0].url,
+                                        //     //songs.thumbnails.map((e) => ThumbnailLocal(height: e.height, url: e.url.toString(), width: e.width)).toList(),
+                                        //     songs.thumbnails.last.url.toString());
+
+                                        // await AudioControlClass.play(
+                                        //   videoId: songs.videoId.toString(),
+                                        //   context: context,
+                                        // );
+                                      },
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            5, 5, 5, 5),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            FadeInImage(
+                                                placeholder: const AssetImage(
+                                                    'assets/images/GDlogo.png'),
+                                                width: 40,
+                                                height: 40,
+                                                fit: BoxFit.cover,
+                                                image: NetworkImage(
+                                                  songs.thumbnails.first.url
+                                                      .toString(),
+                                                )),
+                                            // CachedNetworkImage(
+                                            //   memCacheHeight: 40,
+                                            //   memCacheWidth: 40,
+                                            //   width: 40,
+                                            //   height: 40,
+                                            //   imageBuilder: (context, imageProvider) => CircleAvatar(
+                                            //     backgroundColor: Colors.transparent,
+                                            //     foregroundColor: Colors.transparent,
+                                            //     radius: 100,
+                                            //     backgroundImage: imageProvider,
+                                            //   ),
+                                            //   fit: BoxFit.cover,
+                                            //   errorWidget: (context, _, __) => const Image(
+                                            //     fit: BoxFit.cover,
+                                            //     image: AssetImage('assets/cover.jpg'),
+                                            //   ),
+                                            //   imageUrl: songs.thumbnails.first.url.toString(),
+                                            //   placeholder: (context, url) => const Image(
+                                            //       fit: BoxFit.cover,
+                                            //       image: AssetImage('assets/cover.jpg')),
+                                            // ),
+                                            spacer,
+
+                                            SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  1 /
+                                                  4,
+                                              child: Text(
+                                                songs.title.toString(),
+                                                // widget.isFromPrimarySearchPage ? songs[index].title.toString() : 'Kuch is tarah',
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            spacer,
+                                            SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  1 /
+                                                  8,
+                                              child: Text(
+                                                songs.artists![0].name
+                                                    .toString(),
+                                                // widget.isFromPrimarySearchPage ? songs[index].artists![0].name.toString() : 'Atif',
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            spacer,
+                                            if (MediaQuery.of(context)
+                                                    .size
+                                                    .width >
+                                                500)
+                                              SizedBox(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    1 /
+                                                    8,
+                                                child: Text(
+                                                  songs.album!.name.toString(),
+                                                  //  widget.isFromPrimarySearchPage ? songs[index].album!.name.toString() : 'The jal band',
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  1 /
+                                                  15,
+                                              child: Text(
+                                                songs.duration.toString(),
+                                                //widget.isFromPrimarySearchPage ? songs[index].duration.toString() : '5:25',
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            biggerSpacer,
+                                            const Icon(Icons.more_vert)
+                                            // mat.IconButton(
+                                            //     iconSize : 10,
+                                            //     onPressed: () {}, icon: Icon(FluentIcons.play))
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  )),
+                                ),
+                              ),
+                              // firstPageErrorIndicatorBuilder: (context) =>
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // !############################### for Youtube Search API
 
   _openFileManager() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -233,6 +677,11 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
   @override
   void initState() {
     screen = Size(50, 50);
+
+    // 3
+    _pagingController.addPageRequestListener((pageKey) {
+      fetchSongs(pageKey);
+    });
 
     client = GiphyClient(apiKey: giphyApiKey, randomId: '');
     WidgetsBinding.instance!.addPostFrameCallback((_) {
@@ -348,6 +797,10 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
   Future<void> runFFmpegForAudioOnlyFiles({
     required int arVal,
     required File audioFile,
+    required String songTitle,
+    required String songArtist,
+    required String songUrl,
+    required String songAlbumCover,
   }) async {
     if (await Permission.storage.request().isGranted) {
       dev.log("AR INDEX == $arVal");
@@ -381,9 +834,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
 
             final AudioPlayer? _player = AudioPlayer();
 
-            final List<String> _fullPathsOnline = [
-              "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
-            ];
+            final List<String> _fullPathsOnline = [songAlbumCover];
 
             final File musicFile = await saveMusicFiletoDevice(
                 fileBytes: audioFile.readAsBytesSync(),
@@ -393,6 +844,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
             dev.log("ArCut out ois here  = ${arCutOutFile.path}");
 
             await _player!.setFilePath(audioFile.path);
+
             await _player.pause();
 
             final containerKey = GlobalKey();
@@ -400,32 +852,39 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
             final String idValue = nanoid();
 
             list.value.add(ARList(
-              arId: idValue,
-              arIndex: arVal,
-              height: 0,
-              rotation: 0,
-              scale: 1,
-              width: 0,
-              xPosition: 0,
-              yPosition: 0,
-              pathsForVideoFrames: _fullPathsOnline,
-              startingPositon: 0,
-              endingPosition: 0,
-              totalDuration: double.parse(durationString),
-              showAr: ValueNotifier(false),
-              audioPlayer: _player,
-              layerType: LayerType.Music,
-              arKey: containerKey,
-              fromFirebase: true,
-              audioFlag: true,
-              finishedCaching: ValueNotifier(true),
-              ownerId: context.read<Authentication>().getUserId,
-              ownerName: context.read<FirebaseOperations>().initUserName,
-              selectedMaterial: ValueNotifier<bool>(false),
-              musicFile: musicFile,
-            ));
+                arId: idValue,
+                arIndex: arVal,
+                height: 0,
+                rotation: 0,
+                scale: 1,
+                width: 0,
+                xPosition: 0,
+                yPosition: 0,
+                pathsForVideoFrames: _fullPathsOnline,
+                startingPositon: 0,
+                endingPosition: 0,
+                totalDuration: double.parse(durationString),
+                showAr: ValueNotifier(false),
+                audioPlayer: _player,
+                layerType: LayerType.Music,
+                arKey: containerKey,
+                fromFirebase: true,
+                audioFlag: true,
+                finishedCaching: ValueNotifier(true),
+                ownerId:
+                    context.read<AdminVideoCreator>().getUserModel!.useruid,
+                ownerName:
+                    context.read<AdminVideoCreator>().getUserModel!.useruid,
+                selectedMaterial: ValueNotifier<bool>(true),
+                musicFile: musicFile,
+                youtubeArtistName: songArtist,
+                youtubeTitle: songTitle,
+                youtubeUrl: songUrl,
+                youtubeAlbumCover: songAlbumCover,
+                audioStart: 0,
+                audioEnd: _player.duration!.inSeconds));
 
-            _controllerSeekTo(0);
+            _controllerSeekTo(1);
             if (!mounted) return;
 
             musicIndexVal.value += 1;
@@ -433,7 +892,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
             dev.log(
                 "list Music ${musicIndexVal.value} | index counter == $arVal");
             Get.back();
-            // Get.back();
+            Get.back();
             setState(() {});
           });
         });
@@ -1350,13 +1809,40 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                 arListValFull.map((arVal) {
                                               return InkWell(
                                                 onDoubleTap: () {
-                                                  selected = arVal;
+                                                  dev.log("this");
+                                                  setState(() {
+                                                    selected = arVal;
+                                                  });
                                                 },
-                                                onTap: () {
-                                                  if (arVal.audioFlag == true)
+                                                onTap: () async {
+                                                  if (arVal.audioFlag == true &&
+                                                      arVal.layerType !=
+                                                          LayerType.Music) {
                                                     showAlertDialog(
                                                         context: context,
                                                         ar: arVal);
+                                                  } else {
+                                                    _controllerSeekTo(1);
+                                                    setState(() {
+                                                      _controller.video.pause();
+
+                                                      for (ARList arPlaying
+                                                          in list.value) {
+                                                        if (arPlaying.showAr!
+                                                                .value ==
+                                                            true) {
+                                                          arPlaying.arState!
+                                                              .pause();
+
+                                                          arPlaying.audioPlayer!
+                                                              .pause();
+                                                        }
+                                                      }
+                                                    });
+                                                    await showMusicAdjustBottomSheet(
+                                                        context: context,
+                                                        ar: arVal);
+                                                  }
                                                 },
                                                 child: Container(
                                                   width: fullLayout.width,
@@ -1373,7 +1859,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                                     100),
                                                         left: arVal
                                                             .startingPositon,
-                                                        key: UniqueKey(),
+                                                        key: Key("This"),
                                                         child: Container(
                                                           height: 50,
                                                           width: arVal.finishedCaching!
@@ -1381,8 +1867,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                                   true
                                                               ? arVal
                                                                   .endingPosition
-                                                              : size.width *
-                                                                  0.3,
+                                                              : 30.w,
                                                           decoration:
                                                               BoxDecoration(
                                                             color: arVal.layerType ==
@@ -1395,7 +1880,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                                     ? constantColors
                                                                         .darkColor
                                                                     : constantColors
-                                                                        .lightBlueColor,
+                                                                        .black,
                                                             border: Border.all(
                                                               color:
                                                                   Colors.white,
@@ -1426,22 +1911,20 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                                       )
                                                                     : arVal.layerType ==
                                                                             LayerType.Music
-                                                                        ? Padding(
-                                                                            padding:
-                                                                                const EdgeInsets.only(left: 10),
-                                                                            child:
-                                                                                Row(
-                                                                              children: [
-                                                                                Text(
-                                                                                  "Music Layer",
-                                                                                  style: TextStyle(color: constantColors.whiteColor),
-                                                                                ),
-                                                                                SizedBox(
-                                                                                  width: 10,
-                                                                                ),
-                                                                                Icon(FontAwesomeIcons.music, color: constantColors.whiteColor)
-                                                                              ],
-                                                                            ),
+                                                                        ? Row(
+                                                                            children: [
+                                                                              Container(
+                                                                                width: 50,
+                                                                                child: ImageNetworkLoader(imageUrl: arVal.youtubeAlbumCover!),
+                                                                              ),
+                                                                              SizedBox(
+                                                                                width: 10,
+                                                                              ),
+                                                                              Text(
+                                                                                "${arVal.youtubeArtistName} - ${arVal.youtubeTitle!}",
+                                                                                style: TextStyle(color: constantColors.whiteColor),
+                                                                              ),
+                                                                            ],
                                                                           )
                                                                         : Center(
                                                                             child:
@@ -1699,59 +2182,8 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                                   .pause();
                                                             });
 
-                                                            FilePickerResult?
-                                                                file =
-                                                                await FilePicker
-                                                                    .platform
-                                                                    .pickFiles(
-                                                              type: FileType
-                                                                  .custom,
-                                                              allowedExtensions: [
-                                                                'mp3'
-                                                              ],
-                                                              allowMultiple:
-                                                                  false,
-                                                              allowCompression:
-                                                                  true,
-                                                            );
-
-                                                            if (file != null) {
-                                                              if (list.value
-                                                                  .isNotEmpty) {
-                                                                list.value.last.layerType ==
-                                                                        LayerType
-                                                                            .AR
-                                                                    ? indexCounter
-                                                                            .value =
-                                                                        indexCounter.value +
-                                                                            2
-                                                                    : indexCounter
-                                                                            .value =
-                                                                        indexCounter.value +
-                                                                            1;
-                                                              } else {
-                                                                indexCounter
-                                                                    .value = 1;
-                                                              }
-
-                                                              if (indexCounter
-                                                                      .value <=
-                                                                  0) {
-                                                                indexCounter
-                                                                    .value = 1;
-                                                              }
-
-                                                              await runFFmpegForAudioOnlyFiles(
-                                                                arVal:
-                                                                    indexCounter
-                                                                        .value,
-                                                                audioFile: File(
-                                                                    file
-                                                                        .files
-                                                                        .single
-                                                                        .path!),
-                                                              );
-                                                            }
+                                                            _selectAudioOption(
+                                                                context);
                                                           } else {
                                                             await Get.dialog(
                                                               SimpleDialog(
@@ -2557,7 +2989,7 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                             LayerType.Music &&
                                         arElement.audioFlag == true) {
                                       ffmpegVolumeList.add(
-                                          "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},adelay=${arStartTime.toStringAsFixed(10)}s:all=1[a${arElement.arIndex}];");
+                                          "[${arElement.arIndex}:a]volume=${arElement.audioPlayer!.volume},atrim=start=${arElement.audioStart}:end=${arElement.audioEnd},asetpts=PTS-STARTPTS[a${arElement.arIndex}];");
                                       ffmpegSoundInputs
                                           .add("[a${arElement.arIndex}]");
                                     }
@@ -2818,6 +3250,244 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
           );
         });
   }
+
+  customHandler(IconData icon) {
+    return FlutterSliderHandler(
+      decoration: BoxDecoration(),
+      child: Container(
+        height: 60,
+        width: 5,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+                color: Colors.blue.withOpacity(0.3),
+                spreadRadius: 0.05,
+                blurRadius: 5,
+                offset: Offset(0, 1))
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<dynamic> showMusicAdjustBottomSheet(
+      {required BuildContext context, required ARList ar}) async {
+    final point = ValueNotifier<double>(ar.audioPlayer!.volume);
+    await ar.audioPlayer!.setClip(start: null, end: null);
+    final Duration maxAudioDuration = ar.audioPlayer!.duration!;
+
+    final ValueNotifier<List<double>> _currentRangeValues =
+        ValueNotifier<List<double>>(
+            [ar.audioStart!.toDouble(), ar.audioEnd!.toDouble()]);
+
+    final ValueNotifier<bool> audioPlaying =
+        ValueNotifier<bool>(ar.audioPlayer!.playing);
+
+    dev.log("audio duration == ${ar.audioPlayer!.duration!.inSeconds}");
+    return showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      isScrollControlled: false,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          width: 100.w,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              color: constantColors.whiteColor),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 150),
+                child: Divider(
+                  thickness: 4,
+                  color: constantColors.greyColor,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text("Set Music Volume"),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Icon(Icons.volume_down),
+                  Expanded(
+                    child: ValueListenableBuilder<double>(
+                      valueListenable: point,
+                      builder: (context, mark, _) {
+                        return CupertinoSlider(
+                          activeColor: constantColors.navButton,
+                          value: mark,
+                          min: 0,
+                          max: 1,
+                          onChanged: (double value) async {
+                            point.value = value;
+                            print(point.value);
+                            await ar.audioPlayer!.setVolume(point.value);
+                            // await ar.audioPlayer!.setVolume(value);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  Icon(Icons.volume_up_rounded),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text("Select clip from music layer"),
+              SizedBox(
+                height: 10,
+              ),
+              ValueListenableBuilder<List<double>>(
+                valueListenable: _currentRangeValues,
+                builder: (context, rangeVal, _) {
+                  return Container(
+                      alignment: Alignment.centerLeft,
+                      child: FlutterSlider(
+                        values: _currentRangeValues.value,
+                        rangeSlider: true,
+//rtl: true,
+
+//                ignoreSteps: [
+//                  FlutterSliderIgnoreSteps(from: 8000, to: 12000),
+//                  FlutterSliderIgnoreSteps(from: 18000, to: 22000),
+//                ],
+                        max: maxAudioDuration.inSeconds.toDouble(),
+                        min: 0,
+                        step: FlutterSliderStep(step: 1),
+                        jump: true,
+                        trackBar: FlutterSliderTrackBar(
+                          inactiveTrackBarHeight: 2,
+                          activeTrackBarHeight: 60,
+                          activeTrackBar: BoxDecoration(
+                            color: constantColors.bioBg.withOpacity(0.5),
+                          ),
+                          centralWidget: Container(
+                            height: 80,
+                            width: 100.w,
+                            margin: EdgeInsets.symmetric(horizontal: 10),
+                            color: constantColors.navButton,
+                            child: ListView.separated(
+                              controller: _scrollController,
+                              itemCount: 40,
+                              separatorBuilder: (_, __) => const Divider(
+                                indent: 1,
+                              ),
+                              itemBuilder: (_, index) => Container(
+                                child: Image.network(ar.youtubeAlbumCover!),
+                                height: 50,
+                              ),
+                              scrollDirection: Axis.horizontal,
+                            ),
+                          ),
+                        ),
+
+                        disabled: false,
+
+                        handler: customHandler(Icons.chevron_right),
+                        rightHandler: customHandler(Icons.chevron_left),
+                        tooltip: FlutterSliderTooltip(
+                            custom: (value) {
+                              // dev.log("value is $value");
+                              // int valueChange = int.parse(value.toString());
+                              // dev.log(valueChange.toString());
+                              return Text(
+                                  formatter(Duration(seconds: value.toInt())));
+                            },
+                            textStyle:
+                                TextStyle(fontSize: 17, color: Colors.white),
+                            boxStyle: FlutterSliderTooltipBox(
+                                decoration: BoxDecoration(
+                                    color: Colors.redAccent.withOpacity(0.7)))),
+
+                        minimumDistance: _controller
+                            .video.value.duration.inSeconds
+                            .toDouble(),
+                        onDragging: (handlerIndex, lowerValue, upperValue) {
+                          dev.log("lower - $lowerValue");
+                          dev.log("upper - $upperValue");
+
+                          ar.audioPlayer!.setClip(
+                            start: Duration(seconds: lowerValue.truncate()),
+                            end: Duration(seconds: upperValue.truncate()),
+                          );
+
+                          ar.audioStart = lowerValue.truncate();
+                          ar.audioEnd = upperValue.truncate();
+                          dev.log(
+                              "ar start == ${ar.audioStart} | end == ${ar.audioEnd}");
+
+                          if (ar.audioPlayer!.playing)
+                            setState(() {
+                              audioPlaying.value = false;
+                              ar.audioPlayer!.pause();
+                            });
+
+                          // _lowerValue = lowerValue;
+                          // _upperValue = upperValue;
+                          // setState(() {});
+                        },
+                      ));
+                },
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              StatefulBuilder(builder: (context, innerState) {
+                return ValueListenableBuilder<bool>(
+                    valueListenable: audioPlaying,
+                    builder: (context, playingAudio, _) {
+                      return Center(
+                        child: IconButton(
+                            onPressed: () {
+                              innerState(() {
+                                if (ar.audioPlayer!.playing) {
+                                  ar.audioPlayer!.pause();
+                                  audioPlaying.value = false;
+                                } else {
+                                  audioPlaying.value = true;
+                                  ar.audioPlayer!.play();
+                                }
+                              });
+                            },
+                            icon: Icon(
+                                playingAudio ? Icons.pause : Icons.play_arrow)),
+                      );
+                    });
+              }),
+              Expanded(
+                child: Center(
+                  child: SubmitButton(
+                    function: () {
+                      ar.audioPlayer!.pause();
+                      Navigator.pop(context);
+                    },
+                    text: "Done",
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String formatter(Duration duration) => [
+        duration.inMinutes.remainder(60).toString().padLeft(2, '0'),
+        duration.inSeconds.remainder(60).toString().padLeft(2, '0')
+      ].join(":");
 
   Future<void> combineBgAr({
     required File bgVideoFile,

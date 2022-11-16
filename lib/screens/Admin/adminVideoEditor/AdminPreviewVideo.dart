@@ -416,10 +416,6 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                 valueListenable:
                                     selectMaterials[index].selectedMaterial!,
                                 builder: (context, selected, _) {
-                                  if (selectMaterials[index].layerType ==
-                                      LayerType.Music) {
-                                    return SizedBox();
-                                  }
                                   switch (index) {
                                     case 0:
                                       return Column(
@@ -509,26 +505,30 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                             ),
                                           ),
                                           ListTile(
-                                            trailing: Switch(
-                                              activeColor:
-                                                  constantColors.navButton,
-                                              value: selected,
-                                              onChanged: (val) {
-                                                selectMaterials[index]
-                                                    .selectedMaterial!
-                                                    .value = val;
+                                            trailing: selectMaterials[index]
+                                                        .layerType !=
+                                                    LayerType.Music
+                                                ? Switch(
+                                                    activeColor: constantColors
+                                                        .navButton,
+                                                    value: selected,
+                                                    onChanged: (val) {
+                                                      selectMaterials[index]
+                                                          .selectedMaterial!
+                                                          .value = val;
 
-                                                log(selectMaterials
-                                                    .where((element) =>
-                                                        element
-                                                            .selectedMaterial!
-                                                            .value ==
-                                                        true)
-                                                    .toList()
-                                                    .length
-                                                    .toString());
-                                              },
-                                            ),
+                                                      log(selectMaterials
+                                                          .where((element) =>
+                                                              element
+                                                                  .selectedMaterial!
+                                                                  .value ==
+                                                              true)
+                                                          .toList()
+                                                          .length
+                                                          .toString());
+                                                    },
+                                                  )
+                                                : null,
                                             leading: selectMaterials[index]
                                                         .layerType ==
                                                     LayerType.AR
@@ -543,18 +543,29 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                                       ),
                                                     ),
                                                   )
-                                                : Container(
-                                                    height: 50,
-                                                    width: 50,
-                                                    child: Image.memory(
-                                                      Uint8List.fromList(
-                                                        File(selectMaterials[
-                                                                    index]
-                                                                .gifFilePath!)
-                                                            .readAsBytesSync(),
-                                                      ),
-                                                    ),
-                                                  ),
+                                                : selectMaterials[index]
+                                                            .layerType ==
+                                                        LayerType.Effect
+                                                    ? Container(
+                                                        height: 50,
+                                                        width: 50,
+                                                        child: Image.memory(
+                                                          Uint8List.fromList(
+                                                            File(selectMaterials[
+                                                                        index]
+                                                                    .gifFilePath!)
+                                                                .readAsBytesSync(),
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : Container(
+                                                        height: 50,
+                                                        width: 50,
+                                                        child: ImageNetworkLoader(
+                                                            imageUrl:
+                                                                selectMaterials[
+                                                                        index]
+                                                                    .youtubeAlbumCover!)),
                                             title: Text(
                                               selectMaterials[index]
                                                           .layerType ==
@@ -574,32 +585,38 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
 
                                     default:
                                       return ListTile(
-                                        trailing: Switch(
-                                          activeColor: constantColors.navButton,
-                                          value: selected,
-                                          onChanged: (val) {
-                                            if (selectMaterials[index]
-                                                    .layerType ==
-                                                LayerType.Effect) {
-                                              selectMaterials[index]
-                                                  .selectedMaterial!
-                                                  .value = true;
-                                            } else {
-                                              selectMaterials[index]
-                                                  .selectedMaterial!
-                                                  .value = val;
-                                            }
+                                        trailing: !selectMaterials[index]
+                                                .youtubeUrl!
+                                                .contains("www.youtube.com")
+                                            ? Switch(
+                                                activeColor:
+                                                    constantColors.navButton,
+                                                value: selected,
+                                                onChanged: (val) {
+                                                  if (selectMaterials[index]
+                                                          .layerType ==
+                                                      LayerType.Effect) {
+                                                    selectMaterials[index]
+                                                        .selectedMaterial!
+                                                        .value = true;
+                                                  } else {
+                                                    selectMaterials[index]
+                                                        .selectedMaterial!
+                                                        .value = val;
+                                                  }
 
-                                            log(selectMaterials
-                                                .where((element) =>
-                                                    element.selectedMaterial!
-                                                        .value ==
-                                                    true)
-                                                .toList()
-                                                .length
-                                                .toString());
-                                          },
-                                        ),
+                                                  log(selectMaterials
+                                                      .where((element) =>
+                                                          element
+                                                              .selectedMaterial!
+                                                              .value ==
+                                                          true)
+                                                      .toList()
+                                                      .length
+                                                      .toString());
+                                                },
+                                              )
+                                            : null,
                                         leading: selectMaterials[index]
                                                     .layerType ==
                                                 LayerType.AR
@@ -614,22 +631,37 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                                   ),
                                                 ),
                                               )
-                                            : Container(
-                                                height: 50,
-                                                width: 50,
-                                                child: Image.memory(
-                                                  Uint8List.fromList(
-                                                    File(selectMaterials[index]
-                                                            .gifFilePath!)
-                                                        .readAsBytesSync(),
-                                                  ),
-                                                ),
-                                              ),
+                                            : selectMaterials[index]
+                                                        .layerType ==
+                                                    LayerType.Effect
+                                                ? Container(
+                                                    height: 50,
+                                                    width: 50,
+                                                    child: Image.memory(
+                                                      Uint8List.fromList(
+                                                        File(selectMaterials[
+                                                                    index]
+                                                                .gifFilePath!)
+                                                            .readAsBytesSync(),
+                                                      ),
+                                                    ),
+                                                  )
+                                                : Container(
+                                                    height: 50,
+                                                    width: 50,
+                                                    child: ImageNetworkLoader(
+                                                        imageUrl: selectMaterials[
+                                                                index]
+                                                            .youtubeAlbumCover!)),
                                         title: Text(
                                           selectMaterials[index].layerType ==
                                                   LayerType.AR
                                               ? "AR Cut out"
-                                              : "Effect Added",
+                                              : selectMaterials[index]
+                                                          .layerType ==
+                                                      LayerType.Effect
+                                                  ? "Effect Added"
+                                                  : "${selectMaterials[index].youtubeArtistName} - ${selectMaterials[index].youtubeTitle!}",
                                         ),
                                         subtitle: selectMaterials[index]
                                                     .layerType ==
@@ -944,6 +976,9 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                                     coverThumbnailUrl: coverThumbnail!,
                                     addBgToMaterials: bgSelected.value,
                                     ctx: context,
+                                    fromPexels: context
+                                        .read<ArVideoCreation>()
+                                        .getFromPexel,
                                     backgroundVideoFile:
                                         videoEditor.getBackgroundVideoFile,
                                     arListVal: selectMaterials

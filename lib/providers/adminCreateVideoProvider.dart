@@ -49,6 +49,7 @@ class AdminVideoCreator extends ChangeNotifier {
     List<ARList>? arListVal,
     required BuildContext ctx,
     required bool addBgToMaterials,
+    bool fromPexels = false,
   }) async {
     try {
       List<String> arUid = [];
@@ -82,6 +83,7 @@ class AdminVideoCreator extends ChangeNotifier {
       String idVal = nanoid();
 
       if (addBgToMaterials == true) {
+        log("taken from material value from BG is === null so uploading my bgFile");
         await FirebaseFirestore.instance
             .collection("users")
             .doc(userUid)
@@ -93,10 +95,12 @@ class AdminVideoCreator extends ChangeNotifier {
           'main': uploadedAWS_BgFile!,
           'layerType': 'Background',
           'timestamp': Timestamp.now(),
+          'hideItem': false,
           'valueType': "myItems",
           "ownerId": userUid,
-          "ownerName": _userModel!.username,
+          "ownerName": fromPexels ? "Pexels" : _userModel!.username,
         }).then((value) {
+          log("added background to arIdsVal");
           _arIdsVal.add(idVal);
           notifyListeners();
         });
@@ -120,10 +124,9 @@ class AdminVideoCreator extends ChangeNotifier {
       final String id = nanoid().toString();
 
       print("length of arListVal: ${arListVal!.length}");
-      arListVal.forEach((arVal) async {
+      for (var arVal in arListVal) {
         print("ar index ${arVal.arIndex}");
-        if (arVal.layerType == LayerType.Effect &&
-            arVal.fromFirebase == false) {
+        if (arVal.layerType == LayerType.Effect) {
           // final String idValForEffect = await uploadEffects(
           //   userUid: userUid,
           //   gifFile: File(arVal.gifFilePath!),
@@ -158,6 +161,67 @@ class AdminVideoCreator extends ChangeNotifier {
           log("id for effect == $idVal");
           _arIdsVal.add(idVal);
           notifyListeners();
+        } else if (arVal.layerType == LayerType.Music) {
+          String idVal = nanoid();
+          if (arVal.youtubeUrl!.contains("www.youtube.com")) {
+            await FirebaseFirestore.instance
+                .collection("users")
+                .doc(userUid)
+                .collection("MyCollection")
+                .doc(idVal)
+                .set({
+              'id': idVal,
+              'gif': arVal.youtubeAlbumCover,
+              'layerType': 'Music',
+              'timestamp': Timestamp.now(),
+              'valueType': "myItems",
+              'songArtist': arVal.youtubeArtistName,
+              'songUrl': arVal.youtubeUrl,
+              'songName': arVal.youtubeTitle,
+              "ownerId": userUid,
+              "ownerName": arVal.youtubeArtistName,
+              "hideItem": false,
+            });
+
+            log("id for music == $idVal");
+            _arIdsVal.add(idVal);
+
+            notifyListeners();
+          } else {
+            final String? musicUrl = await AwsAnketS3.uploadFile(
+                accessKey: "AKIATF76MVYR34JAVB7H",
+                secretKey: "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",
+                bucket: "anketvideobucket",
+                file: File(arVal.musicFile!.path),
+                filename: "${Timestamp.now().millisecondsSinceEpoch}Music.mp3",
+                region: "us-east-1",
+                destDir: "${userUid}");
+
+            log("music url == $musicUrl");
+            await FirebaseFirestore.instance
+                .collection("users")
+                .doc(userUid)
+                .collection("MyCollection")
+                .doc(idVal)
+                .set({
+              'id': idVal,
+              'gif': arVal.youtubeAlbumCover,
+              'layerType': 'Music',
+              'timestamp': Timestamp.now(),
+              'valueType': "myItems",
+              'songArtist': arVal.youtubeArtistName,
+              'songUrl': musicUrl,
+              'songName': arVal.youtubeTitle,
+              "ownerId": userUid,
+              "ownerName": arVal.youtubeArtistName,
+              "hideItem": false,
+            });
+
+            log("id for music == $idVal");
+            _arIdsVal.add(idVal);
+
+            notifyListeners();
+          }
         } else {
           _arIdsVal.add(arVal.arId!);
           notifyListeners();
@@ -165,7 +229,7 @@ class AdminVideoCreator extends ChangeNotifier {
 
         print(
             "added arId: ${arVal.arIndex} to list _arIdsVal |  ${_arIdsVal.length}");
-      });
+      }
 
       print("lis of ar == ${getArIdsVal}");
 
@@ -269,40 +333,46 @@ class AdminVideoCreator extends ChangeNotifier {
                 }
                 break;
               case "Effect":
-                log("adding Effect to Materials");
-                if (arSnapshot.data()!['ownerId'] == userUid) {
-                  await FirebaseFirestore.instance
-                      .collection("posts")
-                      .doc(id)
-                      .collection("materials")
-                      .doc("${arUidVal}${id}")
-                      .set({
-                    "hideItem": false,
-                    "gif": arSnapshot.data()!['gif'],
-                    "layerType": arSnapshot.data()!['layerType'],
-                    "timestamp": arSnapshot.data()!['timestamp'],
-                    "id": "${arSnapshot.data()!['id']}${id}",
-                    "ownerId": arSnapshot.data()!['ownerId'],
-                    "ownerName": arSnapshot.data()!['ownerName'],
-                    "videoId": id,
-                  });
-                } else {
-                  await FirebaseFirestore.instance
-                      .collection("posts")
-                      .doc(id)
-                      .collection("materials")
-                      .doc("${arUidVal}${id}")
-                      .set({
-                    "gif": arSnapshot.data()!['gif'],
-                    "hideItem": arSnapshot.data()!['hideItem'],
-                    "layerType": arSnapshot.data()!['layerType'],
-                    "timestamp": arSnapshot.data()!['timestamp'],
-                    "id": "${arSnapshot.data()!['id']}${id}",
-                    "ownerId": arSnapshot.data()!['ownerId'],
-                    "ownerName": arSnapshot.data()!['ownerName'],
-                    "videoId": arSnapshot.data()!['videoId'],
-                  });
-                }
+                log("adding effect now");
+                await FirebaseFirestore.instance
+                    .collection("posts")
+                    .doc(id)
+                    .collection("materials")
+                    .doc("${arUidVal}${id}")
+                    .set({
+                  "hideItem": false,
+                  "gif": arSnapshot.data()!['gif'],
+                  "layerType": arSnapshot.data()!['layerType'],
+                  "timestamp": arSnapshot.data()!['timestamp'],
+                  "id": "${arSnapshot.data()!['id']}${id}",
+                  "ownerId": arSnapshot.data()!['ownerId'],
+                  "ownerName": "GIPHY",
+                  "videoId": id,
+                });
+                log("effect added now");
+                break;
+              case "Music":
+                log("adding Music now");
+                await FirebaseFirestore.instance
+                    .collection("posts")
+                    .doc(id)
+                    .collection("materials")
+                    .doc("${arUidVal}${id}")
+                    .set({
+                  "id": "${arSnapshot.data()!['id']}${id}",
+                  'gif': arSnapshot.data()!['gif'],
+                  'layerType': 'Music',
+                  'timestamp': Timestamp.now(),
+                  'valueType': "myItems",
+                  'songArtist': arSnapshot.data()!['songArtist'],
+                  'songUrl': arSnapshot.data()!['songUrl'],
+                  'songName': arSnapshot.data()!['songName'],
+                  "ownerId": userUid,
+                  "ownerName": arSnapshot.data()!['ownerName'],
+                  "hideItem": false,
+                  "videoId": id,
+                });
+                log("music added now");
                 break;
               case "Background":
                 log("adding Background to Materials");

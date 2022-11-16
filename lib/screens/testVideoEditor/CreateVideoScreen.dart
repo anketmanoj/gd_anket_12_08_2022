@@ -69,7 +69,7 @@ import 'package:video_player/video_player.dart';
 import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
 
-import '../youtubeSearchApi/searchResults/songsdataclass.dart';
+import 'package:diamon_rose_app/screens/youtubeSearchApi/searchResults/songsdataclass.dart';
 
 enum _FrameBoundaries { left, right, inside, progress, none }
 
