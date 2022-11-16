@@ -2240,38 +2240,88 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                           .toString());
                                                     },
                                                   )
-                                                : InkWell(
-                                                    onTap: () async {
-                                                      final url = myItems[index]
-                                                          .songUrl!;
-                                                      if (await canLaunch(
-                                                          url)) {
-                                                        await launch(
-                                                          url,
-                                                          forceSafariVC: false,
-                                                        );
-                                                      }
-                                                    },
-                                                    child: Container(
-                                                      padding:
-                                                          EdgeInsets.all(15),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.black,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20),
-                                                      ),
-                                                      child: Text(
-                                                        "Youtube",
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors.white,
+                                                : myItems[index]
+                                                        .songUrl!
+                                                        .contains(
+                                                            "www.youtube.com")
+                                                    ? InkWell(
+                                                        onTap: () async {
+                                                          final url =
+                                                              myItems[index]
+                                                                  .songUrl!;
+                                                          if (await canLaunch(
+                                                              url)) {
+                                                            await launch(
+                                                              url,
+                                                              forceSafariVC:
+                                                                  false,
+                                                            );
+                                                          }
+                                                        },
+                                                        child: Container(
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  15),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.black,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                          ),
+                                                          child: Text(
+                                                            "Youtube",
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : InkWell(
+                                                        onTap: () async {
+                                                          final url =
+                                                              myItems[index]
+                                                                  .songUrl!;
+                                                          if (await canLaunch(
+                                                              url)) {
+                                                            await launch(
+                                                              url,
+                                                              forceSafariVC:
+                                                                  false,
+                                                            );
+                                                          }
+                                                        },
+                                                        child: Container(
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  15),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.black,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                          ),
+                                                          child: Text(
+                                                            "Play",
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ),
                                             title: Text(
                                               // !Found this here;
                                               "${myItems[index].layerType} by ${myItems[index].ownerName}",
