@@ -188,8 +188,6 @@ class ArViewcollectionScreen extends StatelessWidget {
                               .getUserId)
                           .collection("MyCollection")
                           .where("layerType", isEqualTo: "AR")
-                          .where("usage", isNotEqualTo: "Pending")
-                          .orderBy("usage", descending: false)
                           .orderBy("timestamp", descending: true)
                           .snapshots(),
                       builder: (context, snapshot) {
@@ -199,6 +197,22 @@ class ArViewcollectionScreen extends StatelessWidget {
                               child: Text("No AR For Viewing Added Yet!"),
                             );
                           }
+
+                          List<MyArCollection> myArList = [];
+
+                          snapshot.data!.docs.removeWhere((element) {
+                            MyArCollection myAr = MyArCollection.fromJson(
+                                element.data() as Map<String, dynamic>);
+
+                            if (myAr.usage == "Pending") {
+                              log("removed pending == ${myAr.usage}");
+                              return true;
+                            } else {
+                              log("not removed pending == ${myAr.usage}");
+                              myArList.add(myAr);
+                              return false;
+                            }
+                          });
                           return GridView.builder(
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
@@ -206,20 +220,16 @@ class ArViewcollectionScreen extends StatelessWidget {
                               crossAxisSpacing: 5,
                               mainAxisSpacing: 5,
                             ),
-                            itemCount: snapshot.data!.docs.length,
+                            itemCount: myArList.length,
                             itemBuilder: (context, index) {
-                              var arSnap = snapshot.data!.docs[index];
-
-                              MyArCollection myAr = MyArCollection.fromJson(
-                                  arSnap.data() as Map<String, dynamic>);
-
                               return Stack(
                                 children: [
                                   InkWell(
                                     onTap: () {
-                                      log("name == ${myAr.id}");
+                                      log("name == ${myArList[index].id}");
                                       runARCommand(
-                                          myAr: myAr, context: context);
+                                          myAr: myArList[index],
+                                          context: context);
                                     },
                                     child: GridTile(
                                       header: deleteItems.value == true
@@ -237,7 +247,9 @@ class ArViewcollectionScreen extends StatelessWidget {
                                                           .read<
                                                               FirebaseOperations>()
                                                           .deleteItemFromMyCollection(
-                                                            arID: arSnap.id,
+                                                            arID:
+                                                                myArList[index]
+                                                                    .id,
                                                             useruid: context
                                                                 .read<
                                                                     Authentication>()
@@ -287,7 +299,7 @@ class ArViewcollectionScreen extends StatelessWidget {
                                           height: 100.h,
                                           width: 100.w,
                                           child: Image.network(
-                                            arSnap["imgSeq"][0],
+                                            myArList[index].imgSeq[0],
                                             loadingBuilder:
                                                 (BuildContext context,
                                                     Widget child,
@@ -321,14 +333,15 @@ class ArViewcollectionScreen extends StatelessWidget {
                                     child: Container(
                                       padding: EdgeInsets.all(5),
                                       decoration: BoxDecoration(
-                                          color: myAr.usage == "Material" ||
-                                                  myAr.usage == null
+                                          color: myArList[index].usage ==
+                                                      "Material" ||
+                                                  myArList[index].usage == null
                                               ? constantColors.greyColor
                                                   .withOpacity(0.7)
                                               : constantColors.navButton
                                                   .withOpacity(0.7)),
                                       child: Text(
-                                        myAr.usage ?? "Material",
+                                        myArList[index].usage ?? "Material",
                                         style: TextStyle(
                                             color: constantColors.whiteColor),
                                       ),
@@ -350,21 +363,23 @@ class ArViewcollectionScreen extends StatelessWidget {
                 case "mine":
                   return Container(
                     padding: const EdgeInsets.all(15),
-                    child: StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
+                    child: FutureBuilder<QuerySnapshot>(
+                      future: FirebaseFirestore.instance
                           .collection("users")
+                          // .doc("ndkBvq3gGWWTCUKvbXOFzuZUzNx2")
                           .doc(Provider.of<Authentication>(context,
                                   listen: false)
                               .getUserId)
                           .collection("MyCollection")
                           .where("layerType", isEqualTo: "AR")
                           .where("ownerId",
-                              isEqualTo:
-                                  context.read<Authentication>().getUserId)
+                              isEqualTo: Provider.of<Authentication>(context,
+                                      listen: false)
+                                  .getUserId)
 
                           // .where("usage", isEqualTo: "Ar View Only")
                           .orderBy("timestamp", descending: true)
-                          .snapshots(),
+                          .get(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           if (snapshot.data!.docs.length == 0) {
@@ -372,6 +387,22 @@ class ArViewcollectionScreen extends StatelessWidget {
                               child: Text("No AR For Viewing Added Yet!"),
                             );
                           }
+
+                          List<MyArCollection> myArList = [];
+
+                          snapshot.data!.docs.removeWhere((element) {
+                            MyArCollection myAr = MyArCollection.fromJson(
+                                element.data() as Map<String, dynamic>);
+
+                            if (myAr.usage == "Pending") {
+                              log("removed pending == ${myAr.usage}");
+                              return true;
+                            } else {
+                              log("not removed pending == ${myAr.usage}");
+                              myArList.add(myAr);
+                              return false;
+                            }
+                          });
                           return GridView.builder(
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
@@ -379,20 +410,16 @@ class ArViewcollectionScreen extends StatelessWidget {
                               crossAxisSpacing: 5,
                               mainAxisSpacing: 5,
                             ),
-                            itemCount: snapshot.data!.docs.length,
+                            itemCount: myArList.length,
                             itemBuilder: (context, index) {
-                              var arSnap = snapshot.data!.docs[index];
-
-                              MyArCollection myAr = MyArCollection.fromJson(
-                                  arSnap.data() as Map<String, dynamic>);
-
                               return Stack(
                                 children: [
                                   InkWell(
                                     onTap: () {
-                                      log("name == ${myAr.id}");
+                                      log("name == ${myArList[index].id}");
                                       runARCommand(
-                                          myAr: myAr, context: context);
+                                          myAr: myArList[index],
+                                          context: context);
                                     },
                                     child: GridTile(
                                       header: deleteItems.value == true
@@ -410,7 +437,9 @@ class ArViewcollectionScreen extends StatelessWidget {
                                                           .read<
                                                               FirebaseOperations>()
                                                           .deleteItemFromMyCollection(
-                                                            arID: arSnap.id,
+                                                            arID:
+                                                                myArList[index]
+                                                                    .id,
                                                             useruid: context
                                                                 .read<
                                                                     Authentication>()
@@ -457,7 +486,7 @@ class ArViewcollectionScreen extends StatelessWidget {
                                           height: 100.h,
                                           width: 100.w,
                                           child: Image.network(
-                                            arSnap["imgSeq"][0],
+                                            myArList[index].imgSeq[0],
                                             loadingBuilder:
                                                 (BuildContext context,
                                                     Widget child,
@@ -491,14 +520,15 @@ class ArViewcollectionScreen extends StatelessWidget {
                                     child: Container(
                                       padding: EdgeInsets.all(5),
                                       decoration: BoxDecoration(
-                                          color: myAr.usage == "Material" ||
-                                                  myAr.usage == null
+                                          color: myArList[index].usage ==
+                                                      "Material" ||
+                                                  myArList[index].usage == null
                                               ? constantColors.greyColor
                                                   .withOpacity(0.7)
                                               : constantColors.navButton
                                                   .withOpacity(0.7)),
                                       child: Text(
-                                        myAr.usage ?? "Material",
+                                        myArList[index].usage ?? "Material",
                                         style: TextStyle(
                                             color: constantColors.whiteColor),
                                       ),
