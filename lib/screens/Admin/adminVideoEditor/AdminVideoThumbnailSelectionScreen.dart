@@ -84,7 +84,7 @@ class _AdminVideothumbnailSelectorState
         if (videoFileNew != null) {
           // context.read<VideoEditorProvider>().setFinalVideoFile(videoFileNew);
 
-          Navigator.pushReplacement(
+          Navigator.push(
               context,
               PageTransition(
                   child: AdminPreviewVideoScreen(

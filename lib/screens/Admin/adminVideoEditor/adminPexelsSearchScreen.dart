@@ -54,7 +54,10 @@ class _AdminPexelsSearchScreenState extends State<AdminPexelsSearchScreen> {
               height: 6.h,
               child: TextFormField(
                 controller: textController,
-                keyboardType: TextInputType.text,
+                onEditingComplete: () {
+                  log("value");
+                  setState(() {});
+                },
                 autocorrect: false,
                 style: TextStyle(
                   color: constantColors.whiteColor,
