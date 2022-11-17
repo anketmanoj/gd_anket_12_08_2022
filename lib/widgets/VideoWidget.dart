@@ -15,6 +15,7 @@ import 'package:diamon_rose_app/screens/PostPage/postMaterialModel.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/ArViewerScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/buyCaratScreen.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/following_bloc/following_preload_bloc.dart';
+import 'package:diamon_rose_app/screens/audioPlayer/audioPlayerScreen.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateMessage.dart';
 import 'package:diamon_rose_app/screens/homePage/showCommentScreen.dart';
 import 'package:diamon_rose_app/screens/homePage/showLikeScreen.dart';
@@ -2490,46 +2491,55 @@ class VideoWidget extends StatelessWidget {
                                                           ),
                                                         ),
                                                       )
-                                                    : null,
-                                            // : InkWell(
-                                            //     onTap: () async {
-                                            //       final url =
-                                            //           myItems[index]
-                                            //               .songUrl!;
-                                            //       if (await canLaunch(
-                                            //           url)) {
-                                            //         await launch(
-                                            //           url,
-                                            //           forceSafariVC:
-                                            //               false,
-                                            //         );
-                                            //       }
-                                            //     },
-                                            //     child: Container(
-                                            //       padding:
-                                            //           EdgeInsets.all(
-                                            //               15),
-                                            //       decoration:
-                                            //           BoxDecoration(
-                                            //         color: Colors.black,
-                                            //         borderRadius:
-                                            //             BorderRadius
-                                            //                 .circular(
-                                            //                     20),
-                                            //       ),
-                                            //       child: Text(
-                                            //         "Play",
-                                            //         style: TextStyle(
-                                            //           fontSize: 12,
-                                            //           fontWeight:
-                                            //               FontWeight
-                                            //                   .bold,
-                                            //           color:
-                                            //               Colors.white,
-                                            //         ),
-                                            //       ),
-                                            //     ),
-                                            //   ),
+                                                    : InkWell(
+                                                        onTap: () {
+                                                          controller.pause();
+                                                          Navigator.push(
+                                                            context,
+                                                            PageTransition(
+                                                                child:
+                                                                    AudioPlayerScreen(
+                                                                  albumCover: video
+                                                                      .userimage,
+                                                                  audioUrl: myItems[
+                                                                          index]
+                                                                      .songUrl!,
+                                                                  songTitle: myItems[
+                                                                          index]
+                                                                      .songTitle!,
+                                                                  artistName: myItems[
+                                                                          index]
+                                                                      .ownerName,
+                                                                ),
+                                                                type: PageTransitionType
+                                                                    .rightToLeft),
+                                                          );
+                                                        },
+                                                        child: Container(
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  15),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.black,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                          ),
+                                                          child: Text(
+                                                            "Play",
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
                                             title: Text(
                                               // !Found this here;
                                               "${myItems[index].layerType} by ${myItems[index].ownerName}",

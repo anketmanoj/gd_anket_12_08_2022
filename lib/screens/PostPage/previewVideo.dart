@@ -680,38 +680,40 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
 
                                     default:
                                       return ListTile(
-                                        trailing: !selectMaterials[index]
-                                                .youtubeUrl!
-                                                .contains("www.youtube.com")
-                                            ? Switch(
-                                                activeColor:
-                                                    constantColors.navButton,
-                                                value: selected,
-                                                onChanged: (val) {
-                                                  if (selectMaterials[index]
-                                                          .layerType ==
-                                                      LayerType.Effect) {
-                                                    selectMaterials[index]
-                                                        .selectedMaterial!
-                                                        .value = true;
-                                                  } else {
-                                                    selectMaterials[index]
-                                                        .selectedMaterial!
-                                                        .value = val;
-                                                  }
+                                        trailing: Switch(
+                                          activeColor: constantColors.navButton,
+                                          value: selected,
+                                          onChanged: (val) {
+                                            if (selectMaterials[index]
+                                                    .layerType ==
+                                                LayerType.Effect) {
+                                              selectMaterials[index]
+                                                  .selectedMaterial!
+                                                  .value = true;
+                                            } else if (selectMaterials[index]
+                                                    .youtubeUrl!
+                                                    .contains(
+                                                        "www.youtube.com") ==
+                                                true) {
+                                              selectMaterials[index]
+                                                  .selectedMaterial!
+                                                  .value = true;
+                                            } else {
+                                              selectMaterials[index]
+                                                  .selectedMaterial!
+                                                  .value = val;
+                                            }
 
-                                                  log(selectMaterials
-                                                      .where((element) =>
-                                                          element
-                                                              .selectedMaterial!
-                                                              .value ==
-                                                          true)
-                                                      .toList()
-                                                      .length
-                                                      .toString());
-                                                },
-                                              )
-                                            : null,
+                                            log(selectMaterials
+                                                .where((element) =>
+                                                    element.selectedMaterial!
+                                                        .value ==
+                                                    true)
+                                                .toList()
+                                                .length
+                                                .toString());
+                                          },
+                                        ),
                                         leading: selectMaterials[index]
                                                     .layerType ==
                                                 LayerType.AR
@@ -1041,7 +1043,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                 _selectedRecommendedOptions.length > 0) {
                               // ignore: unawaited_futures
                               CoolAlert.show(
-                                barrierDismissible: true,
+                                barrierDismissible: false,
                                 context: context,
                                 type: CoolAlertType.loading,
                                 text: LocaleKeys.uploadingvideo.tr(),
