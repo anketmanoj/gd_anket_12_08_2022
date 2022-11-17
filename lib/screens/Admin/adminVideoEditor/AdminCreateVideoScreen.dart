@@ -1957,9 +1957,12 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                                                               SizedBox(
                                                                                 width: 10,
                                                                               ),
-                                                                              Text(
-                                                                                "${arVal.youtubeArtistName} - ${arVal.youtubeTitle!}",
-                                                                                style: TextStyle(color: constantColors.whiteColor),
+                                                                              Expanded(
+                                                                                child: Text(
+                                                                                  "${arVal.youtubeArtistName} - ${arVal.youtubeTitle!}",
+                                                                                  softWrap: true,
+                                                                                  style: TextStyle(color: constantColors.whiteColor),
+                                                                                ),
                                                                               ),
                                                                             ],
                                                                           )
@@ -3448,9 +3451,12 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                 decoration: BoxDecoration(
                                     color: Colors.redAccent.withOpacity(0.7)))),
 
-                        minimumDistance: _controller
-                            .video.value.duration.inSeconds
-                            .toDouble(),
+                        minimumDistance: ar.audioEnd!.toDouble() <=
+                                _controller.video.value.duration.inSeconds
+                                    .toDouble()
+                            ? ar.audioEnd!.toDouble()
+                            : _controller.video.value.duration.inSeconds
+                                .toDouble(),
                         onDragging: (handlerIndex, lowerValue, upperValue) {
                           dev.log("lower - $lowerValue");
                           dev.log("upper - $upperValue");

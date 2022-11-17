@@ -57,6 +57,7 @@ class _AdminPexelsSearchScreenState extends State<AdminPexelsSearchScreen> {
                 onEditingComplete: () {
                   log("value");
                   setState(() {});
+                  FocusScope.of(context).unfocus();
                 },
                 autocorrect: false,
                 style: TextStyle(
