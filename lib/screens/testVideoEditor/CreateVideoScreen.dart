@@ -964,7 +964,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       CoolAlert.show(
         context: context,
         type: CoolAlertType.loading,
-        barrierDismissible: true,
+        barrierDismissible: false,
         text: "Loading Music file",
       );
       // Form matte file
@@ -996,7 +996,8 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                 fileBytes: audioFile.readAsBytesSync(),
                 fileName: audioFile.path);
 
-            final File arCutOutFile = await getImage(url: _fullPathsOnline[0]);
+            final File arCutOutFile =
+                await getImageForOwnerMusic(url: _fullPathsOnline[0]);
             dev.log("ArCut out ois here  = ${arCutOutFile.path}");
 
             await _player!.setFilePath(audioFile.path);
@@ -1050,8 +1051,19 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
             setState(() {});
           });
         });
-      } catch (e) {
-        print("FFmpeg Error ==== ${e.toString()}");
+      } catch (e, d) {
+        Get.back();
+        Get.dialog(
+          SimpleDialog(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Text("Error : ${e.toString()}"),
+              ),
+            ],
+          ),
+        );
+        print("FFmpeg Error ==== ${e..toString()}");
       }
     } else if (await Permission.storage.request().isDenied) {
       await openAppSettings();
@@ -1069,6 +1081,28 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     /// Create Empty File in app dir & fill with new image
     final File file = File(path.join(appDir.path, timeNow + imageName));
     file.writeAsBytesSync(fileBytes);
+
+    return file;
+  }
+
+  Future<File> getImageForOwnerMusic({required String url}) async {
+    /// Get Image from server
+    final dio.Response res = await dio.Dio().get<List<int>>(
+      url,
+      options: dio.Options(
+        responseType: dio.ResponseType.bytes,
+      ),
+    );
+
+    /// Get App local storage
+    final Directory appDir = await getApplicationDocumentsDirectory();
+
+    /// Generate Image Name
+    final String imageName = "${Timestamp.now().millisecondsSinceEpoch}";
+
+    /// Create Empty File in app dir & fill with new image
+    final File file = File(path.join(appDir.path, imageName));
+    file.writeAsBytesSync(res.data as List<int>);
 
     return file;
   }
@@ -3500,7 +3534,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       context: context,
       isDismissible: false,
       enableDrag: false,
-      isScrollControlled: false,
+      isScrollControlled: true,
       builder: (context) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -3512,6 +3546,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
               ),
               color: constantColors.whiteColor),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
@@ -3568,12 +3603,12 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                       child: FlutterSlider(
                         values: _currentRangeValues.value,
                         rangeSlider: true,
-//rtl: true,
+                        //rtl: true,
 
-//                ignoreSteps: [
-//                  FlutterSliderIgnoreSteps(from: 8000, to: 12000),
-//                  FlutterSliderIgnoreSteps(from: 18000, to: 22000),
-//                ],
+                        //                ignoreSteps: [
+                        //                  FlutterSliderIgnoreSteps(from: 8000, to: 12000),
+                        //                  FlutterSliderIgnoreSteps(from: 18000, to: 22000),
+                        //                ],
                         max: maxAudioDuration.inSeconds.toDouble(),
                         min: 0,
                         step: FlutterSliderStep(step: 1),
@@ -3677,16 +3712,20 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                       );
                     });
               }),
-              Expanded(
-                child: Center(
-                  child: SubmitButton(
-                    function: () {
-                      ar.audioPlayer!.pause();
-                      Navigator.pop(context);
-                    },
-                    text: "Done",
-                  ),
+              SizedBox(
+                height: 10,
+              ),
+              Center(
+                child: SubmitButton(
+                  function: () {
+                    ar.audioPlayer!.pause();
+                    Navigator.pop(context);
+                  },
+                  text: "Done",
                 ),
+              ),
+              SizedBox(
+                height: 20,
               ),
             ],
           ),

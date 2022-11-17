@@ -447,7 +447,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                   )
                 ],
               ),
-              height: MediaQuery.of(context).size.height * 0.2,
+
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 color: constantColors.whiteColor,

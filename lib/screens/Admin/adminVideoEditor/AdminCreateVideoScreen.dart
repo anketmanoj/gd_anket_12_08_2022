@@ -840,7 +840,8 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                 fileBytes: audioFile.readAsBytesSync(),
                 fileName: audioFile.path);
 
-            final File arCutOutFile = await getImage(url: _fullPathsOnline[0]);
+            final File arCutOutFile =
+                await getImageForOwnerMusic(url: _fullPathsOnline[0]);
             dev.log("ArCut out ois here  = ${arCutOutFile.path}");
 
             await _player!.setFilePath(audioFile.path);
@@ -897,6 +898,18 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
           });
         });
       } catch (e) {
+        Get.back();
+        Get.dialog(
+          SimpleDialog(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Text("Error : ${e.toString()}"),
+              ),
+            ],
+          ),
+        );
+        print("FFmpeg Error ==== ${e..toString()}");
         print("FFmpeg Error ==== ${e.toString()}");
       }
     } else if (await Permission.storage.request().isDenied) {
@@ -910,6 +923,8 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
 
     /// Generate Image Name
     final String imageName = fileName.split('/').last;
+
+    dev.log("Filename == ${imageName}");
     final String timeNow = Timestamp.now().millisecondsSinceEpoch.toString();
 
     /// Create Empty File in app dir & fill with new image
@@ -1082,6 +1097,28 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
 
     /// Generate Image Name
     final String imageName = url.split('/').last;
+
+    /// Create Empty File in app dir & fill with new image
+    final File file = File(path.join(appDir.path, imageName));
+    file.writeAsBytesSync(res.data as List<int>);
+
+    return file;
+  }
+
+  Future<File> getImageForOwnerMusic({required String url}) async {
+    /// Get Image from server
+    final dio.Response res = await dio.Dio().get<List<int>>(
+      url,
+      options: dio.Options(
+        responseType: dio.ResponseType.bytes,
+      ),
+    );
+
+    /// Get App local storage
+    final Directory appDir = await getApplicationDocumentsDirectory();
+
+    /// Generate Image Name
+    final String imageName = "${Timestamp.now().millisecondsSinceEpoch}";
 
     /// Create Empty File in app dir & fill with new image
     final File file = File(path.join(appDir.path, imageName));
