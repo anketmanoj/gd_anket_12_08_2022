@@ -965,9 +965,11 @@ class FirebaseOperations with ChangeNotifier {
           arIdsVal.add(idVal);
           notifyListeners();
         });
-      } else {
-        arIdsVal.add(bgTakenFromMaterials!);
+      } else if (bgTakenFromMaterials != null) {
+        arIdsVal.add(bgTakenFromMaterials);
       }
+
+      log("so far");
 
       await AwsAnketS3.uploadFile(
               accessKey: "AKIATF76MVYR34JAVB7H",

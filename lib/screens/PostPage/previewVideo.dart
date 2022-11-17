@@ -1041,7 +1041,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                                 _selectedRecommendedOptions.length > 0) {
                               // ignore: unawaited_futures
                               CoolAlert.show(
-                                barrierDismissible: false,
+                                barrierDismissible: true,
                                 context: context,
                                 type: CoolAlertType.loading,
                                 text: LocaleKeys.uploadingvideo.tr(),

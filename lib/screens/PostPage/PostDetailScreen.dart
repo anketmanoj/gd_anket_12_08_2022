@@ -2283,45 +2283,46 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                           ),
                                                         ),
                                                       )
-                                                    : InkWell(
-                                                        onTap: () async {
-                                                          final url =
-                                                              myItems[index]
-                                                                  .songUrl!;
-                                                          if (await canLaunch(
-                                                              url)) {
-                                                            await launch(
-                                                              url,
-                                                              forceSafariVC:
-                                                                  false,
-                                                            );
-                                                          }
-                                                        },
-                                                        child: Container(
-                                                          padding:
-                                                              EdgeInsets.all(
-                                                                  15),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors.black,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        20),
-                                                          ),
-                                                          child: Text(
-                                                            "Play",
-                                                            style: TextStyle(
-                                                              fontSize: 12,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
+                                                    : null,
+                                            // : InkWell(
+                                            //     onTap: () async {
+                                            //       final url =
+                                            //           myItems[index]
+                                            //               .songUrl!;
+                                            //       if (await canLaunch(
+                                            //           url)) {
+                                            //         await launch(
+                                            //           url,
+                                            //           forceSafariVC:
+                                            //               false,
+                                            //         );
+                                            //       }
+                                            //     },
+                                            //     child: Container(
+                                            //       padding:
+                                            //           EdgeInsets.all(
+                                            //               15),
+                                            //       decoration:
+                                            //           BoxDecoration(
+                                            //         color: Colors.black,
+                                            //         borderRadius:
+                                            //             BorderRadius
+                                            //                 .circular(
+                                            //                     20),
+                                            //       ),
+                                            //       child: Text(
+                                            //         "Play",
+                                            //         style: TextStyle(
+                                            //           fontSize: 12,
+                                            //           fontWeight:
+                                            //               FontWeight
+                                            //                   .bold,
+                                            //           color:
+                                            //               Colors.white,
+                                            //         ),
+                                            //       ),
+                                            //     ),
+                                            //   ),
                                             title: Text(
                                               // !Found this here;
                                               "${myItems[index].layerType} by ${myItems[index].ownerName}",

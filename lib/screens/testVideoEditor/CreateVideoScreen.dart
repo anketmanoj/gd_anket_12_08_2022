@@ -964,7 +964,7 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
       CoolAlert.show(
         context: context,
         type: CoolAlertType.loading,
-        barrierDismissible: false,
+        barrierDismissible: true,
         text: "Loading Music file",
       );
       // Form matte file
@@ -1951,9 +1951,12 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                                                               SizedBox(
                                                                                 width: 10,
                                                                               ),
-                                                                              Text(
-                                                                                "${arVal.youtubeArtistName} - ${arVal.youtubeTitle!}",
-                                                                                style: TextStyle(color: constantColors.whiteColor),
+                                                                              Expanded(
+                                                                                child: Text(
+                                                                                  "${arVal.youtubeArtistName} - ${arVal.youtubeTitle!}",
+                                                                                  softWrap: true,
+                                                                                  style: TextStyle(color: constantColors.whiteColor),
+                                                                                ),
                                                                               ),
                                                                             ],
                                                                           )
