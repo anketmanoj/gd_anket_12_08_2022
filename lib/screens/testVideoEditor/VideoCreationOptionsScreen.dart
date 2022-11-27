@@ -354,6 +354,7 @@ class VideoCreationOptionsScreen extends StatelessWidget {
             child: Container(
               // ignore: sort_child_properties_last
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 150),
@@ -444,7 +445,10 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                         );
                       },
                     ),
-                  )
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
                 ],
               ),
 
