@@ -15,6 +15,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 import 'package:path/path.dart';
+import 'package:social_share/social_share.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 ///sharing platform
 enum Share {
@@ -49,6 +52,7 @@ class ShareWidget extends StatefulWidget {
 class _ShareWidgetState extends State<ShareWidget> {
   final bool videoEnable = true;
   File? videoFile;
+  late File thumbnailFile;
 
   @override
   void initState() {
@@ -91,8 +95,19 @@ class _ShareWidgetState extends State<ShareWidget> {
       log("output is ${output}");
     });
 
+    final Uint8List? _thumbData = await VideoThumbnail.thumbnailData(
+      imageFormat: ImageFormat.PNG,
+      video: "${appDir.path}/shareVideo.mp4",
+      maxHeight: 10,
+      maxWidth: 10,
+    );
+
+    final videoThumbnailFile = File(join(appDir.path, "videoThumbnail.png"));
+    videoThumbnailFile.writeAsBytesSync(_thumbData!);
+
     setState(() {
       videoFile = File("${appDir.path}/shareVideo.mp4");
+      thumbnailFile = videoThumbnailFile;
     });
 
     log("video Url = ${videoFile!.path}");
@@ -293,13 +308,36 @@ class _ShareWidgetState extends State<ShareWidget> {
     }
   }
 
+  Future<String?> screenshot() async {
+    var data = await screenshotController.capture();
+    if (data == null) {
+      return null;
+    }
+    final tempDir = await getTemporaryDirectory();
+    final assetPath = '${tempDir.path}/temp.png';
+    File file = await File(assetPath).create();
+    await file.writeAsBytes(data);
+    return file.path;
+  }
+
+  ScreenshotController screenshotController = ScreenshotController();
+
   Future<void> onButtonTap(Share share) async {
     String? response;
     final FlutterShareMe flutterShareMe = FlutterShareMe();
     switch (share) {
       case Share.facebook:
-        response =
-            await flutterShareMe.shareToFacebook(url: widget.msg, msg: "");
+        log("social share now!");
+
+        await SocialShare.shareFacebookStory(
+          appId: "264465402552974",
+          imagePath: thumbnailFile.path,
+          backgroundResourcePath: videoFile!.path,
+          attributionURL: widget.urlPath,
+        ).then((data) {
+          print(data);
+        });
+
         break;
 
       case Share.twitter:
