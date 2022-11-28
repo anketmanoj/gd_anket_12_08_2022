@@ -1661,13 +1661,17 @@ class VideoWidget extends StatelessWidget {
                                                     .videoId!);
 
                                         if (checkExists == true) {
+                                          Video videoVal = await context
+                                              .read<FirebaseOperations>()
+                                              .getVideoPosts(
+                                                  videoId:
+                                                      othersMaterials[index]
+                                                          .videoId!);
                                           Navigator.push(
                                               context,
                                               PageTransition(
                                                   child: PostDetailsScreen(
-                                                    videoId:
-                                                        othersMaterials[index]
-                                                            .videoId!,
+                                                    video: videoVal,
                                                   ),
                                                   type:
                                                       PageTransitionType.fade));
@@ -2129,13 +2133,22 @@ class VideoWidget extends StatelessWidget {
                                                                           .Both));
 
                                                           // ignore: unawaited_futures
+                                                          Video videoVal = await context
+                                                              .read<
+                                                                  FirebaseOperations>()
+                                                              .getVideoPosts(
+                                                                  videoId:
+                                                                      video.id);
                                                           Navigator.push(
                                                               context,
-                                                              MaterialPageRoute(
-                                                                  builder: (context) =>
+                                                              PageTransition(
+                                                                  child:
                                                                       PostDetailsScreen(
-                                                                          videoId:
-                                                                              video.id)));
+                                                                    video:
+                                                                        videoVal,
+                                                                  ),
+                                                                  type: PageTransitionType
+                                                                      .fade));
                                                         }
                                                       },
                                                       icon: VerifiedMark(
@@ -2313,13 +2326,17 @@ class VideoWidget extends StatelessWidget {
                                                       .videoId!);
 
                                           if (checkExists == true) {
+                                            Video videoVal = await context
+                                                .read<FirebaseOperations>()
+                                                .getVideoPosts(
+                                                    videoId:
+                                                        othersMaterials[index]
+                                                            .videoId!);
                                             Navigator.push(
                                                 context,
                                                 PageTransition(
                                                     child: PostDetailsScreen(
-                                                      videoId:
-                                                          othersMaterials[index]
-                                                              .videoId!,
+                                                      video: videoVal,
                                                     ),
                                                     type: PageTransitionType
                                                         .fade));

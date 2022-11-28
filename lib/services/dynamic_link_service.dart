@@ -5,7 +5,9 @@ import 'package:diamon_rose_app/providers/homeScreenProvider.dart';
 import 'package:diamon_rose_app/screens/DynamicLinkPages/DynamicLinkPostPage.dart';
 import 'package:diamon_rose_app/screens/OtherUserProfile/otherUserProfile.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
+import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/user.dart';
+import 'package:diamon_rose_app/services/video.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -34,12 +36,16 @@ class DynamicLinkService {
           Provider.of<HomeScreenProvider>(context, listen: false)
               .setHomeScreen(false);
 
-          Navigator.pushReplacement(
-            context,
-            PageTransition(
-                child: PostDetailsScreen(videoId: id),
-                type: PageTransitionType.topToBottom),
-          );
+          Video videoVal = await context
+              .read<FirebaseOperations>()
+              .getVideoPosts(videoId: id);
+          Navigator.push(
+              context,
+              PageTransition(
+                  child: PostDetailsScreen(
+                    video: videoVal,
+                  ),
+                  type: PageTransitionType.fade));
         }
 
         // ! For User
@@ -81,12 +87,16 @@ class DynamicLinkService {
           Provider.of<HomeScreenProvider>(context, listen: false)
               .setHomeScreen(false);
 
-          Navigator.pushReplacement(
-            context,
-            PageTransition(
-                child: PostDetailsScreen(videoId: id),
-                type: PageTransitionType.topToBottom),
-          );
+          Video videoVal = await context
+              .read<FirebaseOperations>()
+              .getVideoPosts(videoId: id);
+          Navigator.push(
+              context,
+              PageTransition(
+                  child: PostDetailsScreen(
+                    video: videoVal,
+                  ),
+                  type: PageTransitionType.fade));
         }
 
         // ! For User

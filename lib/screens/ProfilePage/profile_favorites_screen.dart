@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
+import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -40,14 +42,21 @@ class FavoritesPage extends StatelessWidget {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        onTap: () {
+                        onTap: () async {
                           try {
+                            Video videoVal = await context
+                                .read<FirebaseOperations>()
+                                .getVideoPosts(
+                                    videoId: snapshot.data!.docs[index]
+                                        ["videoid"]);
+
+                            videoVal.userimage =
+                                snapshot.data!.docs[index]["userimage"];
                             Navigator.push(
                                 context,
                                 PageTransition(
                                     child: PostDetailsScreen(
-                                      videoId: snapshot.data!.docs[index]
-                                          ["videoid"],
+                                      video: videoVal,
                                     ),
                                     type: PageTransitionType.fade));
                           } catch (e) {

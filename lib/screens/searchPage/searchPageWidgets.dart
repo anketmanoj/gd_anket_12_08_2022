@@ -430,12 +430,12 @@ class _VideoSearchState extends State<VideoSearch> {
 
                       return InkWell(
                         onTap: context.read<Authentication>().getIsAnon == false
-                            ? () {
+                            ? () async {
                                 Navigator.push(
                                     context,
                                     PageTransition(
                                         child: PostDetailsScreen(
-                                          videoId: video.id,
+                                          video: video,
                                         ),
                                         type: PageTransitionType.fade));
                               }

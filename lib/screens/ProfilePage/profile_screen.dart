@@ -506,16 +506,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 snapshot.data!.docs[index].data()
                                     as Map<String, dynamic>);
                             return InkWell(
-                              onTap: () {
+                              onTap: () async {
+                                Video videoVal = await context
+                                    .read<FirebaseOperations>()
+                                    .getVideoPosts(videoId: video.id);
+
+                                videoVal.userimage =
+                                    firebaseOperations.initUserImage;
+
                                 Navigator.push(
-                                  context,
-                                  PageTransition(
-                                    type: PageTransitionType.rightToLeft,
-                                    child: PostDetailsScreen(
-                                      videoId: video.id,
-                                    ),
-                                  ),
-                                );
+                                    context,
+                                    PageTransition(
+                                        child: PostDetailsScreen(
+                                          video: videoVal,
+                                        ),
+                                        type: PageTransitionType.fade));
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(20),

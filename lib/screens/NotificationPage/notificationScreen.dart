@@ -7,6 +7,7 @@ import 'package:diamon_rose_app/screens/homePage/showCommentScreen.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/notifications_class.dart';
+import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -98,11 +99,16 @@ class NotificationScreen extends StatelessWidget {
                       );
 
                       if (checkExists == true) {
+                        Video videoVal = await context
+                            .read<FirebaseOperations>()
+                            .getVideoPosts(videoId: notification.postId!);
+
+                        videoVal.userimage = notification.userimage;
                         Navigator.push(
                             context,
                             PageTransition(
                                 child: PostDetailsScreen(
-                                  videoId: notification.postId!,
+                                  video: videoVal,
                                 ),
                                 type: PageTransitionType.fade));
                       } else {

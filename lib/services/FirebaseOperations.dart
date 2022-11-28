@@ -3842,4 +3842,16 @@ class FirebaseOperations with ChangeNotifier {
       });
     }
   }
+
+  Future<Video> getVideoPosts({required String videoId}) async {
+    return FirebaseFirestore.instance
+        .collection("posts")
+        .doc(videoId)
+        .get()
+        .then((value) {
+      final Video video = Video.fromJson(value.data()!);
+
+      return video;
+    });
+  }
 }

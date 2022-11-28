@@ -982,6 +982,8 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                             Video video = Video.fromJson(
                                 snapshot.data!.docs[index].data()
                                     as Map<String, dynamic>);
+
+                            video.userimage = widget.userModel.userimage;
                             return InkWell(
                               onTap: context.read<Authentication>().getIsAnon ==
                                       false
@@ -991,7 +993,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                         PageTransition(
                                           type: PageTransitionType.rightToLeft,
                                           child: PostDetailsScreen(
-                                            videoId: video.id,
+                                            video: video,
                                           ),
                                         ),
                                       );

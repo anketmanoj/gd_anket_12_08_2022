@@ -896,13 +896,17 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                       .videoId!);
 
                                           if (checkExists == true) {
+                                            Video videoVal = await context
+                                                .read<FirebaseOperations>()
+                                                .getVideoPosts(
+                                                    videoId:
+                                                        othersMaterials[index]
+                                                            .videoId!);
                                             Navigator.push(
                                                 context,
                                                 PageTransition(
                                                     child: PostDetailsScreen(
-                                                      videoId:
-                                                          othersMaterials[index]
-                                                              .videoId!,
+                                                      video: videoVal,
                                                     ),
                                                     type: PageTransitionType
                                                         .fade));
@@ -1251,13 +1255,17 @@ class _DynamicLinkPostPageState extends State<DynamicLinkPostPage> {
                                                     .videoId!);
 
                                         if (checkExists == true) {
+                                          Video videoVal = await context
+                                              .read<FirebaseOperations>()
+                                              .getVideoPosts(
+                                                  videoId:
+                                                      othersMaterials[index]
+                                                          .videoId!);
                                           Navigator.push(
                                               context,
                                               PageTransition(
                                                   child: PostDetailsScreen(
-                                                    videoId:
-                                                        othersMaterials[index]
-                                                            .videoId!,
+                                                    video: videoVal,
                                                   ),
                                                   type:
                                                       PageTransitionType.fade));

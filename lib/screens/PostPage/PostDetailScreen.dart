@@ -48,9 +48,9 @@ import 'package:visibility_detector/visibility_detector.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class PostDetailsScreen extends StatefulWidget {
-  final String videoId;
+  final Video video;
 
-  PostDetailsScreen({required this.videoId});
+  PostDetailsScreen({required this.video});
 
   @override
   _PostDetailsScreenState createState() => _PostDetailsScreenState();
@@ -61,68 +61,56 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   late VideoPlayerController _videoPlayerController;
   final ConstantColors constantColors = ConstantColors();
 
-  Video? video;
+  // Video? video;
   bool loading = true;
 
   final ScreenCaptureEvent screenListener = ScreenCaptureEvent();
 
-  // get firebase video from video id
-  Future<Video> getVideo() async {
-    return await FirebaseFirestore.instance
-        .collection('posts')
-        .doc(widget.videoId)
-        .get()
-        .then((value) {
-      return Video.fromJson(value.data()!);
-    });
-    // return video;
-  }
-
   @override
   void initState() {
     log("this right");
-    getVideo().then((value) {
-      setState(() {
-        _videoPlayerController = VideoPlayerController.network(value.videourl);
-        _chewieController = ChewieController(
-          videoPlayerController: _videoPlayerController,
-          showControls: false,
-          aspectRatio: 9 / 16,
-          autoPlay: false,
-          looping: true,
-          autoInitialize: true,
-          errorBuilder: (context, errorMessage) {
-            return Center(
-              child: Text(
-                errorMessage,
-                style: TextStyle(color: Colors.white),
-              ),
-            );
-          },
-        );
-        video = value;
-        loading = false;
-      });
 
-      if (value.useruid != context.read<Authentication>().getUserId) {
-        context.read<FirebaseOperations>().updatePostView(
-              videoId: value.id,
-              useruidVal: context.read<Authentication>().getUserId,
-              videoVal: value,
-            );
-      }
+    setState(() {
+      _videoPlayerController =
+          VideoPlayerController.network(widget.video.videourl);
+      _chewieController = ChewieController(
+        videoPlayerController: _videoPlayerController,
+        showControls: false,
+        aspectRatio: 9 / 16,
+        autoPlay: false,
+        looping: true,
+        autoInitialize: true,
+        errorBuilder: (context, errorMessage) {
+          return Center(
+            child: Text(
+              errorMessage,
+              style: TextStyle(color: Colors.white),
+            ),
+          );
+        },
+      );
+
+      loading = false;
     });
+
+    if (widget.video.useruid != context.read<Authentication>().getUserId) {
+      context.read<FirebaseOperations>().updatePostView(
+            videoId: widget.video.id,
+            useruidVal: context.read<Authentication>().getUserId,
+            videoVal: widget.video,
+          );
+    }
     log("detecting screenshory now");
     screenListener.addScreenRecordListener((recorded) {
       ///Recorded was your record status (bool)
-      if (video!.isPaid) {
+      if (widget.video.isPaid) {
         showScreenrecordWarningMsg();
       }
     });
 
     screenListener.addScreenShotListener((filePath) {
       ///filePath only available for Android
-      if (video!.isPaid) {
+      if (widget.video.isPaid) {
         showScreenshotWarningMsg();
       }
     });
@@ -148,7 +136,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
             onConfirmBtnTap: () async {
               await context
                   .read<FirebaseOperations>()
-                  .deleteVideoPost(videoid: widget.videoId)
+                  .deleteVideoPost(videoid: widget.video.id)
                   .then((value) {
                 Get.back();
                 Get.back();
@@ -200,11 +188,11 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (video != null)
-      return (video!.isPaid &&
-              !video!.boughtBy
+    if (widget.video != null)
+      return (widget.video.isPaid &&
+              !widget.video.boughtBy
                   .contains(context.read<Authentication>().getUserId) &&
-              video!.useruid != context.read<Authentication>().getUserId)
+              widget.video.useruid != context.read<Authentication>().getUserId)
           ? paidVideoNotBought(context)
           : VideoBoughtAndViewable(context);
     else
@@ -221,14 +209,14 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
         backgroundColor: Colors.black,
         body: VisibilityDetector(
           key: Key(
-              '${video!.videotitle} + ${video!.caption} + ${DateTime.now()}'),
+              '${widget.video.videotitle} + ${widget.video.caption} + ${DateTime.now()}'),
           onVisibilityChanged: (visibilityInfo) {
             var visiblePercentage = visibilityInfo.visibleFraction * 100;
             if (visiblePercentage == 100) {
-              log("${video!.videotitle} played");
+              log("${widget.video.videotitle} played");
               _videoPlayerController.play();
             } else {
-              log("${video!.videotitle} paused");
+              log("${widget.video.videotitle} paused");
               _videoPlayerController.pause();
             }
           },
@@ -245,10 +233,11 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 ),
               ),
               Visibility(
-                visible: video!.isPaid &&
-                    !video!.boughtBy
+                visible: widget.video.isPaid &&
+                    !widget.video.boughtBy
                         .contains(context.read<Authentication>().getUserId) &&
-                    video!.useruid != context.read<Authentication>().getUserId,
+                    widget.video.useruid !=
+                        context.read<Authentication>().getUserId,
                 child: Positioned(
                   child: Center(
                     child: BlurryContainer.expand(
@@ -267,7 +256,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                 height: 20.h,
                                 width: 100.w,
                                 child: ImageNetworkLoader(
-                                  imageUrl: video!.thumbnailurl,
+                                  imageUrl: widget.video.thumbnailurl,
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -332,7 +321,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 ),
               ),
               Visibility(
-                visible: video!.useruid ==
+                visible: widget.video.useruid ==
                         Provider.of<Authentication>(context, listen: false)
                             .getUserId ||
                     adminUserId
@@ -353,7 +342,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                             : null;
                       });
 
-                      otherUserOptionsMenu(context: context, video: video!);
+                      otherUserOptionsMenu(
+                          context: context, video: widget.video);
                     },
                   ),
                 ),
@@ -371,7 +361,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                       InkWell(
                         onTap: () {
                           context.read<FirebaseOperations>().goToUserProfile(
-                              userUid: video!.useruid, context: context);
+                              userUid: widget.video.useruid, context: context);
                         },
                         child: Row(
                           children: [
@@ -381,7 +371,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(30),
                                 image: DecorationImage(
-                                  image: Image.network(video!.userimage).image,
+                                  image: Image.network(widget.video.userimage)
+                                      .image,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -394,7 +385,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                       children: <Widget>[
                                         // Stroked text as border.
                                         Text(
-                                          video!.username,
+                                          widget.video.username,
                                           style: TextStyle(
                                             fontSize: 14,
                                             foreground: Paint()
@@ -405,7 +396,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                         ),
                                         // Solid text as fill.
                                         Text(
-                                          video!.username,
+                                          widget.video.username,
                                           style: TextStyle(
                                             fontSize: 14,
                                             color: Colors.white,
@@ -414,7 +405,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                       ],
                                     ),
                                     Visibility(
-                                      visible: video!.verifiedUser ?? false,
+                                      visible:
+                                          widget.video.verifiedUser ?? false,
                                       child: Padding(
                                         padding:
                                             const EdgeInsets.only(left: 8.0),
@@ -432,7 +424,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           children: <Widget>[
                             // Stroked text as border.
                             Text(
-                              video!.videotitle,
+                              widget.video.videotitle,
                               style: TextStyle(
                                 fontSize: 14,
                                 foreground: Paint()
@@ -443,7 +435,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                             ),
                             // Solid text as fill.
                             Text(
-                              video!.videotitle,
+                              widget.video.videotitle,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.white,
@@ -457,7 +449,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         child: Stack(
                           children: <Widget>[
                             ReadMoreText(
-                              video!.caption,
+                              widget.video.caption,
                               trimLines: 2,
                               colorClickableText: constantColors.navButton,
                               trimMode: TrimMode.Line,
@@ -492,7 +484,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           children: <Widget>[
                             // Stroked text as border.
                             Text(
-                              timeago.format((video!.timestamp).toDate()),
+                              timeago.format((widget.video.timestamp).toDate()),
                               style: TextStyle(
                                 fontSize: 10,
                                 foreground: Paint()
@@ -503,7 +495,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                             ),
                             // Solid text as fill.
                             Text(
-                              timeago.format((video!.timestamp).toDate()),
+                              timeago.format((widget.video.timestamp).toDate()),
                               style: TextStyle(
                                 fontSize: 10,
                                 color: Colors.white,
@@ -543,7 +535,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           ),
                         ),
                       ),
-                      onTap: () => video!.isFree
+                      onTap: () => widget.video.isFree
                           ? freeMaterialsBottomSheet(
                               context,
                             )
@@ -558,18 +550,18 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                       onTap: () async {
                         var generatedLink =
                             await DynamicLinkService.createDynamicLink(
-                                video!.id,
+                                widget.video.id,
                                 short: true);
                         final String message = generatedLink.toString();
 
                         bool canShareVal = false;
 
-                        if (video!.isPaid) {
-                          if (video!.boughtBy.contains(
+                        if (widget.video.isPaid) {
+                          if (widget.video.boughtBy.contains(
                               context.read<Authentication>().getUserId)) {
                             canShareVal = true;
                           }
-                          if (video!.useruid ==
+                          if (widget.video.useruid ==
                               context.read<Authentication>().getUserId) {
                             canShareVal == true;
                           }
@@ -580,8 +572,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         Get.bottomSheet(
                           ShareWidget(
                             msg: message,
-                            urlPath: video!.videourl,
-                            videoOwnerName: video!.username,
+                            urlPath: widget.video.videourl,
+                            videoOwnerName: widget.video.username,
                             canShareToSocialMedia: canShareVal,
                           ),
                         );
@@ -595,7 +587,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         await Provider.of<FirebaseOperations>(context,
                                 listen: false)
                             .messageUser(
-                                messagingUid: video!.useruid,
+                                messagingUid: widget.video.useruid,
                                 messagingDocId: Provider.of<Authentication>(
                                         context,
                                         listen: false)
@@ -623,18 +615,18 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                         context,
                                         listen: false)
                                     .getUserId,
-                                messengerDocId: video!.useruid,
+                                messengerDocId: widget.video.useruid,
                                 messengerData: {
-                                  'username': video!.username,
-                                  'userimage': video!.userimage,
+                                  'username': widget.video.username,
+                                  'userimage': widget.video.userimage,
                                   'useremail': 'test - remove later',
-                                  'useruid': video!.useruid,
+                                  'useruid': widget.video.useruid,
                                   'time': Timestamp.now(),
                                 })
                             .whenComplete(() async {
                           await FirebaseFirestore.instance
                               .collection("users")
-                              .doc(video!.useruid)
+                              .doc(widget.video.useruid)
                               .get()
                               .then((value) {
                             if (value.exists) {
@@ -661,7 +653,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         child: StreamBuilder<DocumentSnapshot>(
                             stream: FirebaseFirestore.instance
                                 .collection("posts")
-                                .doc(video!.id)
+                                .doc(widget.video.id)
                                 .collection("likes")
                                 .doc(context.read<Authentication>().getUserId)
                                 .snapshots(),
@@ -673,7 +665,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                       context
                                           .read<FirebaseOperations>()
                                           .deleteLikePost(
-                                              postUid: video!.id,
+                                              postUid: widget.video.id,
                                               userUid: context
                                                   .read<Authentication>()
                                                   .getUserId,
@@ -690,13 +682,14 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                         await context
                                             .read<FirebaseOperations>()
                                             .likePost(
-                                              videoOwnerId: video!.useruid,
+                                              videoOwnerId:
+                                                  widget.video.useruid,
                                               sendToUserToken:
-                                                  video!.ownerFcmToken!,
+                                                  widget.video.ownerFcmToken!,
                                               likerUsername: context
                                                   .read<FirebaseOperations>()
                                                   .initUserName,
-                                              postUid: video!.id,
+                                              postUid: widget.video.id,
                                               userUid: context
                                                   .read<Authentication>()
                                                   .getUserId,
@@ -706,12 +699,13 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                           context
                                               .read<FirebaseOperations>()
                                               .addLikeNotification(
-                                                postId: video!.id,
+                                                postId: widget.video.id,
                                                 userUid: context
                                                     .read<Authentication>()
                                                     .getUserId,
                                                 context: context,
-                                                videoOwnerUid: video!.useruid,
+                                                videoOwnerUid:
+                                                    widget.video.useruid,
                                               );
                                         });
                                       },
@@ -732,7 +726,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                               context,
                               PageTransition(
                                   child: ShowLikesPage(
-                                    postId: video!.id,
+                                    postId: widget.video.id,
                                   ),
                                   type: PageTransitionType.fade));
                         }),
@@ -745,9 +739,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                             context,
                             PageTransition(
                                 child: ShowCommentsPage(
-                                  ownerFcmToken: video!.ownerFcmToken,
-                                  postOwnerId: video!.useruid,
-                                  postId: video!.id,
+                                  ownerFcmToken: widget.video.ownerFcmToken,
+                                  postOwnerId: widget.video.useruid,
+                                  postId: widget.video.id,
                                 ),
                                 type: PageTransitionType.fade));
                       },
@@ -760,7 +754,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                       listen: false)
                                   .getUserId)
                               .collection("favorites")
-                              .doc(video!.id)
+                              .doc(widget.video.id)
                               .snapshots(),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
@@ -773,7 +767,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                     await context
                                         .read<FirebaseOperations>()
                                         .removeFromFavs(
-                                            video: video!, context: context);
+                                            video: widget.video,
+                                            context: context);
                                   },
                                   icon: Icon(
                                     FontAwesomeIcons.solidStar,
@@ -786,7 +781,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                     await context
                                         .read<FirebaseOperations>()
                                         .addToFavs(
-                                            video: video!, context: context);
+                                            video: widget.video,
+                                            context: context);
                                   },
                                   icon: Icon(
                                     FontAwesomeIcons.star,
@@ -802,14 +798,14 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           image: DecorationImage(
-                            image: Image.network(video!.userimage).image,
+                            image: Image.network(widget.video.userimage).image,
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
                       onTap: () {
                         context.read<FirebaseOperations>().goToUserProfile(
-                            userUid: video!.useruid, context: context);
+                            userUid: widget.video.useruid, context: context);
                       },
                     ),
                   ],
@@ -828,7 +824,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
         Container(
           height: 100.h,
           width: 100.w,
-          child: ImageNetworkLoader(imageUrl: video!.thumbnailurl),
+          child: ImageNetworkLoader(imageUrl: widget.video.thumbnailurl),
         ),
         Positioned(
           child: Center(
@@ -848,7 +844,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         height: 20.h,
                         width: 100.w,
                         child: ImageNetworkLoader(
-                          imageUrl: video!.thumbnailurl,
+                          imageUrl: widget.video.thumbnailurl,
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -910,7 +906,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
           ),
         ),
         Visibility(
-          visible: video!.useruid ==
+          visible: widget.video.useruid ==
                   Provider.of<Authentication>(context, listen: false)
                       .getUserId ||
               adminUserId.contains(context.read<Authentication>().getUserId),
@@ -930,7 +926,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                       : null;
                 });
 
-                otherUserOptionsMenu(context: context, video: video!);
+                otherUserOptionsMenu(context: context, video: widget.video);
               },
             ),
           ),
@@ -948,7 +944,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 InkWell(
                   onTap: () {
                     context.read<FirebaseOperations>().goToUserProfile(
-                        userUid: video!.useruid, context: context);
+                        userUid: widget.video.useruid, context: context);
                   },
                   child: Row(
                     children: [
@@ -958,7 +954,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
                           image: DecorationImage(
-                            image: Image.network(video!.userimage).image,
+                            image: Image.network(widget.video.userimage).image,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -971,7 +967,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                 children: <Widget>[
                                   // Stroked text as border.
                                   Text(
-                                    video!.username,
+                                    widget.video.username,
                                     style: TextStyle(
                                       fontSize: 14,
                                       foreground: Paint()
@@ -982,7 +978,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                   ),
                                   // Solid text as fill.
                                   Text(
-                                    video!.username,
+                                    widget.video.username,
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
@@ -991,7 +987,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                 ],
                               ),
                               Visibility(
-                                visible: video!.verifiedUser ?? false,
+                                visible: widget.video.verifiedUser ?? false,
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 8.0),
                                   child: VerifiedMark(),
@@ -1008,7 +1004,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                     children: <Widget>[
                       // Stroked text as border.
                       Text(
-                        video!.videotitle,
+                        widget.video.videotitle,
                         style: TextStyle(
                           fontSize: 14,
                           foreground: Paint()
@@ -1019,7 +1015,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                       ),
                       // Solid text as fill.
                       Text(
-                        video!.videotitle,
+                        widget.video.videotitle,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.white,
@@ -1033,7 +1029,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                   child: Stack(
                     children: <Widget>[
                       ReadMoreText(
-                        video!.caption,
+                        widget.video.caption,
                         trimLines: 2,
                         colorClickableText: constantColors.navButton,
                         trimMode: TrimMode.Line,
@@ -1068,7 +1064,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                     children: <Widget>[
                       // Stroked text as border.
                       Text(
-                        timeago.format((video!.timestamp).toDate()),
+                        timeago.format((widget.video.timestamp).toDate()),
                         style: TextStyle(
                           fontSize: 10,
                           foreground: Paint()
@@ -1079,7 +1075,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                       ),
                       // Solid text as fill.
                       Text(
-                        timeago.format((video!.timestamp).toDate()),
+                        timeago.format((widget.video.timestamp).toDate()),
                         style: TextStyle(
                           fontSize: 10,
                           color: Colors.white,
@@ -1119,7 +1115,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                     ),
                   ),
                 ),
-                onTap: () => video!.isFree
+                onTap: () => widget.video.isFree
                     ? freeMaterialsBottomSheet(
                         context,
                       )
@@ -1133,18 +1129,19 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 ),
                 onTap: () async {
                   var generatedLink =
-                      await DynamicLinkService.createDynamicLink(video!.id,
+                      await DynamicLinkService.createDynamicLink(
+                          widget.video.id,
                           short: true);
                   final String message = generatedLink.toString();
 
                   bool canShareVal = false;
 
-                  if (video!.isPaid) {
-                    if (video!.boughtBy
+                  if (widget.video.isPaid) {
+                    if (widget.video.boughtBy
                         .contains(context.read<Authentication>().getUserId)) {
                       canShareVal = true;
                     }
-                    if (video!.useruid ==
+                    if (widget.video.useruid ==
                         context.read<Authentication>().getUserId) {
                       canShareVal == true;
                     }
@@ -1155,8 +1152,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                   Get.bottomSheet(
                     ShareWidget(
                       msg: message,
-                      urlPath: video!.videourl,
-                      videoOwnerName: video!.username,
+                      urlPath: widget.video.videourl,
+                      videoOwnerName: widget.video.username,
                       canShareToSocialMedia: canShareVal,
                     ),
                   );
@@ -1169,7 +1166,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 onTap: () async {
                   await Provider.of<FirebaseOperations>(context, listen: false)
                       .messageUser(
-                          messagingUid: video!.useruid,
+                          messagingUid: widget.video.useruid,
                           messagingDocId: Provider.of<Authentication>(context,
                                   listen: false)
                               .getUserId,
@@ -1193,18 +1190,18 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           messengerUid: Provider.of<Authentication>(context,
                                   listen: false)
                               .getUserId,
-                          messengerDocId: video!.useruid,
+                          messengerDocId: widget.video.useruid,
                           messengerData: {
-                            'username': video!.username,
-                            'userimage': video!.userimage,
+                            'username': widget.video.username,
+                            'userimage': widget.video.userimage,
                             'useremail': 'test - remove later',
-                            'useruid': video!.useruid,
+                            'useruid': widget.video.useruid,
                             'time': Timestamp.now(),
                           })
                       .whenComplete(() async {
                     await FirebaseFirestore.instance
                         .collection("users")
-                        .doc(video!.useruid)
+                        .doc(widget.video.useruid)
                         .get()
                         .then((value) {
                       if (value.exists) {
@@ -1230,7 +1227,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                   child: StreamBuilder<DocumentSnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection("posts")
-                          .doc(video!.id)
+                          .doc(widget.video.id)
                           .collection("likes")
                           .doc(context.read<Authentication>().getUserId)
                           .snapshots(),
@@ -1242,7 +1239,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                 context
                                     .read<FirebaseOperations>()
                                     .deleteLikePost(
-                                        postUid: video!.id,
+                                        postUid: widget.video.id,
                                         userUid: context
                                             .read<Authentication>()
                                             .getUserId,
@@ -1259,12 +1256,13 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                   await context
                                       .read<FirebaseOperations>()
                                       .likePost(
-                                        videoOwnerId: video!.useruid,
-                                        sendToUserToken: video!.ownerFcmToken!,
+                                        videoOwnerId: widget.video.useruid,
+                                        sendToUserToken:
+                                            widget.video.ownerFcmToken!,
                                         likerUsername: context
                                             .read<FirebaseOperations>()
                                             .initUserName,
-                                        postUid: video!.id,
+                                        postUid: widget.video.id,
                                         userUid: context
                                             .read<Authentication>()
                                             .getUserId,
@@ -1274,12 +1272,12 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                     context
                                         .read<FirebaseOperations>()
                                         .addLikeNotification(
-                                          postId: video!.id,
+                                          postId: widget.video.id,
                                           userUid: context
                                               .read<Authentication>()
                                               .getUserId,
                                           context: context,
-                                          videoOwnerUid: video!.useruid,
+                                          videoOwnerUid: widget.video.useruid,
                                         );
                                   });
                                 },
@@ -1300,7 +1298,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         context,
                         PageTransition(
                             child: ShowLikesPage(
-                              postId: video!.id,
+                              postId: widget.video.id,
                             ),
                             type: PageTransitionType.fade));
                   }),
@@ -1313,9 +1311,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                       context,
                       PageTransition(
                           child: ShowCommentsPage(
-                            ownerFcmToken: video!.ownerFcmToken,
-                            postOwnerId: video!.useruid,
-                            postId: video!.id,
+                            ownerFcmToken: widget.video.ownerFcmToken,
+                            postOwnerId: widget.video.useruid,
+                            postId: widget.video.id,
                           ),
                           type: PageTransitionType.fade));
                 },
@@ -1327,7 +1325,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         .doc(Provider.of<Authentication>(context, listen: false)
                             .getUserId)
                         .collection("favorites")
-                        .doc(video!.id)
+                        .doc(widget.video.id)
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -1339,7 +1337,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                               await context
                                   .read<FirebaseOperations>()
                                   .removeFromFavs(
-                                      video: video!, context: context);
+                                      video: widget.video, context: context);
                             },
                             icon: Icon(
                               FontAwesomeIcons.solidStar,
@@ -1351,7 +1349,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                             onPressed: () async {
                               await context
                                   .read<FirebaseOperations>()
-                                  .addToFavs(video: video!, context: context);
+                                  .addToFavs(
+                                      video: widget.video, context: context);
                             },
                             icon: Icon(
                               FontAwesomeIcons.star,
@@ -1369,14 +1368,14 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(40),
                     image: DecorationImage(
-                      image: Image.network(video!.userimage).image,
+                      image: Image.network(widget.video.userimage).image,
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
                 onTap: () {
                   context.read<FirebaseOperations>().goToUserProfile(
-                      userUid: video!.useruid, context: context);
+                      userUid: widget.video.useruid, context: context);
                 },
               ),
             ],
@@ -1417,7 +1416,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 height: 10,
               ),
               Text(
-                "Materials for ${video!.isPaid ? 'Sale' : 'Free'}",
+                "Materials for ${widget.video.isPaid ? 'Sale' : 'Free'}",
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white,
@@ -1429,7 +1428,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 child: StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection("posts")
-                        .doc(video!.id)
+                        .doc(widget.video.id)
                         .collection("materials")
                         .snapshots(),
                     builder: (context, snapshot) {
@@ -1443,12 +1442,12 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         });
 
                         List<PostMaterialModel> othersMaterials = postMaterials
-                            .where(
-                                (element) => element.ownerId != video!.useruid)
+                            .where((element) =>
+                                element.ownerId != widget.video.useruid)
                             .toList();
                         List<PostMaterialModel> myItems = postMaterials
-                            .where(
-                                (element) => element.ownerId == video!.useruid)
+                            .where((element) =>
+                                element.ownerId == widget.video.useruid)
                             .toList();
 
                         return SingleChildScrollView(
@@ -1475,13 +1474,19 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                       .videoId!);
 
                                           if (checkExists == true) {
+                                            log("here");
+
+                                            Video videoVal = await context
+                                                .read<FirebaseOperations>()
+                                                .getVideoPosts(
+                                                    videoId:
+                                                        othersMaterials[index]
+                                                            .videoId!);
                                             Navigator.push(
                                                 context,
                                                 PageTransition(
                                                     child: PostDetailsScreen(
-                                                      videoId:
-                                                          othersMaterials[index]
-                                                              .videoId!,
+                                                      video: videoVal,
                                                     ),
                                                     type: PageTransitionType
                                                         .fade));
@@ -1618,24 +1623,25 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: Row(
-                  mainAxisAlignment: video!.isPaid
+                  mainAxisAlignment: widget.video.isPaid
                       ? MainAxisAlignment.spaceBetween
                       : MainAxisAlignment.center,
                   children: [
-                    video!.isPaid
-                        ? video!.discountAmount == 0
+                    widget.video.isPaid
+                        ? widget.video.discountAmount == 0
                             ? Text(
-                                "${(video!.price).toStringAsFixed(2)} Carats",
+                                "${(widget.video.price).toStringAsFixed(2)} Carats",
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.white,
                                 ),
                               )
-                            : video!.discountAmount >= 0 &&
+                            : widget.video.discountAmount >= 0 &&
                                     DateTime.now().isAfter(
-                                        (video!.startDiscountDate).toDate()) &&
+                                        (widget.video.startDiscountDate)
+                                            .toDate()) &&
                                     DateTime.now().isBefore(
-                                        (video!.endDiscountDate).toDate())
+                                        (widget.video.endDiscountDate).toDate())
                                 ? Row(
                                     children: [
                                       Text(
@@ -1646,7 +1652,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                         ),
                                       ),
                                       Text(
-                                        " \$${(video!.price).toStringAsFixed(2)}",
+                                        " \$${(widget.video.price).toStringAsFixed(2)}",
                                         style: TextStyle(
                                           decoration:
                                               TextDecoration.lineThrough,
@@ -1655,7 +1661,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                         ),
                                       ),
                                       Text(
-                                        " \$${((video!.price) * (1 - video!.discountAmount / 100)).toStringAsFixed(2)} Carats",
+                                        " \$${((widget.video.price) * (1 - widget.video.discountAmount / 100)).toStringAsFixed(2)} Carats",
                                         style: TextStyle(
                                           fontSize: 16,
                                           color: Colors.red,
@@ -1664,15 +1670,15 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                     ],
                                   )
                                 : Text(
-                                    "${(video!.price).toStringAsFixed(2)} Carats",
+                                    "${(widget.video.price).toStringAsFixed(2)} Carats",
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.white,
                                     ),
                                   )
                         : Container(),
-                    video!.isPaid
-                        ? !video!.boughtBy.contains(
+                    widget.video.isPaid
+                        ? !widget.video.boughtBy.contains(
                                 context.read<Authentication>().getUserId)
                             ? ElevatedButton(
                                 style: ButtonStyle(
@@ -1736,7 +1742,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                   height: 10,
                                                 ),
                                                 Text(
-                                                  "Are you sure you want to spend ${((video!.price) * (1 - video!.discountAmount / 100)).toStringAsFixed(2)} Carats?",
+                                                  "Are you sure you want to spend ${((widget.video.price) * (1 - widget.video.discountAmount / 100)).toStringAsFixed(2)} Carats?",
                                                   textAlign: TextAlign.center,
                                                 ),
                                                 SizedBox(
@@ -1758,10 +1764,12 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                     ElevatedButton.icon(
                                                       onPressed: () async {
                                                         final double
-                                                            totalPrice =
-                                                            (video!.price) *
+                                                            totalPrice = (widget
+                                                                    .video
+                                                                    .price) *
                                                                 (1 -
-                                                                    video!.discountAmount /
+                                                                    widget.video
+                                                                            .discountAmount /
                                                                         100);
 
                                                         log("total price : $totalPrice");
@@ -1839,15 +1847,16 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                               isScrollControlled:
                                                                   true);
                                                         } else {
-                                                          log("old timestamp == ${video!.timestamp.toDate()}");
+                                                          log("old timestamp == ${widget.video.timestamp.toDate()}");
 
-                                                          video!.timestamp =
+                                                          widget.video
+                                                                  .timestamp =
                                                               Timestamp.now();
 
-                                                          log("new timestamp == ${video!.timestamp.toDate()}");
+                                                          log("new timestamp == ${widget.video.timestamp.toDate()}");
 
                                                           log("Total price here  = $totalPrice");
-                                                          log("here ${video!.timestamp}");
+                                                          log("here ${widget.video.timestamp}");
                                                           log("amount transfered == $totalPrice");
                                                           try {
                                                             await context
@@ -1858,17 +1867,22 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                                       .read<
                                                                           Authentication>(),
                                                                   videoOwnerId:
-                                                                      video!
+                                                                      widget
+                                                                          .video
                                                                           .useruid,
                                                                   amount:
                                                                       totalPrice
                                                                           .toInt(),
                                                                   videoItem:
-                                                                      video!,
-                                                                  isFree: video!
+                                                                      widget
+                                                                          .video,
+                                                                  isFree: widget
+                                                                      .video
                                                                       .isFree,
                                                                   videoId:
-                                                                      video!.id,
+                                                                      widget
+                                                                          .video
+                                                                          .id,
                                                                 );
 
                                                             log("success added to cart!");
@@ -2053,7 +2067,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                   height: 10,
                 ),
                 Text(
-                  video!.videoType == "video" ? "Items" : "AR View Only Items",
+                  widget.video.videoType == "video"
+                      ? "Items"
+                      : "AR View Only Items",
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
@@ -2064,7 +2080,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                   child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection("posts")
-                          .doc(video!.id)
+                          .doc(widget.video.id)
                           .collection("materials")
                           .where("hideItem", isEqualTo: false)
                           .snapshots(),
@@ -2081,11 +2097,11 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           List<PostMaterialModel> othersMaterials =
                               postMaterials
                                   .where((element) =>
-                                      element.ownerId != video!.useruid)
+                                      element.ownerId != widget.video.useruid)
                                   .toList();
                           List<PostMaterialModel> myItems = postMaterials
                               .where((element) =>
-                                  element.ownerId == video!.useruid)
+                                  element.ownerId == widget.video.useruid)
                               .toList();
 
                           return SingleChildScrollView(
@@ -2113,14 +2129,17 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                             .videoId!);
 
                                             if (checkExists == true) {
+                                              Video videoVal = await context
+                                                  .read<FirebaseOperations>()
+                                                  .getVideoPosts(
+                                                      videoId:
+                                                          othersMaterials[index]
+                                                              .videoId!);
                                               Navigator.push(
                                                   context,
                                                   PageTransition(
                                                       child: PostDetailsScreen(
-                                                        videoId:
-                                                            othersMaterials[
-                                                                    index]
-                                                                .videoId!,
+                                                        video: videoVal,
                                                       ),
                                                       type: PageTransitionType
                                                           .fade));
@@ -2306,9 +2325,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                                               PageTransition(
                                                                   child:
                                                                       AudioPlayerScreen(
-                                                                    albumCover:
-                                                                        video!
-                                                                            .userimage,
+                                                                    albumCover: widget
+                                                                        .video
+                                                                        .userimage,
                                                                     audioUrl: myItems[
                                                                             index]
                                                                         .songUrl!,
@@ -2436,11 +2455,12 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                             await context
                                                 .read<FirebaseOperations>()
                                                 .addToMyCollection(
-                                                  videoOwnerId: video!.useruid,
-                                                  videoItem: video!,
-                                                  isFree: video!.isFree,
+                                                  videoOwnerId:
+                                                      widget.video.useruid,
+                                                  videoItem: widget.video,
+                                                  isFree: widget.video.isFree,
                                                   ctx: context,
-                                                  videoId: video!.id,
+                                                  videoId: widget.video.id,
                                                   materialIds: materialIds,
                                                 );
                                           } else {
@@ -2460,7 +2480,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                         // paymentController.makePayment(
                                         //     amount: "10", currency: "USD"),
                                         child: Text(
-                                          video!.videoType == "video"
+                                          widget.video.videoType == "video"
                                               ? LocaleKeys.addtomymaterials.tr()
                                               : LocaleKeys.addtoarviewcollection
                                                   .tr(),
