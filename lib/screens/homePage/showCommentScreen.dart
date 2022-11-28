@@ -46,6 +46,7 @@ class _ShowCommentsPageState extends State<ShowCommentsPage> {
                     .collection("posts")
                     .doc(widget.postId)
                     .collection("comments")
+                    .orderBy("time", descending: true)
                     .snapshots(),
                 builder: (context, comments) {
                   if (comments.connectionState == ConnectionState.waiting) {
