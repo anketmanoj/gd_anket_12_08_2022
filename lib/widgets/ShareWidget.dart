@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart' as getF;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
@@ -120,7 +121,91 @@ class _ShareWidgetState extends State<ShareWidget> {
         final List<ShareButtons> listOfShares = [
           ShareButtons(
             iconData: FontAwesomeIcons.facebook,
-            onButtonTop: () => onButtonTap(Share.facebook),
+            onButtonTop: () {
+              getF.Get.bottomSheet(
+                Container(
+                  height: 25.h,
+                  decoration: BoxDecoration(
+                    color: constantColors.whiteColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 150),
+                        child: Divider(
+                          thickness: 4,
+                          color: constantColors.greyColor,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                String? response;
+                                final FlutterShareMe flutterShareMe =
+                                    FlutterShareMe();
+
+                                await flutterShareMe.shareToFacebook(
+                                    url: widget.msg, msg: "");
+                              },
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.post_add_rounded,
+                                    color: constantColors.navButton,
+                                    size: 50,
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text("Facebook Post")
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                await SocialShare.shareFacebookStory(
+                                  appId: "264465402552974",
+                                  imagePath: thumbnailFile.path,
+                                  backgroundResourcePath: videoFile!.path,
+                                  attributionURL: widget.urlPath,
+                                ).then((data) {
+                                  log(data!);
+                                });
+                              },
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.video,
+                                    color: constantColors.navButton,
+                                    size: 50,
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text("Facebook Story")
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              );
+              // onButtonTap(Share.facebook);
+            },
           ),
           ShareButtons(
             iconData: FontAwesomeIcons.twitter,
