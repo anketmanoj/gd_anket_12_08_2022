@@ -128,6 +128,7 @@ class ApiService extends ChangeNotifier {
         .collection("posts")
         .orderBy("timestamp", descending: true)
         .where("ispaid", isEqualTo: false)
+        .where("timestamp", isLessThanOrEqualTo: DateTime.now())
         .limit(10)
         .get()
         .then((value) {
@@ -280,6 +281,7 @@ class ApiService extends ChangeNotifier {
       await FirebaseFirestore.instance
           .collection("posts")
           .orderBy("timestamp", descending: true)
+          .where("timestamp", isLessThanOrEqualTo: DateTime.now())
           .where("useruid", isEqualTo: followingID)
           .get()
           .then((value) {
@@ -306,6 +308,7 @@ class ApiService extends ChangeNotifier {
     await FirebaseFirestore.instance
         .collection("posts")
         .orderBy("timestamp", descending: true)
+        .where("timestamp", isLessThanOrEqualTo: DateTime.now())
         .where("useruid",
             whereIn: followingUsers.map((e) => "$e").toList().sublist(
                 0, followingUsers.length > 10 ? 10 : followingUsers.length))
@@ -334,6 +337,7 @@ class ApiService extends ChangeNotifier {
     await FirebaseFirestore.instance
         .collection("posts")
         .orderBy("timestamp", descending: true)
+        .where("timestamp", isLessThanOrEqualTo: DateTime.now())
         .where("useruid",
             whereIn: followingUsers.map((e) => "$e").toList().sublist(
                 0, followingUsers.length > 10 ? 10 : followingUsers.length))

@@ -890,6 +890,8 @@ class FirebaseOperations with ChangeNotifier {
   }
 
   Future<bool> uploadVideo({
+    required TimeOfDay timeOfDay,
+    required DateTime dateSelected,
     required File backgroundVideoFile,
     required String userUid,
     required String video_title,
@@ -913,6 +915,12 @@ class FirebaseOperations with ChangeNotifier {
   }) async {
     log("taken from material value from BG is === ${bgTakenFromMaterials}");
     try {
+      final Timestamp timeToPost = Timestamp.fromDate(DateTime(
+          dateSelected.year,
+          dateSelected.month,
+          dateSelected.day,
+          timeOfDay.hour,
+          timeOfDay.minute));
       List<String> arUid = [];
       List<String> effectUID = [];
 
@@ -1121,7 +1129,7 @@ class FirebaseOperations with ChangeNotifier {
         "videourl": videoUrl,
         "videotitle": video_title,
         "caption": caption,
-        "timestamp": Timestamp.now(),
+        "timestamp": timeToPost,
         "username": initUserName,
         "userimage": initUserImage,
         "thumbnailurl": coverThumbnailUrl,

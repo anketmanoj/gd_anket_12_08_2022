@@ -80,6 +80,48 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
 
   ValueNotifier<String> _setContentDiscount = ValueNotifier<String>("");
 
+  late String _setTime, _setDate;
+
+  late String _hour, _minute, _time;
+
+  late String dateTime;
+
+  DateTime selectedDate = DateTime.now();
+
+  TimeOfDay selectedTime = TimeOfDay.now();
+
+  TextEditingController _dateController = TextEditingController();
+  TextEditingController _timeController = TextEditingController();
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        initialDatePickerMode: DatePickerMode.day,
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2101));
+    if (picked != null)
+      setState(() {
+        selectedDate = picked;
+        _dateController.text = DateFormat.yMd().format(selectedDate);
+      });
+  }
+
+  Future<Null> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+    );
+    if (picked != null)
+      setState(() {
+        selectedTime = picked;
+        _hour = selectedTime.hour.toString();
+        _minute = selectedTime.minute.toString();
+        _time = _hour + ' : ' + _minute;
+        _timeController.text = _time;
+      });
+  }
+
   // Function to pick date
   Future<void> _selectEndDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -148,6 +190,12 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
   void initState() {
     log("length of arList == ${widget.arList.length}");
     selectMaterials = widget.arList;
+
+    _dateController.text = DateFormat.yMd().format(DateTime.now());
+
+    String formattedDate = DateFormat('kk:mm').format(selectedDate);
+
+    _timeController.text = formattedDate;
 
     super.initState();
   }
@@ -363,6 +411,66 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                       ),
                     ],
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Container(
+                      color: constantColors.navButton,
+                      height: 35,
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              "Set Post Schedule",
+                              style: TextStyle(
+                                color: constantColors.whiteColor,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: constantColors.navButton,
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ),
+                      ),
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.punch_clock_outlined,
+                          color: constantColors.whiteColor,
+                        ),
+                        title: Text(
+                          "${_dateController.text} at ${_timeController.text}",
+                          style: TextStyle(
+                            color: constantColors.whiteColor,
+                          ),
+                        ),
+                        trailing: ElevatedButton(
+                          style: ButtonStyle(
+                            foregroundColor: MaterialStateProperty.all<Color>(
+                                constantColors.navButton),
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                constantColors.whiteColor),
+                          ),
+                          onPressed: () {
+                            _selectDate(context)
+                                .then((value) => _selectTime(context));
+                          },
+                          child: Icon(FontAwesomeIcons.clock),
+                        ),
+                      ),
+                    ),
+                  ),
+                  NewDivider(constantColors: constantColors),
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Container(
@@ -1075,6 +1183,8 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
 
                               final bool result =
                                   await firebaseOperations.uploadVideo(
+                                timeOfDay: selectedTime,
+                                dateSelected: selectedDate,
                                 coverThumbnailUrl: coverThumbnail!,
                                 addBgToMaterials: bgSelected.value,
                                 ctx: context,
