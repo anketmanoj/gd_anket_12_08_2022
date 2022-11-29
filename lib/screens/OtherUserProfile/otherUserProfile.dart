@@ -961,6 +961,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                       .where("useruid", isEqualTo: widget.userModel.useruid)
                       .where("isfree", isEqualTo: freeClicked)
                       .orderBy("timestamp", descending: true)
+                      .where("timestamp", isLessThanOrEqualTo: DateTime.now())
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {

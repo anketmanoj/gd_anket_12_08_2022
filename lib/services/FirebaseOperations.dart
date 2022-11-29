@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_await_in_return
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -3861,5 +3862,36 @@ class FirebaseOperations with ChangeNotifier {
 
       return video;
     });
+  }
+
+  Future updatePostSchedule(
+      {required String videoId,
+      required DateTime dateSelected,
+      required TimeOfDay timeSelected}) async {
+    unawaited(Get.dialog(
+      SimpleDialog(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    ));
+    final Timestamp timeToPost = Timestamp.fromDate(DateTime(
+        dateSelected.year,
+        dateSelected.month,
+        dateSelected.day,
+        timeSelected.hour,
+        timeSelected.minute));
+
+    await FirebaseFirestore.instance.collection("posts").doc(videoId).update({
+      "timestamp": timeToPost,
+    });
+
+    Get.back();
   }
 }
