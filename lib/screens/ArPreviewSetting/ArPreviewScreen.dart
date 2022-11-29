@@ -373,6 +373,8 @@ class ArPreviewSetting extends StatelessWidget {
                                                     controller:
                                                         _arCaptionController,
                                                     labelText: "Caption",
+                                                    keyboardTypeVal:
+                                                        TextInputType.multiline,
                                                     onSubmit: (val) {},
                                                     validator: (val) {
                                                       if (val!.isEmpty) {

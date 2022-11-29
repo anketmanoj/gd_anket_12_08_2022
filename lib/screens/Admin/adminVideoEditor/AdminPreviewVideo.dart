@@ -256,6 +256,7 @@ class _AdminPreviewVideoScreenState extends State<AdminPreviewVideoScreen> {
                             lines: 4,
                             controller: _videoCaptionController,
                             labelText: "Caption",
+                            keyboardTypeVal: TextInputType.multiline,
                             onSubmit: (val) {},
                             validator: (val) {
                               if (val!.isEmpty) {

@@ -88,6 +88,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     onSubmit: userProvider.setUserBio(_userbioController.text),
                     controller: _userbioController,
                     labelText: LocaleKeys.yourbio.tr(),
+                    keyboardTypeVal: TextInputType.multiline,
                     lines: 3,
                   ),
                 ),

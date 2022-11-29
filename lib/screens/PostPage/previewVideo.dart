@@ -398,6 +398,7 @@ class _PreviewVideoScreenState extends State<PreviewVideoScreen> {
                           child: ProfileUserDetails(
                             lines: 4,
                             controller: _videoCaptionController,
+                            keyboardTypeVal: TextInputType.multiline,
                             labelText: "Caption",
                             onSubmit: (val) {},
                             validator: (val) {
