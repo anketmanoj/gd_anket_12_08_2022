@@ -3894,4 +3894,18 @@ class FirebaseOperations with ChangeNotifier {
 
     Get.back();
   }
+
+  Future archivePost({required Video video}) async {
+    await FirebaseFirestore.instance
+        .collection("posts")
+        .doc(video.id)
+        .update({"archive": true});
+  }
+
+  Future unarchivePost({required Video video}) async {
+    await FirebaseFirestore.instance
+        .collection("posts")
+        .doc(video.id)
+        .update({"archive": false});
+  }
 }

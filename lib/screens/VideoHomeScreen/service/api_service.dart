@@ -161,9 +161,13 @@ class ApiService extends ChangeNotifier {
             totalBilled: element['totalBilled'] as int?,
             verifiedUser: element['verifiedUser'] as bool?,
             views: element['views'],
+            archive: element.data().containsKey("archive")
+                ? element['archive']
+                : false,
           );
+
           log("HEEEERRRRREEEEEEE");
-          _videos.add(video);
+          if (video.archive == false) _videos.add(video);
         }
       });
     });

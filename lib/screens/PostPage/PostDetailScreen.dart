@@ -158,16 +158,16 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
             text: "Are you sure you want to archive this video?",
             showCancelBtn: true,
             onConfirmBtnTap: () async {
-              // await context
-              //     .read<FirebaseOperations>()
-              //     .archiveVideoPost(
-              //         video: video,
-              //         useruid: context.read<Authentication>().getUserId)
-              //     .then((value) {
-              //   Get.back();
-              //   Get.back();
-              //   Get.back();
-              // });
+              await context
+                  .read<FirebaseOperations>()
+                  .archivePost(
+                    video: video,
+                  )
+                  .then((value) {
+                Get.back();
+                Get.back();
+                Get.back();
+              });
             });
       },
     ];
