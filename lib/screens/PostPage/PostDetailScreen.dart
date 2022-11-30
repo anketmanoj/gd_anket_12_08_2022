@@ -124,6 +124,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
     final List<String> optionsList = [
       LocaleKeys.deletepost.tr(),
       LocaleKeys.editpost.tr(),
+      "Archive Post",
     ];
     final List<void Function()> functionsList = [
       () {
@@ -149,6 +150,26 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
           videoFile: video,
         ));
       },
+      () {
+        CoolAlert.show(
+            context: context,
+            type: CoolAlertType.info,
+            title: "Archive Video?",
+            text: "Are you sure you want to archive this video?",
+            showCancelBtn: true,
+            onConfirmBtnTap: () async {
+              // await context
+              //     .read<FirebaseOperations>()
+              //     .archiveVideoPost(
+              //         video: video,
+              //         useruid: context.read<Authentication>().getUserId)
+              //     .then((value) {
+              //   Get.back();
+              //   Get.back();
+              //   Get.back();
+              // });
+            });
+      },
     ];
     return showModalBottomSheet(
       isDismissible: true,
@@ -159,7 +180,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
           bottom: Platform.isAndroid ? true : false,
           child: Container(
             padding: EdgeInsets.all(15),
-            height: 25.h,
+            height: 30.h,
             width: 100.w,
             decoration: BoxDecoration(
               color: constantColors.whiteColor,
@@ -168,17 +189,16 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 topRight: Radius.circular(20),
               ),
             ),
-            child: Container(
-              child: ListView.builder(
-                itemCount: optionsList.length,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return Options(
-                    tapped: functionsList[index],
-                    text: optionsList[index],
-                  );
-                },
-              ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: optionsList.length,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return Options(
+                  tapped: functionsList[index],
+                  text: optionsList[index],
+                );
+              },
             ),
           ),
         );

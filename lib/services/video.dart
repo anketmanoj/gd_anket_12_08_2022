@@ -26,6 +26,7 @@ class Video {
   bool? verifiedUser;
   String? videoType;
   int? views;
+  bool archive;
 
   CachedVideoPlayerController? controller;
 
@@ -55,6 +56,7 @@ class Video {
     this.verifiedUser,
     this.videoType = "video",
     this.views = 0,
+    this.archive = false,
   });
 
   // create video from json
@@ -84,6 +86,7 @@ class Video {
       totalBilled: json['totalBilled'] as int?,
       verifiedUser: json['verifiedUser'] as bool?,
       views: json['views'] ?? 0,
+      archive: json['archive'] ?? false,
     );
   }
 
@@ -114,6 +117,7 @@ class Video {
       'verifiedUser': verifiedUser,
       'videoType': videoType,
       'views': views,
+      'archive': false,
     };
   }
 
