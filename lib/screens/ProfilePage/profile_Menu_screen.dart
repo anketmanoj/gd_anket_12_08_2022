@@ -17,6 +17,7 @@ import 'package:diamon_rose_app/screens/Admin/adminUserRegistration.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminArOptions.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/adminSendUserNotification.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/selectUser.dart';
+import 'package:diamon_rose_app/screens/Admin/admin_user_archive.dart';
 import 'package:diamon_rose_app/screens/Admin/set_user_data_admin.dart';
 import 'package:diamon_rose_app/screens/Admin/upload_video_screen.dart';
 import 'package:diamon_rose_app/screens/ArPreviewSetting/ArPreviewScreen.dart';
@@ -33,6 +34,7 @@ import 'package:diamon_rose_app/screens/ProfilePage/buyCaratScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/changeLanguageScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/parallaxTest.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/payoutHomeScreen.dart';
+import 'package:diamon_rose_app/screens/ProfilePage/profile_archive_screen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/profile_favorites_screen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/shoppingCartScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/social_media_screen.dart';
@@ -821,6 +823,20 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                     Navigator.push(
                       context,
                       PageTransition(
+                          child: ArchiveScreen(),
+                          type: PageTransitionType.rightToLeft),
+                    );
+                  },
+                  leadingIcon: Icons.archive_outlined,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Archived Posts",
+                ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
                           child: BlockedAccountScreen(),
                           type: PageTransitionType.rightToLeft),
                     );
@@ -906,25 +922,28 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.changeLanguage.tr(),
                 ),
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () async {
-                    await FirebaseFirestore.instance
-                        .collection("posts")
-                        .get()
-                        .then((value) async {
-                      for (var item in value.docs) {
-                        await FirebaseFirestore.instance
-                            .collection("posts")
-                            .doc(item.id)
-                            .update({"archive": false});
-                      }
-                    });
-                  },
-                  leadingIcon: Icons.language_outlined,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: "Audio test",
-                ),
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () async {
+                //     await FirebaseFirestore.instance
+                //         .collection("posts")
+                //         .get()
+                //         .then((value) async {
+                //       for (var item in value.docs) {
+                //         if (!item.data().containsKey("archive")) {
+                //           log("doing!");
+                //           await FirebaseFirestore.instance
+                //               .collection("posts")
+                //               .doc(item.id)
+                //               .update({"archive": false});
+                //         }
+                //       }
+                //     });
+                //   },
+                //   leadingIcon: Icons.language_outlined,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "Audio test",
+                // ),
                 // ListTileOption(
                 //   constantColors: constantColors,
                 //   onTap: () {
@@ -1111,6 +1130,31 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                               ? Icons.arrow_forward_ios
                               : Icons.arrow_downward,
                           color: Colors.yellow,
+                        ),
+                      ),
+                      Visibility(
+                        visible: adminDrop,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: AdminUserArchive(),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          title: Text(
+                            "Admin User Archive",
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.yellow,
+                          ),
                         ),
                       ),
                       Visibility(
