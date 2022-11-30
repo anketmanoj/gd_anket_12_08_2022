@@ -864,6 +864,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                                 .collection("posts")
                                 .where("useruid",
                                     isEqualTo: widget.userModel.useruid)
+                                .where("archive", isEqualTo: false)
                                 .snapshots(),
                             builder: (context, posts) {
                               if (posts.hasData) {
@@ -960,6 +961,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                       .collection("posts")
                       .where("useruid", isEqualTo: widget.userModel.useruid)
                       .where("isfree", isEqualTo: freeClicked)
+                      .where("archive", isEqualTo: false)
                       .orderBy("timestamp", descending: true)
                       .where("timestamp", isLessThanOrEqualTo: DateTime.now())
                       .snapshots(),

@@ -386,6 +386,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               stream: FirebaseFirestore.instance
                                   .collection("posts")
                                   .where("useruid", isEqualTo: auth.getUserId)
+                                  .where("archive", isEqualTo: false)
                                   .snapshots(),
                               builder: (context, posts) {
                                 if (posts.hasData) {
@@ -483,6 +484,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       .collection("posts")
                       .where("useruid", isEqualTo: auth.getUserId)
                       .where("isfree", isEqualTo: freeClicked)
+                      .where("archive", isEqualTo: false)
                       .orderBy("timestamp", descending: true)
                       .snapshots(),
                   builder: (context, snapshot) {
@@ -1547,6 +1549,7 @@ class MidProfileStack extends StatelessWidget {
                         stream: FirebaseFirestore.instance
                             .collection("posts")
                             .where("useruid", isEqualTo: auth.getUserId)
+                            .where("archive", isEqualTo: false)
                             .snapshots(),
                         builder: (context, posts) {
                           if (posts.hasData) {
