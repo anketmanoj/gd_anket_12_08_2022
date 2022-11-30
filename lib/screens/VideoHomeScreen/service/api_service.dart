@@ -294,7 +294,7 @@ class ApiService extends ChangeNotifier {
               element.data().containsKey("totalBilled") &&
               element.data().containsKey("verifiedUser")) {
             Video video = Video.fromJson(element.data());
-            _following_videos.add(video);
+            if (video.archive == false) _following_videos.add(video);
           }
         }
       });
@@ -324,7 +324,8 @@ class ApiService extends ChangeNotifier {
             element.data().containsKey("totalBilled") &&
             element.data().containsKey("verifiedUser")) {
           Video video = Video.fromJson(element.data());
-          _following_videos.add(video);
+
+          if (video.archive == false) _following_videos.add(video);
         }
       });
     });
@@ -353,7 +354,7 @@ class ApiService extends ChangeNotifier {
             element.data().containsKey("totalBilled") &&
             element.data().containsKey("verifiedUser")) {
           Video video = Video.fromJson(element.data());
-          _following_videos.add(video);
+          if (video.archive == false) _following_videos.add(video);
         }
       });
     });
