@@ -154,7 +154,7 @@ class _ShareWidgetState extends State<ShareWidget> {
                                     FlutterShareMe();
 
                                 await flutterShareMe.shareToFacebook(
-                                    url: widget.msg, msg: "");
+                                    url: widget.msg, msg: widget.msg);
                               },
                               child: Column(
                                 children: [
