@@ -1150,6 +1150,7 @@ class FirebaseOperations with ChangeNotifier {
         'verifiedUser': isverified,
         "videoType": "video",
         'views': 0,
+        'archive': false,
       }).then((value) async {
         for (var arUidVal in arIdsVal) {
           await FirebaseFirestore.instance
@@ -3627,6 +3628,7 @@ class FirebaseOperations with ChangeNotifier {
       'verifiedUser': isverifiedVal,
       "videoType": "video",
       'views': 0,
+      'archive': false,
     }).then((value) async {
       log("now moving materials");
 
