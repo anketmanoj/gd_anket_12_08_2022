@@ -146,7 +146,6 @@ class SignUpUsername extends StatelessWidget {
                             .createUserCollection(
                           context,
                           {
-                            "token": _getToken.toString(),
                             "useruid": Provider.of<Authentication>(context,
                                     listen: false)
                                 .getUserId,
@@ -183,7 +182,13 @@ class SignUpUsername extends StatelessWidget {
                             'paypal': '',
                             'percentage': 33,
                           },
-                        ).whenComplete(() {
+                        ).whenComplete(() async {
+                          await Provider.of<FirebaseOperations>(context,
+                                  listen: false)
+                              .checkUserExistsBasedOnDevicetoken(
+                                  userUid: Provider.of<Authentication>(context,
+                                          listen: false)
+                                      .getUserId);
                           context.read<Authentication>().setIsAnon(false);
                           Navigator.push(
                               context,

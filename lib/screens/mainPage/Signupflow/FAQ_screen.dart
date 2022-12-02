@@ -185,7 +185,6 @@ class FAQScreen extends StatelessWidget {
                                                     context,
                                                     listen: false)
                                                 .createUserCollection(context, {
-                                              'token': _getToken.toString(),
                                               'useruid':
                                                   Provider.of<Authentication>(
                                                           context,
@@ -228,6 +227,17 @@ class FAQScreen extends StatelessWidget {
                                               'paypal': '',
                                               'percentage': 33,
                                             });
+
+                                            await Provider.of<
+                                                        FirebaseOperations>(
+                                                    context,
+                                                    listen: false)
+                                                .checkUserExistsBasedOnDevicetoken(
+                                                    userUid: Provider.of<
+                                                                Authentication>(
+                                                            context,
+                                                            listen: false)
+                                                        .getUserId);
                                           }
 
                                           context
@@ -318,7 +328,6 @@ class FAQScreen extends StatelessWidget {
                                                     context,
                                                     listen: false)
                                                 .createUserCollection(context, {
-                                              'token': _getToken.toString(),
                                               'useruid':
                                                   Provider.of<Authentication>(
                                                           context,
@@ -365,6 +374,17 @@ class FAQScreen extends StatelessWidget {
                                               'paypal': '',
                                               'percentage': 33,
                                             });
+
+                                            await Provider.of<
+                                                        FirebaseOperations>(
+                                                    context,
+                                                    listen: false)
+                                                .checkUserExistsBasedOnDevicetoken(
+                                                    userUid: Provider.of<
+                                                                Authentication>(
+                                                            context,
+                                                            listen: false)
+                                                        .getUserId);
                                           }
 
                                           context
@@ -450,7 +470,6 @@ class FAQScreen extends StatelessWidget {
                                                     context,
                                                     listen: false)
                                                 .createUserCollection(context, {
-                                              'token': _getToken.toString(),
                                               'useruid':
                                                   Provider.of<Authentication>(
                                                           context,
@@ -493,6 +512,17 @@ class FAQScreen extends StatelessWidget {
                                               'paypal': '',
                                               'percentage': 33,
                                             });
+
+                                            await Provider.of<
+                                                        FirebaseOperations>(
+                                                    context,
+                                                    listen: false)
+                                                .checkUserExistsBasedOnDevicetoken(
+                                                    userUid: Provider.of<
+                                                                Authentication>(
+                                                            context,
+                                                            listen: false)
+                                                        .getUserId);
                                           }
 
                                           context

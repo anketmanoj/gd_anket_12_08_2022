@@ -108,7 +108,6 @@ class SignUpscreen extends StatelessWidget {
                               await Provider.of<FirebaseOperations>(context,
                                       listen: false)
                                   .createUserCollection(context, {
-                                'token': _getToken.toString(),
                                 'useruid': Provider.of<Authentication>(context,
                                         listen: false)
                                     .getUserId,
@@ -144,6 +143,14 @@ class SignUpscreen extends StatelessWidget {
                                 'paypal': '',
                                 'percentage': 33,
                               });
+
+                              await Provider.of<FirebaseOperations>(context,
+                                      listen: false)
+                                  .checkUserExistsBasedOnDevicetoken(
+                                      userUid: Provider.of<Authentication>(
+                                              context,
+                                              listen: false)
+                                          .getUserId);
                             }
 
                             context.read<Authentication>().setIsAnon(false);
@@ -219,7 +226,6 @@ class SignUpscreen extends StatelessWidget {
                                 await Provider.of<FirebaseOperations>(context,
                                         listen: false)
                                     .createUserCollection(context, {
-                                  'token': _getToken.toString(),
                                   'useruid': Provider.of<Authentication>(
                                           context,
                                           listen: false)
@@ -257,6 +263,14 @@ class SignUpscreen extends StatelessWidget {
                                   'paypal': '',
                                   'percentage': 33,
                                 });
+
+                                await Provider.of<FirebaseOperations>(context,
+                                        listen: false)
+                                    .checkUserExistsBasedOnDevicetoken(
+                                        userUid: Provider.of<Authentication>(
+                                                context,
+                                                listen: false)
+                                            .getUserId);
                               }
 
                               context.read<Authentication>().setIsAnon(false);
@@ -334,7 +348,6 @@ class SignUpscreen extends StatelessWidget {
                                 await Provider.of<FirebaseOperations>(context,
                                         listen: false)
                                     .createUserCollection(context, {
-                                  'token': _getToken.toString(),
                                   'useruid': Provider.of<Authentication>(
                                           context,
                                           listen: false)
@@ -375,6 +388,14 @@ class SignUpscreen extends StatelessWidget {
                                   'paypal': '',
                                   'percentage': 33,
                                 });
+
+                                await Provider.of<FirebaseOperations>(context,
+                                        listen: false)
+                                    .checkUserExistsBasedOnDevicetoken(
+                                        userUid: Provider.of<Authentication>(
+                                                context,
+                                                listen: false)
+                                            .getUserId);
                               }
 
                               context.read<Authentication>().setIsAnon(false);

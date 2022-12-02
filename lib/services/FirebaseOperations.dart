@@ -30,8 +30,10 @@ import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:nanoid/nanoid.dart';
@@ -619,6 +621,75 @@ class FirebaseOperations with ChangeNotifier {
         return false;
       }
     });
+  }
+
+  // check if user exists based on field userrealname
+  Future<void> checkUserExistsBasedOnDevicetoken(
+      {required String userUid}) async {
+    final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+    if (Platform.isIOS) {
+      NotificationSettings settings = await _fcm.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: true,
+        criticalAlert: true,
+        provisional: false,
+        sound: true,
+      );
+    } else {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+          overlays: [SystemUiOverlay.top]);
+    }
+
+    _fcm.getAPNSToken().then((value) => log("APN Token === $value"));
+
+    String? token = await _fcm.getToken();
+    assert(token != null);
+
+    try {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .where("token", isEqualTo: token)
+          .limit(1)
+          .get()
+          .then((value) {
+        if (value.docs.isNotEmpty == true) {
+          log("anket here -- dont give carats");
+        } else {
+          if (DateTime.now().isBefore(DateTime(2023, 1, 5))) {
+            addCaratsToUser(userid: userUid, caratValue: 20);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Get.dialog(
+                SimpleDialog(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                        children: [
+                          Text("Welcome To Glamorous Diastation!"),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            "Hi!\n\nWe've added 20 Carats as a registering present from us to you so you can explore Glamorous Diastation and make some fun purchases on us!\n\nWe hope you enjoy your experience and dont shy away from letting your inner content creator go wild with all the features we've developed for you!\n\nGD Team",
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            });
+
+            log("giving carats to user!");
+          }
+          log("anket here -- give carats to user");
+        }
+      });
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   // check if user exists based on field userrealname

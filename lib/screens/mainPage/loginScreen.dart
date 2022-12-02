@@ -286,7 +286,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 await Provider.of<FirebaseOperations>(context,
                                         listen: false)
                                     .createUserCollection(context, {
-                                  'token': _getToken.toString(),
                                   'useruid': Provider.of<Authentication>(
                                           context,
                                           listen: false)
@@ -324,6 +323,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   'paypal': '',
                                   'percentage': 33,
                                 });
+
+                                await Provider.of<FirebaseOperations>(context,
+                                        listen: false)
+                                    .checkUserExistsBasedOnDevicetoken(
+                                        userUid: Provider.of<Authentication>(
+                                                context,
+                                                listen: false)
+                                            .getUserId);
                               }
 
                               context.read<Authentication>().setIsAnon(false);
@@ -400,7 +407,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 await Provider.of<FirebaseOperations>(context,
                                         listen: false)
                                     .createUserCollection(context, {
-                                  'token': _getToken.toString(),
                                   'useruid': Provider.of<Authentication>(
                                           context,
                                           listen: false)
@@ -441,6 +447,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   'paypal': '',
                                   'percentage': 33,
                                 });
+
+                                await Provider.of<FirebaseOperations>(context,
+                                        listen: false)
+                                    .checkUserExistsBasedOnDevicetoken(
+                                        userUid: Provider.of<Authentication>(
+                                                context,
+                                                listen: false)
+                                            .getUserId);
                               }
 
                               context.read<Authentication>().setIsAnon(false);
@@ -512,7 +526,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 await Provider.of<FirebaseOperations>(context,
                                         listen: false)
                                     .createUserCollection(context, {
-                                  'token': _getToken.toString(),
                                   'useruid': Provider.of<Authentication>(
                                           context,
                                           listen: false)
@@ -550,6 +563,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   'paypal': '',
                                   'percentage': 33,
                                 });
+
+                                await Provider.of<FirebaseOperations>(context,
+                                        listen: false)
+                                    .checkUserExistsBasedOnDevicetoken(
+                                        userUid: Provider.of<Authentication>(
+                                                context,
+                                                listen: false)
+                                            .getUserId);
                               }
 
                               context.read<Authentication>().setIsAnon(false);
