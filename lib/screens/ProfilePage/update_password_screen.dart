@@ -1,3 +1,4 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
@@ -125,6 +126,10 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                 ),
                 SubmitButton(function: () async {
                   if (_formKey.currentState!.validate()) {
+                    CoolAlert.show(
+                        context: context,
+                        type: CoolAlertType.loading,
+                        barrierDismissible: false);
                     await _auth.changePassword(_passwordController.text,
                         _confirmPasswordController.text, context);
                   }

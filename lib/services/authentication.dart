@@ -4,10 +4,12 @@ import 'dart:developer';
 
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/services/dbService.dart';
+import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:the_apple_sign_in/the_apple_sign_in.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -288,27 +290,41 @@ class Authentication with ChangeNotifier {
 
     await user.reauthenticateWithCredential(cred).then((value) {
       user.updatePassword(newPassword).then((_) {
-        showTopSnackBar(
-          context,
-          CustomSnackBar.success(
-            message: "Your password has been updated",
-          ),
+        Get.snackbar(
+          'Password Updated!',
+          "Your password has been successfully updated!",
+          overlayColor: constantColors.navButton,
+          colorText: constantColors.whiteColor,
+          snackPosition: SnackPosition.TOP,
+          forwardAnimationCurve: Curves.elasticInOut,
+          reverseAnimationCurve: Curves.easeOut,
         );
+
+        Navigator.pop(context);
+        Navigator.pop(context);
       }).catchError((error) {
-        showTopSnackBar(
-          context,
-          CustomSnackBar.error(
-            message: "Error: ${error.toString()}",
-          ),
+        Get.snackbar(
+          'Error Updating',
+          "Error: ${error.toString()}",
+          overlayColor: constantColors.navButton,
+          colorText: constantColors.whiteColor,
+          snackPosition: SnackPosition.TOP,
+          forwardAnimationCurve: Curves.elasticInOut,
+          reverseAnimationCurve: Curves.easeOut,
         );
+        Navigator.pop(context);
       });
     }).catchError((err) {
-      showTopSnackBar(
-        context,
-        CustomSnackBar.error(
-          message: "Current Password incorrect",
-        ),
+      Get.snackbar(
+        'Incorrect Password',
+        "Current password entered is incorrect",
+        overlayColor: constantColors.navButton,
+        colorText: constantColors.whiteColor,
+        snackPosition: SnackPosition.TOP,
+        forwardAnimationCurve: Curves.elasticInOut,
+        reverseAnimationCurve: Curves.easeOut,
       );
+      Navigator.pop(context);
     });
   }
 

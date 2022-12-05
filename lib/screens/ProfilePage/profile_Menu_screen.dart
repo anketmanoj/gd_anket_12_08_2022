@@ -999,6 +999,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.shareyourprofile.tr(),
                 ),
+
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () {

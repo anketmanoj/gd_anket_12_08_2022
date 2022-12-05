@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,9 +6,12 @@ import 'package:diamon_rose_app/providers/homeScreenProvider.dart';
 import 'package:diamon_rose_app/screens/DynamicLinkPages/DynamicLinkPostPage.dart';
 import 'package:diamon_rose_app/screens/OtherUserProfile/otherUserProfile.dart';
 import 'package:diamon_rose_app/screens/PostPage/PostDetailScreen.dart';
+import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
+import 'package:diamon_rose_app/screens/mainPage/signup_screen.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -122,6 +126,20 @@ class DynamicLinkService {
             );
           });
         }
+        // ! For Sign Up
+        if (dynamicLinkData.link.queryParameters.containsKey('sign_up')) {
+          String id = dynamicLinkData.link.queryParameters['sign_up']!;
+          log('Send User To sign Up screen');
+
+          if (await FirebaseAuth.instance.currentUser != null) {
+            log("user already logged in");
+          } else {
+            unawaited(Navigator.pushReplacement(
+                context,
+                PageTransition(
+                    child: MainPage(), type: PageTransitionType.fade)));
+          }
+        }
       }).onError((error) {
         // Handle errors
       });
@@ -184,6 +202,32 @@ class DynamicLinkService {
     } else {
       url = await FirebaseDynamicLinks.instance.buildLink(parameters);
     }
+
+    log("url ==$url");
+
+    return url;
+  }
+
+  static Future<Uri> createSignUpScreenDynamicLink() async {
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      uriPrefix: 'https://diamantrosegd.page.link',
+      link: Uri.parse('https://gd.diamantrose.com/?sign_up=true'),
+      androidParameters: AndroidParameters(
+        packageName: 'com.diamant.jp.gd_anket',
+        minimumVersion: 1,
+      ),
+      iosParameters: IOSParameters(
+        bundleId: 'com.diamant.jp.diamond-app',
+        minimumVersion: '1',
+        appStoreId: '1600649951',
+      ),
+    );
+
+    Uri url;
+
+    final ShortDynamicLink shortLink =
+        await FirebaseDynamicLinks.instance.buildShortLink(parameters);
+    url = shortLink.shortUrl;
 
     log("url ==$url");
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
@@ -69,6 +70,8 @@ class _SplashScreenState extends State<SplashScreen> {
       } else {
         log("User should be anon");
         context.read<Authentication>().setIsAnon(true);
+        // Get device token and add it to GuestUserCollection with the token being the ID
+        await context.read<FirebaseOperations>().guestUserDetected();
         // ignore: unawaited_futures
         Navigator.pushReplacement(context,
             PageTransition(child: FeedPage(), type: PageTransitionType.fade));

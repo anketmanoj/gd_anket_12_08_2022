@@ -208,17 +208,21 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.video != null)
+    if (widget.video != null) {
+      if (adminUserId.contains(context.read<Authentication>().getUserId)) {
+        return VideoBoughtAndViewable(context);
+      }
       return (widget.video.isPaid &&
               !widget.video.boughtBy
                   .contains(context.read<Authentication>().getUserId) &&
               widget.video.useruid != context.read<Authentication>().getUserId)
           ? paidVideoNotBought(context)
           : VideoBoughtAndViewable(context);
-    else
+    } else {
       return Center(
         child: CircularProgressIndicator(),
       );
+    }
   }
 
   Widget VideoBoughtAndViewable(BuildContext context) {
@@ -252,80 +256,80 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                   controller: _chewieController,
                 ),
               ),
-              Visibility(
-                visible: widget.video.isPaid &&
-                    !widget.video.boughtBy
-                        .contains(context.read<Authentication>().getUserId) &&
-                    widget.video.useruid !=
-                        context.read<Authentication>().getUserId,
-                child: Positioned(
-                  child: Center(
-                    child: BlurryContainer.expand(
-                      blur: 8,
-                      elevation: 0,
-                      color: Colors.transparent,
-                      padding: const EdgeInsets.all(8),
-                      borderRadius: const BorderRadius.all(Radius.circular(20)),
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 45),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                height: 20.h,
-                                width: 100.w,
-                                child: ImageNetworkLoader(
-                                  imageUrl: widget.video.thumbnailurl,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Container(
-                                height: 7.h,
-                                width: 100.w,
-                                child: ElevatedButton.icon(
-                                  onPressed: () async {
-                                    viewMaterials(context);
-                                  },
-                                  style: ButtonStyle(
-                                    foregroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.black),
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            constantColors.black),
-                                    shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                    ),
-                                  ),
-                                  icon: Icon(
-                                    Icons.lock_open,
-                                    color: constantColors.whiteColor,
-                                    size: 30,
-                                  ),
-                                  label: Text(
-                                    "Purchase Content",
-                                    style: TextStyle(
-                                      color: constantColors.whiteColor,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              // Visibility(
+              //   visible: widget.video.isPaid &&
+              //       !widget.video.boughtBy
+              //           .contains(context.read<Authentication>().getUserId) &&
+              //       widget.video.useruid !=
+              //           context.read<Authentication>().getUserId,
+              //   child: Positioned(
+              //     child: Center(
+              //       child: BlurryContainer.expand(
+              //         blur: 8,
+              //         elevation: 0,
+              //         color: Colors.transparent,
+              //         padding: const EdgeInsets.all(8),
+              //         borderRadius: const BorderRadius.all(Radius.circular(20)),
+              //         child: Center(
+              //           child: Padding(
+              //             padding: const EdgeInsets.symmetric(horizontal: 45),
+              //             child: Column(
+              //               mainAxisAlignment: MainAxisAlignment.center,
+              //               children: [
+              //                 Container(
+              //                   height: 20.h,
+              //                   width: 100.w,
+              //                   child: ImageNetworkLoader(
+              //                     imageUrl: widget.video.thumbnailurl,
+              //                     fit: BoxFit.contain,
+              //                   ),
+              //                 ),
+              //                 SizedBox(
+              //                   height: 20,
+              //                 ),
+              //                 Container(
+              //                   height: 7.h,
+              //                   width: 100.w,
+              //                   child: ElevatedButton.icon(
+              //                     onPressed: () async {
+              //                       viewMaterials(context);
+              //                     },
+              //                     style: ButtonStyle(
+              //                       foregroundColor:
+              //                           MaterialStateProperty.all<Color>(
+              //                               Colors.black),
+              //                       backgroundColor:
+              //                           MaterialStateProperty.all<Color>(
+              //                               constantColors.black),
+              //                       shape: MaterialStateProperty.all<
+              //                           RoundedRectangleBorder>(
+              //                         RoundedRectangleBorder(
+              //                           borderRadius: BorderRadius.circular(20),
+              //                         ),
+              //                       ),
+              //                     ),
+              //                     icon: Icon(
+              //                       Icons.lock_open,
+              //                       color: constantColors.whiteColor,
+              //                       size: 30,
+              //                     ),
+              //                     label: Text(
+              //                       "Purchase Content",
+              //                       style: TextStyle(
+              //                         color: constantColors.whiteColor,
+              //                         fontSize: 18,
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
               // back button
               Positioned(
                 top: 10.h,

@@ -7,6 +7,7 @@ import 'dart:math' as math;
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/screens/ForAnonUsers/AnonUserSignUprequired.dart';
 import 'package:diamon_rose_app/screens/HelpScreen/tutorialVideos.dart';
@@ -93,6 +94,9 @@ class VideoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (context.read<Authentication>().getIsAnon == false) {
+      if (adminUserId.contains(context.read<Authentication>().getUserId)) {
+        return ViewableContent(context);
+      }
       return !video.boughtBy
                   .contains(context.read<Authentication>().getUserId) &&
               video.isPaid

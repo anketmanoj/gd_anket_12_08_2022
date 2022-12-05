@@ -340,7 +340,7 @@ class FirebaseOperations with ChangeNotifier {
         .collection("users")
         .doc(Provider.of<Authentication>(context, listen: false).getUserId)
         .get()
-        .then((doc) {
+        .then((doc) async {
       print("fetching user data");
       initUserName = doc['username'];
       initUserEmail = doc['useremail'];
@@ -364,6 +364,56 @@ class FirebaseOperations with ChangeNotifier {
         userCarats = doc['carats'];
         context.read<CaratProvider>().setCarats(doc['carats']);
         log("carats now == ${context.read<CaratProvider>().getCarats}");
+      } else {
+        await addCaratsToUser(
+          userid: context.read<Authentication>().getUserId,
+          caratValue: 0,
+        );
+
+        userCarats = doc['carats'];
+        context.read<CaratProvider>().setCarats(doc['carats']);
+        log("carats now == ${context.read<CaratProvider>().getCarats}");
+      }
+
+      if (!doc.data()!.containsKey("rewardedCarats")) {
+        context
+            .read<CaratProvider>()
+            .setCarats(context.read<CaratProvider>().getCarats + 20);
+
+        await addCaratsToUser(
+          userid: context.read<Authentication>().getUserId,
+          caratValue: context.read<CaratProvider>().getCarats,
+        );
+
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(context.read<Authentication>().getUserId)
+            .update({"rewardedCarats": true});
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.dialog(
+            SimpleDialog(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      Text("Welcome To Glamorous Diastation!"),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "Hi!\n\nWe've added 20 Carats as a signing in present from us to you so you can explore Glamorous Diastation and make some fun purchases on us!\n\nThe 20 Carat giveaway is for all new and old users signing in with us from now till the 5th of January!\n\nWe hope you enjoy your experience and dont shy away from letting your inner content creator go wild with all the features we've developed for you!\n\nGD Team",
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
+
+        log("User rewarded 20 carats");
       }
 
       print("is verified == ${doc['isverified']}");
@@ -3980,5 +4030,15 @@ class FirebaseOperations with ChangeNotifier {
         .collection("posts")
         .doc(video.id)
         .update({"archive": false});
+  }
+
+  Future guestUserDetected() async {
+    final String documentIdVal = nanoid();
+    final String? _getToken = await FirebaseMessaging.instance.getToken();
+
+    await FirebaseFirestore.instance
+        .collection("guestUserTokens")
+        .doc(documentIdVal)
+        .set({"token": _getToken});
   }
 }
