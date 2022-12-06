@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:diamon_rose_app/constants/appleSignInCheck.dart';
 import 'package:diamon_rose_app/controllers/global_messages_controller.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/injection.dart';
@@ -17,6 +19,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+
+import 'screens/messageNavigator/messageNavigator.dart';
 
 // import 'package:mared_social/constants/appleSignInCheck.dart';
 // import 'package:mared_social/controllers/global_messages_controller.dart';
@@ -53,12 +57,26 @@ config() async {
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     FlutterAppBadger.updateBadgeCount(1);
 
-    print('Got a message whilst in the foreground!');
-    print('Message data: ${message.data}');
+    log('Got a message whilst in the foreground!');
+    log('Message data: ${message.data}');
 
     if (message.notification != null) {
-      print('Message also contained a notification: ${message.notification}');
+      log('Message also contained a notification: ${message.notification}');
     }
+  });
+
+  FirebaseMessaging.onMessageOpenedApp.listen((message) async {
+    log('onMessageOpenedApp notification: ${message.notification}');
+    log('onMessageOpenedApp data: ${message.data}');
+
+    if (message.data['videoId'] != null) {
+      log("Go To!");
+      Get.to(FCMNotificationNavigator(
+        videoId: message.data['videoId'],
+      ));
+    }
+
+    ///Todo(param): yet undetermined
   });
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);

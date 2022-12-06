@@ -20,6 +20,7 @@ import 'package:diamon_rose_app/services/NotifyUserModels.dart';
 import 'package:diamon_rose_app/services/RVMServerResponse.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/aws/aws_upload_service.dart';
+import 'package:diamon_rose_app/services/dynamic_link_service.dart';
 import 'package:diamon_rose_app/services/fcm_notification_Service.dart';
 import 'package:diamon_rose_app/services/mux/mux_video_stream.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
@@ -1422,7 +1423,7 @@ class FirebaseOperations with ChangeNotifier {
             }
           });
         }
-      }).then((value) {
+      }).then((value) async {
         arIdsVal = [];
         notifyListeners();
       });
@@ -1431,12 +1432,15 @@ class FirebaseOperations with ChangeNotifier {
         accountOwnerId: userUid,
       );
 
+      await recommendedNotifications(videoGenres: genre, videoId: id);
+      log("sent fcm notification");
+
       log("notified");
 
       return true;
     } catch (e) {
+      log("ANKET ERROR ${e.toString()}");
       return false;
-      print("ANKET ERROR ${e.toString()}");
     }
   }
 
@@ -4040,5 +4044,72 @@ class FirebaseOperations with ChangeNotifier {
         .collection("guestUserTokens")
         .doc(documentIdVal)
         .set({"token": _getToken});
+  }
+
+  Future addRecommendationGenresToUserDocument(
+      {required String useruid, required List<String> interests}) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(useruid)
+        .update({"interested": interests});
+  }
+
+  Future notifyUserIfTheyAreInterested(
+      {required List<String?> videoGenres, required String postUrl}) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .get()
+        .then((users) async {
+      for (var value in users.docs) {
+        if (value.data().containsKey("interested")) {
+          log("notifiying user ==== ${value['username']}");
+          List<String> userInterests = (value['interested'] as List)
+              .map((item) => item as String)
+              .toList();
+          for (String? genre in videoGenres) {
+            if (userInterests.contains(genre)) {
+              await _fcmNotificationService.sendNotificationToUser(
+                to: value['token'],
+                title: "New $genre post!",
+                body: "New post on $genre!",
+                click_action_url: postUrl,
+              );
+            }
+          }
+        }
+      }
+    });
+  }
+
+  Future recommendedNotifications(
+      {required String videoId, required List<String?> videoGenres}) async {
+    // ignore: unawaited_futures
+
+    log("sending request");
+
+    var response = await http.post(
+      Uri.parse(
+          "https://us-central1-gdfe-ac584.cloudfunctions.net/sendNotificationToUsersInterested/"),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(
+        {
+          "videoGenres": videoGenres,
+          "videoId": videoId,
+        },
+      ),
+    );
+
+    log("sent request");
+
+    // log(response.statusCode)
+
+    if (response.statusCode == 200) {
+      log("Anket response OK");
+
+      log("rvm response full = ${response.body}");
+    } else {
+      // ignore: unawaited_futures
+      log("Anket Error RVM ${response.statusCode}");
+    }
   }
 }

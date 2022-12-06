@@ -35,12 +35,16 @@ class FCMNotificationService {
     required String to,
     required String title,
     required String body,
+    String? click_action_url,
   }) async {
     try {
       final dynamic data = json.encode({
         'to': to,
         'priority': 'high',
-        'notification': {'title': title, 'body': body},
+        "click_action": click_action_url,
+        'notification': click_action_url != null
+            ? {"title": title, "body": body, "click_action": click_action_url}
+            : {'title': title, 'body': body},
         'content_available': true,
       });
 

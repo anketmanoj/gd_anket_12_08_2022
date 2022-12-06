@@ -925,20 +925,9 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 // ListTileOption(
                 //   constantColors: constantColors,
                 //   onTap: () async {
-                //     await FirebaseFirestore.instance
-                //         .collection("posts")
-                //         .get()
-                //         .then((value) async {
-                //       for (var item in value.docs) {
-                //         if (!item.data().containsKey("archive")) {
-                //           log("doing!");
-                //           await FirebaseFirestore.instance
-                //               .collection("posts")
-                //               .doc(item.id)
-                //               .update({"archive": false});
-                //         }
-                //       }
-                //     });
+                //     await context
+                //         .read<FirebaseOperations>()
+                //         .testRecommendationNotifications();
                 //   },
                 //   leadingIcon: Icons.language_outlined,
                 //   trailingIcon: Icons.arrow_forward_ios,

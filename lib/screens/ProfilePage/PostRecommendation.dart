@@ -5,6 +5,8 @@ import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/recommendedProvider.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/feedPages/feedPage.dart';
+import 'package:diamon_rose_app/services/FirebaseOperations.dart';
+import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
@@ -217,7 +219,7 @@ class _PostRecommendationScreenState extends State<PostRecommendationScreen> {
                   height: 20,
                 ),
                 SubmitButton(
-                  function: () {
+                  function: () async {
                     SharedPreferencesHelper.setRecommendedOptions(
                         "selected_options", selectedOptions);
 
@@ -236,6 +238,12 @@ class _PostRecommendationScreenState extends State<PostRecommendationScreen> {
 
                       BlocProvider.of<PreloadBloc>(context, listen: false).add(
                           PreloadEvent.updatePostsByUserGenre(selectedOptions));
+
+                      await context
+                          .read<FirebaseOperations>()
+                          .addRecommendationGenresToUserDocument(
+                              useruid: context.read<Authentication>().getUserId,
+                              interests: selectedOptions);
                     }
 
                     // BlocProvider.of<PreloadBloc>(context, listen: false)

@@ -35,6 +35,66 @@ const db = admin.firestore();
 //     return null;
 //   });
 
+exports.sendNotificationToUsersInterested = functions.https.onRequest(
+  async (req, res) => {
+    switch (req.method) {
+      case "POST":
+        const body = req.body;
+        const genres = body["videoGenres"];
+        const videoId = body["videoId"];
+
+        // https://diamantrosegd.page.link/vJC3
+
+        await db
+          .collection("users")
+          .get()
+          .then(async (snapshot) => {
+            snapshot.forEach(async (doc) => {
+              if (doc.get("interested") != undefined) {
+                console.log(doc.get("interested") + "EXISTS ANKE?");
+                const userInterests = doc.data().interested;
+                var arrayLength = userInterests.length;
+                for (var i = 0; i < arrayLength; i++) {
+                  var interests = userInterests[i];
+                  console.log(interests);
+                  if (genres.includes(interests)) {
+                    console.log(doc.data().token);
+                    console.log("Sending notification to device!");
+
+                    const deviceToken = doc.data().token;
+                    const payload = {
+                      notification: {
+                        title: `New ${interests} post for you!`,
+                        body: "Theres a new post we believe would interest you!",
+                        icon: "https://firebasestorage.googleapis.com/v0/b/gdfe-ac584.appspot.com/o/test%2FGDlogo.png?alt=media&token=46fc62df-e0e9-4822-ae58-5c7816949857",
+                      },
+                      data: {
+                        videoId: `${videoId}`,
+                      },
+                    };
+
+                    const response = await admin
+                      .messaging()
+                      .sendToDevice(deviceToken, payload);
+
+                    functions.logger.log(
+                      "Notifications have been sent and tokens cleaned up."
+                    );
+                  }
+                }
+              }
+            });
+          });
+
+        res.status(200).send("ok");
+        break;
+
+      default:
+        break;
+    }
+  }
+);
+
 exports.sendGuestUsersNotificationToRegister = functions.pubsub
   // .schedule("* * * * *")
   .schedule("0 9 * * 4") // for every thursday
