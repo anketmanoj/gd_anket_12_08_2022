@@ -1,8 +1,10 @@
 // ignore_for_file: avoid_catches_without_on_clauses
 
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cool_alert/cool_alert.dart';
+import 'package:diamon_rose_app/services/OTPModel.dart';
 import 'package:diamon_rose_app/services/dbService.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,6 +16,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:the_apple_sign_in/the_apple_sign_in.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
+import 'package:http/http.dart' as http;
 
 class Authentication with ChangeNotifier {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -362,5 +365,136 @@ class Authentication with ChangeNotifier {
         ),
       );
     });
+  }
+
+  Future<OtpSecreteId?> sendEmailForOTPGeneration({
+    required String otp_email,
+  }) async {
+    // ignore: unawaited_futures
+
+    log("sending email OTP request");
+
+    var response = await http.post(
+      Uri.parse(
+        "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/apiv6/generateotp/",
+      ),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(
+        {
+          "email": otp_email,
+        },
+      ),
+    );
+
+    log("sent request");
+
+    // log(response.statusCode)
+
+    switch (response.statusCode) {
+      case 200:
+        log("Anket response OK");
+
+        log("otp email response full = ${response.body}");
+        final OtpSecreteId otpResponse = OtpSecreteId.fromJson(response.body);
+
+        return otpResponse;
+      case 500:
+        log("######FAILED TO GENERATE OTP");
+        Get.dialog(
+          SimpleDialog(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Text("Failed to generate OTP, please try again later!"),
+              ),
+            ],
+          ),
+        );
+        break;
+      case 406:
+        log("######INVALID EMAIL ADDRESS");
+        Get.dialog(
+          SimpleDialog(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Text(
+                    "Invalid email address entered, please check the entered email address!"),
+              ),
+            ],
+          ),
+        );
+        break;
+    }
+  }
+
+  Future<bool> verifyOtpFromUser({
+    required String secretId,
+    required String otp,
+  }) async {
+    // ignore: unawaited_futures
+
+    log("verifying OTP");
+
+    var response = await http.post(
+      Uri.parse(
+        "http://ALBforSeparateAPI-1104668696.us-east-1.elb.amazonaws.com/apiv6/verify/verifyotp/",
+      ),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(
+        {"secret_id": secretId, "enteredOTP": otp},
+      ),
+    );
+
+    log("sent otp verification request");
+
+    // log(response.statusCode)
+
+    switch (response.statusCode) {
+      case 200:
+        log("Anket response OK");
+
+        return true;
+      case 500:
+        log("######FAILED TO Connect to server");
+        Get.dialog(
+          SimpleDialog(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Text(
+                    "Failed to connect to server, please try again later!"),
+              ),
+            ],
+          ),
+        );
+        return false;
+      case 406:
+        log("######INCORRECT OTP ENTERED");
+        Get.dialog(
+          SimpleDialog(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Text("OTP entered is incorrect"),
+              ),
+            ],
+          ),
+        );
+        return false;
+      default:
+        log("######Unknown error");
+        Get.dialog(
+          SimpleDialog(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Text("Unknown OTP Error"),
+              ),
+            ],
+          ),
+        );
+        return false;
+    }
   }
 }

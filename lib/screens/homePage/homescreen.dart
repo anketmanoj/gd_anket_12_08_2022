@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     context
         .read<CaratProvider>()
-        .setCarats(context.read<CaratProvider>().getCarats + 10);
+        .setCarats(context.read<CaratProvider>().getCarats + 5);
 
     await context.read<FirebaseOperations>().addCaratsToUser(
           userid: context.read<Authentication>().getUserId,
@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          "Please enter the Promocode if you have it to win 10 Carats!",
+                          "Please enter the Promocode if you have it to win 5 Carats!",
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(

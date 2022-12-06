@@ -9,6 +9,8 @@ import 'package:diamon_rose_app/providers/user_signup_provider.dart';
 import 'package:diamon_rose_app/screens/mainPage/Signupflow/FAQ_screen.dart';
 import 'package:diamon_rose_app/screens/mainPage/Signupflow/signup_otp.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
+import 'package:diamon_rose_app/services/OTPModel.dart';
+import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -243,14 +245,20 @@ class _SignUpEmailState extends State<SignUpEmail> {
                     text: LocaleKeys.pleasewaitwearesendingyouanemail.tr(),
                     barrierDismissible: false,
                   );
-                  createOtp();
-                  try {
-                    await sendMail();
 
+                  final OtpSecreteId? secrteIdVal = await context
+                      .read<Authentication>()
+                      .sendEmailForOTPGeneration(
+                          otp_email:
+                              _emailController.text.trim().toLowerCase());
+
+                  if (secrteIdVal != null) {
                     Provider.of<SignUpUser>(context, listen: false)
                         .setEmail(_emailController.text);
                     Provider.of<SignUpUser>(context, listen: false)
-                        .setOtp(_otp);
+                        .setSecretId(secrteIdVal.secretId);
+
+                    dev.log("${secrteIdVal.secretId} secret ID anket");
 
                     Navigator.push(
                       context,
@@ -261,29 +269,38 @@ class _SignUpEmailState extends State<SignUpEmail> {
                         ),
                       ),
                     );
-                    // ignore: avoid_catches_without_on_clauses
-                  } catch (e) {
-                    // Navigator.pop(context);
-                    // ignore: unawaited_futures
-                    CoolAlert.show(
-                        context: context,
-                        type: CoolAlertType.info,
-                        showCancelBtn: true,
-                        cancelBtnText: "FAQ",
-                        confirmBtnText: "Okay",
-                        onCancelBtnTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              child: FAQScreen(),
-                              type: PageTransitionType.fade,
-                            ),
-                          );
-                        },
-                        title: "Error Sending OTP",
-                        text:
-                            "There was an error sending an email to ${_emailController.text} || This is most likely due to an unstable network connection. Please check your network connection and try again.");
                   }
+
+                  // createOtp();
+                  // try {
+                  //   await sendMail();
+
+                  //   Provider.of<SignUpUser>(context, listen: false)
+                  //       .setOtp(_otp);
+
+                  //   // ignore: avoid_catches_without_on_clauses
+                  // } catch (e) {
+                  //   // Navigator.pop(context);
+                  //   // ignore: unawaited_futures
+                  //   CoolAlert.show(
+                  //       context: context,
+                  //       type: CoolAlertType.info,
+                  //       showCancelBtn: true,
+                  //       cancelBtnText: "FAQ",
+                  //       confirmBtnText: "Okay",
+                  //       onCancelBtnTap: () {
+                  //         Navigator.push(
+                  //           context,
+                  //           PageTransition(
+                  //             child: FAQScreen(),
+                  //             type: PageTransitionType.fade,
+                  //           ),
+                  //         );
+                  //       },
+                  //       title: "Error Sending OTP",
+                  //       text:
+                  //           "There was an error sending an email to ${_emailController.text} || This is most likely due to an unstable network connection. Please check your network connection and try again.");
+                  // }
                 }
               },
             ),

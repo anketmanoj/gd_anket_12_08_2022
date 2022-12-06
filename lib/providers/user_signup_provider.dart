@@ -8,6 +8,7 @@ class SignUpUser with ChangeNotifier {
   late String _otp;
   late DateTime _dob;
   late String _location;
+  late String _secretId;
 
   String get getEmail => _email;
   String get password => _password;
@@ -16,9 +17,15 @@ class SignUpUser with ChangeNotifier {
   String get otp => _otp;
   DateTime get dob => _dob;
   String get location => _location;
+  String get secretId => _secretId;
 
   void setEmail(String email) {
     _email = email;
+    notifyListeners();
+  }
+
+  void setSecretId(String id) {
+    _secretId = id;
     notifyListeners();
   }
 

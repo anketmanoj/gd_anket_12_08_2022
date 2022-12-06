@@ -2,6 +2,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/providers/user_signup_provider.dart';
 import 'package:diamon_rose_app/screens/mainPage/Signupflow/signUp_password.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
+import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -144,13 +145,18 @@ class _SignUpOTPState extends State<SignUpOTP> {
                   padding: const EdgeInsets.only(top: 30),
                   child: Pinput(
                     controller: pinController,
+                    length: 6,
                     focusNode: focusNode,
                     androidSmsAutofillMethod:
                         AndroidSmsAutofillMethod.smsRetrieverApi,
                     defaultPinTheme: defaultPinTheme,
                     hapticFeedbackType: HapticFeedbackType.lightImpact,
                     onCompleted: (s) async {
-                      bool valid = checkOtp();
+                      bool valid = await context
+                          .read<Authentication>()
+                          .verifyOtpFromUser(
+                              secretId: context.read<SignUpUser>().secretId,
+                              otp: pinController.text);
 
                       if (valid) {
                         // ignore: unawaited_futures
