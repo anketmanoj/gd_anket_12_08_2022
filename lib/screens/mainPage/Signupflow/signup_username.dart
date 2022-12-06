@@ -183,12 +183,6 @@ class SignUpUsername extends StatelessWidget {
                             'percentage': 33,
                           },
                         ).whenComplete(() async {
-                          await Provider.of<FirebaseOperations>(context,
-                                  listen: false)
-                              .checkUserExistsBasedOnDevicetoken(
-                                  userUid: Provider.of<Authentication>(context,
-                                          listen: false)
-                                      .getUserId);
                           context.read<Authentication>().setIsAnon(false);
                           Navigator.push(
                               context,

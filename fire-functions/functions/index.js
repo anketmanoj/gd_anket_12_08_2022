@@ -54,8 +54,8 @@ exports.sendGuestUsersNotificationToRegister = functions.pubsub
               const deviceToken = doc.data().token;
               const payload = {
                 notification: {
-                  title: "👋 Hello!",
-                  body: "We're giving away 20 Carats just for registering! These carats can be used to purchase premium content on us! Sign up and explore all the exciting features we have in store for you! ✨",
+                  title: "GD is waiting for you!",
+                  body: "Sign up now and explore all the exciting features we have in store for you!✨",
                   icon: "https://firebasestorage.googleapis.com/v0/b/gdfe-ac584.appspot.com/o/test%2FGDlogo.png?alt=media&token=46fc62df-e0e9-4822-ae58-5c7816949857",
                   click_action: "https://diamantrosegd.page.link/2q9Q",
                 },

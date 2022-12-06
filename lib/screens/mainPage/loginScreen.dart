@@ -323,14 +323,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   'paypal': '',
                                   'percentage': 33,
                                 });
-
-                                await Provider.of<FirebaseOperations>(context,
-                                        listen: false)
-                                    .checkUserExistsBasedOnDevicetoken(
-                                        userUid: Provider.of<Authentication>(
-                                                context,
-                                                listen: false)
-                                            .getUserId);
                               }
 
                               context.read<Authentication>().setIsAnon(false);
@@ -447,14 +439,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   'paypal': '',
                                   'percentage': 33,
                                 });
-
-                                await Provider.of<FirebaseOperations>(context,
-                                        listen: false)
-                                    .checkUserExistsBasedOnDevicetoken(
-                                        userUid: Provider.of<Authentication>(
-                                                context,
-                                                listen: false)
-                                            .getUserId);
                               }
 
                               context.read<Authentication>().setIsAnon(false);
@@ -563,14 +547,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   'paypal': '',
                                   'percentage': 33,
                                 });
-
-                                await Provider.of<FirebaseOperations>(context,
-                                        listen: false)
-                                    .checkUserExistsBasedOnDevicetoken(
-                                        userUid: Provider.of<Authentication>(
-                                                context,
-                                                listen: false)
-                                            .getUserId);
                               }
 
                               context.read<Authentication>().setIsAnon(false);
