@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:diamon_rose_app/constants/appleSignInCheck.dart';
 import 'package:diamon_rose_app/controllers/global_messages_controller.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/injection.dart';
+import 'package:diamon_rose_app/screens/mainPage/mainpage.dart';
 import 'package:diamon_rose_app/services/feed_viewmodel.dart';
 import 'package:diamon_rose_app/services/get_http_client.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
@@ -19,6 +20,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'screens/messageNavigator/messageNavigator.dart';
 
@@ -74,6 +76,22 @@ config() async {
       Get.to(FCMNotificationNavigator(
         videoId: message.data['videoId'],
       ));
+    }
+
+    if (message.data['signUp'] != null) {
+      log("Go To Sign up screen");
+      Get.off(MainPage());
+    }
+
+    if (message.data['googleForm'] != null) {
+      log("Go To Google Form up screen");
+      final url = 'https://forms.gle/qsohZXPWRFTceMvz5';
+      if (await canLaunch(url)) {
+        await launch(
+          url,
+          forceSafariVC: false,
+        );
+      }
     }
 
     ///Todo(param): yet undetermined
