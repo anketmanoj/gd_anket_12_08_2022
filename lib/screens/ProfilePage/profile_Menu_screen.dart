@@ -922,17 +922,13 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.changeLanguage.tr(),
                 ),
-                // ListTileOption(
-                //   constantColors: constantColors,
-                //   onTap: () async {
-                //     await context
-                //         .read<FirebaseOperations>()
-                //         .testRecommendationNotifications();
-                //   },
-                //   leadingIcon: Icons.language_outlined,
-                //   trailingIcon: Icons.arrow_forward_ios,
-                //   text: "Audio test",
-                // ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () {},
+                  leadingIcon: Icons.language_outlined,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Audio test",
+                ),
                 // ListTileOption(
                 //   constantColors: constantColors,
                 //   onTap: () {
