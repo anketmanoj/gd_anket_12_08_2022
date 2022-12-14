@@ -1,6 +1,8 @@
 import 'dart:collection';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:math' as math;
+import 'package:quiver/iterables.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
@@ -56,6 +58,42 @@ String formatHHMMSS(double seconds) {
     return "";
   }
 }
+
+void randomSplit({required int numberOfRandNb, required int predefinedNumber}) {
+  List randomNumbers = [];
+
+  for (int i = 0; i < numberOfRandNb - 1; i++) {
+    int randNb = math.Random().nextInt(predefinedNumber);
+    randomNumbers.add(randNb);
+    predefinedNumber -= randNb;
+  }
+  randomNumbers.add(predefinedNumber);
+
+  randomNumbers.removeWhere((element) => element <= 0);
+
+  print(randomNumbers.join(' '));
+}
+
+int randomBetween(int min, int max) {
+  int value = max.abs() - (min.abs() + 1);
+  if (value == 0) {
+    return (min.abs()) + math.Random().nextInt(1);
+  }
+
+  return (min.abs() + 1) + math.Random().nextInt(value);
+}
+
+// def num_pieces(num,lenght):
+//     ot = list(range(1,lenght+1))[::-1]
+//     all_list = []
+//     for i in range(lenght-1):
+//         n = random.randint(1, num-ot[i])
+//         all_list.append(n)
+//         num -= n
+//     all_list.append(num)
+//     return all_list
+
+// num_pieces(167,12)
 
 const String kConsumableId0 = 'gd_carats_1';
 const String kConsumableId1 = 'gd_carats_5';

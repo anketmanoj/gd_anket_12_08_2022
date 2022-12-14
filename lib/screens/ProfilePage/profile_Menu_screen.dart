@@ -43,6 +43,7 @@ import 'package:diamon_rose_app/screens/ProfilePage/update_password_screen.dart'
 import 'package:diamon_rose_app/screens/ProfilePage/update_profile_screen.dart';
 import 'package:diamon_rose_app/screens/PurchaseHistory/purchaseHistroy.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
+import 'package:diamon_rose_app/screens/VideoTemplateFeature/videoTemplateFeatureScreen.dart';
 import 'package:diamon_rose_app/screens/audioPlayer/audioPlayerScreen.dart';
 import 'package:diamon_rose_app/screens/blockedAccounts/blockedAccountsScreen.dart';
 import 'package:diamon_rose_app/screens/closeAccount/closeAccountScreen.dart';
@@ -924,11 +925,20 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 ),
                 ListTileOption(
                   constantColors: constantColors,
-                  onTap: () {},
+                  onTap: () {
+                    randomSplit(numberOfRandNb: 4, predefinedNumber: 15);
+                    // Navigator.push(
+                    //   context,
+                    //   PageTransition(
+                    //       child: VideoTemplateFeatureScreen(),
+                    //       type: PageTransitionType.rightToLeft),
+                    // );
+                  },
                   leadingIcon: Icons.language_outlined,
                   trailingIcon: Icons.arrow_forward_ios,
                   text: "Audio test",
                 ),
+
                 // ListTileOption(
                 //   constantColors: constantColors,
                 //   onTap: () {
