@@ -59,8 +59,9 @@ String formatHHMMSS(double seconds) {
   }
 }
 
-void randomSplit({required int numberOfRandNb, required int predefinedNumber}) {
-  List randomNumbers = [];
+List<int> randomSplit(
+    {required int numberOfRandNb, required int predefinedNumber}) {
+  List<int> randomNumbers = [];
 
   for (int i = 0; i < numberOfRandNb - 1; i++) {
     int randNb = math.Random().nextInt(predefinedNumber);
@@ -71,7 +72,7 @@ void randomSplit({required int numberOfRandNb, required int predefinedNumber}) {
 
   randomNumbers.removeWhere((element) => element <= 0);
 
-  print(randomNumbers.join(' '));
+  return randomNumbers;
 }
 
 int randomBetween(int min, int max) {

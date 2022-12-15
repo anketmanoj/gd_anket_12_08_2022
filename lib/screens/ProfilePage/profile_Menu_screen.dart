@@ -926,13 +926,13 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 ListTileOption(
                   constantColors: constantColors,
                   onTap: () {
-                    randomSplit(numberOfRandNb: 4, predefinedNumber: 15);
-                    // Navigator.push(
-                    //   context,
-                    //   PageTransition(
-                    //       child: VideoTemplateFeatureScreen(),
-                    //       type: PageTransitionType.rightToLeft),
-                    // );
+                    // randomSplit(numberOfRandNb: 4, predefinedNumber: 15);
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          child: VideoTemplateFeatureScreen(),
+                          type: PageTransitionType.rightToLeft),
+                    );
                   },
                   leadingIcon: Icons.language_outlined,
                   trailingIcon: Icons.arrow_forward_ios,

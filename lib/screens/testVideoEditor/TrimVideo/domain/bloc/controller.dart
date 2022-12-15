@@ -529,6 +529,90 @@ class VideoEditorController extends ChangeNotifier {
     );
   }
 
+  Future<void> exportIntermediateFile({
+    required void Function(File? file, Duration? endDuration) onCompleted,
+    String? name,
+    String? outDir,
+    String format = "ts",
+    double scale = 1.0,
+    double? playbackSpeed = 1.0,
+    String? customInstruction,
+    int audioCheckVal = 1,
+    void Function(Statistics, double)? onProgress,
+    VideoExportPreset preset = VideoExportPreset.slow,
+    bool isFiltersEnabled = true,
+  }) async {
+    final String tempPath = outDir ?? (await getTemporaryDirectory()).path;
+    final String videoPath = file.path;
+    // name ??= path.basenameWithoutExtension(videoPath);
+    final int epoch = DateTime.now().millisecondsSinceEpoch;
+    final String outputPath = "$tempPath/$epoch.$format";
+
+    final double endTrimDuration = _trimEnd.inSeconds / playbackSpeed!;
+
+    log("original trim == -ss ${_trimStart.inSeconds} -to ${_trimEnd.inSeconds}");
+    log("trim with speed of x$playbackSpeed trim == -ss ${_trimStart.inSeconds} -to ${_trimStart.inSeconds + endTrimDuration}");
+
+    // CALCULATE FILTERS
+    final String gif = format != "gif" ? "" : "fps=10 -loop 0";
+    final String trim = minTrim >= _min.dx && maxTrim <= _max.dx
+        ? "-ss ${_trimStart.inSeconds} -to ${_trimStart.inSeconds + endTrimDuration + 0.3}"
+        : "";
+    String filters =
+        "[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1,setpts=${1 / playbackSpeed!}*PTS[v]";
+    // minCrop >= _min && maxCrop <= _max ? await _getCrop() : "";
+    final String rotation =
+        _rotation >= 360 || _rotation <= 0 ? "" : _getRotation();
+    final String scaleInstruction =
+        scale == 1.0 ? "" : "scale=iw*$scale:ih*$scale";
+    final String audioPlayback = ";[0:a]atempo=${playbackSpeed}[a]";
+
+    // await runRvm()
+
+    // VALIDATE FILTERS
+    // final List<String> filters = [crop, scaleInstruction, rotation, gif];
+    // filters.removeWhere((item) => item.isEmpty);
+    // final String filter = filters.isNotEmpty && isFiltersEnabled
+    //     ? "-filter_complex " + filters.join(",")
+    //     : "";
+    if (audioCheckVal != 0) {
+      filters = filters + audioPlayback;
+    }
+
+    final String execute =
+        "-i \'$videoPath\' ${audioCheckVal == 0 ? '-f lavfi -i anullsrc' : ''} -vf \"scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1,setsar=1,setpts=1.0*PTS\" -acodec aac -shortest -crf 30 -preset faster $trim -y $outputPath";
+    // ignore: unnecessary_string_escapes
+    // " -i \'$videoPath\' ${audioCheckVal == 0 ? '-f lavfi -i anullsrc' : ''} ${customInstruction ?? ""} -filter_complex \"$filters\" -map ''[v]'' ${audioCheckVal == 0 ? '' : '-map  ' '[a]' ' '} -crf 30 -preset faster $trim -y $outputPath";
+
+    log("trim command == $execute");
+
+    // PROGRESS CALLBACKS
+    await FFmpegKit.executeAsync(
+      execute,
+      (session) async {
+        final state =
+            FFmpegKitConfig.sessionStateToString(await session.getState());
+        final code = await session.getReturnCode();
+        final failStackTrace = await session.getFailStackTrace();
+
+        debugPrint(
+            "FFmpeg process exited with state $state and return code $code.${(failStackTrace == null) ? "" : "\\n" + failStackTrace}");
+
+        onCompleted(code?.isValueSuccess() == true ? File(outputPath) : null,
+            code?.isValueSuccess() == true ? (_trimEnd - _trimStart) : null);
+      },
+      null,
+      onProgress != null
+          ? (stats) {
+              // Progress value of encoded video
+              double progressValue =
+                  stats.getTime() / (_trimEnd - _trimStart).inMilliseconds;
+              onProgress(stats, progressValue.clamp(0.0, 1.0));
+            }
+          : null,
+    );
+  }
+
   /// Convert [VideoExportPreset] to ffmpeg preset as a [String], [More info about presets](https://trac.ffmpeg.org/wiki/Encode/H.264)
   ///
   /// Return [String] in `-preset xxx` format

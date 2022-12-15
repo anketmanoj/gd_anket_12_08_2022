@@ -24,6 +24,7 @@ import 'package:diamon_rose_app/screens/VideoHomeScreen/core/constants.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/following_bloc/following_preload_bloc.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/service/api_service.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/service/navigation_service.dart';
+import 'package:diamon_rose_app/screens/VideoTemplateFeature/videoTemplateProvider.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateChatHelpers.dart';
 import 'package:diamon_rose_app/screens/chatPage/old_chatCode/privateMessageHelper.dart';
 import 'package:diamon_rose_app/screens/mainPage/mainpage_helpers.dart';
@@ -235,6 +236,7 @@ class MyApp extends StatelessWidget with PortraitModeMixin {
           ChangeNotifierProvider(create: (_) => VideoEditorProvider()),
           ChangeNotifierProvider(create: (_) => ArVideoCreation()),
           ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
+          ChangeNotifierProvider(create: (_) => VideoTemplateProvider()),
         ],
         child: Sizer(
           builder: (context, orientation, deviceType) {

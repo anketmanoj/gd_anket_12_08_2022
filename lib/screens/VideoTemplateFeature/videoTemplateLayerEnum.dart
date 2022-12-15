@@ -1,0 +1,4 @@
+enum VideoTemplateLayer {
+  Video,
+  Image,
+}
