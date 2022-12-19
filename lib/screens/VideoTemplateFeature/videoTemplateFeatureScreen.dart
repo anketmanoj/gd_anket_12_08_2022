@@ -135,7 +135,7 @@ class _VideoTemplateFeatureScreenState
         "${rawDocumentPath}/${Timestamp.now().millisecondsSinceEpoch}.mp4";
 
     final String commandForFinalFile =
-        " -r 0.01 -loop 1 -i ${file.path} -preset ultrafast -t ${vtm.seconds} -pix_fmt yuv420p -shortest $outputFile -y";
+        " -framerate 1/${vtm.seconds} -i ${file.path} -preset ultrafast -t ${vtm.seconds} -pix_fmt yuv420p -shortest $outputFile -y";
 
     log("command: $commandForFinalFile");
 
@@ -148,9 +148,9 @@ class _VideoTemplateFeatureScreenState
 
       await value.getReturnCode().then((value) {
         if (value.toString() == '0') {
-          log("finished ffmpeg");
+          log("finished ffmpeg for img");
 
-          log("output file done");
+          log("output file done got img");
         } else {
           log("Error running ffmpeg : $value");
           Get.back();
@@ -370,10 +370,9 @@ class _VideoTemplateFeatureScreenState
                                         : () async {
                                             if (index == 0) {
                                               log("index == $index");
-                                              await _pickImage(
+                                              await bottomSheetOptions(
                                                   videoTemplate:
-                                                      videoTemplate[index],
-                                                  context: context);
+                                                      videoTemplate[index]);
 
                                               setState(() {});
                                             } else if (index != 0) {
@@ -381,10 +380,9 @@ class _VideoTemplateFeatureScreenState
                                                       .intermediateFile !=
                                                   null) {
                                                 log("index == $index");
-                                                await _pickImage(
+                                                await bottomSheetOptions(
                                                     videoTemplate:
-                                                        videoTemplate[index],
-                                                    context: context);
+                                                        videoTemplate[index]);
 
                                                 setState(() {});
                                               } else {
@@ -456,10 +454,9 @@ class _VideoTemplateFeatureScreenState
                                               onPressed: () async {
                                                 if (index == 0) {
                                                   log("index == $index");
-                                                  await _pickVideo(
+                                                  await bottomSheetOptions(
                                                       videoTemplate:
-                                                          videoTemplate[index],
-                                                      context: context);
+                                                          videoTemplate[index]);
 
                                                   setState(() {});
                                                 } else if (index != 0) {
@@ -467,11 +464,10 @@ class _VideoTemplateFeatureScreenState
                                                           .intermediateFile !=
                                                       null) {
                                                     log("index == $index");
-                                                    await _pickVideo(
+                                                    await bottomSheetOptions(
                                                         videoTemplate:
                                                             videoTemplate[
-                                                                index],
-                                                        context: context);
+                                                                index]);
 
                                                     setState(() {});
                                                   } else {
@@ -616,5 +612,62 @@ class _VideoTemplateFeatureScreenState
         ),
       ),
     );
+  }
+
+  Future bottomSheetOptions({required VideoTemplateModel videoTemplate}) async {
+    return Get.dialog(SimpleDialog(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  style: ButtonStyle(
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        constantColors.navButton),
+                  ),
+                  onPressed: () async {
+                    await _pickImage(
+                        videoTemplate: videoTemplate, context: context);
+
+                    Get.back();
+                  },
+                  icon: Icon(Icons.image),
+                  label: Text(
+                    "Pick Image",
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: ElevatedButton.icon(
+                  style: ButtonStyle(
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        constantColors.navButton),
+                  ),
+                  onPressed: () async {
+                    await _pickVideo(
+                        videoTemplate: videoTemplate, context: context);
+
+                    Get.back();
+                  },
+                  icon: Icon(Icons.video_call),
+                  label: Text(
+                    "Pick Video",
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ));
   }
 }
