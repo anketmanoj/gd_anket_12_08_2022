@@ -142,153 +142,145 @@ class _VideoTemplateFeatureScreenState
       backgroundColor: constantColors.whiteColor,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            context.read<VideoTemplateProvider>().resetAllParams();
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+          ),
+        ),
         backgroundColor: constantColors.transperant,
         elevation: 0,
       ),
-      body: Stack(
-        children: [
-          bodyColor(),
-          Padding(
-            padding: EdgeInsets.fromLTRB(10, 12.h, 10, 10),
-            child: Column(
-              children: [
-                Flexible(
-                  flex: 2,
-                  child: Column(
-                    children: [
-                      Flexible(
-                        flex: 9,
-                        child: Consumer<VideoTemplateProvider>(
-                            builder: (context, videoTemplateProvider, _) {
-                          return videoTemplateProvider
-                                      .getVideoTemplateSelected ==
-                                  null
-                              ? Container(
-                                  child: Center(
-                                    child: Container(
-                                      height: 30.h,
-                                      width: 100.w,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: AssetImage(
-                                                'assets/images/GDlogo.png')),
+      body: SafeArea(
+        top: false,
+        bottom: Platform.isAndroid ? true : false,
+        child: Stack(
+          children: [
+            bodyColor(),
+            Padding(
+              padding: EdgeInsets.fromLTRB(10, 12.h, 10, 10),
+              child: Column(
+                children: [
+                  Flexible(
+                    flex: 2,
+                    child: Column(
+                      children: [
+                        Flexible(
+                          flex: 9,
+                          child: Consumer<VideoTemplateProvider>(
+                              builder: (context, videoTemplateProvider, _) {
+                            return videoTemplateProvider
+                                        .getVideoTemplateSelected ==
+                                    null
+                                ? Container(
+                                    child: Center(
+                                      child: Container(
+                                        height: 30.h,
+                                        width: 100.w,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              image: AssetImage(
+                                                  'assets/images/GDlogo.png')),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                )
-                              : Center(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      videoTemplateProvider
-                                              .getVideoTemplateSelected
-                                              .videoController!
-                                              .value
-                                              .isPlaying
-                                          ? videoTemplateProvider
-                                              .getVideoTemplateSelected
-                                              .videoController!
-                                              .pause()
-                                          : videoTemplateProvider
-                                              .getVideoTemplateSelected
-                                              .videoController!
-                                              .play();
-                                    },
+                                  )
+                                : Center(
                                     child: AspectRatio(
                                       aspectRatio: 9 / 16,
                                       child: VideoPlayer(videoTemplateProvider
-                                          .getVideoTemplateSelected
+                                          .getVideoTemplateSelected!
                                           .videoController!),
                                     ),
+                                  );
+                          }),
+                        ),
+                        Flexible(
+                          flex: 1,
+                          child: Container(
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Use Template",
+                                  style: TextStyle(
+                                    color: constantColors.black,
+                                    fontSize: 16,
                                   ),
-                                );
-                        }),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: Container(
-                          child: Column(
-                            children: [
-                              Text(
-                                "Use Template",
-                                style: TextStyle(
-                                  color: constantColors.black,
-                                  fontSize: 16,
                                 ),
-                              ),
-                              Text(
-                                "Replace the clips with your own!",
-                                style: TextStyle(
-                                  color: constantColors.greyColor,
-                                  fontSize: 14,
+                                Text(
+                                  "Replace the clips with your own!",
+                                  style: TextStyle(
+                                    color: constantColors.greyColor,
+                                    fontSize: 14,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                Flexible(
-                  flex: 1,
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    width: 100.w,
-                    decoration: BoxDecoration(
-                      color: constantColors.greyColor.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(20),
+                      ],
                     ),
-                    child: Column(
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              log("play controllers in sequences");
-                              context
-                                  .read<VideoTemplateProvider>()
-                                  .playAllControllers(
-                                      videoTemplateList: videoTemplate
-                                          .where(
-                                              (element) => element.file != null)
-                                          .toList());
-                            },
-                            icon: Icon(Icons.play_arrow)),
-                        Container(
-                          height: 80,
-                          width: 100.w,
-                          alignment: Alignment.center,
-                          child: ListView.separated(
-                            separatorBuilder: (context, index) => SizedBox(
-                              height: 10,
-                            ),
-                            scrollDirection: Axis.horizontal,
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: videoTemplate.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(3.0),
-                                child: InkWell(
-                                  onTap: videoTemplate[index].file != null
-                                      ? () {
-                                          context
-                                              .read<VideoTemplateProvider>()
-                                              .selectVideoTemplate(
-                                                  videoVal:
-                                                      videoTemplate[index]);
-                                        }
-                                      : () async {
-                                          if (index == 0) {
-                                            log("index == $index");
-                                            await _pickVideo(
-                                                videoTemplate:
-                                                    videoTemplate[index],
-                                                context: context);
-
-                                            setState(() {});
-                                          } else if (index != 0) {
-                                            if (videoTemplate[index - 1]
-                                                    .intermediateFile !=
-                                                null) {
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      width: 100.w,
+                      decoration: BoxDecoration(
+                        color: constantColors.greyColor.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Column(
+                        children: [
+                          Consumer<VideoTemplateProvider>(
+                              builder: (context, vtp, _) {
+                            return IconButton(
+                                onPressed: vtp.isPlayingVideo == false
+                                    ? () {
+                                        log("play controllers in sequences");
+                                        vtp.playVideo(
+                                            videoTemplateList: videoTemplate
+                                                .where((element) =>
+                                                    element.file != null)
+                                                .toList());
+                                      }
+                                    : () {
+                                        log("pause controllers in sequences");
+                                        vtp.pauseVideo();
+                                      },
+                                icon: Icon(vtp.isPlayingVideo == false
+                                    ? Icons.play_arrow
+                                    : Icons.pause));
+                          }),
+                          Container(
+                            height: 12.h,
+                            width: 100.w,
+                            alignment: Alignment.center,
+                            child: ListView.separated(
+                              separatorBuilder: (context, index) => SizedBox(
+                                height: 10,
+                              ),
+                              scrollDirection: Axis.horizontal,
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: videoTemplate.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: InkWell(
+                                    onTap: videoTemplate[index].file != null
+                                        ? () {
+                                            context
+                                                .read<VideoTemplateProvider>()
+                                                .selectVideoTemplate(
+                                                    videoVal:
+                                                        videoTemplate[index]);
+                                          }
+                                        : () async {
+                                            if (index == 0) {
                                               log("index == $index");
                                               await _pickVideo(
                                                   videoTemplate:
@@ -296,60 +288,10 @@ class _VideoTemplateFeatureScreenState
                                                   context: context);
 
                                               setState(() {});
-                                            } else {
-                                              log("Error");
-                                            }
-                                          }
-                                        },
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        width: 80.w / videoTemplate.length,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          image:
-                                              videoTemplate[index].thumbnail !=
-                                                      null
-                                                  ? DecorationImage(
-                                                      fit: BoxFit.cover,
-                                                      image: MemoryImage(
-                                                          videoTemplate[index]
-                                                              .thumbnail!))
-                                                  : null,
-                                          border: Border.all(
-                                            color: constantColors.bioBg,
-                                            width: 1,
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        bottom: 0,
-                                        left: 0,
-                                        right: 0,
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "${videoTemplate[index].seconds}s",
-                                            style: TextStyle(
-                                              color: constantColors.black,
-                                              shadows: outlinedText(
-                                                strokeColor:
-                                                    constantColors.whiteColor,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Visibility(
-                                        visible:
-                                            videoTemplate[index].file != null,
-                                        child: Positioned(
-                                          top: 0,
-                                          right: 0,
-                                          child: IconButton(
-                                            onPressed: () async {
-                                              if (index == 0) {
+                                            } else if (index != 0) {
+                                              if (videoTemplate[index - 1]
+                                                      .intermediateFile !=
+                                                  null) {
                                                 log("index == $index");
                                                 await _pickVideo(
                                                     videoTemplate:
@@ -357,10 +299,60 @@ class _VideoTemplateFeatureScreenState
                                                     context: context);
 
                                                 setState(() {});
-                                              } else if (index != 0) {
-                                                if (videoTemplate[index - 1]
-                                                        .intermediateFile !=
-                                                    null) {
+                                              } else {
+                                                log("Error");
+                                              }
+                                            }
+                                          },
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          width: 80.w / videoTemplate.length,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            image: videoTemplate[index]
+                                                        .thumbnail !=
+                                                    null
+                                                ? DecorationImage(
+                                                    fit: BoxFit.cover,
+                                                    image: MemoryImage(
+                                                        videoTemplate[index]
+                                                            .thumbnail!))
+                                                : null,
+                                            border: Border.all(
+                                              color: constantColors.bioBg,
+                                              width: 1,
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          bottom: 0,
+                                          left: 0,
+                                          right: 0,
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "${videoTemplate[index].seconds}s",
+                                              style: TextStyle(
+                                                color: constantColors.black,
+                                                shadows: outlinedText(
+                                                  strokeColor:
+                                                      constantColors.whiteColor,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Visibility(
+                                          visible:
+                                              videoTemplate[index].file != null,
+                                          child: Positioned(
+                                            top: 0,
+                                            right: 0,
+                                            child: IconButton(
+                                              onPressed: () async {
+                                                if (index == 0) {
                                                   log("index == $index");
                                                   await _pickVideo(
                                                       videoTemplate:
@@ -368,97 +360,118 @@ class _VideoTemplateFeatureScreenState
                                                       context: context);
 
                                                   setState(() {});
-                                                } else {
-                                                  log("Error");
+                                                } else if (index != 0) {
+                                                  if (videoTemplate[index - 1]
+                                                          .intermediateFile !=
+                                                      null) {
+                                                    log("index == $index");
+                                                    await _pickVideo(
+                                                        videoTemplate:
+                                                            videoTemplate[
+                                                                index],
+                                                        context: context);
+
+                                                    setState(() {});
+                                                  } else {
+                                                    log("Error");
+                                                  }
                                                 }
-                                              }
-                                            },
-                                            icon: Icon(Icons.edit),
+                                              },
+                                              icon: Icon(Icons.edit),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                        SubmitButton(function: () async {
-                          log("message");
-                          final Directory appDocumentDir =
-                              await getApplicationDocumentsDirectory();
-                          final String rawDocumentPath = appDocumentDir.path;
-                          final String outputFile =
-                              "${rawDocumentPath}/${Timestamp.now().millisecondsSinceEpoch}.mp4";
+                          SizedBox(
+                            height: 15,
+                          ),
+                          SubmitButton(
+                              text: "Combine Clips",
+                              function: () async {
+                                log("message");
+                                final Directory appDocumentDir =
+                                    await getApplicationDocumentsDirectory();
+                                final String rawDocumentPath =
+                                    appDocumentDir.path;
+                                final String outputFile =
+                                    "${rawDocumentPath}/${Timestamp.now().millisecondsSinceEpoch}.mp4";
 
-                          List<String> inputString = [];
-                          List<String> streamsBreakdown = [];
+                                List<String> inputString = [];
+                                List<String> streamsBreakdown = [];
 
-                          // videoTemplate.forEach((element) {
+                                // videoTemplate.forEach((element) {
 
-                          // });
+                                // });
 
-                          for (var element in videoTemplate) {
-                            if (element.intermediateFile != null) {
-                              int indexOfElement =
-                                  videoTemplate.indexOf(element);
-                              log(indexOfElement.toString());
-                              inputString.add("-i ${element.file!.path}");
+                                for (var element in videoTemplate) {
+                                  if (element.intermediateFile != null) {
+                                    int indexOfElement =
+                                        videoTemplate.indexOf(element);
+                                    log(indexOfElement.toString());
+                                    inputString.add("-i ${element.file!.path}");
 
-                              streamsBreakdown.add(
-                                  "[$indexOfElement:v:0][$indexOfElement:a:0]");
-                            }
-                          }
+                                    streamsBreakdown.add(
+                                        "[$indexOfElement:v:0][$indexOfElement:a:0]");
+                                  }
+                                }
 
-                          final String commandForFinalFile =
-                              "${inputString.join(" ")} -filter_complex \"${streamsBreakdown.join()}concat=n=${videoTemplate.length}:v=1:a=1[outv][outa]\" -map ''[outv]'' -map ''[outa]'' -y -r 30/1 -crf 30 -preset faster  $outputFile";
+                                final String commandForFinalFile =
+                                    "${inputString.join(" ")} -filter_complex \"${streamsBreakdown.join()}concat=n=${videoTemplate.length}:v=1:a=1[outv][outa]\" -map ''[outv]'' -map ''[outa]'' -y -r 30/1 -crf 30 -preset faster  $outputFile";
 
-                          log("command: $commandForFinalFile");
+                                log("command: $commandForFinalFile");
 
-                          log("starting");
+                                log("starting");
 
-                          await FFmpegKit.execute(commandForFinalFile)
-                              .then((value) async {
-                            // await value.getOutput().then((value) {
-                            //   log(value!);
-                            // });
+                                await FFmpegKit.execute(commandForFinalFile)
+                                    .then((value) async {
+                                  // await value.getOutput().then((value) {
+                                  //   log(value!);
+                                  // });
 
-                            await value.getReturnCode().then((value) {
-                              if (value.toString() == '0') {
-                                log("finished ffmpeg");
+                                  await value.getReturnCode().then((value) {
+                                    if (value.toString() == '0') {
+                                      log("finished ffmpeg");
 
-                                final File outputFileValue = File(outputFile);
-                                log("output file done");
+                                      final File outputFileValue =
+                                          File(outputFile);
+                                      log("output file done");
 
-                                context
-                                    .read<VideoEditorProvider>()
-                                    .setBackgroundVideoFile(outputFileValue);
-                                log("setBackgroundVideoFile done");
+                                      context
+                                          .read<VideoEditorProvider>()
+                                          .setBackgroundVideoFile(
+                                              outputFileValue);
+                                      log("setBackgroundVideoFile done");
 
-                                context
-                                    .read<VideoEditorProvider>()
-                                    .setBackgroundVideoController();
-                                log("setBackgroundVideoController done");
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute<void>(
-                                        builder: (BuildContext context) =>
-                                            VideoTemplateInitVideoEditorScreen()));
-                              } else {
-                                log("Error running ffmpeg : $value");
-                              }
-                            });
-                          });
-                        }),
-                      ],
+                                      context
+                                          .read<VideoEditorProvider>()
+                                          .setBackgroundVideoController();
+                                      log("setBackgroundVideoController done");
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute<void>(
+                                              builder: (BuildContext context) =>
+                                                  VideoTemplateInitVideoEditorScreen()));
+                                    } else {
+                                      log("Error running ffmpeg : $value");
+                                    }
+                                  });
+                                });
+                              }),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

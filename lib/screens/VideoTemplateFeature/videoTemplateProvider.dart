@@ -8,8 +8,8 @@ class VideoTemplateProvider extends ChangeNotifier {
   late VideoTemplateModel _videoTemplate;
   VideoTemplateModel get videoTemplate => _videoTemplate;
 
-  late VideoTemplateModel _videoTemplateSelected;
-  VideoTemplateModel get getVideoTemplateSelected => _videoTemplateSelected;
+  VideoTemplateModel? _videoTemplateSelected = null;
+  VideoTemplateModel? get getVideoTemplateSelected => _videoTemplateSelected;
 
   List<VideoPlayerController> _videoControllers = [];
   List<VideoPlayerController> get getVideoControllersList => _videoControllers;
@@ -18,11 +18,43 @@ class VideoTemplateProvider extends ChangeNotifier {
   VideoPlayerController? _prevPlayer;
   VideoPlayerController? _nextPlayer;
 
+  bool _isPlayingVideo = false;
+  bool get isPlayingVideo => _isPlayingVideo;
+
   void playAllControllers(
       {required List<VideoTemplateModel> videoTemplateList}) async {
+    _isPlayingVideo = true;
+    notifyListeners();
+    log("set is playing video : True");
     for (VideoTemplateModel video in videoTemplateList) {
-      selectVideoTemplate(videoVal: video);
-      await Future.delayed(Duration(seconds: video.seconds));
+      if (_isPlayingVideo == true) {
+        selectVideoTemplate(videoVal: video);
+        log("+is playing video value : $_isPlayingVideo");
+        await Future.delayed(Duration(seconds: video.seconds));
+      }
+    }
+  }
+
+  void resetAllParams() {
+    _videoTemplateSelected = null;
+    _isPlayingVideo = false;
+    _currentPlayer = null;
+    _prevPlayer = null;
+    notifyListeners();
+  }
+
+  void pauseVideo() {
+    _currentPlayer!.pause();
+    _isPlayingVideo = false;
+    notifyListeners();
+    log("set is playing video : False");
+  }
+
+  void playVideo({required List<VideoTemplateModel> videoTemplateList}) {
+    if (videoTemplateList.isNotEmpty) {
+      playAllControllers(videoTemplateList: videoTemplateList);
+      _isPlayingVideo = true;
+      notifyListeners();
     }
   }
 
@@ -39,12 +71,12 @@ class VideoTemplateProvider extends ChangeNotifier {
     _videoTemplateSelected = videoVal;
 
     final VideoPlayerController _videoController =
-        VideoPlayerController.file(_videoTemplateSelected.file!)..initialize();
+        VideoPlayerController.file(_videoTemplateSelected!.file!)..initialize();
 
     _currentPlayer = _videoController;
 
-    _videoTemplateSelected.videoController = _currentPlayer;
-    await _videoTemplateSelected.videoController!.play();
+    _videoTemplateSelected!.videoController = _currentPlayer;
+    await _videoTemplateSelected!.videoController!.play();
     notifyListeners();
   }
 
