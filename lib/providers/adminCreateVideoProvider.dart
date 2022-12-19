@@ -272,6 +272,7 @@ class AdminVideoCreator extends ChangeNotifier {
         'verifiedUser': _userModel!.isverified,
         "videoType": "video",
         'views': 0,
+        'archive': false,
       }).then((value) {
         _arIdsVal.forEach((arUidVal) async {
           await FirebaseFirestore.instance

@@ -1625,6 +1625,7 @@ class FirebaseOperations with ChangeNotifier {
         'verifiedUser': isverified,
         "videoType": "video",
         'views': 0,
+        'archive': false,
       }).then((value) {
         arIdsVal.forEach((arUidVal) async {
           await FirebaseFirestore.instance
@@ -1932,6 +1933,7 @@ class FirebaseOperations with ChangeNotifier {
         'verifiedUser': isverified,
         'videoType': 'arView',
         'views': 0,
+        'archive': false,
       }).then((value) async {
         await addArToCollection(
           ownerName: initUserName,

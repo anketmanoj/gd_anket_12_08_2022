@@ -118,6 +118,7 @@ class DraftVideo {
       'verifiedUser': verifiedUser,
       'videoType': videoType,
       'views': views,
+      'archive': false,
     };
   }
 

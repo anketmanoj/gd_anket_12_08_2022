@@ -7,6 +7,7 @@ import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/ForAnonUsers/AnonUserSignUprequired.dart';
 import 'package:diamon_rose_app/screens/HelpScreen/tutorialVideos.dart';
+import 'package:diamon_rose_app/screens/VideoTemplateFeature/videoTemplateFeatureScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/MyCollectionHome.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/MyCollectionMiddleNav.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/InitVideoEditorScreen.dart';
@@ -442,6 +443,28 @@ class VideoCreationOptionsScreen extends StatelessWidget {
                             child: MyCollectionMiddleNav(goToMaterial: 2),
                             type: PageTransitionType.fade,
                           ),
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: MaterialButton(
+                      minWidth: 100.w,
+                      color: constantColors.navButton,
+                      child: Text(
+                        "Custom Backgrounds Template",
+                        style: TextStyle(
+                          color: constantColors.whiteColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                              child: VideoTemplateFeatureScreen(),
+                              type: PageTransitionType.rightToLeft),
                         );
                       },
                     ),

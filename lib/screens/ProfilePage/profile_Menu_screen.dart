@@ -924,35 +924,30 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.changeLanguage.tr(),
                 ),
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () async {
-                    // randomSplit(numberOfRandNb: 4, predefinedNumber: 15);
-                    // await FirebaseFirestore.instance
-                    //     .collection("posts")
-                    //     .get()
-                    //     .then((value) async {
-                    //   for (var item in value.docs) {
-                    //     if (!item.data().containsKey("archive")) {
-                    //       log("doing!");
-                    //       await FirebaseFirestore.instance
-                    //           .collection("posts")
-                    //           .doc(item.id)
-                    //           .update({"archive": false});
-                    //     }
-                    //   }
-                    // });
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                          child: VideoTemplateFeatureScreen(),
-                          type: PageTransitionType.rightToLeft),
-                    );
-                  },
-                  leadingIcon: Icons.language_outlined,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: "Video Template Test",
-                ),
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () async {
+                //     // randomSplit(numberOfRandNb: 4, predefinedNumber: 15);
+                //     // await FirebaseFirestore.instance
+                //     //     .collection("posts")
+                //     //     .get()
+                //     //     .then((value) async {
+                //     //   for (var item in value.docs) {
+                //     //     if (!item.data().containsKey("archive")) {
+                //     //       log("doing!");
+                //     //       await FirebaseFirestore.instance
+                //     //           .collection("posts")
+                //     //           .doc(item.id)
+                //     //           .update({"archive": false});
+                //     //     }
+                //     //   }
+                //     // });
+
+                //   },
+                //   leadingIcon: Icons.language_outlined,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "Video Template Test",
+                // ),
 
                 // ListTileOption(
                 //   constantColors: constantColors,
