@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
@@ -103,6 +104,93 @@ class _VideoTemplateFeatureScreenState
           child: VideoTemplateTrimTool(
             videoTemplate: videoTemplate,
             file: File(file.path),
+            seconds: videoTemplate.seconds,
+          ),
+        ),
+        isDismissible: true,
+        isScrollControlled: true,
+        enableDrag: true,
+      );
+
+      videoTemplate.file =
+          context.read<VideoTemplateProvider>().videoTemplate.file;
+      videoTemplate.videoSelected =
+          context.read<VideoTemplateProvider>().videoTemplate.videoSelected;
+
+      videoTemplate.videoController =
+          context.read<VideoTemplateProvider>().videoTemplate.videoController;
+
+      videoTemplate.thumbnail =
+          context.read<VideoTemplateProvider>().videoTemplate.thumbnail;
+      videoTemplate.intermediateFile =
+          context.read<VideoTemplateProvider>().videoTemplate.intermediateFile;
+    }
+  }
+
+  Future<File> turnImageToVideo(
+      {required VideoTemplateModel vtm, required File file}) async {
+    final Directory appDocumentDir = await getApplicationDocumentsDirectory();
+    final String rawDocumentPath = appDocumentDir.path;
+    final String outputFile =
+        "${rawDocumentPath}/${Timestamp.now().millisecondsSinceEpoch}.mp4";
+
+    final String commandForFinalFile =
+        " -r 0.01 -loop 1 -i ${file.path} -preset ultrafast -t ${vtm.seconds} -pix_fmt yuv420p -shortest $outputFile -y";
+
+    log("command: $commandForFinalFile");
+
+    log("starting");
+
+    await FFmpegKit.execute(commandForFinalFile).then((value) async {
+      // await value.getOutput().then((value) {
+      //   log(value!);
+      // });
+
+      await value.getReturnCode().then((value) {
+        if (value.toString() == '0') {
+          log("finished ffmpeg");
+
+          log("output file done");
+        } else {
+          log("Error running ffmpeg : $value");
+          Get.back();
+          CoolAlert.show(
+              context: context,
+              type: CoolAlertType.error,
+              barrierDismissible: true);
+        }
+      });
+    });
+
+    final File outputFileValue = File(outputFile);
+
+    return outputFileValue;
+  }
+
+  Future _pickImage(
+      {required VideoTemplateModel videoTemplate,
+      required BuildContext context}) async {
+    final XFile? imgfile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (imgfile != null) {
+      File img2VidFile = await turnImageToVideo(
+        vtm: videoTemplate,
+        file: File(imgfile.path),
+      );
+      await audioCheck(
+          videoTemplate: videoTemplate,
+          file: File(img2VidFile.path),
+          context: context);
+
+      await Get.bottomSheet(
+        Container(
+          height: 90.h,
+          width: 100.w,
+          color: constantColors.whiteColor,
+          child: VideoTemplateTrimTool(
+            videoTemplate: videoTemplate,
+            file: File(img2VidFile.path),
             seconds: videoTemplate.seconds,
           ),
         ),
@@ -282,7 +370,7 @@ class _VideoTemplateFeatureScreenState
                                         : () async {
                                             if (index == 0) {
                                               log("index == $index");
-                                              await _pickVideo(
+                                              await _pickImage(
                                                   videoTemplate:
                                                       videoTemplate[index],
                                                   context: context);
@@ -293,14 +381,28 @@ class _VideoTemplateFeatureScreenState
                                                       .intermediateFile !=
                                                   null) {
                                                 log("index == $index");
-                                                await _pickVideo(
+                                                await _pickImage(
                                                     videoTemplate:
                                                         videoTemplate[index],
                                                     context: context);
 
                                                 setState(() {});
                                               } else {
-                                                log("Error");
+                                                unawaited(Get.dialog(
+                                                  SimpleDialog(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.all(10),
+                                                        child: Text(
+                                                          "Please select an Image / Video for the previous slot!",
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ));
                                               }
                                             }
                                           },
@@ -377,7 +479,17 @@ class _VideoTemplateFeatureScreenState
                                                   }
                                                 }
                                               },
-                                              icon: Icon(Icons.edit),
+                                              icon: Icon(
+                                                Icons.edit,
+                                                color:
+                                                    constantColors.whiteColor,
+                                                shadows: [
+                                                  Shadow(
+                                                    color: constantColors.black,
+                                                    blurRadius: 10,
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -393,76 +505,106 @@ class _VideoTemplateFeatureScreenState
                           ),
                           SubmitButton(
                               text: "Combine Clips",
-                              function: () async {
-                                log("message");
-                                final Directory appDocumentDir =
-                                    await getApplicationDocumentsDirectory();
-                                final String rawDocumentPath =
-                                    appDocumentDir.path;
-                                final String outputFile =
-                                    "${rawDocumentPath}/${Timestamp.now().millisecondsSinceEpoch}.mp4";
+                              function: videoTemplate
+                                      .where((element) => element.file != null)
+                                      .toList()
+                                      .isNotEmpty
+                                  ? () async {
+                                      log("message");
+                                      CoolAlert.show(
+                                          context: context,
+                                          type: CoolAlertType.loading,
+                                          barrierDismissible: false);
+                                      final Directory appDocumentDir =
+                                          await getApplicationDocumentsDirectory();
+                                      final String rawDocumentPath =
+                                          appDocumentDir.path;
+                                      final String outputFile =
+                                          "${rawDocumentPath}/${Timestamp.now().millisecondsSinceEpoch}.mp4";
 
-                                List<String> inputString = [];
-                                List<String> streamsBreakdown = [];
+                                      List<String> inputString = [];
+                                      List<String> streamsBreakdown = [];
 
-                                // videoTemplate.forEach((element) {
+                                      for (var element in videoTemplate) {
+                                        if (element.intermediateFile != null) {
+                                          int indexOfElement =
+                                              videoTemplate.indexOf(element);
+                                          log(indexOfElement.toString());
+                                          inputString
+                                              .add("-i ${element.file!.path}");
 
-                                // });
+                                          streamsBreakdown.add(
+                                              "[$indexOfElement:v:0][$indexOfElement:a:0]");
+                                        }
+                                      }
 
-                                for (var element in videoTemplate) {
-                                  if (element.intermediateFile != null) {
-                                    int indexOfElement =
-                                        videoTemplate.indexOf(element);
-                                    log(indexOfElement.toString());
-                                    inputString.add("-i ${element.file!.path}");
+                                      final String commandForFinalFile =
+                                          "${inputString.join(" ")} -filter_complex \"${streamsBreakdown.join()}concat=n=${videoTemplate.where((element) => element.file != null).toList().length}:v=1:a=1[outv][outa]\" -map ''[outv]'' -map ''[outa]'' -y -r 30/1 -crf 30 -preset faster  $outputFile";
 
-                                    streamsBreakdown.add(
-                                        "[$indexOfElement:v:0][$indexOfElement:a:0]");
-                                  }
-                                }
+                                      log("command: $commandForFinalFile");
 
-                                final String commandForFinalFile =
-                                    "${inputString.join(" ")} -filter_complex \"${streamsBreakdown.join()}concat=n=${videoTemplate.length}:v=1:a=1[outv][outa]\" -map ''[outv]'' -map ''[outa]'' -y -r 30/1 -crf 30 -preset faster  $outputFile";
+                                      log("starting");
 
-                                log("command: $commandForFinalFile");
+                                      await FFmpegKit.execute(
+                                              commandForFinalFile)
+                                          .then((value) async {
+                                        // await value.getOutput().then((value) {
+                                        //   log(value!);
+                                        // });
 
-                                log("starting");
+                                        await value
+                                            .getReturnCode()
+                                            .then((value) {
+                                          if (value.toString() == '0') {
+                                            log("finished ffmpeg");
 
-                                await FFmpegKit.execute(commandForFinalFile)
-                                    .then((value) async {
-                                  // await value.getOutput().then((value) {
-                                  //   log(value!);
-                                  // });
+                                            final File outputFileValue =
+                                                File(outputFile);
+                                            log("output file done");
 
-                                  await value.getReturnCode().then((value) {
-                                    if (value.toString() == '0') {
-                                      log("finished ffmpeg");
+                                            context
+                                                .read<VideoEditorProvider>()
+                                                .setBackgroundVideoFile(
+                                                    outputFileValue);
+                                            log("setBackgroundVideoFile done");
 
-                                      final File outputFileValue =
-                                          File(outputFile);
-                                      log("output file done");
-
-                                      context
-                                          .read<VideoEditorProvider>()
-                                          .setBackgroundVideoFile(
-                                              outputFileValue);
-                                      log("setBackgroundVideoFile done");
-
-                                      context
-                                          .read<VideoEditorProvider>()
-                                          .setBackgroundVideoController();
-                                      log("setBackgroundVideoController done");
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute<void>(
-                                              builder: (BuildContext context) =>
-                                                  VideoTemplateInitVideoEditorScreen()));
-                                    } else {
-                                      log("Error running ffmpeg : $value");
+                                            context
+                                                .read<VideoEditorProvider>()
+                                                .setBackgroundVideoController();
+                                            log("setBackgroundVideoController done");
+                                            Get.back();
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute<void>(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        VideoTemplateInitVideoEditorScreen()));
+                                          } else {
+                                            log("Error running ffmpeg : $value");
+                                            Get.back();
+                                            CoolAlert.show(
+                                                context: context,
+                                                type: CoolAlertType.error,
+                                                barrierDismissible: true);
+                                          }
+                                        });
+                                      });
                                     }
-                                  });
-                                });
-                              }),
+                                  : () {
+                                      unawaited(Get.dialog(
+                                        SimpleDialog(
+                                          children: [
+                                            Padding(
+                                              padding: EdgeInsets.all(10),
+                                              child: Text(
+                                                "No clips selected to combine!",
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ));
+                                    }),
                         ],
                       ),
                     ),
