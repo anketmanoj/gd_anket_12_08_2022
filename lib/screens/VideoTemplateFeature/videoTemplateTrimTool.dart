@@ -187,6 +187,7 @@ class _VideoTemplateTrimToolState extends State<VideoTemplateTrimTool> {
                                         file: file,
                                         audioFlag: 1,
                                         intermediateFile: file,
+                                        videoController: _videoController,
                                         thumbnail: cover.readAsBytesSync(),
                                         videoSelected: true,
                                       );
@@ -195,8 +196,12 @@ class _VideoTemplateTrimToolState extends State<VideoTemplateTrimTool> {
                                           .read<VideoTemplateProvider>()
                                           .workOnVideoTemplate(
                                               videoVal: videoTemplateModel);
-                                      Navigator.pop(context);
-                                      Navigator.pop(context);
+                                      context
+                                          .read<VideoTemplateProvider>()
+                                          .addToVideoControllersList(
+                                              _videoController);
+                                      Get.back();
+                                      Get.back();
                                     },
                                     child: Text(
                                       LocaleKeys.next.tr(),

@@ -10,6 +10,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
+import 'package:diamon_rose_app/screens/Admin/adminDashboards.dart';
 import 'package:diamon_rose_app/screens/Admin/adminDeleteUsers.dart';
 import 'package:diamon_rose_app/screens/Admin/adminMassNotification.dart';
 import 'package:diamon_rose_app/screens/Admin/adminUserPromoCodes.dart';
@@ -950,7 +951,7 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   },
                   leadingIcon: Icons.language_outlined,
                   trailingIcon: Icons.arrow_forward_ios,
-                  text: "Audio test",
+                  text: "Video Template Test",
                 ),
 
                 // ListTileOption(
@@ -1242,6 +1243,31 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                           ),
                         ),
                       ),
+                      // Visibility(
+                      //   visible: adminDrop,
+                      //   child: ListTile(
+                      //     onTap: () {
+                      //       Navigator.push(
+                      //         context,
+                      //         PageTransition(
+                      //           child: AdminDashboardScreen(),
+                      //           type: PageTransitionType.fade,
+                      //         ),
+                      //       );
+                      //     },
+                      //     title: Text(
+                      //       "Admin Dashboards",
+                      //       style: TextStyle(
+                      //         color: Colors.yellow,
+                      //         fontSize: 16,
+                      //       ),
+                      //     ),
+                      //     leading: Icon(
+                      //       Icons.admin_panel_settings,
+                      //       color: Colors.yellow,
+                      //     ),
+                      //   ),
+                      // ),
                       Visibility(
                         visible: adminDrop,
                         child: ListTile(

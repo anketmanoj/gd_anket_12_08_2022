@@ -31,7 +31,7 @@ class VideoTemplateModel {
   int seconds;
   int? audioFlag;
   File? intermediateFile;
-  ChewieController? videoController;
+  VideoPlayerController? videoController;
 
   factory VideoTemplateModel.fromJson(String str) =>
       VideoTemplateModel.fromMap(json.decode(str));

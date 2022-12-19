@@ -21,6 +21,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 class VideoTemplateFeatureScreen extends StatefulWidget {
@@ -130,6 +131,9 @@ class _VideoTemplateFeatureScreenState
     videoTemplate.thumbnail = null;
     videoTemplate.audioFlag = null;
     videoTemplate.intermediateFile = null;
+    context
+        .read<VideoTemplateProvider>()
+        .removeFromVideoControllersList(videoTemplate.videoController!);
   }
 
   @override
@@ -145,7 +149,7 @@ class _VideoTemplateFeatureScreenState
         children: [
           bodyColor(),
           Padding(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.fromLTRB(10, 12.h, 10, 10),
             child: Column(
               children: [
                 Flexible(
@@ -154,19 +158,50 @@ class _VideoTemplateFeatureScreenState
                     children: [
                       Flexible(
                         flex: 9,
-                        child: Container(
-                          child: Center(
-                            child: Container(
-                              height: 30.h,
-                              width: 100.w,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image:
-                                        AssetImage('assets/images/GDlogo.png')),
-                              ),
-                            ),
-                          ),
-                        ),
+                        child: Consumer<VideoTemplateProvider>(
+                            builder: (context, videoTemplateProvider, _) {
+                          return videoTemplateProvider
+                                      .getVideoTemplateSelected ==
+                                  null
+                              ? Container(
+                                  child: Center(
+                                    child: Container(
+                                      height: 30.h,
+                                      width: 100.w,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: AssetImage(
+                                                'assets/images/GDlogo.png')),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Center(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      videoTemplateProvider
+                                              .getVideoTemplateSelected
+                                              .videoController!
+                                              .value
+                                              .isPlaying
+                                          ? videoTemplateProvider
+                                              .getVideoTemplateSelected
+                                              .videoController!
+                                              .pause()
+                                          : videoTemplateProvider
+                                              .getVideoTemplateSelected
+                                              .videoController!
+                                              .play();
+                                    },
+                                    child: AspectRatio(
+                                      aspectRatio: 9 / 16,
+                                      child: VideoPlayer(videoTemplateProvider
+                                          .getVideoTemplateSelected
+                                          .videoController!),
+                                    ),
+                                  ),
+                                );
+                        }),
                       ),
                       Flexible(
                         flex: 1,
@@ -205,6 +240,18 @@ class _VideoTemplateFeatureScreenState
                     ),
                     child: Column(
                       children: [
+                        IconButton(
+                            onPressed: () {
+                              log("play controllers in sequences");
+                              context
+                                  .read<VideoTemplateProvider>()
+                                  .playAllControllers(
+                                      videoTemplateList: videoTemplate
+                                          .where(
+                                              (element) => element.file != null)
+                                          .toList());
+                            },
+                            icon: Icon(Icons.play_arrow)),
                         Container(
                           height: 80,
                           width: 100.w,
@@ -221,29 +268,39 @@ class _VideoTemplateFeatureScreenState
                               return Padding(
                                 padding: const EdgeInsets.all(3.0),
                                 child: InkWell(
-                                  onTap: () async {
-                                    if (index == 0) {
-                                      log("index == $index");
-                                      await _pickVideo(
-                                          videoTemplate: videoTemplate[index],
-                                          context: context);
+                                  onTap: videoTemplate[index].file != null
+                                      ? () {
+                                          context
+                                              .read<VideoTemplateProvider>()
+                                              .selectVideoTemplate(
+                                                  videoVal:
+                                                      videoTemplate[index]);
+                                        }
+                                      : () async {
+                                          if (index == 0) {
+                                            log("index == $index");
+                                            await _pickVideo(
+                                                videoTemplate:
+                                                    videoTemplate[index],
+                                                context: context);
 
-                                      setState(() {});
-                                    } else if (index != 0) {
-                                      if (videoTemplate[index - 1]
-                                              .intermediateFile !=
-                                          null) {
-                                        log("index == $index");
-                                        await _pickVideo(
-                                            videoTemplate: videoTemplate[index],
-                                            context: context);
+                                            setState(() {});
+                                          } else if (index != 0) {
+                                            if (videoTemplate[index - 1]
+                                                    .intermediateFile !=
+                                                null) {
+                                              log("index == $index");
+                                              await _pickVideo(
+                                                  videoTemplate:
+                                                      videoTemplate[index],
+                                                  context: context);
 
-                                        setState(() {});
-                                      } else {
-                                        log("Error");
-                                      }
-                                    }
-                                  },
+                                              setState(() {});
+                                            } else {
+                                              log("Error");
+                                            }
+                                          }
+                                        },
                                   child: Stack(
                                     children: [
                                       Container(
@@ -281,6 +338,42 @@ class _VideoTemplateFeatureScreenState
                                                     constantColors.whiteColor,
                                               ),
                                             ),
+                                          ),
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            videoTemplate[index].file != null,
+                                        child: Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: IconButton(
+                                            onPressed: () async {
+                                              if (index == 0) {
+                                                log("index == $index");
+                                                await _pickVideo(
+                                                    videoTemplate:
+                                                        videoTemplate[index],
+                                                    context: context);
+
+                                                setState(() {});
+                                              } else if (index != 0) {
+                                                if (videoTemplate[index - 1]
+                                                        .intermediateFile !=
+                                                    null) {
+                                                  log("index == $index");
+                                                  await _pickVideo(
+                                                      videoTemplate:
+                                                          videoTemplate[index],
+                                                      context: context);
+
+                                                  setState(() {});
+                                                } else {
+                                                  log("Error");
+                                                }
+                                              }
+                                            },
+                                            icon: Icon(Icons.edit),
                                           ),
                                         ),
                                       ),
