@@ -8,6 +8,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:chewie/chewie.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/video_editor_provider.dart';
@@ -100,7 +101,7 @@ class _VideoTemplateTrimToolState extends State<VideoTemplateTrimTool> {
     final int? audioCheckVal = widget.videoTemplate.audioFlag;
     log("audio check val == $audioCheckVal");
     // NOTE: To use `-crf 1` and [VideoExportPreset] you need `ffmpeg_kit_flutter_min_gpl` package (with `ffmpeg_kit` only it won't work)
-    await _controller.exportIntermediateFile(
+    await _controller.exportVideo(
       playbackSpeed: _controller.video.value.playbackSpeed,
       audioCheckVal: audioCheckVal!,
       // preset: VideoExportPreset.medium,
@@ -110,41 +111,113 @@ class _VideoTemplateTrimToolState extends State<VideoTemplateTrimTool> {
         if (!mounted) return;
         if (file != null) {
           await _controller.extractCover(
-            onCompleted: (cover) {
+            onCompleted: (cover) async {
               if (!mounted) return;
 
               if (cover != null) {
                 _exportText = "Cover exported! ${cover.path}";
-                VideoTemplateModel videoTemplateModel = VideoTemplateModel(
-                  seconds: endDuration!.inSeconds,
-                  file: widget.file,
-                  audioFlag: 1,
-                  intermediateFile: file,
-                  thumbnail: cover.readAsBytesSync(),
-                );
 
-                context
-                    .read<VideoTemplateProvider>()
-                    .workOnVideoTemplate(videoVal: videoTemplateModel);
-                Navigator.pop(context);
-                // showDialog(
-                //   context: context,
-                //   builder: (_) => Padding(
-                //     padding: const EdgeInsets.all(30),
-                //     child: Center(child: Image.memory(cover.readAsBytesSync())),
-                //   ),
-                // );
+                final VideoPlayerController _videoController =
+                    VideoPlayerController.file(file);
+
+                _videoController.initialize().then((value) async {
+                  setState(() {});
+
+                  _videoController.setLooping(true);
+                  await showDialog(
+                    context: context,
+                    builder: (_) => Padding(
+                      padding: const EdgeInsets.all(30),
+                      child: Container(
+                        color: Colors.black,
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 50,
+                              color: Colors.white,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    LocaleKeys.preview.tr(),
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              height: MediaQuery.of(context).size.height * 0.6,
+                              child: Center(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _videoController.value.isPlaying
+                                        ? _videoController.pause()
+                                        : _videoController.play();
+                                  },
+                                  child: AspectRatio(
+                                    aspectRatio:
+                                        _videoController.value.aspectRatio,
+                                    child: VideoPlayer(_videoController),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              color: Colors.white,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      "Cancel",
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      VideoTemplateModel videoTemplateModel =
+                                          VideoTemplateModel(
+                                        seconds: endDuration!.inSeconds,
+                                        file: file,
+                                        audioFlag: 1,
+                                        intermediateFile: file,
+                                        thumbnail: cover.readAsBytesSync(),
+                                        videoSelected: true,
+                                      );
+                                      log("hete");
+                                      context
+                                          .read<VideoTemplateProvider>()
+                                          .workOnVideoTemplate(
+                                              videoVal: videoTemplateModel);
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      LocaleKeys.next.tr(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                  await _videoController.pause();
+                  _videoController.dispose();
+                });
               } else {
                 _exportText = "Error on cover exportation :(";
               }
-
-              // setState(() => _exported = true);
-              // Future.delayed(const Duration(seconds: 2),
-              //     () => setState(() => _exported = false));
             },
           );
-          // log("end duration == ${endDuration.toString()}");
-
         } else {
           _exportText = "Error on export video :(";
         }

@@ -925,8 +925,22 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 ),
                 ListTileOption(
                   constantColors: constantColors,
-                  onTap: () {
+                  onTap: () async {
                     // randomSplit(numberOfRandNb: 4, predefinedNumber: 15);
+                    // await FirebaseFirestore.instance
+                    //     .collection("posts")
+                    //     .get()
+                    //     .then((value) async {
+                    //   for (var item in value.docs) {
+                    //     if (!item.data().containsKey("archive")) {
+                    //       log("doing!");
+                    //       await FirebaseFirestore.instance
+                    //           .collection("posts")
+                    //           .doc(item.id)
+                    //           .update({"archive": false});
+                    //     }
+                    //   }
+                    // });
                     Navigator.push(
                       context,
                       PageTransition(

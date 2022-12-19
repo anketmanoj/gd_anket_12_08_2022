@@ -5,6 +5,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:chewie/chewie.dart';
 import 'package:diamon_rose_app/screens/VideoTemplateFeature/videoTemplateLayerEnum.dart';
 import 'package:meta/meta.dart';
 import 'dart:convert';
@@ -16,7 +17,7 @@ class VideoTemplateModel {
     this.file,
     this.videoTemplateLayer,
     this.thumbnail,
-    this.onClick,
+    this.videoSelected,
     required this.seconds,
     this.audioFlag,
     this.intermediateFile,
@@ -26,11 +27,11 @@ class VideoTemplateModel {
   File? file;
   VideoTemplateLayer? videoTemplateLayer;
   Uint8List? thumbnail;
-  void Function()? onClick;
+  bool? videoSelected;
   int seconds;
   int? audioFlag;
   File? intermediateFile;
-  VideoPlayerController? videoController;
+  ChewieController? videoController;
 
   factory VideoTemplateModel.fromJson(String str) =>
       VideoTemplateModel.fromMap(json.decode(str));
@@ -42,7 +43,7 @@ class VideoTemplateModel {
         file: json["file"],
         videoTemplateLayer: json["videoTemplateLayer"],
         thumbnail: json["thumbnail"],
-        onClick: json["onClick"],
+        videoSelected: json["videoSelected"],
         seconds: json["seconds"],
         audioFlag: json["audioFlag"],
         intermediateFile: json["intermediateFile"],
@@ -52,7 +53,7 @@ class VideoTemplateModel {
         "file": file,
         "videoTemplateLayer": videoTemplateLayer,
         "thumbnail": thumbnail,
-        "onClick": onClick,
+        "videoSelected": videoSelected,
         "seconds": seconds,
         "audioFlag": audioFlag,
         "intermediateFile": intermediateFile,

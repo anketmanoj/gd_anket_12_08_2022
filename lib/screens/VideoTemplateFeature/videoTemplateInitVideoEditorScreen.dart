@@ -27,14 +27,16 @@ import 'package:video_player/video_player.dart';
 import 'package:helpers/helpers.dart'
     show OpacityTransition, SwipeTransition, AnimatedInteractiveViewer;
 
-class InitVideoEditorScreen extends StatefulWidget {
-  const InitVideoEditorScreen({Key? key}) : super(key: key);
+class VideoTemplateInitVideoEditorScreen extends StatefulWidget {
+  const VideoTemplateInitVideoEditorScreen({Key? key}) : super(key: key);
 
   @override
-  _InitVideoEditorScreenState createState() => _InitVideoEditorScreenState();
+  _VideoTemplateInitVideoEditorScreenState createState() =>
+      _VideoTemplateInitVideoEditorScreenState();
 }
 
-class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
+class _VideoTemplateInitVideoEditorScreenState
+    extends State<VideoTemplateInitVideoEditorScreen> {
   final _exportingProgress = ValueNotifier<double>(0.0);
   final _isExporting = ValueNotifier<bool>(false);
   final double height = 60;
@@ -74,13 +76,11 @@ class _InitVideoEditorScreenState extends State<InitVideoEditorScreen> {
     log("now");
     _exportingProgress.value = 0;
     _isExporting.value = true;
-    final int? audioCheckVal =
-        context.read<ArVideoCreation>().getArAudioFlagGeneral;
-    log("audio check val == $audioCheckVal");
+
     // NOTE: To use `-crf 1` and [VideoExportPreset] you need `ffmpeg_kit_flutter_min_gpl` package (with `ffmpeg_kit` only it won't work)
     await _controller.exportVideo(
       playbackSpeed: _controller.video.value.playbackSpeed,
-      audioCheckVal: audioCheckVal!,
+      audioCheckVal: 1,
       // preset: VideoExportPreset.medium,
       onProgress: (stats, value) => _exportingProgress.value = value,
       onCompleted: (file, endDuration) async {

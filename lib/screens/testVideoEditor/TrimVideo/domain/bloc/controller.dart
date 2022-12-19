@@ -533,7 +533,7 @@ class VideoEditorController extends ChangeNotifier {
     required void Function(File? file, Duration? endDuration) onCompleted,
     String? name,
     String? outDir,
-    String format = "ts",
+    String format = "mp4",
     double scale = 1.0,
     double? playbackSpeed = 1.0,
     String? customInstruction,
@@ -542,7 +542,8 @@ class VideoEditorController extends ChangeNotifier {
     VideoExportPreset preset = VideoExportPreset.slow,
     bool isFiltersEnabled = true,
   }) async {
-    final String tempPath = outDir ?? (await getTemporaryDirectory()).path;
+    final String tempPath =
+        outDir ?? (await getApplicationDocumentsDirectory()).path;
     final String videoPath = file.path;
     // name ??= path.basenameWithoutExtension(videoPath);
     final int epoch = DateTime.now().millisecondsSinceEpoch;
@@ -750,7 +751,7 @@ class VideoEditorController extends ChangeNotifier {
     required void Function(File? file) onCompleted,
     String? name,
     String? outDir,
-    String format = "gif",
+    String format = "jpeg",
     double scale = 1.0,
     int quality = 10,
     void Function(Statistics)? onProgress,
@@ -759,7 +760,7 @@ class VideoEditorController extends ChangeNotifier {
     final String tempPath =
         outDir ?? (await getApplicationDocumentsDirectory()).path;
     // file generated from the thumbnail library or video source
-    final String? _coverPath = await _generateCoverFile(
+    final String? _coverPath = await _generateCoverImage(
       quality: quality,
     );
 

@@ -6,11 +6,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/core/build_context.dart';
+import 'package:diamon_rose_app/screens/VideoTemplateFeature/videoTemplateInitVideoEditorScreen.dart';
 import 'package:diamon_rose_app/screens/VideoTemplateFeature/videoTemplateModel.dart';
 import 'package:diamon_rose_app/screens/VideoTemplateFeature/videoTemplateProvider.dart';
 import 'package:diamon_rose_app/screens/VideoTemplateFeature/videoTemplateTrimTool.dart';
+import 'package:diamon_rose_app/screens/testVideoEditor/TrimVideo/InitVideoEditorScreen.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -53,9 +56,11 @@ class _VideoTemplateFeatureScreenState
         .then((value) {
       return value.getOutput().then((output) {
         if (output!.isEmpty) {
+          log("no audio");
           videoTemplate.audioFlag = 0;
           return 1;
         } else {
+          log("has audio");
           videoTemplate.audioFlag = 1;
           return 1;
         }
@@ -77,18 +82,19 @@ class _VideoTemplateFeatureScreenState
     return thumbData!;
   }
 
-  Future<VideoTemplateModel?> _pickVideo(
+  Future _pickVideo(
       {required VideoTemplateModel videoTemplate,
       required BuildContext context}) async {
     final XFile? file = await _picker.pickVideo(
       source: ImageSource.gallery,
     );
     if (file != null) {
-      videoTemplate.audioFlag = await audioCheck(
+      await audioCheck(
           videoTemplate: videoTemplate,
           file: File(file.path),
           context: context);
-      Get.bottomSheet(
+
+      await Get.bottomSheet(
         Container(
           height: 90.h,
           width: 100.w,
@@ -102,24 +108,20 @@ class _VideoTemplateFeatureScreenState
         isDismissible: true,
         isScrollControlled: true,
         enableDrag: true,
-      ).then((value) {
-        log("here now");
-      });
-      // final Directory appDocumentDir = await getApplicationDocumentsDirectory();
-      // final String rawDocumentPath = appDocumentDir.path;
-      // final String intermediateFileName =
-      //     "${rawDocumentPath}/${Timestamp.now().millisecondsSinceEpoch}.ts";
-      // final String commandForIntermediateFile =
-      //     "-i ${file.path} -c copy -bsf:v h264_mp4toannexb -f mpegts ${intermediateFileName}";
-      // videoTemplate.file = File(file.path);
-      // videoTemplate.thumbnail =
-      //     await generateCoverThumbnail(video: videoTemplate);
+      );
 
-      // ignore: unawaited_futures
-      VideoTemplateModel videoTemplateReturn =
-          context.read<VideoTemplateProvider>().videoTemplate;
+      videoTemplate.file =
+          context.read<VideoTemplateProvider>().videoTemplate.file;
+      videoTemplate.videoSelected =
+          context.read<VideoTemplateProvider>().videoTemplate.videoSelected;
 
-      return videoTemplateReturn;
+      videoTemplate.videoController =
+          context.read<VideoTemplateProvider>().videoTemplate.videoController;
+
+      videoTemplate.thumbnail =
+          context.read<VideoTemplateProvider>().videoTemplate.thumbnail;
+      videoTemplate.intermediateFile =
+          context.read<VideoTemplateProvider>().videoTemplate.intermediateFile;
     }
   }
 
@@ -127,6 +129,7 @@ class _VideoTemplateFeatureScreenState
     videoTemplate.file = null;
     videoTemplate.thumbnail = null;
     videoTemplate.audioFlag = null;
+    videoTemplate.intermediateFile = null;
   }
 
   @override
@@ -218,20 +221,29 @@ class _VideoTemplateFeatureScreenState
                               return Padding(
                                 padding: const EdgeInsets.all(3.0),
                                 child: InkWell(
-                                  onTap: videoTemplate[index].onClick == null
-                                      ? () async {
-                                          VideoTemplateModel? vidReturn =
-                                              await _pickVideo(
-                                                  videoTemplate:
-                                                      videoTemplate[index],
-                                                  context: context);
+                                  onTap: () async {
+                                    if (index == 0) {
+                                      log("index == $index");
+                                      await _pickVideo(
+                                          videoTemplate: videoTemplate[index],
+                                          context: context);
 
-                                          if (vidReturn != null) {
-                                            videoTemplate[index] = vidReturn;
-                                            setState(() {});
-                                          }
-                                        }
-                                      : () {},
+                                      setState(() {});
+                                    } else if (index != 0) {
+                                      if (videoTemplate[index - 1]
+                                              .intermediateFile !=
+                                          null) {
+                                        log("index == $index");
+                                        await _pickVideo(
+                                            videoTemplate: videoTemplate[index],
+                                            context: context);
+
+                                        setState(() {});
+                                      } else {
+                                        log("Error");
+                                      }
+                                    }
+                                  },
                                   child: Stack(
                                     children: [
                                       Container(
@@ -272,36 +284,6 @@ class _VideoTemplateFeatureScreenState
                                           ),
                                         ),
                                       ),
-                                      Visibility(
-                                        visible:
-                                            videoTemplate[index].file != null,
-                                        child: Positioned(
-                                          top: 0,
-                                          right: 5,
-                                          child: InkWell(
-                                            onTap: () async {
-                                              await removeVideo(
-                                                  videoTemplate:
-                                                      videoTemplate[index]);
-                                              setState(() {});
-                                            },
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "X",
-                                                style: TextStyle(
-                                                  color:
-                                                      constantColors.redColor,
-                                                  shadows: outlinedText(
-                                                    strokeColor: constantColors
-                                                        .whiteColor,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
                                     ],
                                   ),
                                 ),
@@ -309,7 +291,73 @@ class _VideoTemplateFeatureScreenState
                             },
                           ),
                         ),
-                        SubmitButton(function: () {}),
+                        SubmitButton(function: () async {
+                          log("message");
+                          final Directory appDocumentDir =
+                              await getApplicationDocumentsDirectory();
+                          final String rawDocumentPath = appDocumentDir.path;
+                          final String outputFile =
+                              "${rawDocumentPath}/${Timestamp.now().millisecondsSinceEpoch}.mp4";
+
+                          List<String> inputString = [];
+                          List<String> streamsBreakdown = [];
+
+                          // videoTemplate.forEach((element) {
+
+                          // });
+
+                          for (var element in videoTemplate) {
+                            if (element.intermediateFile != null) {
+                              int indexOfElement =
+                                  videoTemplate.indexOf(element);
+                              log(indexOfElement.toString());
+                              inputString.add("-i ${element.file!.path}");
+
+                              streamsBreakdown.add(
+                                  "[$indexOfElement:v:0][$indexOfElement:a:0]");
+                            }
+                          }
+
+                          final String commandForFinalFile =
+                              "${inputString.join(" ")} -filter_complex \"${streamsBreakdown.join()}concat=n=${videoTemplate.length}:v=1:a=1[outv][outa]\" -map ''[outv]'' -map ''[outa]'' -y -r 30/1 -crf 30 -preset faster  $outputFile";
+
+                          log("command: $commandForFinalFile");
+
+                          log("starting");
+
+                          await FFmpegKit.execute(commandForFinalFile)
+                              .then((value) async {
+                            // await value.getOutput().then((value) {
+                            //   log(value!);
+                            // });
+
+                            await value.getReturnCode().then((value) {
+                              if (value.toString() == '0') {
+                                log("finished ffmpeg");
+
+                                final File outputFileValue = File(outputFile);
+                                log("output file done");
+
+                                context
+                                    .read<VideoEditorProvider>()
+                                    .setBackgroundVideoFile(outputFileValue);
+                                log("setBackgroundVideoFile done");
+
+                                context
+                                    .read<VideoEditorProvider>()
+                                    .setBackgroundVideoController();
+                                log("setBackgroundVideoController done");
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute<void>(
+                                        builder: (BuildContext context) =>
+                                            VideoTemplateInitVideoEditorScreen()));
+                              } else {
+                                log("Error running ffmpeg : $value");
+                              }
+                            });
+                          });
+                        }),
                       ],
                     ),
                   ),
