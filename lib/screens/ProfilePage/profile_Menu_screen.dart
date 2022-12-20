@@ -18,6 +18,7 @@ import 'package:diamon_rose_app/screens/Admin/adminUserRegistration.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/AdminArOptions.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/adminSendUserNotification.dart';
 import 'package:diamon_rose_app/screens/Admin/adminVideoEditor/selectUser.dart';
+import 'package:diamon_rose_app/screens/Admin/admin_sample_feature.dart';
 import 'package:diamon_rose_app/screens/Admin/admin_user_archive.dart';
 import 'package:diamon_rose_app/screens/Admin/set_user_data_admin.dart';
 import 'package:diamon_rose_app/screens/Admin/upload_video_screen.dart';
@@ -928,21 +929,20 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                 //   constantColors: constantColors,
                 //   onTap: () async {
                 //     // randomSplit(numberOfRandNb: 4, predefinedNumber: 15);
-                //     // await FirebaseFirestore.instance
-                //     //     .collection("posts")
-                //     //     .get()
-                //     //     .then((value) async {
-                //     //   for (var item in value.docs) {
-                //     //     if (!item.data().containsKey("archive")) {
-                //     //       log("doing!");
-                //     //       await FirebaseFirestore.instance
-                //     //           .collection("posts")
-                //     //           .doc(item.id)
-                //     //           .update({"archive": false});
-                //     //     }
-                //     //   }
-                //     // });
-
+                //     await FirebaseFirestore.instance
+                //         .collection("posts")
+                //         .get()
+                //         .then((value) async {
+                //       for (var item in value.docs) {
+                //         if (!item.data().containsKey("archive")) {
+                //           log("doing!");
+                //           await FirebaseFirestore.instance
+                //               .collection("posts")
+                //               .doc(item.id)
+                //               .update({"archive": false});
+                //         }
+                //       }
+                //     });
                 //   },
                 //   leadingIcon: Icons.language_outlined,
                 //   trailingIcon: Icons.arrow_forward_ios,
@@ -1288,31 +1288,31 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                           ),
                         ),
                       ),
-                      // Visibility(
-                      //   visible: adminDrop,
-                      //   child: ListTile(
-                      //     onTap: () {
-                      //       Navigator.push(
-                      //         context,
-                      //         PageTransition(
-                      //           child: AdminDeleteUsers(),
-                      //           type: PageTransitionType.fade,
-                      //         ),
-                      //       );
-                      //     },
-                      //     title: Text(
-                      //       "Admin Delete Users",
-                      //       style: TextStyle(
-                      //         color: Colors.yellow,
-                      //         fontSize: 16,
-                      //       ),
-                      //     ),
-                      //     leading: Icon(
-                      //       Icons.admin_panel_settings,
-                      //       color: Colors.yellow,
-                      //     ),
-                      //   ),
-                      // ),
+                      Visibility(
+                        visible: adminDrop,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                child: KotohoSampleFeature(),
+                                type: PageTransitionType.fade,
+                              ),
+                            );
+                          },
+                          title: Text(
+                            "Kotoho Sample",
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 16,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.yellow,
+                          ),
+                        ),
+                      ),
                       Visibility(
                         visible: adminDrop,
                         child: ListTile(

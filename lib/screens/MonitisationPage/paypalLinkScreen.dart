@@ -58,6 +58,17 @@ class PayPalLinkScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "You need to get the PayPal.me link on the PayPal service in order to pay out",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white60,
+                    ),
+                  ),
+                  SizedBox(
                     height: MediaQuery.of(context).size.height * 0.2,
                   ),
                   TextFormField(
