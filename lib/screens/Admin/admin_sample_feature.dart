@@ -110,7 +110,7 @@ class _KotohoSampleFeatureState extends State<KotohoSampleFeature> {
               imageTaken = false;
               canMove = false;
               list[0].gifSelected =
-                  "https://images.twinkl.co.uk/tr/image/upload/t_illustration/illustation/Dress-Outline.png";
+                  "https://firebasestorage.googleapis.com/v0/b/gdfe-ac584.appspot.com/o/test%2FDress-Outline%20(1).png?alt=media&token=9b27ed6c-b787-412f-96d4-231e2530c70e";
             });
           },
           icon: Icon(Icons.restore),
