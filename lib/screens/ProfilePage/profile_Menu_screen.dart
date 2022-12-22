@@ -26,6 +26,7 @@ import 'package:diamon_rose_app/screens/ArPreviewSetting/ArPreviewScreen.dart';
 import 'package:diamon_rose_app/screens/ArViewCollection/arViewCollectionScreen.dart';
 import 'package:diamon_rose_app/screens/CartScreen/cartScreen.dart';
 import 'package:diamon_rose_app/screens/FilterOptions/HomescreenFilterOptions.dart';
+import 'package:diamon_rose_app/screens/FortuneBar/LuckySpinScreen.dart';
 import 'package:diamon_rose_app/screens/GiphyTest/giphyTest.dart';
 import 'package:diamon_rose_app/screens/HelpScreen/helpScreen.dart';
 import 'package:diamon_rose_app/screens/MonitisationPage/monitisationScreen.dart';
@@ -64,6 +65,7 @@ import 'package:diamon_rose_app/services/dbService.dart';
 import 'package:diamon_rose_app/services/dynamic_link_service.dart';
 import 'package:diamon_rose_app/services/fcm_notification_Service.dart';
 import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
+import 'package:diamon_rose_app/services/myArCollectionClass.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
@@ -925,29 +927,36 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.changeLanguage.tr(),
                 ),
-                // ListTileOption(
-                //   constantColors: constantColors,
-                //   onTap: () async {
-                //     // randomSplit(numberOfRandNb: 4, predefinedNumber: 15);
-                //     await FirebaseFirestore.instance
-                //         .collection("posts")
-                //         .get()
-                //         .then((value) async {
-                //       for (var item in value.docs) {
-                //         if (!item.data().containsKey("archive")) {
-                //           log("doing!");
-                //           await FirebaseFirestore.instance
-                //               .collection("posts")
-                //               .doc(item.id)
-                //               .update({"archive": false});
-                //         }
-                //       }
-                //     });
-                //   },
-                //   leadingIcon: Icons.language_outlined,
-                //   trailingIcon: Icons.arrow_forward_ios,
-                //   text: "Video Template Test",
-                // ),
+                ListTileOption(
+                  constantColors: constantColors,
+                  onTap: () async {
+                    // randomSplit(numberOfRandNb: 4, predefinedNumber: 15);
+                    // await FirebaseFirestore.instance
+                    //     .collection("posts")
+                    //     .get()
+                    //     .then((value) async {
+                    //   for (var item in value.docs) {
+                    //     if (!item.data().containsKey("archive")) {
+                    //       log("doing!");
+                    //       await FirebaseFirestore.instance
+                    //           .collection("posts")
+                    //           .doc(item.id)
+                    //           .update({"archive": false});
+                    //     }
+                    //   }
+                    // });
+
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                          child: LuckySpinScreen(),
+                          type: PageTransitionType.rightToLeft),
+                    );
+                  },
+                  leadingIcon: Icons.language_outlined,
+                  trailingIcon: Icons.arrow_forward_ios,
+                  text: "Video Template Test",
+                ),
 
                 // ListTileOption(
                 //   constantColors: constantColors,

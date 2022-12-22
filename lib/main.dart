@@ -18,6 +18,7 @@ import 'package:diamon_rose_app/providers/social_media_links_provider.dart';
 import 'package:diamon_rose_app/providers/user_signup_provider.dart';
 import 'package:diamon_rose_app/providers/video_editor_provider.dart';
 import 'package:diamon_rose_app/screens/ArViewCollection/arViewCollectionProvider.dart';
+import 'package:diamon_rose_app/screens/FortuneBar/fortuneBarProvider.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/bloc/preload_bloc.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/core/build_context.dart';
 import 'package:diamon_rose_app/screens/VideoHomeScreen/core/constants.dart';
@@ -237,6 +238,7 @@ class MyApp extends StatelessWidget with PortraitModeMixin {
           ChangeNotifierProvider(create: (_) => ArVideoCreation()),
           ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
           ChangeNotifierProvider(create: (_) => VideoTemplateProvider()),
+          ChangeNotifierProvider(create: (_) => FortuneBarProvider()),
         ],
         child: Sizer(
           builder: (context, orientation, deviceType) {
