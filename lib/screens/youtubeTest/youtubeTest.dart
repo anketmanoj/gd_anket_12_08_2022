@@ -6,10 +6,12 @@ import 'package:diamon_rose_app/screens/youtubeTest/download_status.dart';
 import 'package:diamon_rose_app/screens/youtubeTest/text_input.dart';
 import 'package:diamon_rose_app/screens/youtubeTest/youtubeData.dart';
 import 'package:diamon_rose_app/screens/youtubeTest/youtube_utils.dart';
+import 'package:diamon_rose_app/services/permissionsService.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 class YoutubeTestScreen extends StatefulWidget {
   const YoutubeTestScreen({Key? key}) : super(key: key);
@@ -219,28 +221,13 @@ class _YoutubeTestScreenState extends State<YoutubeTestScreen>
                   onPressed: () async {
                     if (downloadStatus != DownloadStatus.downloading &&
                         downloadStatus != DownloadStatus.success) {
-                      final androidInfo = await DeviceInfoPlugin().androidInfo;
-                      late final Map<Permission, PermissionStatus> statusess;
+                      await context
+                          .read<PermissionsProvider>()
+                          .askForPermissions();
 
-                      if (androidInfo.version.sdkInt! <= 32 || Platform.isIOS) {
-                        statusess = await [Permission.storage].request();
-                      } else {
-                        statusess = await [
-                          Permission.photos,
-                          Permission.notification,
-                          Permission.videos,
-                          Permission.audio,
-                          Permission.camera,
-                        ].request();
-                      }
-
-                      var allAccept = true;
-
-                      statusess.forEach((permission, status) {
-                        if (status != PermissionStatus.granted) {
-                          allAccept = false;
-                        }
-                      });
+                      final bool allAccept = context
+                          .read<PermissionsProvider>()
+                          .getPermissionsGive;
 
                       if (allAccept) {
                         startDownloading();

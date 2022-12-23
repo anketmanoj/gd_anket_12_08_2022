@@ -10,6 +10,7 @@ import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/MyColle
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/RVMServerResponse.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/permissionsService.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
@@ -85,28 +86,9 @@ class ArVideoCreation extends ChangeNotifier {
     required String fileName,
     required String inputFileUrl,
   }) async {
-    final androidInfo = await DeviceInfoPlugin().androidInfo;
-    late final Map<Permission, PermissionStatus> statusess;
+    await ctx.read<PermissionsProvider>().askForPermissions();
 
-    if (androidInfo.version.sdkInt! <= 32 || Platform.isIOS) {
-      statusess = await [Permission.storage].request();
-    } else {
-      statusess = await [
-        Permission.photos,
-        Permission.notification,
-        Permission.videos,
-        Permission.audio,
-        Permission.camera,
-      ].request();
-    }
-
-    var allAccept = true;
-
-    statusess.forEach((permission, status) {
-      if (status != PermissionStatus.granted) {
-        allAccept = false;
-      }
-    });
+    final bool allAccept = ctx.read<PermissionsProvider>().getPermissionsGive;
 
     if (allAccept) {
       final FirebaseOperations firebaseOperations =
@@ -226,28 +208,9 @@ class ArVideoCreation extends ChangeNotifier {
     required String useruid,
     required String userToken,
   }) async {
-    final androidInfo = await DeviceInfoPlugin().androidInfo;
-    late final Map<Permission, PermissionStatus> statusess;
+    await ctx.read<PermissionsProvider>().askForPermissions();
 
-    if (androidInfo.version.sdkInt! <= 32 || Platform.isIOS) {
-      statusess = await [Permission.storage].request();
-    } else {
-      statusess = await [
-        Permission.photos,
-        Permission.notification,
-        Permission.videos,
-        Permission.audio,
-        Permission.camera,
-      ].request();
-    }
-
-    var allAccept = true;
-
-    statusess.forEach((permission, status) {
-      if (status != PermissionStatus.granted) {
-        allAccept = false;
-      }
-    });
+    final bool allAccept = ctx.read<PermissionsProvider>().getPermissionsGive;
 
     if (allAccept) {
       log("starting | $ownerName");

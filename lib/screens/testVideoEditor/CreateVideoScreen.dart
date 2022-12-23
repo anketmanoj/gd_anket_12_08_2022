@@ -34,6 +34,7 @@ import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/img_seq_animator.dart';
 import 'package:diamon_rose_app/services/myArCollectionClass.dart';
+import 'package:diamon_rose_app/services/permissionsService.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/translations/locale_keys.g.dart';
 import 'package:diamon_rose_app/widgets/extensions.dart';
@@ -356,35 +357,13 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
                                     color: constantColors.bioBg,
                                     child: InkWell(
                                       onTap: () async {
-                                        final androidInfo =
-                                            await DeviceInfoPlugin()
-                                                .androidInfo;
-                                        late final Map<Permission,
-                                            PermissionStatus> statusess;
+                                        await context
+                                            .read<PermissionsProvider>()
+                                            .askForPermissions();
 
-                                        if (androidInfo.version.sdkInt! <= 32 ||
-                                            Platform.isIOS) {
-                                          statusess = await [Permission.storage]
-                                              .request();
-                                        } else {
-                                          statusess = await [
-                                            Permission.photos,
-                                            Permission.notification,
-                                            Permission.videos,
-                                            Permission.audio,
-                                            Permission.camera,
-                                          ].request();
-                                        }
-
-                                        var allAccept = true;
-
-                                        statusess.forEach((permission, status) {
-                                          if (status !=
-                                              PermissionStatus.granted) {
-                                            allAccept = false;
-                                          }
-                                        });
-
+                                        final bool allAccept = context
+                                            .read<PermissionsProvider>()
+                                            .getPermissionsGive;
                                         if (allAccept) {
                                           CoolAlert.show(
                                               context: context,
@@ -880,28 +859,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     required int arVal,
     required MyArCollection myAr,
   }) async {
-    final androidInfo = await DeviceInfoPlugin().androidInfo;
-    late final Map<Permission, PermissionStatus> statusess;
+    await context.read<PermissionsProvider>().askForPermissions();
 
-    if (androidInfo.version.sdkInt! <= 32 || Platform.isIOS) {
-      statusess = await [Permission.storage].request();
-    } else {
-      statusess = await [
-        Permission.photos,
-        Permission.notification,
-        Permission.videos,
-        Permission.audio,
-        Permission.camera,
-      ].request();
-    }
-
-    var allAccept = true;
-
-    statusess.forEach((permission, status) {
-      if (status != PermissionStatus.granted) {
-        allAccept = false;
-      }
-    });
+    final bool allAccept =
+        context.read<PermissionsProvider>().getPermissionsGive;
 
     if (allAccept) {
       dev.log("AR INDEX == $arVal");
@@ -1091,28 +1052,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     required String songUrl,
     required String songAlbumCover,
   }) async {
-    final androidInfo = await DeviceInfoPlugin().androidInfo;
-    late final Map<Permission, PermissionStatus> statusess;
+    await context.read<PermissionsProvider>().askForPermissions();
 
-    if (androidInfo.version.sdkInt! <= 32 || Platform.isIOS) {
-      statusess = await [Permission.storage].request();
-    } else {
-      statusess = await [
-        Permission.photos,
-        Permission.notification,
-        Permission.videos,
-        Permission.audio,
-        Permission.camera,
-      ].request();
-    }
-
-    var allAccept = true;
-
-    statusess.forEach((permission, status) {
-      if (status != PermissionStatus.granted) {
-        allAccept = false;
-      }
-    });
+    final bool allAccept =
+        context.read<PermissionsProvider>().getPermissionsGive;
 
     if (allAccept) {
       dev.log("AR INDEX == $arVal");
@@ -1329,28 +1272,10 @@ class _CreateVideoScreenState extends State<CreateVideoScreen>
     String? ownerId,
     String? ownerName,
   }) async {
-    final androidInfo = await DeviceInfoPlugin().androidInfo;
-    late final Map<Permission, PermissionStatus> statusess;
+    await context.read<PermissionsProvider>().askForPermissions();
 
-    if (androidInfo.version.sdkInt! <= 32 || Platform.isIOS) {
-      statusess = await [Permission.storage].request();
-    } else {
-      statusess = await [
-        Permission.photos,
-        Permission.notification,
-        Permission.videos,
-        Permission.audio,
-        Permission.camera,
-      ].request();
-    }
-
-    var allAccept = true;
-
-    statusess.forEach((permission, status) {
-      if (status != PermissionStatus.granted) {
-        allAccept = false;
-      }
-    });
+    final bool allAccept =
+        context.read<PermissionsProvider>().getPermissionsGive;
 
     if (allAccept) {
       dev.log("Owner id == $ownerId | OwnerName == $ownerName");

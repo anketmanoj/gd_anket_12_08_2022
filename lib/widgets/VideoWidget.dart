@@ -26,6 +26,7 @@ import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
 import 'package:diamon_rose_app/services/dynamic_link_service.dart';
 import 'package:diamon_rose_app/services/homeScreenUserEnum.dart';
+import 'package:diamon_rose_app/services/permissionsService.dart';
 import 'package:diamon_rose_app/services/shared_preferences_helper.dart';
 import 'package:diamon_rose_app/services/user.dart';
 import 'package:diamon_rose_app/services/video.dart';
@@ -991,139 +992,62 @@ class VideoWidget extends StatelessWidget {
                                     } else {
                                       canShareVal = true;
                                     }
-                                    if (Platform.isAndroid) {
-                                      final androidInfo =
-                                          await DeviceInfoPlugin().androidInfo;
-                                      late final Map<Permission,
-                                          PermissionStatus> statusess;
 
-                                      if (androidInfo.version.sdkInt! <= 32) {
-                                        statusess = await [Permission.storage]
-                                            .request();
-                                      } else {
-                                        statusess = await [
-                                          Permission.photos,
-                                          Permission.notification,
-                                          Permission.videos,
-                                          Permission.audio,
-                                          Permission.camera,
-                                        ].request();
-                                      }
+                                    await context
+                                        .read<PermissionsProvider>()
+                                        .askForPermissions();
 
-                                      var allAccept = true;
+                                    final bool allAccept = context
+                                        .read<PermissionsProvider>()
+                                        .getPermissionsGive;
 
-                                      statusess.forEach((permission, status) {
-                                        if (status !=
-                                            PermissionStatus.granted) {
-                                          allAccept = false;
-                                        }
-                                      });
-
-                                      if (allAccept) {
-                                        await Get.bottomSheet(
-                                          ShareWidget(
-                                            msg: message,
-                                            urlPath: video.videourl,
-                                            videoOwnerName: video.username,
-                                            canShareToSocialMedia: canShareVal,
-                                          ),
-                                        );
-                                      } else {
-                                        await Get.dialog(
-                                          SimpleDialog(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(10),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      "Device permissions required",
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    ),
-                                                    SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    Text(
-                                                      "Permissions are required to store the videos on your device so you can share the videos on various other social media platforms!",
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    ),
-                                                    SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    SubmitButton(
-                                                      text: "Open Settings",
-                                                      function: () async {
-                                                        await openAppSettings();
-                                                      },
-                                                    )
-                                                  ],
-                                                ),
+                                    if (allAccept) {
+                                      await Get.bottomSheet(
+                                        ShareWidget(
+                                          msg: message,
+                                          urlPath: video.videourl,
+                                          videoOwnerName: video.username,
+                                          canShareToSocialMedia: canShareVal,
+                                        ),
+                                      );
+                                    } else {
+                                      await Get.dialog(
+                                        SimpleDialog(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(10),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    "Device permissions required",
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Text(
+                                                    "Permissions are required to store the videos on your device so you can share the videos on various other social media platforms!",
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  SubmitButton(
+                                                    text: "Open Settings",
+                                                    function: () async {
+                                                      await openAppSettings();
+                                                    },
+                                                  )
+                                                ],
                                               ),
-                                            ],
-                                          ),
-                                        );
-                                      }
-                                    } else if (Platform.isIOS) {
-                                      if (await Permission.storage
-                                          .request()
-                                          .isGranted) {
-                                        await Get.bottomSheet(
-                                          ShareWidget(
-                                            msg: message,
-                                            urlPath: video.videourl,
-                                            videoOwnerName: video.username,
-                                            canShareToSocialMedia: canShareVal,
-                                          ),
-                                        );
-                                      } else {
-                                        await Get.dialog(
-                                          SimpleDialog(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(10),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      "Device permissions required",
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    ),
-                                                    SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    Text(
-                                                      "Permissions are required to store the videos on your device so you can share the videos on various other social media platforms!",
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    ),
-                                                    SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    SubmitButton(
-                                                      text: "Open Settings",
-                                                      function: () async {
-                                                        await openAppSettings();
-                                                      },
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }
+                                            ),
+                                          ],
+                                        ),
+                                      );
                                     }
                                   }
                                 : () {

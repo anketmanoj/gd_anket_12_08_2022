@@ -34,6 +34,7 @@ import 'package:diamon_rose_app/screens/splashscreen/splashscreen.dart';
 import 'package:diamon_rose_app/services/ArVideoCreationService.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
+import 'package:diamon_rose_app/services/permissionsService.dart';
 import 'package:diamon_rose_app/services/portraitMixin.dart';
 import 'package:diamon_rose_app/services/video.dart';
 import 'package:diamon_rose_app/translations/codegen_loader.g.dart';
@@ -239,6 +240,7 @@ class MyApp extends StatelessWidget with PortraitModeMixin {
           ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
           ChangeNotifierProvider(create: (_) => VideoTemplateProvider()),
           ChangeNotifierProvider(create: (_) => FortuneBarProvider()),
+          ChangeNotifierProvider(create: (_) => PermissionsProvider()),
         ],
         child: Sizer(
           builder: (context, orientation, deviceType) {
