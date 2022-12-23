@@ -7,6 +7,7 @@ import 'dart:math' as math;
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/screens/ForAnonUsers/AnonUserSignUprequired.dart';
@@ -990,9 +991,35 @@ class VideoWidget extends StatelessWidget {
                                     } else {
                                       canShareVal = true;
                                     }
-                                    if (await Permission.storage
-                                        .request()
-                                        .isGranted) {
+
+                                    final androidInfo =
+                                        await DeviceInfoPlugin().androidInfo;
+                                    late final Map<Permission, PermissionStatus>
+                                        statusess;
+
+                                    if (androidInfo.version.sdkInt! <= 32 ||
+                                        Platform.isIOS) {
+                                      statusess =
+                                          await [Permission.storage].request();
+                                    } else {
+                                      statusess = await [
+                                        Permission.photos,
+                                        Permission.notification,
+                                        Permission.videos,
+                                        Permission.audio,
+                                        Permission.camera,
+                                      ].request();
+                                    }
+
+                                    var allAccept = true;
+
+                                    statusess.forEach((permission, status) {
+                                      if (status != PermissionStatus.granted) {
+                                        allAccept = false;
+                                      }
+                                    });
+
+                                    if (allAccept) {
                                       await Get.bottomSheet(
                                         ShareWidget(
                                           msg: message,

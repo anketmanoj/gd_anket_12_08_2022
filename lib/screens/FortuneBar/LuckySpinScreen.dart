@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diamon_rose_app/providers/caratsProvider.dart';
 import 'package:diamon_rose_app/screens/FortuneBar/fortuneBarProvider.dart';
 import 'package:diamon_rose_app/screens/FortuneBar/roll_button.dart';
+import 'package:diamon_rose_app/screens/FortuneBar/wonArScreen.dart';
 import 'package:diamon_rose_app/screens/ProfilePage/buyCaratScreen.dart';
 import 'package:diamon_rose_app/services/FirebaseOperations.dart';
 import 'package:diamon_rose_app/services/authentication.dart';
@@ -12,6 +13,7 @@ import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'package:get/get.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -233,6 +235,76 @@ class LuckySpinScreen extends HookWidget {
                                 context
                                     .read<FortuneBarProvider>()
                                     .stopArCollection(true);
+
+                                // await FirebaseFirestore.instance
+                                //     .collection("users")
+                                //     .doc(Provider.of<Authentication>(context,
+                                //             listen: false)
+                                //         .getUserId)
+                                //     .collection("MyCollection")
+                                //     .doc(context
+                                //         .read<FortuneBarProvider>()
+                                //         .getArRollSelected
+                                //         .id)
+                                //     .set({
+                                //   "alpha": context
+                                //       .read<FortuneBarProvider>()
+                                //       .getArRollSelected
+                                //       .alpha,
+                                //   "audioFile": context
+                                //       .read<FortuneBarProvider>()
+                                //       .getArRollSelected
+                                //       .audioFile,
+                                //   "audioFlag": context
+                                //       .read<FortuneBarProvider>()
+                                //       .getArRollSelected
+                                //       .audioFlag,
+                                //   "gif": context
+                                //       .read<FortuneBarProvider>()
+                                //       .getArRollSelected
+                                //       .gif,
+                                //   "id": context
+                                //       .read<FortuneBarProvider>()
+                                //       .getArRollSelected
+                                //       .id,
+                                //   "imgSeq": context
+                                //       .read<FortuneBarProvider>()
+                                //       .getArRollSelected
+                                //       .imgSeq,
+                                //   "layerType": context
+                                //       .read<FortuneBarProvider>()
+                                //       .getArRollSelected
+                                //       .layerType,
+                                //   "main": context
+                                //       .read<FortuneBarProvider>()
+                                //       .getArRollSelected
+                                //       .main,
+                                //   "timestamp": Timestamp.now(),
+                                //   "valueType": context
+                                //       .read<FortuneBarProvider>()
+                                //       .getArRollSelected
+                                //       .valueType,
+                                //   "ownerId": context
+                                //       .read<FortuneBarProvider>()
+                                //       .getArRollSelected
+                                //       .ownerId,
+                                //   "ownerName": context
+                                //       .read<FortuneBarProvider>()
+                                //       .getArRollSelected
+                                //       .layerType,
+                                //   "usage": context
+                                //       .read<FortuneBarProvider>()
+                                //       .getArRollSelected
+                                //       .usage,
+                                // });
+                                // log("AR ADDED!!!!!!!");
+
+                                Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                      child: WonArScreen(),
+                                      type: PageTransitionType.fade),
+                                );
 
                                 // ! use selected index to get the image of the Ar that has been selected from the list
                               },
