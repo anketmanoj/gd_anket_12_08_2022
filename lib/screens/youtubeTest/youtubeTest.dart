@@ -1,12 +1,14 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:diamon_rose_app/screens/youtubeTest/download_status.dart';
 import 'package:diamon_rose_app/screens/youtubeTest/text_input.dart';
 import 'package:diamon_rose_app/screens/youtubeTest/youtubeData.dart';
 import 'package:diamon_rose_app/screens/youtubeTest/youtube_utils.dart';
 import 'package:diamon_rose_app/widgets/global.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class YoutubeTestScreen extends StatefulWidget {
@@ -217,15 +219,75 @@ class _YoutubeTestScreenState extends State<YoutubeTestScreen>
                   onPressed: () async {
                     if (downloadStatus != DownloadStatus.downloading &&
                         downloadStatus != DownloadStatus.success) {
-                      await Permission.storage.request();
-                      startDownloading();
-                      // final bool success = await youtubeHandler.downloadMP3();
-                      final File? success =
-                          await youtubeHandler.downloadMP3File();
-                      if (success != null) {
-                        log("DONE == ${success.path}");
+                      final androidInfo = await DeviceInfoPlugin().androidInfo;
+                      late final Map<Permission, PermissionStatus> statusess;
+
+                      if (androidInfo.version.sdkInt! <= 32 || Platform.isIOS) {
+                        statusess = await [Permission.storage].request();
+                      } else {
+                        statusess = await [
+                          Permission.photos,
+                          Permission.notification,
+                          Permission.videos,
+                          Permission.audio,
+                          Permission.camera,
+                        ].request();
                       }
-                      changeDownloading(success != null ? true : false);
+
+                      var allAccept = true;
+
+                      statusess.forEach((permission, status) {
+                        if (status != PermissionStatus.granted) {
+                          allAccept = false;
+                        }
+                      });
+
+                      if (allAccept) {
+                        startDownloading();
+                        // final bool success = await youtubeHandler.downloadMP3();
+                        final File? success =
+                            await youtubeHandler.downloadMP3File();
+                        if (success != null) {
+                          log("DONE == ${success.path}");
+                        }
+                        changeDownloading(success != null ? true : false);
+                      } else {
+                        await Get.dialog(
+                          SimpleDialog(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Device permissions required",
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      "Permissions are required to store the videos on your device so you can share the videos on various other social media platforms!",
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    SubmitButton(
+                                      text: "Open Settings",
+                                      function: () async {
+                                        await openAppSettings();
+                                      },
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
                     }
                   },
                   child: (downloadStatus == DownloadStatus.downloading)

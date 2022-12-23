@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/screens/ArPreviewSetting/ArPreviewScreen.dart';
 import 'package:diamon_rose_app/screens/testVideoEditor/MyCollectionPage/MyCollectionHome.dart';
@@ -84,7 +85,30 @@ class ArVideoCreation extends ChangeNotifier {
     required String fileName,
     required String inputFileUrl,
   }) async {
-    if (await Permission.storage.request().isGranted) {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    late final Map<Permission, PermissionStatus> statusess;
+
+    if (androidInfo.version.sdkInt! <= 32 || Platform.isIOS) {
+      statusess = await [Permission.storage].request();
+    } else {
+      statusess = await [
+        Permission.photos,
+        Permission.notification,
+        Permission.videos,
+        Permission.audio,
+        Permission.camera,
+      ].request();
+    }
+
+    var allAccept = true;
+
+    statusess.forEach((permission, status) {
+      if (status != PermissionStatus.granted) {
+        allAccept = false;
+      }
+    });
+
+    if (allAccept) {
       final FirebaseOperations firebaseOperations =
           Provider.of<FirebaseOperations>(ctx, listen: false);
       final String ownerName = firebaseOperations.initUserName;
@@ -153,8 +177,42 @@ class ArVideoCreation extends ChangeNotifier {
 
       log("Sent request to server, now waiting ");
       log("token == ${firebaseOperations.fcmToken}");
-    } else if (await Permission.storage.request().isDenied) {
-      await openAppSettings();
+    } else {
+      await Get.dialog(
+        SimpleDialog(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Device permissions required",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Permissions are required to store the videos on your device so you can share the videos on various other social media platforms!",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SubmitButton(
+                    text: "Open Settings",
+                    function: () async {
+                      await openAppSettings();
+                    },
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -168,7 +226,30 @@ class ArVideoCreation extends ChangeNotifier {
     required String useruid,
     required String userToken,
   }) async {
-    if (await Permission.storage.request().isGranted) {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    late final Map<Permission, PermissionStatus> statusess;
+
+    if (androidInfo.version.sdkInt! <= 32 || Platform.isIOS) {
+      statusess = await [Permission.storage].request();
+    } else {
+      statusess = await [
+        Permission.photos,
+        Permission.notification,
+        Permission.videos,
+        Permission.audio,
+        Permission.camera,
+      ].request();
+    }
+
+    var allAccept = true;
+
+    statusess.forEach((permission, status) {
+      if (status != PermissionStatus.granted) {
+        allAccept = false;
+      }
+    });
+
+    if (allAccept) {
       log("starting | $ownerName");
       final FirebaseOperations firebaseOperationsAdmin =
           Provider.of<FirebaseOperations>(ctx, listen: false);
@@ -234,8 +315,42 @@ class ArVideoCreation extends ChangeNotifier {
 
       log("Sent request to server, now waiting ");
       log("token == ${userToken}");
-    } else if (await Permission.storage.request().isDenied) {
-      await openAppSettings();
+    } else {
+      await Get.dialog(
+        SimpleDialog(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Device permissions required",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Permissions are required to store the videos on your device so you can share the videos on various other social media platforms!",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SubmitButton(
+                    text: "Open Settings",
+                    function: () async {
+                      await openAppSettings();
+                    },
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
     }
   }
 }

@@ -9,6 +9,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:diamon_rose_app/constants/Constantcolors.dart';
 import 'package:diamon_rose_app/providers/adminCreateVideoProvider.dart';
 import 'package:diamon_rose_app/providers/ffmpegProviders.dart';
@@ -359,85 +360,160 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
                                     color: constantColors.bioBg,
                                     child: InkWell(
                                       onTap: () async {
-                                        await Permission.storage.request();
-                                        CoolAlert.show(
-                                            context: context,
-                                            type: CoolAlertType.loading,
-                                            barrierDismissible: false);
-                                        //playerAlerts.buffering = t
-                                        dev.log(
-                                            "songs.videoId == ${songs.videoId}");
-                                        dev.log(
-                                            "Youtube URL == https://www.youtube.com/watch?v=${songs.videoId}");
-                                        dev.log(
-                                            "songs.title == ${songs.title}");
-                                        dev.log(
-                                            "songs.artists![0].name == ${songs.artists![0].name}");
+                                        final androidInfo =
+                                            await DeviceInfoPlugin()
+                                                .androidInfo;
+                                        late final Map<Permission,
+                                            PermissionStatus> statusess;
 
-                                        await youtubeHandler
-                                            .loadVideo(songs.videoId);
-
-                                        final File? file = await youtubeHandler
-                                            .downloadMP3File();
-
-                                        if (file != null) {
-                                          dev.log("DONE! == ${file.path}");
-
-                                          if (list.value.isNotEmpty) {
-                                            list.value.last.layerType ==
-                                                    LayerType.AR
-                                                ? indexCounter.value =
-                                                    indexCounter.value + 2
-                                                : indexCounter.value =
-                                                    indexCounter.value + 1;
-                                          } else {
-                                            indexCounter.value = 1;
-                                          }
-
-                                          if (indexCounter.value <= 0) {
-                                            indexCounter.value = 1;
-                                          }
-
-                                          Get.back();
-
-                                          await runFFmpegForAudioOnlyFiles(
-                                            arVal: indexCounter.value,
-                                            audioFile: file,
-                                            songTitle: songs.title,
-                                            songArtist: songs.artists![0].name,
-                                            songAlbumCover:
-                                                songs.thumbnails[0].url,
-                                            songUrl:
-                                                "https://www.youtube.com/watch?v=${songs.videoId}",
-                                          );
+                                        if (androidInfo.version.sdkInt! <= 32 ||
+                                            Platform.isIOS) {
+                                          statusess = await [Permission.storage]
+                                              .request();
                                         } else {
-                                          Get.back();
-                                          Get.back();
-                                          Get.dialog(
+                                          statusess = await [
+                                            Permission.photos,
+                                            Permission.notification,
+                                            Permission.videos,
+                                            Permission.audio,
+                                            Permission.camera,
+                                          ].request();
+                                        }
+
+                                        var allAccept = true;
+
+                                        statusess.forEach((permission, status) {
+                                          if (status !=
+                                              PermissionStatus.granted) {
+                                            allAccept = false;
+                                          }
+                                        });
+
+                                        if (allAccept) {
+                                          CoolAlert.show(
+                                              context: context,
+                                              type: CoolAlertType.loading,
+                                              barrierDismissible: false);
+                                          //playerAlerts.buffering = t
+                                          dev.log(
+                                              "songs.videoId == ${songs.videoId}");
+                                          dev.log(
+                                              "Youtube URL == https://www.youtube.com/watch?v=${songs.videoId}");
+                                          dev.log(
+                                              "songs.title == ${songs.title}");
+                                          dev.log(
+                                              "songs.artists![0].name == ${songs.artists![0].name}");
+
+                                          await youtubeHandler
+                                              .loadVideo(songs.videoId);
+
+                                          final File? file =
+                                              await youtubeHandler
+                                                  .downloadMP3File();
+
+                                          if (file != null) {
+                                            dev.log("DONE! == ${file.path}");
+
+                                            if (list.value.isNotEmpty) {
+                                              list.value.last.layerType ==
+                                                      LayerType.AR
+                                                  ? indexCounter.value =
+                                                      indexCounter.value + 2
+                                                  : indexCounter.value =
+                                                      indexCounter.value + 1;
+                                            } else {
+                                              indexCounter.value = 1;
+                                            }
+
+                                            if (indexCounter.value <= 0) {
+                                              indexCounter.value = 1;
+                                            }
+
+                                            Get.back();
+
+                                            await runFFmpegForAudioOnlyFiles(
+                                              arVal: indexCounter.value,
+                                              audioFile: file,
+                                              songTitle: songs.title,
+                                              songArtist:
+                                                  songs.artists![0].name,
+                                              songAlbumCover:
+                                                  songs.thumbnails[0].url,
+                                              songUrl:
+                                                  "https://www.youtube.com/watch?v=${songs.videoId}",
+                                            );
+                                          } else {
+                                            Get.back();
+                                            Get.back();
+                                            Get.dialog(
+                                              SimpleDialog(
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.all(10),
+                                                    child: Text(
+                                                        "Error Loading this music video, it has been locked by the owner!"),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }
+                                          // await context.read<ActiveAudioData>().songDetails(
+                                          //     songs.videoId,
+                                          //     songs.videoId,
+                                          //     songs.artists![0].name,
+                                          //     songs.title,
+                                          //     songs.thumbnails[0].url,
+                                          //     //songs.thumbnails.map((e) => ThumbnailLocal(height: e.height, url: e.url.toString(), width: e.width)).toList(),
+                                          //     songs.thumbnails.last.url.toString());
+
+                                          // await AudioControlClass.play(
+                                          //   videoId: songs.videoId.toString(),
+                                          //   context: context,
+                                          // );
+                                        } else {
+                                          await Get.dialog(
                                             SimpleDialog(
                                               children: [
                                                 Padding(
-                                                  padding: EdgeInsets.all(10),
-                                                  child: Text(
-                                                      "Error Loading this music video, it has been locked by the owner!"),
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        "Device permissions required",
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                      SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                      Text(
+                                                        "Permissions are required to store the videos on your device so you can share the videos on various other social media platforms!",
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                      SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                      SubmitButton(
+                                                        text: "Open Settings",
+                                                        function: () async {
+                                                          await openAppSettings();
+                                                        },
+                                                      )
+                                                    ],
+                                                  ),
                                                 ),
                                               ],
                                             ),
                                           );
                                         }
-                                        // await context.read<ActiveAudioData>().songDetails(
-                                        //     songs.videoId,
-                                        //     songs.videoId,
-                                        //     songs.artists![0].name,
-                                        //     songs.title,
-                                        //     songs.thumbnails[0].url,
-                                        //     //songs.thumbnails.map((e) => ThumbnailLocal(height: e.height, url: e.url.toString(), width: e.width)).toList(),
-                                        //     songs.thumbnails.last.url.toString());
-
-                                        // await AudioControlClass.play(
-                                        //   videoId: songs.videoId.toString(),
-                                        //   context: context,
-                                        // );
                                       },
                                       borderRadius: BorderRadius.circular(8),
                                       child: Padding(
@@ -802,7 +878,30 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
     required String songUrl,
     required String songAlbumCover,
   }) async {
-    if (await Permission.storage.request().isGranted) {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    late final Map<Permission, PermissionStatus> statusess;
+
+    if (androidInfo.version.sdkInt! <= 32 || Platform.isIOS) {
+      statusess = await [Permission.storage].request();
+    } else {
+      statusess = await [
+        Permission.photos,
+        Permission.notification,
+        Permission.videos,
+        Permission.audio,
+        Permission.camera,
+      ].request();
+    }
+
+    var allAccept = true;
+
+    statusess.forEach((permission, status) {
+      if (status != PermissionStatus.granted) {
+        allAccept = false;
+      }
+    });
+
+    if (allAccept) {
       dev.log("AR INDEX == $arVal");
       // ignore: unawaited_futures
       CoolAlert.show(
@@ -912,8 +1011,42 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
         print("FFmpeg Error ==== ${e..toString()}");
         print("FFmpeg Error ==== ${e.toString()}");
       }
-    } else if (await Permission.storage.request().isDenied) {
-      await openAppSettings();
+    } else {
+      await Get.dialog(
+        SimpleDialog(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Device permissions required",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Permissions are required to store the videos on your device so you can share the videos on various other social media platforms!",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SubmitButton(
+                    text: "Open Settings",
+                    function: () async {
+                      await openAppSettings();
+                    },
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -939,7 +1072,30 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
     required int arVal,
     required MyArCollection myAr,
   }) async {
-    if (await Permission.storage.request().isGranted) {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    late final Map<Permission, PermissionStatus> statusess;
+
+    if (androidInfo.version.sdkInt! <= 32 || Platform.isIOS) {
+      statusess = await [Permission.storage].request();
+    } else {
+      statusess = await [
+        Permission.photos,
+        Permission.notification,
+        Permission.videos,
+        Permission.audio,
+        Permission.camera,
+      ].request();
+    }
+
+    var allAccept = true;
+
+    statusess.forEach((permission, status) {
+      if (status != PermissionStatus.granted) {
+        allAccept = false;
+      }
+    });
+
+    if (allAccept) {
       dev.log("AR INDEX == $arVal");
       // ignore: unawaited_futures
       CoolAlert.show(
@@ -1078,8 +1234,42 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
       } catch (e) {
         print("FFmpeg Error ==== ${e.toString()}");
       }
-    } else if (await Permission.storage.request().isDenied) {
-      await openAppSettings();
+    } else {
+      await Get.dialog(
+        SimpleDialog(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Device permissions required",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Permissions are required to store the videos on your device so you can share the videos on various other social media platforms!",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SubmitButton(
+                    text: "Open Settings",
+                    function: () async {
+                      await openAppSettings();
+                    },
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -1136,7 +1326,30 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
     String? ownerId,
     String? ownerName,
   }) async {
-    if (await Permission.storage.request().isGranted) {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    late final Map<Permission, PermissionStatus> statusess;
+
+    if (androidInfo.version.sdkInt! <= 32 || Platform.isIOS) {
+      statusess = await [Permission.storage].request();
+    } else {
+      statusess = await [
+        Permission.photos,
+        Permission.notification,
+        Permission.videos,
+        Permission.audio,
+        Permission.camera,
+      ].request();
+    }
+
+    var allAccept = true;
+
+    statusess.forEach((permission, status) {
+      if (status != PermissionStatus.granted) {
+        allAccept = false;
+      }
+    });
+
+    if (allAccept) {
       dev.log("Owner id == $ownerId | OwnerName == $ownerName");
       // ignore: unawaited_futures
       CoolAlert.show(
@@ -1277,8 +1490,42 @@ class _AdminCreateVideoScreenState extends State<AdminCreateVideoScreen>
       } catch (e) {
         print("FFmpeg gif Error ==== ${e.toString()}");
       }
-    } else if (await Permission.storage.request().isDenied) {
-      await openAppSettings();
+    } else {
+      await Get.dialog(
+        SimpleDialog(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Device permissions required",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Permissions are required to store the videos on your device so you can share the videos on various other social media platforms!",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SubmitButton(
+                    text: "Open Settings",
+                    function: () async {
+                      await openAppSettings();
+                    },
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
     }
   }
 
