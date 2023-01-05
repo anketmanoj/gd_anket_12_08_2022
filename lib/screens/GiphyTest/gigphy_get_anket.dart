@@ -50,7 +50,7 @@ class GiphyGetAnket {
         context: context,
         builder: (ctx) => MultiProvider(providers: [
               ChangeNotifierProvider(
-                create: (ctx) => AppBarProvider(queryText = queryText),
+                create: (ctx) => AppBarProvider(queryText, 1),
               ),
               ChangeNotifierProvider(
                 create: (ctx) => SheetProvider(),

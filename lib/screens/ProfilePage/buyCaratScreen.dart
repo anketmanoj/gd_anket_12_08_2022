@@ -152,12 +152,18 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
               );
             }
 
-            if (productDetails.id == kConsumableId0) {
-              _inAppPurchase.buyConsumable(
-                  purchaseParam: purchaseParam, autoConsume: kAutoConsume);
-            } else {
-              _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
-            }
+            log("Here now consumable");
+            _inAppPurchase.buyConsumable(
+                purchaseParam: purchaseParam, autoConsume: kAutoConsume);
+
+            // if (productDetails.id == kConsumableId0) {
+            //   log("Here now consumable");
+            //   _inAppPurchase.buyConsumable(
+            //       purchaseParam: purchaseParam, autoConsume: kAutoConsume);
+            // } else {
+            //   log("Here now nonconsumable");
+            //   _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+            // }
             // Get.bottomSheet(
             //   Container(
             //     height: 30.h,
@@ -386,7 +392,9 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
               // ignore: deprecated_member_use
               primary: Colors.white,
             ),
-            onPressed: () => _inAppPurchase.restorePurchases(),
+            onPressed: () async {
+              await _inAppPurchase.restorePurchases();
+            },
             child: const Text('Restore purchases'),
           ),
         ],

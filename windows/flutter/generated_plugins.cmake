@@ -3,8 +3,10 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  flutter_secure_storage_windows
   hotkey_manager
   permission_handler_windows
+  share_plus
   smart_auth
   url_launcher_windows
 )
