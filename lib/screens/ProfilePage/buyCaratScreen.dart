@@ -152,6 +152,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
               );
             }
 
+            log(productDetails.id);
             log("Here now consumable");
             _inAppPurchase.buyConsumable(
                 purchaseParam: purchaseParam, autoConsume: kAutoConsume);

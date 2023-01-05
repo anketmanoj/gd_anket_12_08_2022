@@ -97,11 +97,11 @@ int randomBetween(int min, int max) {
 // num_pieces(167,12)
 
 const String kConsumableId0 = 'gd_carats_1';
-const String kConsumableId1 = 'gd_carats_5';
-const String kConsumableId2 = 'gd_carats_10';
-const String kConsumableId3 = 'gd_carats_30';
-const String kConsumableId4 = 'gd_carats_55';
-const String kConsumableId5 = 'gd_carats_80';
+const String kConsumableId1 = 'gd_carats_5_s';
+const String kConsumableId2 = 'gd_carats_10_s';
+const String kConsumableId3 = 'gd_carats_30_s';
+const String kConsumableId4 = 'gd_carats_55_s';
+const String kConsumableId5 = 'gd_carats_80_s';
 // const String _kConsumableId6 = 'gd_carats_222';
 // const String _kConsumableId7 = 'gd_carats_312';
 // const String _kConsumableId8 = 'gd_carats_555';
