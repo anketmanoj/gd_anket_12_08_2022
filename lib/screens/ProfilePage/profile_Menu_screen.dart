@@ -927,36 +927,36 @@ class _ProfileMenuScreenState extends State<ProfileMenuScreen> {
                   trailingIcon: Icons.arrow_forward_ios,
                   text: LocaleKeys.changeLanguage.tr(),
                 ),
-                ListTileOption(
-                  constantColors: constantColors,
-                  onTap: () async {
-                    // randomSplit(numberOfRandNb: 4, predefinedNumber: 15);
-                    // await FirebaseFirestore.instance
-                    //     .collection("posts")
-                    //     .get()
-                    //     .then((value) async {
-                    //   for (var item in value.docs) {
-                    //     if (!item.data().containsKey("archive")) {
-                    //       log("doing!");
-                    //       await FirebaseFirestore.instance
-                    //           .collection("posts")
-                    //           .doc(item.id)
-                    //           .update({"archive": false});
-                    //     }
-                    //   }
-                    // });
+                // ListTileOption(
+                //   constantColors: constantColors,
+                //   onTap: () async {
+                //     // randomSplit(numberOfRandNb: 4, predefinedNumber: 15);
+                //     // await FirebaseFirestore.instance
+                //     //     .collection("posts")
+                //     //     .get()
+                //     //     .then((value) async {
+                //     //   for (var item in value.docs) {
+                //     //     if (!item.data().containsKey("archive")) {
+                //     //       log("doing!");
+                //     //       await FirebaseFirestore.instance
+                //     //           .collection("posts")
+                //     //           .doc(item.id)
+                //     //           .update({"archive": false});
+                //     //     }
+                //     //   } This is just a test type, we test type to make it seem like we're working when in reality, its akl lies, so many thins
+                //     // });
 
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                          child: LuckySpinScreen(),
-                          type: PageTransitionType.rightToLeft),
-                    );
-                  },
-                  leadingIcon: Icons.language_outlined,
-                  trailingIcon: Icons.arrow_forward_ios,
-                  text: "Video Template Test",
-                ),
+                //     Navigator.push(
+                //       context,
+                //       PageTransition(
+                //           child: LuckySpinScreen(),
+                //           type: PageTransitionType.rightToLeft),
+                //     );
+                //   },
+                //   leadingIcon: Icons.language_outlined,
+                //   trailingIcon: Icons.arrow_forward_ios,
+                //   text: "Video Template Test",
+                // ),
 
                 // ListTileOption(
                 //   constantColors: constantColors,
