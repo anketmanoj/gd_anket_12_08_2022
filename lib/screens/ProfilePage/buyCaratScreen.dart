@@ -134,18 +134,19 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
               // verify the latest status of you your subscription by using server side receipt validation
               // and update the UI accordingly. The subscription purchase status shown
               // inside the app may not be accurate.
-              final GooglePlayPurchaseDetails? oldSubscription =
-                  _getOldSubscription(productDetails, purchases);
+              // final GooglePlayPurchaseDetails? oldSubscription =
+              //     _getOldSubscription(productDetails, purchases);
 
               purchaseParam = GooglePlayPurchaseParam(
-                  productDetails: productDetails,
-                  changeSubscriptionParam: (oldSubscription != null)
-                      ? ChangeSubscriptionParam(
-                          oldPurchaseDetails: oldSubscription,
-                          prorationMode:
-                              ProrationMode.immediateWithTimeProration,
-                        )
-                      : null);
+                productDetails: productDetails,
+                // changeSubscriptionParam: (oldSubscription != null)
+                //     ? ChangeSubscriptionParam(
+                //         oldPurchaseDetails: oldSubscription,
+                //         prorationMode:
+                //             ProrationMode.immediateWithTimeProration,
+                //       )
+                //     : null
+              );
             } else {
               purchaseParam = PurchaseParam(
                 productDetails: productDetails,
@@ -405,6 +406,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
 
   Future<void> consume(String id) async {
     await ConsumableStore.consume(id);
+    log("consumed == $id");
     final List<String> consumables = await ConsumableStore.load();
     setState(() {
       _consumables = consumables;
@@ -419,19 +421,13 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
 
   Future<void> deliverProduct(PurchaseDetails purchaseDetails) async {
     // IMPORTANT!! Always verify purchase details before delivering the product.
-    if (purchaseDetails.productID == kConsumableId0) {
-      await ConsumableStore.save(purchaseDetails.purchaseID!);
-      final List<String> consumables = await ConsumableStore.load();
-      setState(() {
-        _purchasePending = false;
-        _consumables = consumables;
-      });
-    } else {
-      setState(() {
-        _purchases.add(purchaseDetails);
-        _purchasePending = false;
-      });
-    }
+    log("DELIVER!!!!");
+    await ConsumableStore.save(purchaseDetails.purchaseID!);
+    final List<String> consumables = await ConsumableStore.load();
+    setState(() {
+      _purchasePending = false;
+      _consumables = consumables;
+    });
   }
 
   void handleError(IAPError error) {
@@ -480,6 +476,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
           if (valid) {
             log("done verifying");
             deliverProduct(purchaseDetails);
+            consume(purchaseDetails.productID);
           } else {
             log("invalid purchase");
             _handleInvalidPurchase(purchaseDetails);
@@ -487,12 +484,11 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
           }
         }
         if (Platform.isAndroid) {
-          if (!kAutoConsume && purchaseDetails.productID == kConsumableId0) {
-            final InAppPurchaseAndroidPlatformAddition androidAddition =
-                _inAppPurchase.getPlatformAddition<
-                    InAppPurchaseAndroidPlatformAddition>();
-            await androidAddition.consumePurchase(purchaseDetails);
-          }
+          log("CONSUMMMEEE!!!!");
+          final InAppPurchaseAndroidPlatformAddition androidAddition =
+              _inAppPurchase
+                  .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+          await androidAddition.consumePurchase(purchaseDetails);
         }
         if (purchaseDetails.pendingCompletePurchase) {
           if (purchaseDetails.status != PurchaseStatus.purchased) {
@@ -698,13 +694,38 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
     if (_purchasePending) {
       stack.add(
         Stack(
-          children: const <Widget>[
+          children: <Widget>[
             Opacity(
               opacity: 0.3,
               child: ModalBarrier(dismissible: false, color: Colors.grey),
             ),
-            Center(
-              child: CircularProgressIndicator(),
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: Center(
+                child: Container(
+                  height: 20.h,
+                  width: 100.w,
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: constantColors.whiteColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "Please do not leave this page or exit the app.\nYour purchase is being verified!",
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -712,7 +733,7 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
     }
     return Scaffold(
       backgroundColor: constantColors.whiteColor,
-      appBar: widget.showAppBar == true
+      appBar: widget.showAppBar == true && _purchasePending == false
           ? AppBarWidget(
               text: LocaleKeys.collectcarats.tr(),
               context: context,
@@ -721,205 +742,6 @@ class _BuyCaratScreenState extends State<BuyCaratScreen> {
       body: Stack(
         children: stack,
       ),
-      // body: Padding(
-      //   padding: const EdgeInsets.all(10),
-      //   child: ListView.builder(
-      //     shrinkWrap: true,
-      //     itemCount: 9,
-      //     itemBuilder: (context, index) {
-      //       return Padding(
-      //         padding: const EdgeInsets.only(bottom: 10),
-      //         child: ListTile(
-      //           onTap: () {
-      //             Get.bottomSheet(
-      //               Container(
-      //                 height: 25.h,
-      //                 width: 100.w,
-      //                 padding: EdgeInsets.all(10),
-      //                 decoration: BoxDecoration(
-      //                   color: constantColors.navButton,
-      //                   borderRadius: BorderRadius.only(
-      //                     topLeft: Radius.circular(20),
-      //                     topRight: Radius.circular(20),
-      //                   ),
-      //                 ),
-      //                 child: Column(
-      //                   children: [
-      //                     Padding(
-      //                       padding:
-      //                           const EdgeInsets.symmetric(horizontal: 150),
-      //                       child: Divider(
-      //                         thickness: 4,
-      //                         color: constantColors.whiteColor,
-      //                       ),
-      //                     ),
-      //                     Padding(
-      //                       padding: const EdgeInsets.only(top: 20),
-      //                       child: Container(
-      //                         height: 50,
-      //                         width: 100.w,
-      //                         child: ElevatedButton(
-      //                           style: ButtonStyle(
-      //                             foregroundColor:
-      //                                 MaterialStateProperty.all<Color>(
-      //                                     Colors.white),
-      //                             backgroundColor:
-      //                                 MaterialStateProperty.all<Color>(
-      //                                     constantColors.bioBg),
-      //                             shape: MaterialStateProperty.all<
-      //                                 RoundedRectangleBorder>(
-      //                               RoundedRectangleBorder(
-      //                                 borderRadius: BorderRadius.circular(20),
-      //                               ),
-      //                             ),
-      //                           ),
-      //                           onPressed: () {
-      //                             Get.dialog(
-      //                               SimpleDialog(
-      //                                 backgroundColor:
-      //                                     constantColors.whiteColor,
-      //                                 title: Text(
-      //                                   "Pending in-app purchase approval",
-      //                                   textAlign: TextAlign.center,
-      //                                   style: TextStyle(
-      //                                     color: constantColors.black,
-      //                                   ),
-      //                                 ),
-      //                                 children: [
-      //                                   Padding(
-      //                                     padding: const EdgeInsets.all(10),
-      //                                     child: Text(
-      //                                       "We've submitted our in-app purchase approval request for all the Carat tiers shown",
-      //                                       textAlign: TextAlign.center,
-      //                                       style: TextStyle(
-      //                                           color: constantColors.black),
-      //                                     ),
-      //                                   ),
-      //                                   Padding(
-      //                                     padding: EdgeInsets.all(10),
-      //                                     child: Row(
-      //                                       children: [
-      //                                         Expanded(
-      //                                           child: ElevatedButton(
-      //                                             style: ButtonStyle(
-      //                                               foregroundColor:
-      //                                                   MaterialStateProperty
-      //                                                       .all<Color>(
-      //                                                           Colors.white),
-      //                                               backgroundColor:
-      //                                                   MaterialStateProperty
-      //                                                       .all<Color>(
-      //                                                           constantColors
-      //                                                               .navButton),
-      //                                               shape: MaterialStateProperty
-      //                                                   .all<
-      //                                                       RoundedRectangleBorder>(
-      //                                                 RoundedRectangleBorder(
-      //                                                   borderRadius:
-      //                                                       BorderRadius
-      //                                                           .circular(20),
-      //                                                 ),
-      //                                               ),
-      //                                             ),
-      //                                             onPressed: Get.back,
-      //                                             child: Text(
-      //                                               "Understood!",
-      //                                               style:
-      //                                                   TextStyle(fontSize: 12),
-      //                                             ),
-      //                                           ),
-      //                                         ),
-      //                                         SizedBox(
-      //                                           width: 10,
-      //                                         ),
-      //                                         Expanded(
-      //                                           child: ElevatedButton(
-      //                                             style: ButtonStyle(
-      //                                               foregroundColor:
-      //                                                   MaterialStateProperty
-      //                                                       .all<Color>(
-      //                                                           Colors.white),
-      //                                               backgroundColor:
-      //                                                   MaterialStateProperty
-      //                                                       .all<Color>(
-      //                                                           constantColors
-      //                                                               .navButton),
-      //                                               shape: MaterialStateProperty
-      //                                                   .all<
-      //                                                       RoundedRectangleBorder>(
-      //                                                 RoundedRectangleBorder(
-      //                                                   borderRadius:
-      //                                                       BorderRadius
-      //                                                           .circular(20),
-      //                                                 ),
-      //                                               ),
-      //                                             ),
-      //                                             onPressed: Get.back,
-      //                                             child: Text(
-      //                                               "View Items",
-      //                                             ),
-      //                                           ),
-      //                                         ),
-      //                                       ],
-      //                                     ),
-      //                                   ),
-      //                                 ],
-      //                               ),
-      //                               barrierDismissible: false,
-      //                             );
-      //                           },
-      //                           child: Text(
-      //                             "Apple App Store",
-      //                             style: TextStyle(
-      //                               color: constantColors.navButton,
-      //                             ),
-      //                           ),
-      //                         ),
-      //                       ),
-      //                     ),
-      //                     Padding(
-      //                       padding: const EdgeInsets.only(top: 20),
-      //                       child: Container(
-      //                         height: 50,
-      //                         width: 100.w,
-      //                         child: ElevatedButton(
-      //                           style: ButtonStyle(
-      //                             foregroundColor:
-      //                                 MaterialStateProperty.all<Color>(
-      //                                     Colors.white),
-      //                             backgroundColor:
-      //                                 MaterialStateProperty.all<Color>(
-      //                                     constantColors.bioBg),
-      //                             shape: MaterialStateProperty.all<
-      //                                 RoundedRectangleBorder>(
-      //                               RoundedRectangleBorder(
-      //                                 borderRadius: BorderRadius.circular(20),
-      //                               ),
-      //                             ),
-      //                           ),
-      //                           onPressed: () async {},
-      //                           child: Text(
-      //                             "Glamorous Diastation Direct Payment",
-      //                             style: TextStyle(
-      //                               color: constantColors.navButton,
-      //                             ),
-      //                           ),
-      //                         ),
-      //                       ),
-      //                     ),
-      //                   ],
-      //                 ),
-      //               ),
-      //             );
-      //           },
-      //           leading: Image.asset("assets/carats/${index}.png"),
-      //           title: Text(carats[index].name),
-      //           trailing: Text("\$${carats[index].price}"),
-      //         ),
-      //       );
-      //     },
-      //   ),
-      // ),
     );
   }
 }

@@ -28,6 +28,7 @@ const List<String> adminUserId = [
   "Pbe9wKL0zVMfZdP9yjF8IdEPhsw2",
   "dL92cdeOzThSxpNDBMx7Ohx5Mio2",
   "tIH6Kdu6ugXkWPeA0hHY7XpuVfp1",
+  "PME96JZYmgZcxnKPjNKY42S7Sre2",
 ];
 
 class ListTileOption extends StatelessWidget {
